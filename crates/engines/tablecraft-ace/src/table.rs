@@ -101,6 +101,8 @@ pub use mutation::{
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub use mutation::{FittedColumnUpdates, FixedColumnUpdates, SlotScalarUpdate};
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(crate) use mutation::{NativeIndexCreateEffect, NativeIndexCreateParts};
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub use mutation::{NativeIndexDropCandidate, NativeLongIndexCandidate};
 #[cfg(feature = "journal")]
 pub use mutation::{

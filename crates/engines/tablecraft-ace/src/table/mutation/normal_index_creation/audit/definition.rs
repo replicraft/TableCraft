@@ -99,7 +99,7 @@ pub(super) fn definition(
     active.extend_from_slice(&raw[layout.logical.clone()]);
     let mut logical = [0; LOGICAL_BYTES];
     integer(&mut logical, 0, LOGICAL_MAGIC);
-    integer(&mut logical, LOGICAL_NUMBER_OFFSET, layout.logical_count);
+    integer(&mut logical, LOGICAL_NUMBER_OFFSET, original.logical);
     integer(&mut logical, PHYSICAL_NUMBER_OFFSET, layout.physical_count);
     integer(&mut logical, RELATED_INDEX_OFFSET, u32::MAX);
     active.extend(logical);

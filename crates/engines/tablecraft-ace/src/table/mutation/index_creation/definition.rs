@@ -170,12 +170,28 @@ pub(in crate::table::mutation) fn compose(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, EditError> {
+    if descriptor.logical != layout.logical_count {
+        return Err(EditError::Preservation);
+    }
+    compose_fresh(image, layout, name, descriptor, budget, cancelled)
+}
+
+/// Physical serialization consumes an independently source-bound logical identity.
+/// The original entry point above retains its exact count-based language.
+pub(in crate::table::mutation) fn compose_fresh(
+    image: &NativeImage,
+    layout: &DefinitionLayout,
+    name: &tablecraft_schema::SchemaName,
+    descriptor: CreatedDescriptor,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, EditError> {
     let name_units = name.as_str().encode_utf16().count();
     let name_bytes = name_units
         .checked_mul(size_of::<u16>())
         .ok_or(InspectError::StructureLimit)?;
     let length = layout.new_length(name_bytes)?;
-    if descriptor.physical != layout.physical_count || descriptor.logical != layout.logical_count {
+    if descriptor.physical != layout.physical_count {
         return Err(EditError::Preservation);
     }
     let start = layout.definition as usize * PAGE_BYTES;

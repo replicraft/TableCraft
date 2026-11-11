@@ -456,6 +456,14 @@ pub use transaction::{
 };
 
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use transaction::RecoverableNativeFreshIndexCreatePlan;
+#[cfg(feature = "journal")]
+pub use transaction::{
+    FreshIndexCreateIntentError, NativeFreshIndexCreateIntent,
+    QualifiedNativeFreshIndexCreateRecovery,
+};
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub use transaction::RecoverableNativeIndexCreatePlan;
 #[cfg(feature = "journal")]
 pub use transaction::{

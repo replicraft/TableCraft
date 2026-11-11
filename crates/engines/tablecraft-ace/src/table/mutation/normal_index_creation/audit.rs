@@ -33,6 +33,30 @@ pub(super) fn prove(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
     let original = source::capture(before, table, request, budget, cancelled)?;
+    prove_original(before, after, table, request, original, budget, cancelled)
+}
+
+pub(super) fn prove_fresh(
+    before: &NativeImage,
+    after: &NativeImage,
+    table: &str,
+    request: &SecondaryIndexCreate<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    let original = source::capture_fresh(before, table, request, budget, cancelled)?;
+    prove_original(before, after, table, request, original, budget, cancelled)
+}
+
+fn prove_original(
+    before: &NativeImage,
+    after: &NativeImage,
+    table: &str,
+    request: &SecondaryIndexCreate<'_>,
+    original: source::Original,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
     let keys = original.keys(budget, cancelled)?;
     let inventory = Inventory::capture(before, budget, cancelled)?;
     let after_pages =
@@ -62,7 +86,7 @@ pub(super) fn prove(
         return Err(EditError::Preservation);
     };
     if index.name() != original.name.as_str()
-        || index.number() != original.layout.logical_count
+        || index.number() != original.logical
         || index.data_number() != original.layout.physical_count
         || index.flags() != 128
         || index.native_type() != 0

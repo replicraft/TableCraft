@@ -1,5 +1,7 @@
 //! A source-bound, independently checked normal LONG index candidate.
 mod audit;
+mod effect;
+pub(crate) use effect::{NativeIndexCreateEffect, NativeIndexCreateParts};
 mod maps;
 mod source;
 #[cfg(test)]
@@ -25,6 +27,7 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 /// image, source admission and independent whole-image proof remain bound to it.
 /// No native Access application save qualification is implied.
 pub struct NativeLongIndexCandidate {
+    construction: source::Construction,
     before: NativeImage,
     after: NativeImage,
     table: String,
@@ -44,6 +47,10 @@ pub struct NativeLongIndexCandidate {
 }
 
 impl NativeLongIndexCandidate {
+    pub(crate) fn is_fresh_construction(&self) -> bool {
+        self.construction == source::Construction::Fresh
+    }
+
     /// Complete immutable original image.
     pub fn before_bytes(&self) -> &[u8] {
         self.before.as_bytes()
@@ -138,6 +145,37 @@ impl NativeImage {
     ) -> Result<NativeLongIndexCandidate, EditError> {
         let _span = tracing::debug_span!("native.index.create_long").entered();
         let original = source::capture(&self, table, request, budget, cancelled)?;
+        self.build_retained_long_index(table, request, original, budget, cancelled)
+    }
+
+    /// Build the normal LONG tree with a fresh nonconflicting logical identity.
+    /// Existing count-based identities stay unchanged when available; a collision
+    /// chooses checked maximum-plus-one while preserving every existing identity.
+    /// This explicit producer policy is not a Microsoft allocation-algorithm claim.
+    ///
+    /// # Errors
+    /// Returns source/target, namespace, ownership, capacity, cancellation,
+    /// resource, allocation, identity exhaustion or independent-proof failures.
+    pub fn prepare_retained_fresh_long_index_creation(
+        self,
+        table: &str,
+        request: &SecondaryIndexCreate<'_>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<NativeLongIndexCandidate, EditError> {
+        let _span = tracing::debug_span!("native.index.create_fresh_long").entered();
+        let original = source::capture_fresh(&self, table, request, budget, cancelled)?;
+        self.build_retained_long_index(table, request, original, budget, cancelled)
+    }
+
+    fn build_retained_long_index(
+        self,
+        table: &str,
+        request: &SecondaryIndexCreate<'_>,
+        original: source::Original,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<NativeLongIndexCandidate, EditError> {
         let rows = original.content.records.len();
         let population = Population::capture(
             original.keys(budget, cancelled)?,
@@ -162,18 +200,28 @@ impl NativeImage {
             descending: original.descending,
             counter: population.distinct(),
             physical: original.layout.physical_count,
-            logical: original.layout.logical_count,
+            logical: original.logical,
             usage: maps.usage,
             root: population.root(),
         };
-        let definition = definition::compose(
-            &self,
-            &original.layout,
-            &original.name,
-            descriptor,
-            budget,
-            cancelled,
-        )?;
+        let definition = match original.construction {
+            source::Construction::OriginalCount => definition::compose(
+                &self,
+                &original.layout,
+                &original.name,
+                descriptor,
+                budget,
+                cancelled,
+            )?,
+            source::Construction::Fresh => definition::compose_fresh(
+                &self,
+                &original.layout,
+                &original.name,
+                descriptor,
+                budget,
+                cancelled,
+            )?,
+        };
         let length = usize::try_from(maps.after_pages)
             .map_err(|_| InspectError::StructureLimit)?
             .checked_mul(PAGE_BYTES)
@@ -215,12 +263,20 @@ impl NativeImage {
             budget,
             cancelled,
         )?;
-        audit::prove(&self, &after, table, request, budget, cancelled)?;
+        match original.construction {
+            source::Construction::OriginalCount => {
+                audit::prove(&self, &after, table, request, budget, cancelled)?
+            }
+            source::Construction::Fresh => {
+                audit::prove_fresh(&self, &after, table, request, budget, cancelled)?
+            }
+        }
         let table = String::from_utf8(buffer::copy(table.as_bytes(), budget, cancelled)?)
             .map_err(|_| InspectError::Malformed)?;
         let column = String::from_utf8(buffer::copy(request.column.as_bytes(), budget, cancelled)?)
             .map_err(|_| InspectError::Malformed)?;
         Ok(NativeLongIndexCandidate {
+            construction: original.construction,
             before: self,
             after,
             table,
@@ -231,7 +287,7 @@ impl NativeImage {
             descending: original.descending,
             index: original.name,
             native: original.native,
-            logical: original.layout.logical_count,
+            logical: original.logical,
             physical: original.layout.physical_count,
             rows,
             root: population.root(),
@@ -248,3 +304,6 @@ fn allocation_error(error: AllocationError) -> EditError {
         AllocationError::Source => EditError::Preservation,
     }
 }
+
+#[cfg(test)]
+mod history_tests;

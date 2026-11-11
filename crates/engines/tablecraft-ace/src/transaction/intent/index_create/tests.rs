@@ -188,3 +188,41 @@ fn journal_only_decodes_original_but_recovery_refuses_before_target_effects() {
     assert_eq!(target.writes, 0);
     assert_eq!(target.bytes.get_ref(), &before);
 }
+
+#[cfg(feature = "ace16-create")]
+#[test]
+fn original_capture_rejects_fresh_construction_even_when_count_based_bytes_are_identical() {
+    use crate::{NativeImage, SecondaryIndexCreate};
+    use std::io::Cursor;
+    use tablecraft_model::CatalogScope;
+    use tablecraft_testkit::fixtures::access::secondary_index::normal::{self as raw, Population};
+    let case = raw::source(Population::NullableDuplicate, false);
+    let image = NativeImage::capture_retained(
+        &mut Cursor::new(&case.before),
+        CatalogScope::new(28613),
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    let fresh = image
+        .prepare_retained_fresh_long_index_creation(
+            case.table,
+            &SecondaryIndexCreate::new(case.index_name, case.column, false),
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+    assert_eq!(fresh.candidate_bytes().len(), case.expected.len());
+    assert_eq!(
+        fresh
+            .candidate_bytes()
+            .iter()
+            .zip(&case.expected)
+            .position(|(a, b)| a != b),
+        None
+    );
+    assert!(matches!(
+        NativeIndexCreateIntent::capture(&fresh, &mut budget(), &|| false),
+        Err(IndexCreateIntentError::InvalidRecord)
+    ));
+}

@@ -24,7 +24,15 @@ use tablecraft_core::{
 };
 use tablecraft_schema::SchemaName;
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(super) enum Construction {
+    OriginalCount,
+    Fresh,
+}
+
 pub(super) struct Original {
+    pub construction: Construction,
+    pub logical: u32,
     pub content: preserved_source::Source,
     pub layout: DefinitionLayout,
     pub name: SchemaName,
@@ -43,6 +51,41 @@ pub(super) fn capture(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Original, EditError> {
+    capture_with(
+        image,
+        table,
+        request,
+        Construction::OriginalCount,
+        budget,
+        cancelled,
+    )
+}
+
+pub(super) fn capture_fresh(
+    image: &NativeImage,
+    table: &str,
+    request: &SecondaryIndexCreate<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Original, EditError> {
+    capture_with(
+        image,
+        table,
+        request,
+        Construction::Fresh,
+        budget,
+        cancelled,
+    )
+}
+
+fn capture_with(
+    image: &NativeImage,
+    table: &str,
+    request: &SecondaryIndexCreate<'_>,
+    construction: Construction,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Original, EditError> {
     check(budget, cancelled)?;
     image.require_retained_capture()?;
     if !image.has_retained_table_source(table, budget, cancelled)? {
@@ -52,6 +95,9 @@ pub(super) fn capture(
     inventory.require_source(image)?;
     if !identifier::valid_name(request.name, budget, cancelled)? {
         return Err(EditError::Unsupported(WriteBlocker::Column));
+    }
+    if construction == Construction::Fresh && !request.name.is_ascii() {
+        return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
     }
     let bytes = buffer::copy(request.name.as_bytes(), budget, cancelled)?;
     let name =
@@ -67,7 +113,7 @@ pub(super) fn capture(
     {
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }
-    let next_logical = u32::try_from(schema.layout.logical_indexes)
+    let mut next_logical = u32::try_from(schema.layout.logical_indexes)
         .map_err(|_| crate::InspectError::StructureLimit)?;
     let mut selected = None;
     for column in schema.columns() {
@@ -107,6 +153,9 @@ pub(super) fn capture(
         }
     }
     let dense = dense.ok_or(crate::InspectError::Malformed)?;
+    if construction == Construction::Fresh {
+        next_logical = fresh_logical(next_logical, content.indexes.indexes(), budget, cancelled)?;
+    }
     for index in content.indexes.indexes() {
         check(budget, cancelled)?;
         budget
@@ -115,6 +164,11 @@ pub(super) fn capture(
                 index.name().len().max(name.as_str().len()) as u64,
             )
             .map_err(crate::InspectError::from)?;
+        // Fresh construction does not infer native Unicode identifier
+        // equivalence from SQL text collation or ASCII-only comparison.
+        if construction == Construction::Fresh && !index.name().is_ascii() {
+            return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
+        }
         if index.number() == next_logical {
             // Existing logical identities may have holes; count is usable as a
             // new identity only when the original descriptor set leaves it free.
@@ -163,6 +217,8 @@ pub(super) fn capture(
     let index_start = u32::try_from(image.as_bytes().len() / PAGE_BYTES)
         .map_err(|_| crate::InspectError::StructureLimit)?;
     Ok(Original {
+        construction,
+        logical: next_logical,
         content,
         layout,
         name,
@@ -205,5 +261,31 @@ impl Original {
             });
         }
         Ok(output)
+    }
+}
+
+/// Generated identity policy; input metadata alone does not grant source authority.
+pub(super) fn fresh_logical(
+    count: u32,
+    indexes: &[crate::NativeIndex],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<u32, crate::InspectError> {
+    check(budget, cancelled)?;
+    let mut occupied = false;
+    let mut highest = None;
+    for index in indexes {
+        check(budget, cancelled)?;
+        budget.charge(Resource::Steps, 1)?;
+        occupied |= index.number() == count;
+        highest = Some(highest.map_or(index.number(), |value: u32| value.max(index.number())));
+    }
+    if occupied {
+        highest
+            .ok_or(crate::InspectError::Malformed)?
+            .checked_add(1)
+            .ok_or(crate::InspectError::StructureLimit)
+    } else {
+        Ok(count)
     }
 }

@@ -163,6 +163,9 @@ impl NativeIndexCreateIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, IndexCreateIntentError> {
+        if candidate.is_fresh_construction() {
+            return Err(IndexCreateIntentError::InvalidRecord);
+        }
         let identity = Identity {
             native_table: candidate.native_table_id(),
             definition: candidate.definition_page(),
