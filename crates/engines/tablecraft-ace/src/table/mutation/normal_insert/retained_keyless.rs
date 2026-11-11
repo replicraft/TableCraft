@@ -1,5 +1,7 @@
 //! Fresh ordinary rows over retained schema history, without generation or indexes.
 mod proof;
+#[cfg(test)]
+mod tests;
 
 use super::{incrementing, indexed, retained};
 use crate::{
