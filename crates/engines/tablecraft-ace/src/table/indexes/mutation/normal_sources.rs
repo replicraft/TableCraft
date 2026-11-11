@@ -43,14 +43,22 @@ fn expected_order(case: &raw::Source) -> Vec<raw::Row> {
     rows
 }
 
-fn qualify(case: &raw::Source, bytes: &[u8], after: bool) {
+fn qualify(case: &raw::Source, bytes: &[u8], after: bool, population: &str) {
+    let context = format!(
+        "{population} rows={} after={after} descending={} levels={} leaves={}",
+        case.rows.len(),
+        case.descending,
+        case.levels,
+        case.leaf_pages
+    );
     let mut work = allowance(case.rows.len());
     let image = NativeImage::capture_retained(&mut Cursor::new(bytes), SCOPE, &mut work, &|| false)
         .unwrap();
     // This is complete represented ownership/global allocation observation;
     // it does not mint index mutation or journal permission.
     #[cfg(feature = "ace16-create")]
-    Inventory::capture_represented(&image, &mut work, &|| false).unwrap();
+    Inventory::capture_represented(&image, &mut work, &|| false)
+        .unwrap_or_else(|error| panic!("{context}: represented inventory: {error:?}"));
     let metadata =
         inspect_table_indexes(&mut image.reader(), SCOPE, case.table, &mut work, &|| false)
             .unwrap();
@@ -156,8 +164,14 @@ fn independent_sources_and_expected_indexes_qualify_empty_nullable_and_real_tree
     ] {
         for descending in [false, true] {
             let case = raw::source(population, descending);
-            qualify(&case, &case.before, false);
-            qualify(&case, &case.expected, true);
+            let label = match population {
+                Population::Empty => "Empty",
+                Population::NullableDuplicate => "NullableDuplicate",
+                Population::ThreeLeaves => "ThreeLeaves",
+                Population::MultiLevel => "MultiLevel",
+            };
+            qualify(&case, &case.before, false, label);
+            qualify(&case, &case.expected, true, label);
             if matches!(population, Population::ThreeLeaves) {
                 assert!(case.leaf_pages > 2);
             }
@@ -172,8 +186,8 @@ fn independent_sources_and_expected_indexes_qualify_empty_nullable_and_real_tree
 fn ordinary_secondary_creation_preserves_existing_primary_typed_payloads_and_siblings() {
     for descending in [false, true] {
         let case = raw::protected_companion(descending);
-        qualify(&case, &case.before, false);
-        qualify(&case, &case.expected, true);
+        qualify(&case, &case.before, false, "ProtectedCompanion");
+        qualify(&case, &case.expected, true, "ProtectedCompanion");
         let mut work = allowance(case.rows.len());
         let result = read_table_index_with_request(
             &mut Cursor::new(&case.expected),
@@ -252,7 +266,12 @@ fn ordinary_secondary_creation_preserves_existing_primary_typed_payloads_and_sib
 #[test]
 fn represented_map_owner_and_full_key_row_fence_corruption_are_not_accepted() {
     let case = raw::source(Population::ThreeLeaves, false);
-    qualify(&case, &case.expected, true);
+    qualify(
+        &case,
+        &case.expected,
+        true,
+        "ThreeLeaves corruption control",
+    );
     let mut missing_member = case.expected.clone();
     let map = case.map_host as usize * 4096;
     let record =
