@@ -101,58 +101,81 @@ fn six_scalar_originals_and_null_noop_recover_pending_committed_and_confirm_fres
         (Column::DateValue, Value::Null, Value::Null, None),
     ] {
         let after = raw::update(&before, definition, 0, column, raw_value);
-        for committed in [false, true] {
-            let plan = image(&before, 2121)
-                .plan_recoverable_retained_fixed_scalar_row_updates(
-                    "Measurements",
-                    groups(column, expected.clone(), replacement.clone()),
-                    &mut budget(),
-                    &|| false,
-                )
-                .unwrap();
-            assert_image(plan.after_bytes(), &after);
-            let plan = plan
-                .requalify_with_budgets(image(&before, 2122), &mut budget(), &mut budget(), &|| {
-                    false
-                })
-                .unwrap();
-            let wire = plan.intent().encode(&mut budget(), &|| false).unwrap();
-            let mut target = MemoryStorage::new(before.clone());
-            let mut journal_file = MemoryStorage::new(Vec::new());
-            let prepared = plan
-                .prepare_retained(&mut target, &mut journal_file, &mut budget(), &|| false)
-                .unwrap();
-            if committed {
-                prepared.commit(&mut budget(), &|| false).unwrap();
-            } else {
-                drop(prepared);
-                target.bytes.get_mut().copy_from_slice(&after);
-            }
-            let checked = journal::inspect_v3(&mut journal_file, &mut budget(), &|| false).unwrap();
-            NativeUpdateIntent::decode(&wire, &mut budget(), &|| false)
-                .unwrap()
-                .qualify_retained_recovery(checked, CatalogScope::new(2123), &mut budget(), &|| {
-                    false
-                })
-                .unwrap()
-                .recover_retained(&mut target, &mut budget(), &|| false)
-                .unwrap();
-            assert_image(
-                target.bytes.get_ref(),
-                if committed { &after } else { &before },
-            );
-            let writes = target.writes;
-            let checked = journal::inspect_v3(&mut journal_file, &mut budget(), &|| false).unwrap();
-            NativeUpdateIntent::decode(&wire, &mut budget(), &|| false)
-                .unwrap()
-                .qualify_retained_recovery(checked, CatalogScope::new(2124), &mut budget(), &|| {
-                    false
-                })
-                .unwrap()
-                .confirm_completed(&mut target, &mut budget(), &|| false)
-                .unwrap();
-            assert_eq!(target.writes, writes);
+        recover_case(&before, column, &expected, &replacement, &after);
+    }
+
+    let seed = fields::source(fields::Case::FirstNumber).bytes;
+    let definition = (seed.len() / 4096) as u32;
+    let empty = raw::append_table(&seed, "Measurements");
+    let before = raw::historical::append(&empty, definition, 124);
+    let after = raw::historical::after(
+        &before,
+        definition,
+        0,
+        Column::ByteValue,
+        Some(Scalar::Byte(255)),
+    );
+    recover_case(
+        &before,
+        Column::ByteValue,
+        &Value::Null,
+        &Value::Byte(255),
+        &after,
+    );
+}
+
+fn recover_case(
+    before: &[u8],
+    column: Column,
+    expected: &Value,
+    replacement: &Value,
+    after: &[u8],
+) {
+    for committed in [false, true] {
+        let plan = image(before, 2121)
+            .plan_recoverable_retained_fixed_scalar_row_updates(
+                "Measurements",
+                groups(column, expected.clone(), replacement.clone()),
+                &mut budget(),
+                &|| false,
+            )
+            .unwrap();
+        assert_image(plan.after_bytes(), after);
+        let plan = plan
+            .requalify_with_budgets(image(before, 2122), &mut budget(), &mut budget(), &|| false)
+            .unwrap();
+        let wire = plan.intent().encode(&mut budget(), &|| false).unwrap();
+        let mut target = MemoryStorage::new(before.to_vec());
+        let mut journal_file = MemoryStorage::new(Vec::new());
+        let prepared = plan
+            .prepare_retained(&mut target, &mut journal_file, &mut budget(), &|| false)
+            .unwrap();
+        if committed {
+            prepared.commit(&mut budget(), &|| false).unwrap();
+        } else {
+            drop(prepared);
+            target.bytes.get_mut().copy_from_slice(after);
         }
+        let checked = journal::inspect_v3(&mut journal_file, &mut budget(), &|| false).unwrap();
+        NativeUpdateIntent::decode(&wire, &mut budget(), &|| false)
+            .unwrap()
+            .qualify_retained_recovery(checked, CatalogScope::new(2123), &mut budget(), &|| false)
+            .unwrap()
+            .recover_retained(&mut target, &mut budget(), &|| false)
+            .unwrap();
+        assert_image(
+            target.bytes.get_ref(),
+            if committed { after } else { before },
+        );
+        let writes = target.writes;
+        let checked = journal::inspect_v3(&mut journal_file, &mut budget(), &|| false).unwrap();
+        NativeUpdateIntent::decode(&wire, &mut budget(), &|| false)
+            .unwrap()
+            .qualify_retained_recovery(checked, CatalogScope::new(2124), &mut budget(), &|| false)
+            .unwrap()
+            .confirm_completed(&mut target, &mut budget(), &|| false)
+            .unwrap();
+        assert_eq!(target.writes, writes);
     }
 }
 
