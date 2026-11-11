@@ -17,6 +17,8 @@ mod initial_properties;
 mod initial_wide;
 #[path = "render_preview/navigation.rs"]
 mod navigation;
+#[path = "render_preview/query_collections.rs"]
+mod query_collections;
 #[path = "render_preview/query_limits.rs"]
 mod query_limits;
 #[path = "render_preview/saved_sql.rs"]
@@ -71,6 +73,18 @@ fn main() -> Result<(), Box<dyn Error>> {
         Ok(query) => Some(query),
         Err(env::VarError::NotPresent) => None,
         Err(error) => return Err(error.into()),
+    };
+    let query_collection_mode = setting("TABLECRAFT_PREVIEW_QUERY_COLLECTIONS", "none")?;
+    if !query_collections::is_mode(&query_collection_mode) {
+        return Err(io::Error::other("unknown query collection preview mode").into());
+    }
+    if query_collection_mode != "none" && scenes != [Scene::Query] {
+        return Err(io::Error::other("query collection rendering requires the query scene").into());
+    }
+    let query_collection_suffix = if query_collection_mode == "none" {
+        String::new()
+    } else {
+        format!("-query-collections-{query_collection_mode}")
     };
     let query_limits = match setting("TABLECRAFT_PREVIEW_QUERY_LIMITS", "false")?.as_str() {
         "false" => false,
@@ -487,9 +501,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         if query_limits {
             query_limits::prepare(&mut harness);
         }
+        if query_collection_mode != "none" {
+            query_collections::prepare(&mut harness, &query_collection_mode);
+        }
         let image = harness.render().map_err(io::Error::other)?;
         let path = directory.join(format!(
-            "{}-{}-{}{}{}{ribbon_suffix}{gallery_suffix}{initial_suffix}{table_suffix}{navigation_suffix}{date_suffix}{rename_suffix}{saved_sql_suffix}{field_addition_suffix}{field_drop_suffix}{field_rename_suffix}{database_options_suffix}{query_limits_suffix}{update_suffix}{}.png",
+            "{}-{}-{}{}{}{ribbon_suffix}{gallery_suffix}{initial_suffix}{table_suffix}{navigation_suffix}{date_suffix}{rename_suffix}{saved_sql_suffix}{field_addition_suffix}{field_drop_suffix}{field_rename_suffix}{database_options_suffix}{query_limits_suffix}{query_collection_suffix}{update_suffix}{}.png",
             locale.as_str(),
             theme_name,
             scene.as_str(),

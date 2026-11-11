@@ -14,6 +14,7 @@ mod insertion;
 mod object_status;
 mod queries;
 mod query_actions;
+mod query_collections;
 mod query_design;
 mod restart;
 mod saved_sql;

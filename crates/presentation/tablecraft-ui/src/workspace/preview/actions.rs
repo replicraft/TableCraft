@@ -400,7 +400,7 @@ impl Preview {
                     );
                 }
             }
-            Action::ViewQueryContents { .. } => {}
+            Action::ViewQueryContents { target } => self.query_collection(target),
             Action::ViewContents { target } => {
                 let kind = match target.column.as_str() {
                     "Categories" => CollectionKind::Multivalue,
