@@ -64,6 +64,7 @@ impl OfflineWriteSession {
                     | NativeUpdateProfile::Ace16RetainedOpaqueRows
                     | NativeUpdateProfile::Ace16RetainedCurrencyRows
                     | NativeUpdateProfile::Ace16RetainedBooleanRows
+                    | NativeUpdateProfile::Ace16RetainedFixedScalarRows
             ) {
                 #[cfg(feature = "ace16-create")]
                 {

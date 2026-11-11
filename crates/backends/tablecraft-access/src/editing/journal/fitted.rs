@@ -17,6 +17,51 @@ use tablecraft_schema::ScalarType;
 
 const COPY_BYTES: usize = 4096;
 
+#[cfg(feature = "ace16-create")]
+fn retained_fixed_scalar(kind: ScalarType) -> bool {
+    matches!(
+        kind,
+        ScalarType::Byte
+            | ScalarType::Int16
+            | ScalarType::Int64
+            | ScalarType::Single
+            | ScalarType::Double
+            | ScalarType::DateTime
+    )
+}
+
+#[cfg(feature = "ace16-create")]
+fn retained_scalar(value: &Value, kind: ScalarType) -> Result<Value, NativeEditError> {
+    Ok(match (kind, value) {
+        (ScalarType::Byte, Value::Byte(value)) => Value::Byte(*value),
+        (ScalarType::Int16, Value::Int16(value)) => Value::Int16(*value),
+        (ScalarType::Int64, Value::Int64(value)) => Value::Int64(*value),
+        (ScalarType::Single, Value::Single(value)) if value.to_float().is_finite() => {
+            Value::Single(*value)
+        }
+        (ScalarType::Double, Value::Double(value)) if value.to_float().is_finite() => {
+            Value::Double(*value)
+        }
+        (ScalarType::DateTime, Value::DateTime(value)) => Value::DateTime(*value),
+        (kind, Value::Null) if retained_fixed_scalar(kind) => Value::Null,
+        _ => return Err(NativeEditError::Unsupported),
+    })
+}
+
+fn scalar_request(
+    value: &Value,
+    kind: ScalarType,
+    route: JournalRoute,
+) -> Result<Value, NativeEditError> {
+    #[cfg(feature = "ace16-create")]
+    if route == JournalRoute::RetainedRows && retained_fixed_scalar(kind) {
+        return retained_scalar(value, kind);
+    }
+    #[cfg(not(feature = "ace16-create"))]
+    let _ = route;
+    scalar(value, kind)
+}
+
 impl NativeJournalEditor {
     /// Original target metadata chooses the request category before conversion.
     /// Empty Text/Binary groups retain their fitted semantics and are not dropped.
@@ -83,21 +128,29 @@ impl NativeJournalEditor {
                 #[cfg(feature = "ace16-create")]
                 let supported = supported
                     || self.route == JournalRoute::RetainedRows
-                        && matches!(kind, ScalarType::Currency | ScalarType::Boolean);
+                        && (matches!(kind, ScalarType::Currency | ScalarType::Boolean)
+                            || retained_fixed_scalar(kind));
                 if columns.len() != 1 || !supported {
                     return Err(NativeEditError::Unsupported.into());
                 }
             }
-            if !matches!(
-                kind,
-                ScalarType::Boolean
-                    | ScalarType::Int32
-                    | ScalarType::Int64
-                    | ScalarType::Currency
-                    | ScalarType::DateTime
-                    | ScalarType::Text
-                    | ScalarType::Binary
-            ) {
+            #[cfg(feature = "ace16-create")]
+            let new_scalar =
+                self.route == JournalRoute::RetainedRows && retained_fixed_scalar(kind);
+            #[cfg(not(feature = "ace16-create"))]
+            let new_scalar = false;
+            if !new_scalar
+                && !matches!(
+                    kind,
+                    ScalarType::Boolean
+                        | ScalarType::Int32
+                        | ScalarType::Int64
+                        | ScalarType::Currency
+                        | ScalarType::DateTime
+                        | ScalarType::Text
+                        | ScalarType::Binary
+                )
+            {
                 return Err(NativeEditError::Unsupported.into());
             }
             positions.push(position);
@@ -151,8 +204,8 @@ impl NativeJournalEditor {
                     NativeFittedUpdates::Fixed(updates) => {
                         updates.push(FixedScalarUpdate::new(
                             ordinal,
-                            scalar(original, kind)?,
-                            scalar(update.value(), kind)?,
+                            scalar_request(original, kind, self.route)?,
+                            scalar_request(update.value(), kind, self.route)?,
                         ));
                     }
                     NativeFittedUpdates::Variable(updates) => {
@@ -171,6 +224,23 @@ impl NativeJournalEditor {
                 }
                 rows.push(ordinal);
             }
+            #[cfg(feature = "ace16-create")]
+            let new_scalar =
+                self.route == JournalRoute::RetainedRows && retained_fixed_scalar(kind);
+            #[cfg(feature = "ace16-create")]
+            let group = if new_scalar {
+                NativeFittedIntentGroup::new_retained_fixed_scalars(
+                    target.name(),
+                    requests,
+                    budget,
+                    cancelled,
+                )
+            } else if self.route.retained_rows() {
+                NativeFittedIntentGroup::new_retained(target.name(), requests, budget, cancelled)
+            } else {
+                NativeFittedIntentGroup::new(target.name(), requests, budget, cancelled)
+            };
+            #[cfg(not(feature = "ace16-create"))]
             let group = if self.route.retained_rows() {
                 NativeFittedIntentGroup::new_retained(target.name(), requests, budget, cancelled)
             } else {
@@ -198,6 +268,11 @@ impl NativeJournalEditor {
             #[cfg(feature = "ace16-create")]
             JournalRoute::RetainedRows => {
                 if positions.first().is_some_and(|&position| {
+                    retained_fixed_scalar(self.snapshot().columns()[position].data_type())
+                }) {
+                    self.editor
+                        .plan_recoverable_retained_fixed_scalar_rows(groups, budget, cancelled)?
+                } else if positions.first().is_some_and(|&position| {
                     self.snapshot().columns()[position].data_type() == ScalarType::Boolean
                 }) {
                     self.editor
