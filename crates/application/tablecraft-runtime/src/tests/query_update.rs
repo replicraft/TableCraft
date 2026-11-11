@@ -281,7 +281,7 @@ fn unsupported_actions_eager_errors_and_read_only_sources_never_write() {
     let (directory, path, worker, revision) = opened(&original);
     for sql in [
         "SELECT * FROM Items",
-        "UPDATE Items INNER JOIN Other ON Items.Id=Other.Id SET Items.Score=1",
+        "UPDATE Items INNER JOIN Other ON Items.Id=Other.Id SET Score=1",
     ] {
         let (target, _) = inspect(&worker, revision, sql);
         assert!(matches!(
