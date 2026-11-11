@@ -13,7 +13,7 @@ use tablecraft_ace::{
     CurrentFieldAdditionIntentError, DeclaredFieldAdditionIntentError, FieldDropIntentError,
     FieldRenameIntentError, InspectError, NativeIntentError, NativeRecoveryQualificationError,
     QueryExpressionEditsIntentError, QueryExpressionIntentError, QueryExpressionRecoveryError,
-    TableDropIntentError, TableRenameIntentError,
+    TableDropIntentError, TableRenameIntentError, UnadornedFieldAdditionIntentError,
 };
 use tablecraft_io::{
     IoError,
@@ -115,6 +115,9 @@ pub enum Cause {
     /// Unadorned declared ADD request or complete native reconstruction refused.
     #[error(transparent)]
     DeclaredFieldAdditionIntent(DeclaredFieldAdditionIntentError),
+    /// The exact unadorned scalar declaration, source or effect proof failed.
+    #[error(transparent)]
+    UnadornedFieldAdditionIntent(UnadornedFieldAdditionIntentError),
     /// Typed retained-field ADD request or complete native reconstruction refused.
     #[error(transparent)]
     RetainedTypedFieldAdditionIntent(tablecraft_ace::RetainedTypedFieldAdditionIntentError),

@@ -16,8 +16,9 @@ use tablecraft_ace::{
     NativeFieldAdditionAfterOffHistoryIntent, NativeFieldAdditionAfterOffIntent,
     NativeFieldAdditionIntent, NativeFirstTableIntent, NativeIndexCreateIntent,
     NativePopulatedAddTableIntent, NativeRepeatedDefaultZeroAddColumnIntent,
-    NativeRetainedTypedFieldAdditionIntent, PopulatedAddTablePlan, RecoverableAddColumnPlan,
-    RecoverableFieldDropPlan, RecoverableFieldRenamePlan, RecoverableNativeIndexCreatePlan,
+    NativeRetainedTypedFieldAdditionIntent, NativeUnadornedFieldAdditionIntent,
+    PopulatedAddTablePlan, RecoverableAddColumnPlan, RecoverableFieldDropPlan,
+    RecoverableFieldRenamePlan, RecoverableNativeIndexCreatePlan,
 };
 use tablecraft_ace::{
     NativeClockInsertIntent, NativeCompleteInsertIntent, NativeCurrentFieldAdditionIntent,
@@ -334,6 +335,8 @@ pub(super) enum MutationIntent {
     #[cfg(feature = "ace16-create")]
     DeclaredFieldAddition(NativeDeclaredFieldAdditionIntent),
     #[cfg(feature = "ace16-create")]
+    UnadornedFieldAddition(NativeUnadornedFieldAdditionIntent),
+    #[cfg(feature = "ace16-create")]
     FieldRename(NativeFieldRenameIntent),
     RetainedFieldRename(NativeFieldRenameIntent),
     #[cfg(feature = "ace16-create")]
@@ -487,6 +490,16 @@ impl MutationIntent {
             return NativeOmittedInsertIntent::decode_retained(raw, budget, cancelled)
                 .map(Self::RetainedInsert)
                 .map_err(Cause::Intent);
+        }
+        if raw.starts_with(b"TCAC0014") {
+            #[cfg(feature = "ace16-create")]
+            return NativeUnadornedFieldAdditionIntent::decode(raw, budget, cancelled)
+                .map(Self::UnadornedFieldAddition)
+                .map_err(Cause::UnadornedFieldAdditionIntent);
+            #[cfg(not(feature = "ace16-create"))]
+            return Err(Cause::UnadornedFieldAdditionIntent(
+                UnadornedFieldAdditionIntentError::UnsupportedSource,
+            ));
         }
         if raw.starts_with(b"TCAC0013") {
             #[cfg(feature = "ace16-create")]
@@ -702,3 +715,6 @@ impl MutationIntent {
         decoded.map_err(Cause::Intent)
     }
 }
+
+#[cfg(all(test, not(feature = "ace16-create")))]
+mod unadorned_addition_tests;

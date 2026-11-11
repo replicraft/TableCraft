@@ -6,7 +6,7 @@ use std::path::Path;
 use tablecraft_ace::{
     InspectError, NativeImage, RecoverableDeclaredFieldAdditionPlan,
     RecoverableDefaultZeroAddColumnPlan, RecoverableFieldAdditionPlan,
-    RecoverableRepeatedDefaultZeroAddColumnPlan,
+    RecoverableRepeatedDefaultZeroAddColumnPlan, RecoverableUnadornedFieldAdditionPlan,
 };
 use tablecraft_core::limits::ResourceBudget;
 
@@ -57,6 +57,38 @@ impl OfflineWriteSession {
     ) -> Result<StagedFieldAddition, Failure> {
         let _span = tracing::debug_span!("access.offline.stage_reviewed_field_addition").entered();
         self.stage_field_addition(Plan::Typed(reviewed), native, proof, cancelled)
+    }
+
+    /// Requalify the unadorned TCAC14 request under this exact retained original.
+    /// This method creates no journal and does not add gallery field policies.
+    ///
+    /// # Errors
+    /// Returns typed source/identity/proof, work, allocation and cancellation
+    /// failures while retaining this exclusive owner without creating a namespace.
+    pub fn stage_reviewed_retained_unadorned_field_addition_with_budgets(
+        self,
+        reviewed: RecoverableUnadornedFieldAdditionPlan,
+        native: &mut ResourceBudget,
+        proof: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<StagedFieldAddition, Failure> {
+        if let Err(cause) = self.require_ready() {
+            return Err(self.fail(Phase::Planning, cause));
+        }
+        if cancelled() {
+            return Err(self.fail(Phase::Planning, Cause::Native(InspectError::Cancelled)));
+        }
+        if let Err(error) =
+            native.charge_allocation(1, size_of::<RecoverableUnadornedFieldAdditionPlan>() as u64)
+        {
+            return Err(self.fail(Phase::Planning, Cause::Native(InspectError::from(error))));
+        }
+        self.stage_field_addition(
+            Plan::Unadorned(Box::new(reviewed)),
+            native,
+            proof,
+            cancelled,
+        )
     }
 
     /// Requalify the unadorned TCAC13 request under this exact retained original.
@@ -188,3 +220,9 @@ mod tests;
 
 #[cfg(test)]
 mod declared_tests;
+
+#[cfg(test)]
+mod unadorned_tests;
+
+#[cfg(test)]
+mod retained_recovery_tests;

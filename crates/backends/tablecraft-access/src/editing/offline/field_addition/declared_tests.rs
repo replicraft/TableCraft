@@ -1,11 +1,9 @@
 //! Real original13 staging and stateful V3 recovery use independent native AFTER bytes.
 use super::*;
-use crate::editing::offline::{
-    CompletionKind, VerifiedImage, test_support::saved_field::retired_namespace,
-};
+use crate::editing::offline::CompletionKind;
 use std::{fs, io::Cursor};
 use tablecraft_ace::{CreateColumn, DeclaredFieldAdditionDefinition};
-use tablecraft_io::journal::{RecoveryOutcome, filesystem::OfflineJournalPair};
+use tablecraft_io::journal::RecoveryOutcome;
 use tablecraft_model::CatalogScope;
 use tablecraft_schema::ScalarType;
 use tablecraft_testkit::fixtures::access::canonical_retained_add_table::declared_fields as raw;
@@ -77,89 +75,26 @@ fn declared_currency_cold_pending_committed_and_settled_recovery_rebuilds_origin
     let expected = raw::after(&source.bytes, source.definition, "Amount");
     for committed in [false, true] {
         for retired in [false, true] {
-            let directory = tempfile::tempdir().unwrap();
-            let path = directory.path().join("declared.accdb");
-            let bundle = directory.path().join("journal");
-            fs::write(&path, &source.bytes).unwrap();
             let original = plan(&source.bytes);
             let encoded = original.intent().encode(&mut budget(), &|| false).unwrap();
             assert!(encoded.starts_with(b"TCAC0013"));
-            let mut owner = open(&path);
-            let slot = owner.slot_mut().unwrap();
-            let mut pair = OfflineJournalPair::create(
-                slot.target.take().unwrap(),
-                &bundle,
+            super::retained_recovery_tests::cold_case(
+                &source.bytes,
+                &expected,
                 encoded,
-                &mut budget(),
-                &|| false,
-            )
-            .unwrap();
-            {
-                let (mut target, mut journal) = pair.resizable_storage().unwrap();
-                let prepared = original
-                    .prepare_retained(&mut target, &mut journal, &mut budget(), &|| false)
-                    .unwrap();
-                if committed {
-                    prepared.commit(&mut budget(), &|| false).unwrap();
-                } else if retired {
-                    prepared.rollback(&mut budget(), &|| false).unwrap();
-                }
-            }
-            if retired {
-                pair.retire(if committed {
-                    RecoveryOutcome::Committed
-                } else {
-                    RecoveryOutcome::RolledBack
-                })
-                .unwrap();
-            }
-            slot.pair = Some(pair);
-            slot.state = SessionState::RetainedJournal;
-            owner.release().unwrap();
-            let (owner, receipt) = if retired {
-                open(&path)
-                    .confirm_retired(&retired_namespace(directory.path()), &mut budget(), &|| {
-                        false
-                    })
-                    .unwrap()
-            } else {
-                open(&path)
-                    .recover_update(&bundle, &mut budget(), &|| false)
-                    .unwrap()
-            };
-            assert_eq!(
-                receipt.schema_change(),
-                committed.then_some(SchemaChange::ColumnAdded)
-            );
-            assert_eq!(
-                (receipt.matched_rows(), receipt.changed_rows()),
-                (None, None)
-            );
-            if retired {
-                assert_eq!(receipt.kind(), CompletionKind::Confirmed);
-                assert_eq!(
-                    receipt.verified_image(),
-                    Some(if committed {
-                        VerifiedImage::Replacement
-                    } else {
-                        VerifiedImage::Original
-                    })
-                );
-            } else {
-                assert_eq!(receipt.kind(), CompletionKind::Recovered);
-                assert_eq!(
-                    receipt.outcome(),
-                    Some(if committed {
-                        RecoveryOutcome::Committed
-                    } else {
-                        RecoveryOutcome::RolledBack
-                    })
-                );
-            }
-            owner.release().unwrap();
-            same(
-                &fs::read(&path).unwrap(),
-                if committed { &expected } else { &source.bytes },
+                committed,
+                retired,
+                |pair, committed, retired| {
+                    let (mut target, mut journal) = pair.resizable_storage().unwrap();
+                    let prepared = original
+                        .prepare_retained(&mut target, &mut journal, &mut budget(), &|| false)
+                        .unwrap();
+                    if committed {
+                        prepared.commit(&mut budget(), &|| false).unwrap();
+                    } else if retired {
+                        prepared.rollback(&mut budget(), &|| false).unwrap();
+                    }
+                },
             );
         }
     }
