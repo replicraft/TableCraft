@@ -114,6 +114,10 @@ pub enum Scene {
     QueryInsertReview,
     QueryInsertSaving,
     QueryInsertResult,
+    QuerySchemaCreateReview,
+    QuerySchemaDropTableReview,
+    QuerySchemaDropColumnReview,
+    QuerySchemaReopenFailed,
     SavedInspecting,
     SavedRunning,
     SavedError,
@@ -141,7 +145,7 @@ pub enum Scene {
 }
 
 impl Scene {
-    pub const ALL: [Self; 107] = [
+    pub const ALL: [Self; 111] = [
         Self::Datasheet,
         Self::RibbonCollapsed,
         Self::RibbonTemporary,
@@ -225,6 +229,10 @@ impl Scene {
         Self::QueryInsertReview,
         Self::QueryInsertSaving,
         Self::QueryInsertResult,
+        Self::QuerySchemaCreateReview,
+        Self::QuerySchemaDropTableReview,
+        Self::QuerySchemaDropColumnReview,
+        Self::QuerySchemaReopenFailed,
         Self::SavedInspecting,
         Self::SavedRunning,
         Self::SavedError,
@@ -365,6 +373,10 @@ impl Scene {
             Self::QueryInsertReview => "query-insert-review",
             Self::QueryInsertSaving => "query-insert-saving",
             Self::QueryInsertResult => "query-insert-result",
+            Self::QuerySchemaCreateReview => "query-schema-create-review",
+            Self::QuerySchemaDropTableReview => "query-schema-drop-table-review",
+            Self::QuerySchemaDropColumnReview => "query-schema-drop-column-review",
+            Self::QuerySchemaReopenFailed => "query-schema-reopen-failed",
             Self::SavedInspecting => "saved-inspecting",
             Self::SavedRunning => "saved-running",
             Self::SavedError => "saved-error",
@@ -603,7 +615,11 @@ impl Preview {
             | Scene::QueryDeleteResult
             | Scene::QueryInsertReview
             | Scene::QueryInsertSaving
-            | Scene::QueryInsertResult => {
+            | Scene::QueryInsertResult
+            | Scene::QuerySchemaCreateReview
+            | Scene::QuerySchemaDropTableReview
+            | Scene::QuerySchemaDropColumnReview
+            | Scene::QuerySchemaReopenFailed => {
                 self.prepare_query_action_scene(scene);
             }
             Scene::SavedInspecting => self.prepare_saved_inspecting(),

@@ -268,11 +268,21 @@ impl Desktop {
             filters,
         });
         self.editing.query_schema = Some(host);
-        self.retry_query_schema_reopen();
+        let revision = self
+            .state
+            .database
+            .as_ref()
+            .map(|database| database.document_revision);
+        if let Some(revision) = revision {
+            self.retry_query_schema_reopen(revision);
+        }
         true
     }
 
-    pub(in crate::workspace) fn retry_query_schema_reopen(&mut self) {
+    pub(in crate::workspace) fn retry_query_schema_reopen(&mut self, revision: u64) {
+        if self.state.query_schema_reopen_retry_revision() != Some(revision) {
+            return;
+        }
         let Some(host) = &self.editing.query_schema else {
             return;
         };
@@ -280,6 +290,14 @@ impl Desktop {
             host.read.as_ref().map(|read| &read.request),
             Some(ReadRequest::Failed)
         ) {
+            return;
+        }
+        let captured_revision = match &host.reopen {
+            Reopen::Created(witness) => witness.document_revision(),
+            Reopen::FieldDropped(witness) => witness.document_revision(),
+            Reopen::TableDropped(witness) => witness.document_revision(),
+        };
+        if captured_revision != revision {
             return;
         }
         let command = host.reopen.command();
@@ -299,6 +317,7 @@ impl Desktop {
         {
             read.request = ReadRequest::Running(id);
         }
+        self.state.begin_query_schema_reopen(revision);
         self.generation = id;
         self.pending = PendingOperation::QuerySchemaReopen { request_id: id };
         self.state.busy = true;
@@ -317,6 +336,10 @@ impl Desktop {
             return;
         }
         read.request = ReadRequest::Failed;
+        if let Some(database) = &self.state.database {
+            self.state
+                .fail_query_schema_reopen(database.document_revision);
+        }
         self.pending = PendingOperation::Read;
         self.state.busy = false;
         self.state.error = Some(message);

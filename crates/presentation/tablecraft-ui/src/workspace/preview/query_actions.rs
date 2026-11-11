@@ -1,10 +1,17 @@
 //! Synthetic action decisions use the real UI owner without a database capability.
 use super::{Preview, Scene, fixtures};
 use crate::workspace::objects::{ObjectKind, ObjectTarget};
-use crate::{Action, EditSaveOutcome, QueryActionEffect, QueryActionKind, QueryActionReview};
+use crate::{
+    Action, EditSaveOutcome, QueryActionEffect, QueryActionKind, QueryActionReview,
+    QuerySchemaEffect,
+};
 
 const UPDATE_SQL: &str =
     "UPDATE [Customers] SET [Balance] = [Balance] + 25 WHERE [City] = 'Madrid'";
+
+const CREATE_SQL: &str = "CREATE TABLE [Contacts] ([Id] LONG, [Name] VARCHAR(80))";
+const DROP_TABLE_SQL: &str = "DROP TABLE [Customers]";
+const DROP_COLUMN_SQL: &str = "ALTER TABLE [Customers] DROP COLUMN [Balance]";
 
 const DELETE_SQL: &str = "DELETE FROM [Customers] WHERE [City] = 'Madrid'";
 const INSERT_SQL: &str = concat!(
@@ -14,6 +21,18 @@ const INSERT_SQL: &str = concat!(
 
 impl Preview {
     pub(super) fn prepare_query_action_scene(&mut self, scene: Scene) {
+        if matches!(
+            scene,
+            Scene::QuerySchemaDropTableReview
+                | Scene::QuerySchemaDropColumnReview
+                | Scene::QuerySchemaReopenFailed
+        ) {
+            for tab in self.state.object_tabs() {
+                if matches!(&tab.target.kind, ObjectKind::Table { name } if name == "Customers") {
+                    assert!(self.state.close_object(&tab));
+                }
+            }
+        }
         self.mock_open_object(ObjectTarget {
             document_revision: fixtures::REVISION,
             kind: ObjectKind::Sql,
@@ -29,6 +48,9 @@ impl Preview {
             Scene::QueryInsertReview | Scene::QueryInsertSaving | Scene::QueryInsertResult => {
                 INSERT_SQL
             }
+            Scene::QuerySchemaCreateReview => CREATE_SQL,
+            Scene::QuerySchemaDropTableReview => DROP_TABLE_SQL,
+            Scene::QuerySchemaDropColumnReview | Scene::QuerySchemaReopenFailed => DROP_COLUMN_SQL,
             _ => UPDATE_SQL,
         };
         assert!(self.state.replace_query_sql(sql.into()));
@@ -37,13 +59,30 @@ impl Preview {
             .expect("synthetic action review");
         if matches!(
             scene,
-            Scene::QueryUpdateReview | Scene::QueryDeleteReview | Scene::QueryInsertReview
+            Scene::QueryUpdateReview
+                | Scene::QueryDeleteReview
+                | Scene::QueryInsertReview
+                | Scene::QuerySchemaCreateReview
+                | Scene::QuerySchemaDropTableReview
+                | Scene::QuerySchemaDropColumnReview
         ) {
             return;
         }
 
         let save = self.request();
         assert!(self.state.begin_query_action_save(review, save));
+        if scene == Scene::QuerySchemaReopenFailed {
+            assert!(self.state.set_query_action_save_outcome(
+                save,
+                EditSaveOutcome::Saved(self.state.localizer.text("settings-mock-saved"))
+            ));
+            let _publication = self
+                .state
+                .take_query_schema_publication(save)
+                .expect("synthetic saved schema origin");
+            self.state.fail_query_schema_reopen(fixtures::REVISION);
+            return;
+        }
         if matches!(
             scene,
             Scene::QueryUpdateResult | Scene::QueryDeleteResult | Scene::QueryInsertResult
@@ -64,6 +103,7 @@ impl Preview {
             UPDATE_SQL => QueryActionKind::Update,
             DELETE_SQL => QueryActionKind::Delete,
             INSERT_SQL => QueryActionKind::Insert,
+            CREATE_SQL | DROP_TABLE_SQL | DROP_COLUMN_SQL => QueryActionKind::Schema,
             _ => return None,
         };
         let inspection = self.request();
@@ -92,7 +132,12 @@ impl Preview {
         let review = QueryActionReview {
             id: request,
             document_revision: fixtures::REVISION,
-            table: "Customers".into(),
+            table: if sql == CREATE_SQL {
+                "Contacts"
+            } else {
+                "Customers"
+            }
+            .into(),
             effect: match kind {
                 QueryActionKind::Update => QueryActionEffect::Update {
                     matched_rows: 2,
@@ -103,7 +148,17 @@ impl Preview {
                     deleted_rows: 2,
                 },
                 QueryActionKind::Insert => QueryActionEffect::Insert { inserted_rows: 2 },
-                QueryActionKind::Schema => return None,
+                QueryActionKind::Schema => QueryActionEffect::Schema(match sql.as_str() {
+                    CREATE_SQL => QuerySchemaEffect::CreateTable { column_count: 2 },
+                    DROP_TABLE_SQL => QuerySchemaEffect::DropTable {
+                        declared_rows: fixtures::TOTAL_ROWS,
+                    },
+                    DROP_COLUMN_SQL => QuerySchemaEffect::DropColumn {
+                        column: "Balance".into(),
+                        native_number: 3,
+                    },
+                    _ => return None,
+                }),
             },
         };
         self.state
@@ -228,5 +283,36 @@ mod tests {
             assert!(!result.state.query_action_dialog_open());
             assert!(result.state.query_data.is_some());
         }
+    }
+
+    #[test]
+    fn schema_scenes_keep_actual_sql_origins_and_no_native_retry_authority() {
+        for scene in [
+            Scene::QuerySchemaCreateReview,
+            Scene::QuerySchemaDropTableReview,
+            Scene::QuerySchemaDropColumnReview,
+        ] {
+            let preview = Preview::new(scene);
+            assert!(preview.state.query_action_dialog_open());
+            assert!(!preview.state.query_action_save_pending());
+            assert!(preview.state.query_schema_reopen_retry_revision().is_none());
+            assert!(!preview.state.native_source_stale());
+        }
+        let mut failed = Preview::new(Scene::QuerySchemaReopenFailed);
+        assert!(!failed.state.query_action_dialog_open());
+        assert!(failed.state.native_source_stale());
+        assert_eq!(failed.state.sql, DROP_COLUMN_SQL);
+        assert_eq!(
+            failed.state.query_schema_reopen_retry_revision(),
+            Some(fixtures::REVISION)
+        );
+        failed.dispatch(Action::RetryQuerySchemaReopen {
+            document_revision: fixtures::REVISION,
+        });
+        assert_eq!(failed.state.sql, DROP_COLUMN_SQL);
+        assert_eq!(
+            failed.state.query_schema_reopen_retry_revision(),
+            Some(fixtures::REVISION)
+        );
     }
 }

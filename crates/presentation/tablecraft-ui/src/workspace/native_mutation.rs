@@ -7,10 +7,10 @@ impl State {
             self.database
                 .as_ref()
                 .is_some_and(|database| database.document_revision == revision)
-        }) || self.schema_reopen_revision.is_some_and(|revision| {
+        }) || self.schema_reopen.as_ref().is_some_and(|read| {
             self.database
                 .as_ref()
-                .is_some_and(|database| database.document_revision == revision)
+                .is_some_and(|database| database.document_revision == read.revision)
         }) || self.field_addition_source_stale()
             || self.database_options_source_stale()
             || self.field_rename_source_stale()

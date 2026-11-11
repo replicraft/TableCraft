@@ -1,6 +1,14 @@
 //! Sealed SQL-origin publication facts; these grant no native write authority.
 use super::{Origin, Phase, QueryActionEffect, QueryActionKind, QueryActionReview};
-use crate::workspace::{EditSaveOutcome, ObjectKind, State};
+use crate::localization::tr;
+use crate::workspace::{Action, EditSaveOutcome, ObjectKind, State};
+use egui::{Frame, Ui};
+
+/// Read publication state only; this supplies no native reopen authority.
+pub(in crate::workspace) struct QuerySchemaRead {
+    pub(in crate::workspace) revision: u64,
+    running: bool,
+}
 
 /// Exact reviewed schema effect, separate from matched or changed record counts.
 #[derive(Debug, PartialEq, Eq)]
@@ -103,7 +111,10 @@ impl State {
         match session.phase {
             Phase::Finished { review, .. } => {
                 // AFTER is known, but no freshly verified read session is published yet.
-                self.schema_reopen_revision = Some(review.document_revision);
+                self.schema_reopen = Some(QuerySchemaRead {
+                    revision: review.document_revision,
+                    running: false,
+                });
                 Some(QuerySchemaPublication {
                     origin: session.origin,
                     review,
@@ -115,5 +126,84 @@ impl State {
                 None
             }
         }
+    }
+}
+
+impl State {
+    /// Mark a guarded read running only for this known-AFTER source revision.
+    pub fn begin_query_schema_reopen(&mut self, revision: u64) -> bool {
+        if self.query_schema_reopen_retry_revision() != Some(revision) {
+            return false;
+        }
+        if let Some(read) = &mut self.schema_reopen {
+            read.running = true;
+        }
+        true
+    }
+
+    /// Retain a known-AFTER read failure without granting native write permission.
+    pub fn fail_query_schema_reopen(&mut self, revision: u64) {
+        if let Some(read) = &mut self.schema_reopen
+            && read.revision == revision
+        {
+            read.running = false;
+        }
+    }
+
+    /// Revision whose known saved result can be explicitly reopened, never rerun.
+    pub fn query_schema_reopen_retry_revision(&self) -> Option<u64> {
+        self.schema_reopen
+            .as_ref()
+            .filter(|read| {
+                !read.running
+                    && !self.busy
+                    && self
+                        .database
+                        .as_ref()
+                        .is_some_and(|database| database.document_revision == read.revision)
+            })
+            .map(|read| read.revision)
+    }
+
+    pub(in crate::workspace) fn query_schema_reopen_status(
+        &self,
+        ui: &mut Ui,
+        actions: &mut Vec<Action>,
+    ) {
+        let Some(read) = &self.schema_reopen else {
+            return;
+        };
+        if self
+            .database
+            .as_ref()
+            .is_none_or(|database| database.document_revision != read.revision)
+        {
+            return;
+        }
+        Frame::new()
+            .fill(ui.visuals().extreme_bg_color)
+            .inner_margin(12)
+            .show(ui, |ui| {
+                ui.label(tr(
+                    ui,
+                    if read.running {
+                        "objects-loading"
+                    } else {
+                        "query-action-schema-reopen-failed"
+                    },
+                ));
+                if ui
+                    .add_enabled(
+                        self.query_schema_reopen_retry_revision().is_some(),
+                        egui::Button::new(tr(ui, "query-action-schema-retry-reopen")),
+                    )
+                    .clicked()
+                {
+                    actions.push(Action::RetryQuerySchemaReopen {
+                        document_revision: read.revision,
+                    });
+                }
+            });
+        ui.add_space(10.0);
     }
 }

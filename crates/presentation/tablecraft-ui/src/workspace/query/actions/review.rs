@@ -2,6 +2,7 @@
 //! No retained Access warning capture exists; dialog layout is an adaptation.
 mod dialog;
 mod schema;
+pub(in crate::workspace) use schema::QuerySchemaRead;
 pub use schema::{QuerySchemaEffect, QuerySchemaPublication};
 
 use crate::workspace::objects::MAX_RETAINED_BYTES;

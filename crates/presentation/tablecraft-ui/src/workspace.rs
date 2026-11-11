@@ -257,6 +257,11 @@ pub enum Action {
         /// Original source revision and exact old/new catalog spellings.
         request: TableRenameRequest,
     },
+    /// Retry only the retained guarded read of a known schema AFTER result.
+    RetryQuerySchemaReopen {
+        /// Exact source revision retained after acknowledgment.
+        document_revision: u64,
+    },
     ApplyQueryAction {
         review_id: u64,
     },
@@ -519,7 +524,7 @@ pub struct State {
     pub database: Option<Database>,
     /// A dead save actor invalidated this snapshot; only a fresh revision retires it.
     uncertain_native_revision: Option<u64>,
-    schema_reopen_revision: Option<u64>,
+    schema_reopen: Option<query::actions::review::QuerySchemaRead>,
     /// Last table page; query results have a separate slot.
     pub data: Option<Data>,
     pub query_data: Option<Data>,

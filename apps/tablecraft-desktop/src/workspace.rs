@@ -1271,6 +1271,9 @@ impl eframe::App for Desktop {
                 Action::RunSavedQuery { target, parameters } => {
                     self.run_saved_query(target, parameters);
                 }
+                Action::RetryQuerySchemaReopen { document_revision } => {
+                    self.retry_query_schema_reopen(document_revision);
+                }
                 Action::ApplyQueryAction { review_id } => self.apply_query_action(review_id),
                 Action::CancelQueryActionReview { request_id } => {
                     self.cancel_query_action_review(request_id);

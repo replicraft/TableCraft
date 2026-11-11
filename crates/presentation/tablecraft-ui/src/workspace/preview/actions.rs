@@ -333,6 +333,9 @@ impl Preview {
                     self.state.localizer.text("navigation-rename-unavailable"),
                 );
             }
+            Action::RetryQuerySchemaReopen { .. } => {
+                // Synthetic scenes have no native witness and never retry I/O.
+            }
             Action::ApplyQueryAction { review_id } => self.mock_apply_query_action(review_id),
             Action::CancelQueryActionReview { request_id } => {
                 self.mock_cancel_query_action_review(request_id);

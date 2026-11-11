@@ -37,6 +37,7 @@ impl State {
             self.prepare_pane_entry(pane, ui.ctx());
         }
         self.field_addition_saved_warning_status(ui);
+        self.query_schema_reopen_status(ui, actions);
         if let Some(error) = &self.error {
             Frame::new()
                 .fill(ui.visuals().extreme_bg_color)

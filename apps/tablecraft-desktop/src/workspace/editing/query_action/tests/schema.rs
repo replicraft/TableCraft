@@ -244,8 +244,20 @@ fn guarded_reopen_failure_retains_known_after_and_original_sql_without_row_fallb
     assert!(matches!(harness.state().pending, PendingOperation::Read));
     assert_eq!(harness.state().state.sql, sql);
     assert_image(&std::fs::read(&path).unwrap(), &foreign);
+    let revision = harness
+        .state()
+        .state
+        .database
+        .as_ref()
+        .unwrap()
+        .document_revision;
+    harness.state_mut().retry_query_schema_reopen(revision + 1);
+    assert!(matches!(harness.state().pending, PendingOperation::Read));
     std::fs::write(&path, &after).unwrap();
-    harness.state_mut().retry_query_schema_reopen();
+    harness
+        .get_by_role_and_label(Role::Button, "Retry reopening")
+        .click_accesskit();
+    harness.run_steps(1);
     finish_reads(&mut harness);
     assert!(!harness.state().state.native_source_stale());
     assert!(harness.state().editing.query_schema.is_none());

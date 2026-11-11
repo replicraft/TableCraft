@@ -50,9 +50,13 @@ fn failed_and_cancelled_schema_displays_acknowledge_without_issuing_after_public
         assert!(!state.can_take_query_schema_publication(70));
         assert_eq!(state.can_take_query_schema_publication(71), saved);
         assert_eq!(state.take_query_schema_publication(71).is_some(), saved);
-        assert_eq!(state.schema_reopen_revision, saved.then_some(7));
+        assert_eq!(
+            state.schema_reopen.as_ref().map(|read| read.revision),
+            saved.then_some(7)
+        );
         assert_eq!(state.uncertain_native_revision, None);
         if !saved {
+            assert_eq!(state.query_schema_reopen_retry_revision(), None);
             assert!(state.acknowledge_query_action_save(71));
         }
     }
@@ -98,4 +102,25 @@ fn accepted_schema_terminal_survives_sql_edits_but_cannot_publish_over_the_chang
     assert_eq!(state.sql, "SELECT 2");
     assert_eq!(state.database.as_ref().unwrap().document_revision, 7);
     assert!(state.native_source_stale());
+}
+
+#[test]
+fn known_after_retry_is_revision_bound_and_disabled_during_a_guarded_read() {
+    let mut state = reviewed_schema();
+    assert_eq!(state.query_schema_reopen_retry_revision(), None);
+    assert!(state.begin_query_action_save(REVIEW, 71));
+    assert!(state.set_query_action_save_outcome(71, EditSaveOutcome::Saved("known AFTER".into())));
+    let _publication = state.take_query_schema_publication(71).unwrap();
+    assert_eq!(state.query_schema_reopen_retry_revision(), Some(7));
+    assert!(!state.begin_query_schema_reopen(8));
+    assert!(state.begin_query_schema_reopen(7));
+    assert_eq!(state.query_schema_reopen_retry_revision(), None);
+    assert!(!state.begin_query_schema_reopen(7));
+    state.fail_query_schema_reopen(8);
+    assert_eq!(state.query_schema_reopen_retry_revision(), None);
+    state.fail_query_schema_reopen(7);
+    assert_eq!(state.query_schema_reopen_retry_revision(), Some(7));
+    state.database.as_mut().unwrap().document_revision = 8;
+    assert_eq!(state.query_schema_reopen_retry_revision(), None);
+    assert!(!state.begin_query_schema_reopen(7));
 }

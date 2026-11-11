@@ -48,7 +48,7 @@ impl State {
         if !replacement::publish(self, prepared, database, change) {
             return false;
         }
-        self.schema_reopen_revision = None;
+        self.schema_reopen = None;
         true
     }
 }
