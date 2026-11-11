@@ -43,7 +43,7 @@ compatibility. The owning documents describe the exact admitted shapes.
 | INSERT | Reviewed VALUES and SELECT append routes work. | Complete source/assignment/default/constraint semantics and native target coverage. See [INSERT SELECT](INSERT_SELECT.md). |
 | Make-table | SELECT INTO is parsed. | Runtime SQL execution refuses make-table statements; destination declaration derivation, native creation, preservation and reviewed publication are not supplied by parsing. |
 | SQL DDL | CREATE/ALTER/DROP table/index and saved-definition syntax are partly modeled. | General runtime DDL execution is unavailable. Typed GUI schema commands are separate services, not SQL DDL support. See [parser scope](SQL_PARSER.md). |
-| DDL grammar details | CHECK expressions, DEFAULT annotations and ALTER COLUMN nullability/default/inline constraints now parse into owned fields, alongside primary/unique/not-null/foreign-key declarations. | Focused syntax, safe-token and depth tests pass. Provider expression validity, native constraint enforcement and GUI execution remain separate. Deep CREATE CHECK normalization still needs a same-limit round-trip check. |
+| DDL grammar details | CHECK expressions, DEFAULT annotations and ALTER COLUMN nullability/default/inline constraints now parse into owned fields, alongside primary/unique/not-null/foreign-key declarations. Same-limit normalization covers deep CHECK/default expressions, including nested retrievals and precedence. | Provider expression validity, native constraint enforcement and GUI execution remain separate. Parser tests do not qualify any native mutation. |
 | OWNERACCESS | The clause is parsed. | Retrieval binding refuses it. Implement the actual applicable security policy rather than ignoring the clause. |
 | Saved definitions | Qualified native retrieval and restricted saved SELECT expression edits work. | General QueryDef creation, Save As, rename, deletion and other definition bodies remain unfinished. See [saved query editing](../application/SAVED_QUERY_EDITING.md). |
 | External/application contexts | Explicit host-bound external sources and named definitions have working read profiles. | No stored path opens a provider implicitly. Forms/Reports/TempVars and user-defined calls need supplied host contracts; deferred VBA execution is not activated by parsing. |
@@ -52,6 +52,22 @@ This list intentionally excludes foreign SQL features such as window functions,
 LIMIT or FULL JOIN as presumed ACE requirements. A rejected construct is a gap
 only after its availability in the intended Access context has been established.
 Deferred VBA-only tracker entries are not unfinished native query built-ins.
+
+## Active implementation priorities
+
+ACE SQL conformance is the current implementation focus. Work proceeds across
+three independent tracks; a track stays incomplete until its consuming workflow
+passes, even when an earlier layer has working functionality.
+
+| Track | Next acceptance boundary |
+| --- | --- |
+| SQL DDL | Route qualified statements through the existing shared schema reviews and native publication services. Preserve invocation-context restrictions and refuse declarations that those services cannot enforce. |
+| Make-table queries | Evaluate SELECT INTO with explicit destination declarations and complete results, then publish through a reviewed native creation service. Do not infer inherited keys, indexes, defaults or generation from a SELECT projection. |
+| Joined action queries | Bind and evaluate qualified joined UPDATE/DELETE targets with original target identity and defined duplicate-match behavior, then use checked mutation services. Joined read support alone does not make a source updateable. |
+
+Expression, comparison, parameter, saved-definition and security gaps in the
+matrix remain in scope after these statement-level boundaries. These priorities
+do not expand SQLite, project scripting or deferred VBA execution.
 
 ## Evidence required for a completed row
 
