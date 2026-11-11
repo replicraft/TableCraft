@@ -1,6 +1,9 @@
 //! Typed tail metadata removal preserves every original record and survivor identity.
 use super::{opened, request, terminal};
-use crate::{Command, EditInput, EditTarget, Response, SaveOutcome, SaveSchemaChange, SaveWorker};
+use crate::{
+    Command, EditInput, EditTarget, InsertInput, InsertTarget, Response, SaveOutcome,
+    SaveSchemaChange, SaveWorker,
+};
 use tablecraft_testkit::fixtures::access::canonical_retained_add_table::{
     exact_values, field_changes, fields,
     fixed_scalars::{self, Scalar},
@@ -162,6 +165,56 @@ fn drop_sequence(
     );
     assert!(saves.acknowledge(id));
     assert_image(&std::fs::read(&path).unwrap(), &expected);
+    let Response::Opened {
+        document_revision, ..
+    } = request(
+        &worker,
+        Command::Open {
+            path: path.clone(),
+            password: String::new(),
+        },
+    )
+    .unwrap()
+    else {
+        panic!("expected freshly qualified insertion source");
+    };
+    let Response::InsertDraft(draft) = request(
+        &worker,
+        Command::BeginInsert {
+            target: InsertTarget {
+                document_revision,
+                table: table.into(),
+            },
+        },
+    )
+    .unwrap() else {
+        panic!("expected post-DROP insertion metadata");
+    };
+    assert_eq!(draft.fields.len(), 2);
+    let Response::InsertReviewed { capability, .. } = request(
+        &worker,
+        Command::ReviewInsert {
+            draft_id: draft.id,
+            inputs: vec![InsertInput::Omitted, InsertInput::Omitted],
+        },
+    )
+    .unwrap() else {
+        panic!("expected actual defaulted survivor insertion review");
+    };
+    let before = expected;
+    expected = field_changes::append_score(&before, definition, Some(0));
+    assert_image(&std::fs::read(&path).unwrap(), &before);
+    let id = saves
+        .start_insert(capability, crate::journal_path(&path))
+        .unwrap();
+    let report = terminal(&saves);
+    assert!(
+        matches!(report.outcome, SaveOutcome::Saved { receipt }
+        if receipt.changed_rows == Some(1) && receipt.schema_change.is_none()),
+        "{report:?}"
+    );
+    assert!(saves.acknowledge(id));
+    assert_image(&std::fs::read(&path).unwrap(), &expected);
     assert!(matches!(
         request(
             &worker,
@@ -187,6 +240,10 @@ fn drop_sequence(
     assert_eq!(columns[1].name, "Score");
     assert_eq!(rows[0][0].text, "1");
     assert_eq!(rows[0][1].text, "124");
+    assert_eq!(rows.len(), 2);
+    assert_eq!(rows[1][0].text, "2");
+    assert_eq!(rows[1][1].text, "0");
+    assert!(!crate::journal_path(&path).exists());
     assert_image(&std::fs::read(&path).unwrap(), &expected);
 }
 
