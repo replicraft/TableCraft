@@ -182,7 +182,7 @@ pub(super) enum Publication {
     Schema(Reopen),
 }
 
-pub(super) struct Host {
+pub(in crate::workspace::editing) struct Host {
     reopen: Reopen,
     // This native owner has no fresh-read publication context until its actor is
     // acknowledged. The context then survives guarded-open failure and retry.
@@ -201,7 +201,7 @@ impl Host {
         Self { reopen, read: None }
     }
 
-    pub(super) fn replacement_known(&self, outcome: SaveOutcome) -> bool {
+    pub(in crate::workspace::editing) fn replacement_known(&self, outcome: SaveOutcome) -> bool {
         self.reopen.replacement_known(outcome)
     }
 }
