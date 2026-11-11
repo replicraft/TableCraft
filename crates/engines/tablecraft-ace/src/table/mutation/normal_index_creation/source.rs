@@ -3,8 +3,9 @@ use crate::{
     EditError, NativeImage, WriteBlocker,
     format::{
         data_type::INT32,
-        layout::{FIXED_FLAG, UPDATABLE_FLAG},
+        layout::{self, FIXED_FLAG, UPDATABLE_FLAG},
         page::PAGE_BYTES,
+        reader::Reader,
     },
     header::check,
     identifier,
@@ -28,6 +29,8 @@ pub(super) struct Original {
     pub layout: DefinitionLayout,
     pub name: SchemaName,
     pub native: usize,
+    pub native_table: i32,
+    pub column_id: u16,
     pub dense: usize,
     pub descending: bool,
     pub index_start: u32,
@@ -124,6 +127,32 @@ pub(super) fn capture(
             return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
         }
     }
+    let mut native_table = None;
+    for origin in image.catalog().origins() {
+        check(budget, cancelled)?;
+        if origin.object_id() == schema.object_id()
+            && native_table.replace(origin.native_id()).is_some()
+        {
+            return Err(crate::InspectError::Malformed.into());
+        }
+    }
+    let native_table = native_table.ok_or(crate::InspectError::Malformed)?;
+    let mut input = image.reader();
+    let mut reader = Reader {
+        source: &mut input,
+        header: image.catalog().header(),
+        budget,
+        cancelled,
+        reads: 0,
+    };
+    let mut column_id = None;
+    layout::read_with_field_names(&mut reader, schema.definition_page(), |number, id, _, _| {
+        if number == native && column_id.replace(id).is_some() {
+            return Err(crate::InspectError::Malformed);
+        }
+        Ok(())
+    })?;
+    let column_id = column_id.ok_or(crate::InspectError::Malformed)?;
     let layout = DefinitionLayout::read(image, schema, budget, cancelled)?;
     let units = name.as_str().encode_utf16().count();
     layout.new_length(
@@ -138,6 +167,8 @@ pub(super) fn capture(
         layout,
         name,
         native,
+        native_table,
+        column_id,
         dense,
         descending: request.descending,
         index_start,

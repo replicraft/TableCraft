@@ -442,3 +442,10 @@ pub use transaction::{
     NativeRetainedTypedFieldAdditionIntent, QualifiedRetainedTypedFieldAdditionRecovery,
     RecoverableRetainedTypedFieldAdditionPlan,
 };
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use transaction::RecoverableNativeIndexCreatePlan;
+#[cfg(feature = "journal")]
+pub use transaction::{
+    IndexCreateIntentError, NativeIndexCreateIntent, QualifiedNativeIndexCreateRecovery,
+};

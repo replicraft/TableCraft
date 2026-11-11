@@ -216,3 +216,10 @@ pub use retained_field_addition::{
     NativeRetainedTypedFieldAdditionIntent, QualifiedRetainedTypedFieldAdditionRecovery,
     RecoverableRetainedTypedFieldAdditionPlan,
 };
+
+mod index_create;
+#[cfg(feature = "ace16-create")]
+pub use index_create::RecoverableNativeIndexCreatePlan;
+pub use index_create::{
+    IndexCreateIntentError, NativeIndexCreateIntent, QualifiedNativeIndexCreateRecovery,
+};

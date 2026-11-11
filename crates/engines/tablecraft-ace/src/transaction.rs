@@ -289,3 +289,10 @@ pub use intent::{
     NativeRetainedTypedFieldAdditionIntent, QualifiedRetainedTypedFieldAdditionRecovery,
     RecoverableRetainedTypedFieldAdditionPlan,
 };
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use intent::RecoverableNativeIndexCreatePlan;
+#[cfg(feature = "journal")]
+pub use intent::{
+    IndexCreateIntentError, NativeIndexCreateIntent, QualifiedNativeIndexCreateRecovery,
+};

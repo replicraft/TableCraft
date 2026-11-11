@@ -28,6 +28,11 @@ pub struct NativeLongIndexCandidate {
     before: NativeImage,
     after: NativeImage,
     table: String,
+    column: String,
+    native_table: i32,
+    definition: u32,
+    column_id: u16,
+    descending: bool,
     index: tablecraft_schema::SchemaName,
     native: usize,
     logical: u32,
@@ -47,9 +52,36 @@ impl NativeLongIndexCandidate {
     pub fn candidate_bytes(&self) -> &[u8] {
         self.after.as_bytes()
     }
+    pub(crate) fn after_shared_bytes(&self) -> bytes::Bytes {
+        // NO_CLONE: The independent readonly host witness can outlive this candidate.
+        // NativeImageSource already materialized the shared control allocation;
+        // only an immutable handle is copied, never the database payload.
+        self.after.bytes.clone()
+    }
+
     /// Original qualified table name.
     pub fn table(&self) -> &str {
         &self.table
+    }
+    /// Original selected field name retained by the request.
+    pub fn column(&self) -> &str {
+        &self.column
+    }
+    /// Original signed native catalog table identity.
+    pub const fn native_table_id(&self) -> i32 {
+        self.native_table
+    }
+    /// Original table-definition root, separate from the new index root.
+    pub const fn definition_page(&self) -> u32 {
+        self.definition
+    }
+    /// Stored creation-time field identity, separate from native/display position.
+    pub const fn column_id(&self) -> u16 {
+        self.column_id
+    }
+    /// Requested native key direction; ROW ties remain ascending.
+    pub const fn descending(&self) -> bool {
+        self.descending
     }
     /// Requested native index name.
     pub fn index_name(&self) -> &str {
@@ -186,10 +218,17 @@ impl NativeImage {
         audit::prove(&self, &after, table, request, budget, cancelled)?;
         let table = String::from_utf8(buffer::copy(table.as_bytes(), budget, cancelled)?)
             .map_err(|_| InspectError::Malformed)?;
+        let column = String::from_utf8(buffer::copy(request.column.as_bytes(), budget, cancelled)?)
+            .map_err(|_| InspectError::Malformed)?;
         Ok(NativeLongIndexCandidate {
             before: self,
             after,
             table,
+            column,
+            native_table: original.native_table,
+            definition: original.layout.definition,
+            column_id: original.column_id,
+            descending: original.descending,
             index: original.name,
             native: original.native,
             logical: original.layout.logical_count,
