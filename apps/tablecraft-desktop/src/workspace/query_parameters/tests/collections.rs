@@ -144,16 +144,19 @@ fn sql_view_attachment_metadata_members_preserve_null_empty_and_child_alignment(
     assert!(harness.state().state.contents_request_id().is_none());
     assert_source(&path, &before);
 
-    // A bare attachment is a child recordset, not a scalar metadata member.
-    // Refusal must retain the last fully published result, never publish a
-    // partial scalar-only projection or fabricate query-row source identity.
-    run_until_terminal(&mut harness, "SELECT Id, Score FROM Items ORDER BY Id");
+    // The whole child recordset has no scalar string conversion. Refusal must
+    // retain the last fully published result, without stringifying children,
+    // publishing a partial projection or fabricating native row identity.
+    run_until_terminal(
+        &mut harness,
+        "SELECT Id, CStr(Score) AS Converted FROM Items ORDER BY Id",
+    );
     let report = harness
         .state()
         .state
         .error
         .as_deref()
-        .expect("bare attachment refusal");
+        .expect("whole-recordset scalar conversion refusal");
     assert!(
         harness.query_all_by_role(Role::Label).any(|node| {
             let node = node.accesskit_node();
