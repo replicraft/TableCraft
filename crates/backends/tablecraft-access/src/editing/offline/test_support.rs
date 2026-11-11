@@ -2,6 +2,8 @@
 #[cfg(feature = "ace16-create")]
 pub(super) mod native_creation;
 #[cfg(feature = "ace16-create")]
+pub(super) mod retained_update;
+#[cfg(feature = "ace16-create")]
 pub(super) mod saved_field;
 
 use super::Receipt;

@@ -2,16 +2,14 @@
 use super::{budget, open};
 use crate::editing::{
     offline::{
-        CompletionKind, SessionState, VerifiedImage,
-        test_support::{
-            assert_completion, assert_staged_read_state, saved_field::retired_namespace,
-        },
+        CompletionKind,
+        test_support::{assert_completion, assert_staged_read_state},
     },
     sql,
 };
 use std::{fs, io::Cursor};
 use tablecraft_ace::{NativeImage, NativeUpdateProfile, RecoverableNativeEditPlan};
-use tablecraft_io::journal::{RecoveryOutcome, filesystem::OfflineJournalPair};
+use tablecraft_io::journal::RecoveryOutcome;
 use tablecraft_model::CatalogScope;
 use tablecraft_query::UpdatePlan;
 use tablecraft_sql::{ParseLimits, parse_query};
@@ -69,94 +67,11 @@ fn reviewed_opaque_sql_stage_and_save_publish_exact_image_and_row_counts() {
 fn opaque_update_cold_and_settled_v3_sessions_keep_original_protocol_and_receipts() {
     let source = raw::source(raw::Case::VariableRetired);
     let expected = raw::after(&source.bytes, source.definition, source.roots[0], Some(-42));
-    for committed in [false, true] {
-        for retired in [false, true] {
-            let directory = tempfile::tempdir().unwrap();
-            let path = directory.path().join("recover.accdb");
-            let bundle = directory.path().join("journal");
-            fs::write(&path, &source.bytes).unwrap();
-            let plan = review(&source.bytes).into_backend();
-            assert_eq!(
-                plan.intent().profile(),
-                NativeUpdateProfile::Ace16RetainedOpaqueRows
-            );
-            let wire = plan.intent().encode(&mut budget(), &|| false).unwrap();
-            assert!(wire.starts_with(b"TCNI0018"));
-            let mut owner = open(&path);
-            let slot = owner.slot_mut().unwrap();
-            let mut pair = OfflineJournalPair::create(
-                slot.target.take().unwrap(),
-                &bundle,
-                wire,
-                &mut budget(),
-                &|| false,
-            )
-            .unwrap();
-            {
-                let (mut target, mut journal) = pair.resizable_storage().unwrap();
-                let prepared = plan
-                    .prepare_retained(&mut target, &mut journal, &mut budget(), &|| false)
-                    .unwrap();
-                if committed {
-                    prepared.commit(&mut budget(), &|| false).unwrap();
-                } else if retired {
-                    prepared.rollback(&mut budget(), &|| false).unwrap();
-                }
-            }
-            if retired {
-                pair.retire(if committed {
-                    RecoveryOutcome::Committed
-                } else {
-                    RecoveryOutcome::RolledBack
-                })
-                .unwrap();
-            }
-            slot.pair = Some(pair);
-            slot.state = SessionState::RetainedJournal;
-            owner.release().unwrap();
-            let (owner, receipt) = if retired {
-                open(&path)
-                    .confirm_retired(&retired_namespace(directory.path()), &mut budget(), &|| {
-                        false
-                    })
-                    .unwrap()
-            } else {
-                open(&path)
-                    .recover_update(&bundle, &mut budget(), &|| false)
-                    .unwrap()
-            };
-            assert_eq!(
-                (receipt.matched_rows(), receipt.changed_rows()),
-                (None, None)
-            );
-            assert_eq!(receipt.schema_change(), None);
-            if retired {
-                assert_eq!(receipt.kind(), CompletionKind::Confirmed);
-                assert_eq!(
-                    receipt.verified_image(),
-                    Some(if committed {
-                        VerifiedImage::Replacement
-                    } else {
-                        VerifiedImage::Original
-                    })
-                );
-            } else {
-                assert_eq!(receipt.kind(), CompletionKind::Recovered);
-                assert_eq!(
-                    receipt.outcome(),
-                    Some(if committed {
-                        RecoveryOutcome::Committed
-                    } else {
-                        RecoveryOutcome::RolledBack
-                    })
-                );
-            }
-            assert_completion(&receipt);
-            owner.release().unwrap();
-            assert_eq!(
-                fs::read(&path).unwrap(),
-                if committed { &expected } else { &source.bytes }.as_slice()
-            );
-        }
-    }
+    crate::editing::offline::test_support::retained_update::assert_recovery(
+        &source.bytes,
+        &expected,
+        NativeUpdateProfile::Ace16RetainedOpaqueRows,
+        b"TCNI0018",
+        || review(&source.bytes).into_backend(),
+    );
 }

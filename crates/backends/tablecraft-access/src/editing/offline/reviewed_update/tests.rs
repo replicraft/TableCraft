@@ -338,3 +338,6 @@ mod boolean;
 mod fixed_scalars;
 
 mod wide_values;
+
+#[cfg(feature = "ace16-create")]
+mod retained_recovery;

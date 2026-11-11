@@ -366,6 +366,8 @@ impl MutationIntent {
             || raw.starts_with(b"TCNI0019")
             || raw.starts_with(b"TCNI0020")
             || raw.starts_with(b"TCNI0021")
+            || raw.starts_with(b"TCNI0022")
+            || raw.starts_with(b"TCNI0023")
         {
             return NativeUpdateIntent::decode(raw, budget, cancelled)
                 .map(Self::RetainedUpdate)
