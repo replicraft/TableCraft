@@ -2,6 +2,7 @@
 pub mod boolean;
 pub mod cross_operation;
 pub mod currency;
+pub mod declared_fields;
 pub mod deletes;
 pub mod desktop;
 pub mod exact_values;

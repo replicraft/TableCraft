@@ -1,15 +1,12 @@
 //! Append a descriptor/name while retaining every original native byte frame.
+mod descriptor;
 use super::{CurrentFieldAdditionError as Error, Target};
 use crate::{
     InspectError, NativeImage, TableSchema,
     format::{
         bytes::{u16_at, u32_at},
-        data_type::{INT32, SHORT_TEXT},
         definition::{LENGTH_OFFSET, PAGE_HEADER_BYTES},
-        layout::{
-            self, COLUMN_COUNT_OFFSET, COLUMN_ENTRY_BYTES, FIXED_FLAG, MAX_COLUMN_COUNT_OFFSET,
-            UPDATABLE_FLAG,
-        },
+        layout::{self, COLUMN_COUNT_OFFSET, COLUMN_ENTRY_BYTES, MAX_COLUMN_COUNT_OFFSET},
         page::PAGE_BYTES,
         reader::Reader,
     },
@@ -19,18 +16,6 @@ use crate::{
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const FREE_OFFSET: usize = 2;
-const FIELD_MAGIC: u32 = 1625;
-const MAGIC_OFFSET: usize = 1;
-const NUMBER_OFFSET: usize = 5;
-const VARIABLE_OFFSET: usize = 7;
-const STORED_ID_OFFSET: usize = 9;
-const FLAGS_OFFSET: usize = 15;
-const FIXED_OFFSET: usize = 21;
-const WIDTH_OFFSET: usize = 23;
-const GENERAL_SORT_ORDER: [u8; 4] = [9, 4, 0, 1];
-const SORT_ORDER_OFFSET: usize = 11;
-const PRECISION_OFFSET: usize = 11;
-const SCALE_OFFSET: usize = 12;
 const NAME_LENGTH_BYTES: usize = size_of::<u16>();
 const COPY_BYTES: usize = 16 * 1024;
 
@@ -209,6 +194,18 @@ impl Plan {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u8>, Error> {
+        let frame = descriptor::target(self, target)?;
+        self.build_frame(image, name, frame, budget, cancelled)
+    }
+
+    fn build_frame(
+        &self,
+        image: &NativeImage,
+        name: &str,
+        frame: descriptor::Frame,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<u8>, Error> {
         let before = image.as_bytes();
         budget.charge_allocation(before.len() as u64, 1)?;
         let mut after = Vec::new();
@@ -239,82 +236,14 @@ impl Plan {
             self.index_start + delta,
         );
 
-        let descriptor = &mut root[self.descriptor_end..self.descriptor_end + COLUMN_ENTRY_BYTES];
-        descriptor.fill(0);
-        descriptor[0] = match target {
-            Target::Number => INT32,
-            Target::Typed(target) => {
-                target
-                    .field(self.fixed_offset)
-                    .map_err(super::creation_error)?
-                    .kind
-            }
-            Target::ShortText { .. } => SHORT_TEXT,
-        };
-        descriptor[MAGIC_OFFSET..MAGIC_OFFSET + size_of::<u32>()]
-            .copy_from_slice(&FIELD_MAGIC.to_le_bytes());
-        put16(descriptor, NUMBER_OFFSET, self.number)?;
-        put16(descriptor, VARIABLE_OFFSET, self.variable)?;
-        put16(descriptor, STORED_ID_OFFSET, usize::from(self.column_id))?;
-        match target {
-            Target::Typed(target) => {
-                let field = target
-                    .field(self.fixed_offset)
-                    .map_err(super::creation_error)?;
-                descriptor[FLAGS_OFFSET] = UPDATABLE_FLAG
-                    | if field.offset.is_some() {
-                        FIXED_FLAG
-                    } else {
-                        0
-                    };
-                put16(descriptor, FIXED_OFFSET, field.offset.unwrap_or(0))?;
-                put16(descriptor, WIDTH_OFFSET, field.width)?;
-                if field.kind == SHORT_TEXT {
-                    descriptor[SORT_ORDER_OFFSET..FLAGS_OFFSET]
-                        .copy_from_slice(&GENERAL_SORT_ORDER);
-                    descriptor[FLAGS_OFFSET + 1] = if field.unicode_compression {
-                        layout::UNICODE_COMPRESSION_FLAG
-                    } else {
-                        0
-                    };
-                }
-                if let Some(constraints) = field.decimal {
-                    descriptor[PRECISION_OFFSET] = constraints.precision();
-                    descriptor[SCALE_OFFSET] = constraints.scale();
-                }
-                if field.offset.is_none() {
-                    put16(
-                        root,
-                        layout::VARIABLE_SLOT_COUNT_OFFSET,
-                        self.variable_high_water + 1,
-                    )?;
-                }
-            }
-            Target::Number => {
-                descriptor[FLAGS_OFFSET] = FIXED_FLAG | UPDATABLE_FLAG;
-                put16(descriptor, FIXED_OFFSET, self.fixed_offset)?;
-                put16(descriptor, WIDTH_OFFSET, size_of::<i32>())?;
-            }
-            Target::ShortText {
-                max_utf16_units,
-                unicode_compression,
-            } => {
-                descriptor[FLAGS_OFFSET] = UPDATABLE_FLAG;
-                descriptor[FLAGS_OFFSET + 1] = if unicode_compression {
-                    layout::UNICODE_COMPRESSION_FLAG
-                } else {
-                    0
-                };
-                // New text inherits the table's stored sort order from the
-                // existing creation owner; current source only admits General.
-                descriptor[SORT_ORDER_OFFSET..FLAGS_OFFSET].copy_from_slice(&GENERAL_SORT_ORDER);
-                put16(descriptor, WIDTH_OFFSET, max_utf16_units * size_of::<u16>())?;
-                put16(
-                    root,
-                    layout::VARIABLE_SLOT_COUNT_OFFSET,
-                    self.variable_high_water + 1,
-                )?;
-            }
+        root[self.descriptor_end..self.descriptor_end + COLUMN_ENTRY_BYTES]
+            .copy_from_slice(&frame.bytes);
+        if frame.variable {
+            put16(
+                root,
+                layout::VARIABLE_SLOT_COUNT_OFFSET,
+                self.variable_high_water + 1,
+            )?;
         }
 
         let at = self.index_start + COLUMN_ENTRY_BYTES;

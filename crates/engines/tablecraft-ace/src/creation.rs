@@ -23,7 +23,7 @@ mod input;
 mod multiple;
 mod native;
 mod primary;
-mod profile;
+pub(crate) mod profile;
 pub(crate) mod properties;
 mod record;
 mod request;
