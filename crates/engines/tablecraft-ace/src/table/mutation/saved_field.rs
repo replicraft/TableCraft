@@ -87,13 +87,17 @@ enum Purpose {
     RetainedTail,
     RetainedRename,
     RetainedTypedRename,
+    RetainedTypedTail,
 }
 
 impl Purpose {
     fn retained(self) -> bool {
         matches!(
             self,
-            Self::RetainedTail | Self::RetainedRename | Self::RetainedTypedRename
+            Self::RetainedTail
+                | Self::RetainedRename
+                | Self::RetainedTypedRename
+                | Self::RetainedTypedTail
         )
     }
 }
@@ -191,6 +195,23 @@ impl Observed {
         )
     }
 
+    pub(in crate::table::mutation) fn capture_retained_typed_tail(
+        image: &NativeImage,
+        table: &str,
+        field: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, Error> {
+        Self::capture_for(
+            image,
+            table,
+            field,
+            Purpose::RetainedTypedTail,
+            budget,
+            cancelled,
+        )
+    }
+
     fn capture_for(
         image: &NativeImage,
         table: &str,
@@ -235,19 +256,29 @@ impl Observed {
         }
         let index = selected.ok_or(Error::Source)?;
         let target = &schema.columns()[index];
-        if target.number() == 0 && !matches!(purpose, Purpose::RetainedTypedRename)
+        if target.number() == 0
+            && !matches!(
+                purpose,
+                Purpose::RetainedTypedRename | Purpose::RetainedTypedTail
+            )
             || !target.name().is_ascii()
         {
             return Err(Error::Source);
         }
-        if matches!(purpose, Purpose::CurrentTail | Purpose::RetainedTail)
-            && index + 1 != schema.columns().len()
+        if matches!(
+            purpose,
+            Purpose::CurrentTail | Purpose::RetainedTail | Purpose::RetainedTypedTail
+        ) && index + 1 != schema.columns().len()
         {
             return Err(Error::Source);
         }
         if matches!(purpose, Purpose::CurrentTail)
             && target.number().checked_add(1) != Some(schema.physical_layout().max_columns)
         {
+            return Err(Error::Source);
+        }
+        if matches!(purpose, Purpose::RetainedTypedTail) && schema.columns().len() < 2 {
+            // The qualified table source requires a surviving declaration.
             return Err(Error::Source);
         }
         let indexes =
@@ -278,7 +309,10 @@ impl Observed {
             }
         }
         let group = group.ok_or(Error::Source)?;
-        if matches!(purpose, Purpose::RetainedTypedRename) {
+        if matches!(
+            purpose,
+            Purpose::RetainedTypedRename | Purpose::RetainedTypedTail
+        ) {
             // The consuming retained-schema source separately qualifies every
             // actual property, literal default, dependency and program. This
             // observation preserves that group rather than inventing a type-
@@ -405,7 +439,8 @@ impl Observed {
             | Purpose::CurrentRename
             | Purpose::RetainedTail
             | Purpose::RetainedRename
-            | Purpose::RetainedTypedRename => framing::current_schema_names_with_groups(
+            | Purpose::RetainedTypedRename
+            | Purpose::RetainedTypedTail => framing::current_schema_names_with_groups(
                 &properties,
                 reader.budget,
                 cancelled,
@@ -520,7 +555,8 @@ fn original_declaration_matches(
             | Purpose::CurrentRename
             | Purpose::RetainedTail
             | Purpose::RetainedRename
-            | Purpose::RetainedTypedRename => {
+            | Purpose::RetainedTypedRename
+            | Purpose::RetainedTypedTail => {
                 (size_of::<u16>()..=OBSERVED_TEXT_BYTES).contains(&column.storage_length())
                     && column.storage_length().is_multiple_of(size_of::<u16>())
                     && column.extended_flags() & !UNICODE_COMPRESSION_FLAG == 0
@@ -599,7 +635,7 @@ fn edit_error(error: crate::EditError) -> Error {
 }
 
 /// Choose the typed language from actual metadata, before consuming a source.
-pub(in crate::table::mutation) fn retained_rename_uses_typed(
+pub(in crate::table::mutation) fn retained_field_uses_typed_language(
     image: &NativeImage,
     table: &str,
     requested: &str,

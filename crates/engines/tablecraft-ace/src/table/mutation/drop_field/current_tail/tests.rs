@@ -166,9 +166,14 @@ fn populated_tail_source_and_finish_preserve_budget_and_terminal_cancellation() 
 #[test]
 fn retired_variable_tail_keeps_full_native_index_and_survivor_read_checks() {
     let [before, expected] = raw::pair(raw::Case::TextAbsent);
-    let source = source::capture(image(&before), "Table1", "NewLabel", &mut budget(), &|| {
-        false
-    })
+    let source = source::capture(
+        image(&before),
+        "Table1",
+        "NewLabel",
+        source::Selection::Current,
+        &mut budget(),
+        &|| false,
+    )
     .unwrap_or_else(|error| panic!("source: {error:?}"));
     crate::check_table(
         &mut Cursor::new(&expected),
@@ -185,9 +190,14 @@ fn retired_variable_tail_keeps_full_native_index_and_survivor_read_checks() {
 #[test]
 fn exact_group_retirement_rejects_orphan_live_groups_and_corrupted_dictionary_indices() {
     let before = raw::source(raw::Case::TextAbsent);
-    let mut source = source::capture(image(&before), "Table1", "NewLabel", &mut budget(), &|| {
-        false
-    })
+    let mut source = source::capture(
+        image(&before),
+        "Table1",
+        "NewLabel",
+        source::Selection::Current,
+        &mut budget(),
+        &|| false,
+    )
     .unwrap();
     let body = std::mem::take(&mut source.evidence.body);
     let change = catalog_property::compose_retained_single_at_origin(

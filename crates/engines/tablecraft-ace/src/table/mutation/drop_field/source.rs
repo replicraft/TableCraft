@@ -19,6 +19,13 @@ pub(super) enum Purpose {
     SettledEmpty,
     CurrentTail,
     RetainedTail,
+    RetainedTypedTail,
+}
+
+impl Purpose {
+    pub(super) fn retained(self) -> bool {
+        matches!(self, Self::RetainedTail | Self::RetainedTypedTail)
+    }
 }
 
 pub(super) struct Source {
@@ -115,6 +122,23 @@ impl Evidence {
         )
     }
 
+    pub(super) fn capture_retained_typed_tail(
+        image: &NativeImage,
+        table: &str,
+        field: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, Error> {
+        Self::capture_for(
+            image,
+            table,
+            field,
+            Purpose::RetainedTypedTail,
+            budget,
+            cancelled,
+        )
+    }
+
     fn capture_for(
         image: &NativeImage,
         table: &str,
@@ -123,7 +147,9 @@ impl Evidence {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, Error> {
-        let observed = if matches!(purpose, Purpose::RetainedTail) {
+        let observed = if matches!(purpose, Purpose::RetainedTypedTail) {
+            Observed::capture_retained_typed_tail(image, table, field, budget, cancelled)?
+        } else if matches!(purpose, Purpose::RetainedTail) {
             Observed::capture_retained_schema_drop(image, table, field, budget, cancelled)?
         } else if matches!(purpose, Purpose::CurrentTail) {
             Observed::capture_current_tail(image, table, field, budget, cancelled)?
@@ -136,13 +162,18 @@ impl Evidence {
             Purpose::CurrentTail => {
                 checked.rows() == 0 || checked.rows() != observed.schema.declared_rows() as usize
             }
-            Purpose::RetainedTail => checked.rows() != observed.schema.declared_rows() as usize,
+            Purpose::RetainedTail | Purpose::RetainedTypedTail => {
+                checked.rows() != observed.schema.declared_rows() as usize
+            }
             Purpose::SettledEmpty => checked.rows() != 0 || observed.schema.declared_rows() != 0,
         };
         if invalid_rows {
             return Err(Error::Source);
         }
-        let body = if matches!(purpose, Purpose::CurrentTail | Purpose::RetainedTail) {
+        let body = if matches!(
+            purpose,
+            Purpose::CurrentTail | Purpose::RetainedTail | Purpose::RetainedTypedTail
+        ) {
             current_body(&observed, budget, cancelled)?
         } else {
             let definition =
@@ -172,12 +203,14 @@ impl Evidence {
             Purpose::SettledEmpty => {
                 framing::ordered_group_blocks(&observed.properties, budget, cancelled, visit)?
             }
-            Purpose::CurrentTail | Purpose::RetainedTail => framing::current_schema_group_blocks(
-                &observed.properties,
-                budget,
-                cancelled,
-                visit,
-            )?,
+            Purpose::CurrentTail | Purpose::RetainedTail | Purpose::RetainedTypedTail => {
+                framing::current_schema_group_blocks(
+                    &observed.properties,
+                    budget,
+                    cancelled,
+                    visit,
+                )?
+            }
         };
         let removed = removed.ok_or(Error::Source)?;
         let original = observed.properties.raw_bytes();
@@ -188,7 +221,7 @@ impl Evidence {
         {
             return Err(Error::Preservation);
         }
-        let descriptor = if matches!(purpose, Purpose::RetainedTail) {
+        let descriptor = if purpose.retained() {
             observed.property_descriptor.start..observed.property_descriptor.end
         } else {
             let catalog =

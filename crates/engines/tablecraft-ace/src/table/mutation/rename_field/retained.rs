@@ -185,7 +185,7 @@ impl NativeImage {
         if !self.has_retained_table_source(table, budget, cancelled)? {
             return Ok(false);
         }
-        Ok(saved_field::retained_rename_uses_typed(
+        Ok(saved_field::retained_field_uses_typed_language(
             self, table, column, budget, cancelled,
         )?)
     }

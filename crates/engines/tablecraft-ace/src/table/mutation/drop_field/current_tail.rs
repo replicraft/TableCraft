@@ -20,7 +20,12 @@ pub struct NativeCurrentTailFieldDropCandidate {
 impl NativeCurrentTailFieldDropCandidate {
     /// Whether this sealed candidate belongs to the retained-schema source family.
     pub fn is_retained(&self) -> bool {
-        self.source.proof.table().family == crate::table::mutation::current_schema::Family::Retained
+        self.source.selection == source::Selection::Retained
+    }
+
+    /// Whether this candidate belongs to the distinct typed retained DROP action.
+    pub fn is_retained_typed(&self) -> bool {
+        self.source.selection == source::Selection::RetainedTyped
     }
 
     /// Complete original native bytes under the positive current-table proof.
@@ -66,7 +71,15 @@ impl NativeImage {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeFieldDropIdentity, Error> {
         let _span = tracing::debug_span!("native.current_tail_field_drop.inspect").entered();
-        Ok(source::observe(self, table, column, budget, cancelled)?.identity())
+        Ok(source::observe(
+            self,
+            table,
+            column,
+            source::Selection::Current,
+            budget,
+            cancelled,
+        )?
+        .identity())
     }
 
     /// Remove one nullable, unindexed native tail LONG or Short Text declaration.
@@ -81,7 +94,14 @@ impl NativeImage {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeCurrentTailFieldDropCandidate, Error> {
         let _span = tracing::debug_span!("native.current_tail_field_drop.prepare").entered();
-        let mut source = source::capture(self, table, column, budget, cancelled)?;
+        let mut source = source::capture(
+            self,
+            table,
+            column,
+            source::Selection::Current,
+            budget,
+            cancelled,
+        )?;
         let before = source.proof.image();
         let page = definition::page(before, &source.evidence, budget, cancelled)?;
         let mut after = definition::copy_image(before, budget, cancelled)?;

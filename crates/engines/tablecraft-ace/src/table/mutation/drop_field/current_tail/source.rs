@@ -6,65 +6,84 @@ use super::super::{
 use crate::{NativeImage, table::mutation::current_schema};
 use tablecraft_core::limits::ResourceBudget;
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(super) enum Selection {
+    Current,
+    Retained,
+    RetainedTyped,
+}
+
+impl Selection {
+    fn family(self) -> current_schema::Family {
+        match self {
+            Self::Current => current_schema::Family::Current,
+            Self::Retained | Self::RetainedTyped => current_schema::Family::Retained,
+        }
+    }
+
+    fn evidence(
+        self,
+        image: &NativeImage,
+        table: &str,
+        column: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Evidence, Error> {
+        match self {
+            Self::Current => {
+                Evidence::capture_current_tail(image, table, column, budget, cancelled)
+            }
+            Self::Retained => {
+                Evidence::capture_retained_tail(image, table, column, budget, cancelled)
+            }
+            Self::RetainedTyped => {
+                Evidence::capture_retained_typed_tail(image, table, column, budget, cancelled)
+            }
+        }
+    }
+}
+
 pub(super) struct Source {
     pub proof: current_schema::Source,
     pub evidence: Evidence,
+    pub selection: Selection,
 }
 
 pub(super) fn capture(
     image: NativeImage,
     table: &str,
     column: &str,
+    selection: Selection,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Source, Error> {
     source::request(table, column, budget, cancelled)?;
-    let proof =
-        current_schema::Source::capture(image, table, budget, cancelled).map_err(source_error)?;
-    let evidence = Evidence::capture_current_tail(proof.image(), table, column, budget, cancelled)?;
-    Ok(Source { proof, evidence })
+    let proof = selection
+        .family()
+        .capture(image, table, budget, cancelled)
+        .map_err(source_error)?;
+    let evidence = selection.evidence(proof.image(), table, column, budget, cancelled)?;
+    Ok(Source {
+        proof,
+        evidence,
+        selection,
+    })
 }
 
 pub(super) fn observe(
     image: &NativeImage,
     table: &str,
     column: &str,
+    selection: Selection,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Evidence, Error> {
     source::request(table, column, budget, cancelled)?;
-    current_schema::observe(image, table, budget, cancelled).map_err(source_error)?;
-    Evidence::capture_current_tail(image, table, column, budget, cancelled)
-}
-
-pub(super) fn capture_retained(
-    image: NativeImage,
-    table: &str,
-    column: &str,
-    budget: &mut ResourceBudget,
-    cancelled: &dyn Fn() -> bool,
-) -> Result<Source, Error> {
-    source::request(table, column, budget, cancelled)?;
-    let proof = current_schema::Family::Retained
-        .capture(image, table, budget, cancelled)
-        .map_err(source_error)?;
-    let evidence =
-        Evidence::capture_retained_tail(proof.image(), table, column, budget, cancelled)?;
-    Ok(Source { proof, evidence })
-}
-
-pub(super) fn observe_retained(
-    image: &NativeImage,
-    table: &str,
-    column: &str,
-    budget: &mut ResourceBudget,
-    cancelled: &dyn Fn() -> bool,
-) -> Result<Evidence, Error> {
-    source::request(table, column, budget, cancelled)?;
-    current_schema::Family::Retained
+    selection
+        .family()
         .observe(image, table, budget, cancelled)
         .map_err(source_error)?;
-    Evidence::capture_retained_tail(image, table, column, budget, cancelled)
+    selection.evidence(image, table, column, budget, cancelled)
 }
 
 fn source_error(error: current_schema::Error) -> Error {
