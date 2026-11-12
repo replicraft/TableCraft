@@ -8,10 +8,15 @@ use tablecraft_model::CatalogScope;
 use tablecraft_testkit::fixtures::access::secondary_index::normal::{self as raw, Population};
 
 const SCOPE: CatalogScope = CatalogScope::new(28701);
+const BASE_TEST_BYTES: u64 = 64 * 1024 * 1024;
+const TEST_BYTES_PER_ROW: u64 = 24 * 1024;
 
 fn allowance(rows: usize) -> ResourceBudget {
     ResourceBudget::new(
-        2 * 1024 * 1024 * 1024,
+        // Cumulative accounting includes source reads, complete AFTER reads and
+        // independent proof, rather than only resident image storage. The measured
+        // 200,000-row fixture consumes about 2.23 GiB; retain per-row headroom.
+        BASE_TEST_BYTES + rows.max(1) as u64 * TEST_BYTES_PER_ROW,
         rows.max(1) as u64 * 100 + 100_000,
         rows.max(1) as u64 * 40_000 + 16_000_000,
     )
