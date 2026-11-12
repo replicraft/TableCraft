@@ -584,3 +584,23 @@ stored-field selection marker while a pending proposal owned the lower propertie
 The pending row now carries that marker without changing stored field selection
 for the return path. These source-free frames establish layout/readability only;
 no native windows were opened and no Access save or pixel parity is inferred.
+
+## UNIQUE LONG confirmation adaptation — 12 November 2026
+
+The scene author reopened the actual retained Home/datasheet image for the
+complete Ribbon and workspace context. That image shows Windows Access inside
+VirtualBox; its display scale is unknown. No retained SQL UNIQUE-index warning
+or dark-mode reference establishes this confirmation layout.
+
+The new source-free shared scene retains the ordinary workspace/Ribbon and
+shows the actual typed UNIQUE policy and unique-specific confirmation. It is an
+adaptation, not an Access screenshot match or native interaction observation.
+Four EN/DE light/dark offscreen frames at 1280 × 820, 1×, were rendered on
+macOS 14.7.2 ARM64 and directly inspected by the root reviewer. The complete
+unique-specific confirmation and decisions are readable in each frame. German
+uses the existing horizontal Ribbon scroll; commands are not removed. The first
+sandbox attempt lacked a GPU adapter; the same offscreen release binary then
+succeeded with headless Metal access outside the sandbox. The
+[verification checkpoint](../../tests/results/queries/unique-like-context-workflows-2026-11-12.json)
+records both attempts and frame hashes separately from native full-image,
+recovery and headless save/reopen evidence. No native window was launched.

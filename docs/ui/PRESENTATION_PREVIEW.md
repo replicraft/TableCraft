@@ -2860,3 +2860,32 @@ The retained 1920 × 1141 Home/Ribbon image provides surrounding context only
 warning or save-result capture establishes exact parity for these surfaces. The
 dialogs remain explicit adaptations; offscreen checks are not Windows/Access
 execution or full SQL compatibility evidence.
+
+## UNIQUE LONG index review — 12 November 2026
+
+The `query-schema-unique-index-review` scene supplies inert typed UNIQUE facts
+to the actual shared schema warning. It keeps the normal complete Ribbon,
+ScoreUnique/Archive/CopiedScore/DESC identity, explicit UNIQUE policy and its own
+confirmation rather than the ordinary-index wording. No/Yes retain their actual
+widget behavior; schema population is not a changed-row count. The existing
+ordinary-index scene stays distinct.
+
+Four English/German light/dark offscreen frames were rendered at 1280 × 820
+logical pixels, 1×, on macOS 14.7.2 ARM64, and directly inspected by the root
+reviewer. Table/index/field/direction, uniqueness/NULL policy, existing population,
+warning and Yes/No remain fully visible in all four dialogs. The complete English
+Ribbon fits; German retains the existing horizontal Ribbon scroll rather than
+removing rightmost groups. These are normal presentation gates over inert facts.
+
+The first sandbox attempt failed before rendering with no GPU adapter. The same
+release binary then rendered through headless Metal outside the sandbox, without
+opening a native window. The
+[combined checkpoint](../../tests/results/queries/unique-like-context-workflows-2026-11-12.json)
+pins successful frame/binary hashes, the retained initial failure and the direct
+review observations. Its renderer uses production source e9875bb1f; subsequent
+143d6af03 changes repair tests only, and the scene-source freshness check passed.
+
+The actual retained Home/datasheet reference was opened for the
+Ribbon/workspace context. No retained Access UNIQUE warning or dark-mode capture
+establishes this dialog; it remains a TableCraft adaptation. No native window
+was opened for this offscreen verification.

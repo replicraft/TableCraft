@@ -96,9 +96,11 @@ a week field. See the [week settings contract](../expressions/dates/WEEK_SETTING
 
 The function set excludes CVDate and other date calls, case/encoding/formatting
 APIs, Domain functions, Eval, Rnd, clocks, CurrentUser and user-defined or qualified
-calls. Parameters, subqueries, aggregates, collections, correlated fields and
-external/saved edit targets remain closed. Refusal occurs during binding, even
-when WHERE is false or the snapshot is empty. This does not change the independent
+calls. These scalar calls do not themselves authorize aggregates, collections,
+external/saved edit targets or source expansion. Declared inputs and qualified
+correlated EXISTS/IN or joined criteria use their separate service entry points;
+assignment subqueries remain closed. Unsupported forms refuse during binding,
+even when WHERE is false or the snapshot is empty. This does not change the independent
 [INSERT VALUES profile](../access/writes/SQL_INSERT_COPIES.md).
 
 The binder uses a dedicated mutation-call capability enabled only for UPDATE
@@ -106,6 +108,32 @@ and DELETE. General retrieval function admission is not enabled for these plans.
 The shared owner both binds the allowed calls and rejects accidental retrieval or
 runtime nodes in the final bound expression. Other binder contexts retain their
 existing capabilities.
+
+## SQL View statement context
+
+Runtime SQL View captures one worker expression environment for explicit reads,
+parameter discovery, SELECT INTO, INSERT and UPDATE/DELETE. NumberFormat and
+DateTextFormat are optional explicit provider settings, not display preferences,
+collation-derived regional guesses or implicit OS locale discovery. They survive
+plain, joined and correlated action evaluation; nested reads use the same
+statement options. Missing providers still produce the relevant typed error.
+VALUES raw preflight and mutation binding share the same closed call policy;
+permitted math/date calls do not acquire source fields, clocks, arrays or UDF
+capabilities. Complete written operands still evaluate before one native finish.
+
+For criteria LIKE, native known ANSI89/92 is authoritative. Runtime supplies its
+explicit ANSI89 SQL View default only when the native observation is Absent;
+Unknown remains unknown. Generic query and adapter callers retain explicit
+unsupplied-mode contracts. Assignment admission remains separate: allowing LIKE
+in criteria does not permit LIKE expressions as stored replacements.
+
+No action is applied until every original predicate and selected replacement
+has evaluated successfully. A false AND, NULL operand, TOP boundary or duplicate
+membership cannot suppress a required eager error. The
+[combined checkpoint](../../tests/results/queries/unique-like-context-workflows-2026-11-12.json)
+records passing native/adapter/Runtime/headless workflows, query tests, strict
+and feature checks, with initial failures preserved. It is not a
+claim of complete regional or Access-native expression equivalence.
 
 ## Original rows, eagerness and stored values
 

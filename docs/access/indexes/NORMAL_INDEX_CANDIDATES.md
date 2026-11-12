@@ -175,9 +175,42 @@ records 56 native checks, 11 adapter checks, 441 Runtime passes with one explici
 fixture-dependent ignore, and five selected headless Desktop workflows. Strict
 lint, minimal-feature checks and Rustdoc pass. Counts overlap across layers.
 The numeric profile does not qualify
-Text, Binary, Decimal, GUID, extended Date/Time or complex keys; compound, UNIQUE,
-PRIMARY and foreign-key creation remain unsupported. It does not broaden DROP
+Text, Binary, Decimal, GUID, extended Date/Time or complex keys; compound, general typed UNIQUE,
+PRIMARY and foreign-key creation remain unsupported by this numeric profile. It does not broaden DROP
 INDEX, expose MCP schema SQL or establish Windows/Access save or timestamp parity.
+
+## Separate UNIQUE LONG lifecycle
+
+The retained manual LONG UNIQUE entry uses the nominal
+`NativeUniqueLongIndexCreateIntent` (TCIC0004/profile4) and
+`NativeUniqueLongIndexDropIntent` (TCID0002/profile2). It does not retag ordinary
+originals or widen the numeric profile. Source metadata positively selects the
+unique DROP service; a failed ordinary producer/decoder is never a retry signal.
+Private source policy remains attached through native candidate/effect ownership
+and is checked by original capture and fresh reconstruction.
+
+Creation checks the complete key population and existing source constraints.
+The complete independent AFTER proof protects original DATA, generators,
+Currency/Unicode companions, catalog, LVAL, aliases and unrelated indexes.
+Dropping one surviving logical alias retains its physical tree and maps. Final
+physical-owner deletion zeroes only independently certified exclusive INDEX/map
+storage and updates the global allocator; shared/unknown storage remains refused.
+These are implementation retirement rules, not a Microsoft save-byte claim.
+
+The native originals use the existing checked V3 protocol, with original-source
+identity, exact policy/allocated identity and full-image reconstruction before
+preparation, cold recovery and settled confirmation. V1/V2 and missing-create
+constructive recovery remain closed. Normal SQL Run uses the existing No/Yes,
+consuming save, acknowledgment and exact guarded reopen, reporting schema-only
+IndexCreated/IndexDropped receipts rather than affected row counts.
+
+The [combined checkpoint](../../../tests/results/queries/unique-like-context-workflows-2026-11-12.json)
+records 171 native passes with two explicit ignores, 324 adapter passes,
+471 Runtime passes with one ignore, 77 selected Desktop workflows and 22 selected
+shared-UI cases, alongside query, strict and feature checks. Initial failures
+remain separate; no broader UNIQUE/PRIMARY/foreign or
+compound key creation, timestamp behavior, older-file write or native Windows
+Access parity follows from this profile.
 
 ## Design-timestamp parity gap
 

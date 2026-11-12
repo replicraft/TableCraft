@@ -1,5 +1,32 @@
 # Implementation status
 
+## UNIQUE LONG and SQL View contexts — 12 November 2026
+
+Qualified ACE16 retained manual LONG fields now have distinct UNIQUE creation
+and drop originals (TCIC0004 and TCID0002), source-bound review/save and guarded
+reopen. Native policy survives consuming ownership transfers; ordinary originals
+cannot capture a unique candidate or recover it as another family. Duplicate and
+Required constraints, shared aliases and independently certified retirement remain
+part of the actual native operation.
+
+SQL View now supplies an explicit ANSI89 wildcard default only for an observed
+absent database setting. Known ANSI89/92 settings remain authoritative; unknown
+metadata never defaults. Explicit worker number/date expression profiles propagate
+through retrieval, discovery, make-table and row actions, independently of display
+preferences. Deterministic action math/CStr and Gregorian date conversions and
+intervals reuse the existing query kernels with typed context and eager errors.
+
+Acknowledged same-document saves retain UI tab IDs and inert SQL/design/input
+preferences while replacing every source-bound session at the fresh revision.
+Old targets and callbacks cannot reuse the retained presentation identity.
+The [combined checkpoint](../tests/results/queries/unique-like-context-workflows-2026-11-12.json)
+records 171 native passes with two explicit ignores, 324 adapter passes,
+471 Runtime passes with one explicit ignore, 77 selected Desktop workflows and
+22 selected shared-UI cases. The query library and selected integrations, strict
+lint across nine packages, minimal-feature checks and Rustdoc pass. Earlier
+failures remain recorded separately. This is bounded local progress, not complete
+ACE SQL or Windows Access qualification.
+
 ## Retained indexed INSERT workflows — 12 November 2026
 
 The [indexed INSERT checkpoint](../tests/results/queries/manual-indexed-insert-workflows-2026-11-12.json)
