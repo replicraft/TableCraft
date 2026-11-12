@@ -7,6 +7,7 @@ mod external_tables;
 mod generated;
 mod identifiers;
 mod in_list;
+mod joined_delete;
 mod limits;
 mod parameter_prompts;
 mod queries;

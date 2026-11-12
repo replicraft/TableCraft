@@ -72,6 +72,7 @@ pub(super) fn parse(
         })));
     }
     expect(p, W::DELETE)?;
+    let distinct_row = p.parse_keyword(W::DISTINCTROW);
     let mut targets = Vec::new();
     if !p.consume_token(&Token::Mul)
         && !matches!(p.peek_token().token, Token::Word(ref w) if w.keyword == W::FROM)
@@ -92,6 +93,7 @@ pub(super) fn parse(
         return Err(ParseError::at(p, K::Syntax, "DELETE requires a source"));
     }
     Ok(Statement::Delete(Box::new(Delete {
+        distinct_row,
         targets,
         sources,
         selection,

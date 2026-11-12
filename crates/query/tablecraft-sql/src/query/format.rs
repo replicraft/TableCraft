@@ -85,6 +85,9 @@ impl Query {
             }
             Statement::Delete(delete) => {
                 f.write_str("DELETE ")?;
+                if delete.distinct_row {
+                    f.write_str("DISTINCTROW ")?;
+                }
                 for (i, target) in delete.targets.iter().enumerate() {
                     if i > 0 {
                         f.write_str(", ")?;

@@ -41,6 +41,8 @@ pub struct Update {
 /// DELETE syntax; selected targets are retained without deciding updateability.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Delete {
+    /// Explicit DISTINCTROW / affirmative UniqueRecords declaration.
+    pub distinct_row: bool,
     /// Optional target table wildcards (empty for DELETE FROM or DELETE * FROM).
     pub targets: Vec<Name>,
     /// Source relations.
