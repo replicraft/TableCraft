@@ -141,6 +141,17 @@ impl NativeJournalEditor {
                     cancelled,
                 );
             }
+            if self.snapshot().columns()[position].data_type() == ScalarType::Currency
+                && column.updates.len() != 1
+            {
+                return self.plan_variable_columns_with_count(
+                    columns,
+                    count,
+                    FittedRoute::RetainedCurrencyBatch,
+                    budget,
+                    cancelled,
+                );
+            }
         }
         #[cfg(feature = "ace16-create")]
         if self.retained_empty_long_columns(columns, budget, cancelled)? {

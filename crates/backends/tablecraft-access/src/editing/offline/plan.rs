@@ -268,7 +268,8 @@ impl MutationPlan {
             Self::Update(plan) => {
                 if matches!(
                     plan.intent().profile(),
-                    NativeUpdateProfile::Ace16RetainedIndexedLongRows
+                    NativeUpdateProfile::Ace16RetainedCurrencyColumnBatch
+                        | NativeUpdateProfile::Ace16RetainedIndexedLongRows
                         | NativeUpdateProfile::Ace16RetainedLongColumnBatch
                         | NativeUpdateProfile::Ace16RetainedEmptyRows
                         | NativeUpdateProfile::Ace16RetainedRows
@@ -546,7 +547,8 @@ impl MutationIntent {
                 .map(Self::RetainedDelete)
                 .map_err(Cause::Intent);
         }
-        if raw.starts_with(b"TCNI0026")
+        if raw.starts_with(b"TCNI0027")
+            || raw.starts_with(b"TCNI0026")
             || raw.starts_with(b"TCNI0025")
             || raw.starts_with(b"TCNI0024")
             || raw.starts_with(b"TCNI0017")

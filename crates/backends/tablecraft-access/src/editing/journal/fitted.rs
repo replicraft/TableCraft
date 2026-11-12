@@ -21,6 +21,8 @@ pub(super) enum FittedRoute {
     Existing,
     #[cfg(feature = "ace16-create")]
     RetainedIndexedLong,
+    #[cfg(feature = "ace16-create")]
+    RetainedCurrencyBatch,
 }
 
 const COPY_BYTES: usize = 4096;
@@ -306,6 +308,13 @@ impl NativeJournalEditor {
                     budget,
                     cancelled,
                 )
+            } else if selection == FittedRoute::RetainedCurrencyBatch {
+                NativeFittedIntentGroup::new_retained_currency_column_batch(
+                    target.name(),
+                    requests,
+                    budget,
+                    cancelled,
+                )
             } else if retained_long_batch {
                 NativeFittedIntentGroup::new_retained_long_column_batch(
                     target.name(),
@@ -362,6 +371,11 @@ impl NativeJournalEditor {
                 if selection == FittedRoute::RetainedIndexedLong {
                     self.editor
                         .plan_recoverable_retained_indexed_long(groups, budget, cancelled)?
+                } else if selection == FittedRoute::RetainedCurrencyBatch {
+                    self.editor
+                        .plan_recoverable_retained_currency_column_batch(
+                            groups, budget, cancelled,
+                        )?
                 } else if retained_long_batch {
                     self.editor
                         .plan_recoverable_retained_long_column_batch(groups, budget, cancelled)?
