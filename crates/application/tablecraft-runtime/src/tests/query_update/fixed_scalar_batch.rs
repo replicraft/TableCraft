@@ -63,7 +63,7 @@ fn case(column: Column) -> Case {
                 Scalar::DateTimeBits(0),
             ],
             "UPDATE Measurements SET DateValue=DateAdd('d',1,Nz(DateValue,#1899-12-29#))",
-            "UPDATE Measurements SET DateValue=DateAdd('d',1,#1899-12-28T12:00:00#) WHERE ID=1",
+            "UPDATE Measurements SET DateValue=DateAdd('d',1,#1899-12-28 12:00:00#) WHERE ID=1",
         ),
     };
 
