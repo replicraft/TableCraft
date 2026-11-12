@@ -51,7 +51,8 @@ fn sql_save_ack_keeps_tab_ids_design_and_saved_inputs_but_revokes_old_sessions()
     assert!(harness.state().state.can_edit_cell(&old_row));
     harness.state_mut().view_object_schema("Items".into());
     finish_reads(&mut harness);
-    assert!(harness.state().state.data.is_none());
+    let field_name = harness.state().state.localizer.text("design-field-name");
+    harness.get_by_label(&field_name);
     assert_eq!(
         harness.state().state.schema.as_ref().unwrap().table,
         "Items"
