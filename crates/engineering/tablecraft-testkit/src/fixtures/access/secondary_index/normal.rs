@@ -3,6 +3,8 @@ pub(super) mod definition;
 pub mod dropping;
 pub mod history;
 pub(super) mod tree;
+/// Independent existing-tree effects after ordinary CREATE INDEX.
+pub mod updating;
 
 use crate::fixtures::access::{
     canonical_retained_add_table::{currency::mixed, extend_global_map, fields, populated},
