@@ -1,4 +1,6 @@
 //! Reviewed SQL DELETE consumes typed inputs once, before confirmation and lease.
+#[cfg(feature = "ace16-create")]
+mod joined;
 mod read_source;
 use super::{open, query_parameters::inspect, request, stored::opened, terminal};
 use crate::{

@@ -83,7 +83,19 @@ pub(in crate::editing) fn review(
         && joined_update.is_none()
         && sql::update_uses_read_source(parsed.query(), &mut query_work, cancelled)
             .map_err(sql::RecoverableError::Shape)?;
+    let joined_delete = if matches!(kind, Kind::Delete)
+        && matches!(&parsed.query().statement, Statement::Delete(delete)
+            if !matches!(delete.sources.as_slice(), [tablecraft_sql::select::TableSource::Table(_)]))
+    {
+        Some(
+            sql::local_joined_delete_target(parsed.query(), true, &mut query_work, cancelled)
+                .map_err(sql::RecoverableDeleteError::Shape)?,
+        )
+    } else {
+        None
+    };
     let read_source_delete = matches!(kind, Kind::Delete)
+        && joined_delete.is_none()
         && sql::delete_uses_read_source(parsed.query(), &mut query_work, cancelled)
             .map_err(sql::RecoverableDeleteError::Shape)?;
     let table = match kind {
@@ -92,8 +104,11 @@ pub(in crate::editing) fn review(
             None => sql::local_batch_update_table(parsed.query(), true)
                 .map_err(sql::RecoverableError::Shape)?,
         },
-        Kind::Delete => sql::local_delete_table(parsed.query(), true)
-            .map_err(sql::RecoverableDeleteError::Shape)?,
+        Kind::Delete => match joined_delete {
+            Some(target) => target.table,
+            None => sql::local_delete_table(parsed.query(), true)
+                .map_err(sql::RecoverableDeleteError::Shape)?,
+        },
         Kind::Insert(_) if select_insert => {
             sql::local_insert_select_table(parsed.query(), &mut query_work, cancelled)
                 .map_err(sql::RecoverableInsertError::Shape)?
@@ -197,6 +212,36 @@ pub(in crate::editing) fn review(
             staged
                 .finish(&mut native, cancelled)
                 .map_err(sql::RecoverableError::Plan)?,
+        )
+    } else if joined_delete.is_some() {
+        let editor = {
+            let mut native = native_pool
+                .try_borrow_mut()
+                .map_err(|_| Error::Native(InspectError::Unsupported))?;
+            NativeJournalEditor::new(image, table, &mut native, cancelled)
+                .map_err(sql::RecoverableDeleteError::Editor)?
+        };
+        // Joins use the same immutable original and shared native pool as the
+        // target editor. Finish only after all read callbacks released the pool.
+        let staged = sql::prepare_native_joined_delete(
+            editor,
+            parsed.query(),
+            &source,
+            &mut query_work,
+            sql::NativeMutationOptions {
+                parameters: &bindings,
+                collation: resolver.default_collation(),
+                resolver: &resolver,
+            },
+            cancelled,
+        )?;
+        let mut native = native_pool
+            .try_borrow_mut()
+            .map_err(|_| Error::Native(InspectError::Unsupported))?;
+        Plan::Delete(
+            staged
+                .finish(&mut native, cancelled)
+                .map_err(sql::RecoverableDeleteError::Plan)?,
         )
     } else if read_source_delete {
         let editor = {
