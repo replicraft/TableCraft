@@ -4,6 +4,8 @@ mod deleting;
 #[cfg(feature = "journal")]
 use super::journal::JournalRoute;
 use super::{NativeEditError, snapshot};
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+use tablecraft_ace::NativeFixedScalarKind;
 #[cfg(feature = "journal")]
 use tablecraft_ace::{
     EditError, NativeFittedIntentGroup, NativeFixedIntentGroup, RecoverableEditError,
@@ -447,6 +449,37 @@ impl NativeEditor {
             budget,
             cancelled,
         )
+    }
+
+    #[cfg(feature = "ace16-create")]
+    pub(super) fn retained_fixed_scalar_column_kind(
+        &self,
+        column: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<NativeFixedScalarKind, NativeEditError> {
+        Ok(self.image.retained_fixed_scalar_column_kind(
+            self.snapshot.name(),
+            column,
+            budget,
+            cancelled,
+        )?)
+    }
+
+    #[cfg(feature = "ace16-create")]
+    pub(super) fn plan_recoverable_retained_fixed_scalar_column_batch(
+        self,
+        groups: Vec<NativeFittedIntentGroup>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<RecoverableNativeEditPlan, RecoverableEditError> {
+        self.image
+            .plan_recoverable_retained_fixed_scalar_column_batch_updates(
+                self.snapshot.name(),
+                groups,
+                budget,
+                cancelled,
+            )
     }
 
     #[cfg(feature = "ace16-create")]

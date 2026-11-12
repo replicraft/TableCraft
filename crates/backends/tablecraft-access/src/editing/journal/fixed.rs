@@ -1,4 +1,6 @@
 //! Exact original-snapshot carriers for the normal fixed batch intent.
+#[cfg(feature = "ace16-create")]
+use super::fitted::retained_fixed_scalar;
 use super::{Error, JournalRoute, NativeJournalEditor, fitted::FittedRoute};
 use crate::editing::NativeEditError;
 use tablecraft_ace::{
@@ -148,6 +150,22 @@ impl NativeJournalEditor {
                     columns,
                     count,
                     FittedRoute::RetainedCurrencyBatch,
+                    budget,
+                    cancelled,
+                );
+            }
+            if retained_fixed_scalar(self.snapshot().columns()[position].data_type())
+                && column.updates.len() != 1
+            {
+                let kind = self.editor.retained_fixed_scalar_column_kind(
+                    self.snapshot().columns()[position].name(),
+                    budget,
+                    cancelled,
+                )?;
+                return self.plan_variable_columns_with_count(
+                    columns,
+                    count,
+                    FittedRoute::RetainedFixedScalarBatch(kind),
                     budget,
                     cancelled,
                 );

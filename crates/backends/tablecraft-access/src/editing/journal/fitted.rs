@@ -4,6 +4,8 @@ use super::{
     fixed::{check, matched_rows, scalar, vector},
 };
 use crate::editing::NativeEditError;
+#[cfg(feature = "ace16-create")]
+use tablecraft_ace::NativeFixedScalarKind;
 use tablecraft_ace::{
     FixedScalarUpdate, InspectError, NativeFittedEditIntent, NativeFittedIntentGroup,
     NativeFittedUpdates, RecoverableEditError, RecoverableNativeEditPlan, SlotScalarUpdate,
@@ -23,6 +25,8 @@ pub(super) enum FittedRoute {
     RetainedIndexedLong,
     #[cfg(feature = "ace16-create")]
     RetainedCurrencyBatch,
+    #[cfg(feature = "ace16-create")]
+    RetainedFixedScalarBatch(NativeFixedScalarKind),
 }
 
 const COPY_BYTES: usize = 4096;
@@ -43,7 +47,7 @@ fn wide_value(value: &Value, kind: ScalarType) -> Result<Value, NativeEditError>
 }
 
 #[cfg(feature = "ace16-create")]
-fn retained_fixed_scalar(kind: ScalarType) -> bool {
+pub(super) fn retained_fixed_scalar(kind: ScalarType) -> bool {
     matches!(
         kind,
         ScalarType::Byte
@@ -315,6 +319,14 @@ impl NativeJournalEditor {
                     budget,
                     cancelled,
                 )
+            } else if let FittedRoute::RetainedFixedScalarBatch(kind) = selection {
+                NativeFittedIntentGroup::new_retained_fixed_scalar_column_batch(
+                    target.name(),
+                    kind,
+                    requests,
+                    budget,
+                    cancelled,
+                )
             } else if retained_long_batch {
                 NativeFittedIntentGroup::new_retained_long_column_batch(
                     target.name(),
@@ -374,6 +386,11 @@ impl NativeJournalEditor {
                 } else if selection == FittedRoute::RetainedCurrencyBatch {
                     self.editor
                         .plan_recoverable_retained_currency_column_batch(
+                            groups, budget, cancelled,
+                        )?
+                } else if let FittedRoute::RetainedFixedScalarBatch(_) = selection {
+                    self.editor
+                        .plan_recoverable_retained_fixed_scalar_column_batch(
                             groups, budget, cancelled,
                         )?
                 } else if retained_long_batch {
