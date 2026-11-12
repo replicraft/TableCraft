@@ -131,6 +131,15 @@ pub(super) fn bind_call(
 
 /// Reject every accidental retrieval/runtime node, even when not selected at runtime.
 pub(super) fn admitted(expression: &Expr) -> bool {
+    admitted_with(expression, false)
+}
+
+/// Criteria share scalar admission while retaining explicit wildcard context.
+pub(super) fn predicate_admitted(expression: &Expr) -> bool {
+    admitted_with(expression, true)
+}
+
+fn admitted_with(expression: &Expr, like: bool) -> bool {
     match expression {
         Expr::Parameter(_)
         | Expr::Literal(_)
@@ -140,19 +149,32 @@ pub(super) fn admitted(expression: &Expr) -> bool {
         Expr::Unary(_, value)
         | Expr::IsNull(value, _)
         | Expr::Convert(_, value)
-        | Expr::DateCall(_, value) => admitted(value),
-        Expr::Binary(_, left, right) => admitted(left) && admitted(right),
+        | Expr::DateCall(_, value) => admitted_with(value, like),
+        Expr::Like(left, right, _) if like => {
+            admitted_with(left, like) && admitted_with(right, like)
+        }
+        Expr::Binary(_, left, right) => admitted_with(left, like) && admitted_with(right, like),
         Expr::Between(value, first, last, _) | Expr::IIf(value, first, last) => {
-            admitted(value) && admitted(first) && admitted(last)
+            admitted_with(value, like) && admitted_with(first, like) && admitted_with(last, like)
         }
-        Expr::InList(value, values, _) => admitted(value) && values.iter().all(admitted),
+        Expr::InList(value, values, _) => {
+            admitted_with(value, like) && values.iter().all(|value| admitted_with(value, like))
+        }
         Expr::Nz(value, replacement) => {
-            admitted(value) && replacement.as_ref().is_none_or(|value| admitted(value))
+            admitted_with(value, like)
+                && replacement
+                    .as_ref()
+                    .is_none_or(|value| admitted_with(value, like))
         }
-        Expr::TextCall(function, values) => text_allowed(*function) && values.iter().all(admitted),
-        Expr::MathCall(function, values) => math_allowed(*function) && values.iter().all(admitted),
+        Expr::TextCall(function, values) => {
+            text_allowed(*function) && values.iter().all(|value| admitted_with(value, like))
+        }
+        Expr::MathCall(function, values) => {
+            math_allowed(*function) && values.iter().all(|value| admitted_with(value, like))
+        }
         Expr::ConstructorCall(function, values) => {
-            function.accepts_arity(values.len()) && values.iter().all(admitted)
+            function.accepts_arity(values.len())
+                && values.iter().all(|value| admitted_with(value, like))
         }
         _ => false,
     }

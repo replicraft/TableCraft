@@ -7,6 +7,10 @@ use crate::{
 };
 
 pub(super) fn admit(expression: &Expr, binder: &mut Binder<'_>) -> Result<(), QueryError> {
+    admit_with(expression, binder, true)
+}
+
+fn admit_with(expression: &Expr, binder: &mut Binder<'_>, like: bool) -> Result<(), QueryError> {
     binder.work()?;
     match expression {
         Expr::Parameter(_)
@@ -17,27 +21,31 @@ pub(super) fn admit(expression: &Expr, binder: &mut Binder<'_>) -> Result<(), Qu
         Expr::Unary(_, value)
         | Expr::IsNull(value, _)
         | Expr::Convert(_, value)
-        | Expr::DateCall(_, value) => admit(value, binder),
+        | Expr::DateCall(_, value) => admit_with(value, binder, like),
+        Expr::Like(left, right, _) if like => {
+            admit_with(left, binder, like)?;
+            admit_with(right, binder, like)
+        }
         Expr::Binary(_, left, right) => {
-            admit(left, binder)?;
-            admit(right, binder)
+            admit_with(left, binder, like)?;
+            admit_with(right, binder, like)
         }
         Expr::Between(value, first, last, _) | Expr::IIf(value, first, last) => {
-            admit(value, binder)?;
-            admit(first, binder)?;
-            admit(last, binder)
+            admit_with(value, binder, like)?;
+            admit_with(first, binder, like)?;
+            admit_with(last, binder, like)
         }
         Expr::InList(value, values, _) => {
-            admit(value, binder)?;
+            admit_with(value, binder, like)?;
             for value in values {
-                admit(value, binder)?;
+                admit_with(value, binder, like)?;
             }
             Ok(())
         }
         Expr::Nz(value, replacement) => {
-            admit(value, binder)?;
+            admit_with(value, binder, like)?;
             if let Some(value) = replacement {
-                admit(value, binder)?;
+                admit_with(value, binder, like)?;
             }
             Ok(())
         }
@@ -46,13 +54,13 @@ pub(super) fn admit(expression: &Expr, binder: &mut Binder<'_>) -> Result<(), Qu
         | Expr::MathCall(_, values)
         | Expr::ConstructorCall(_, values) => {
             for value in values {
-                admit(value, binder)?;
+                admit_with(value, binder, like)?;
             }
             Ok(())
         }
         Expr::Exists(read) => admit_read(read, binder),
         Expr::InQuery(value, read, _) => {
-            admit(value, binder)?;
+            admit_with(value, binder, like)?;
             admit_read(read, binder)
         }
         _ => Err(QueryError::Unsupported),
@@ -94,10 +102,10 @@ fn admit_read(read: &ReadPlan, binder: &mut Binder<'_>) -> Result<(), QueryError
         return Err(QueryError::Unsupported);
     }
     for value in &select.projection {
-        admit(value, binder)?;
+        admit_with(value, binder, false)?;
     }
     if let Some(value) = &select.filter {
-        admit(value, binder)?;
+        admit_with(value, binder, true)?;
     }
     Ok(())
 }

@@ -112,6 +112,7 @@ fn field_resolver_governs_where_and_eager_set_lineage_instead_of_database_defaul
         &mut budget(),
         &mut budget(),
         MutationOptions {
+            like_mode: None,
             parameters: None,
             collation: Some(&DEFAULT_COMPARER),
             collation_resolver: Some(&resolver),
@@ -148,6 +149,7 @@ fn typed_text_parameters_preserve_the_stored_field_policy_in_where_and_set() {
         &mut budget(),
         &mut budget(),
         MutationOptions {
+            like_mode: None,
             parameters: Some(&parameters),
             collation: Some(&DEFAULT_COMPARER),
             collation_resolver: Some(&resolver),
@@ -195,6 +197,7 @@ fn conflicting_or_unknown_field_policies_refuse_before_the_consuming_backend_fin
             &mut budget(),
             &mut budget(),
             MutationOptions {
+                like_mode: None,
                 parameters: None,
                 collation: Some(&DEFAULT_COMPARER),
                 collation_resolver: Some(&resolver),
@@ -251,6 +254,7 @@ fn malformed_policy_alignment_and_provider_cancellation_cannot_finish_a_batch() 
         &mut budget(),
         &mut budget(),
         MutationOptions {
+            like_mode: None,
             parameters: None,
             collation: Some(&DEFAULT_COMPARER),
             collation_resolver: Some(&resolver),
@@ -264,3 +268,5 @@ fn malformed_policy_alignment_and_provider_cancellation_cannot_finish_a_batch() 
     ));
     assert_eq!(calls.get(), 0);
 }
+
+mod like;

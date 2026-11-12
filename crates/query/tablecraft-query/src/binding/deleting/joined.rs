@@ -56,7 +56,7 @@ pub(crate) fn admit<'a>(
                 condition,
                 ..
             } => {
-                crate::binding::mutation_reads::syntax::assignment(condition, budget, cancelled)?;
+                crate::binding::mutation_reads::syntax::criteria(condition, budget, cancelled)?;
                 joined = true;
                 push(&mut pending, right, budget, cancelled)?;
                 push(&mut pending, left, budget, cancelled)?;
@@ -72,7 +72,7 @@ pub(crate) fn admit<'a>(
         return Err(QueryError::Unsupported);
     }
     if let Some(filter) = &delete.selection {
-        crate::binding::mutation_reads::syntax::assignment(filter, budget, cancelled)?;
+        crate::binding::mutation_reads::syntax::criteria(filter, budget, cancelled)?;
     }
     Ok(delete)
 }
@@ -104,7 +104,7 @@ pub(crate) fn bind(
         .transpose()?;
     if filter
         .as_ref()
-        .is_some_and(|value| !crate::binding::mutation_scalar::admitted(value))
+        .is_some_and(|value| !crate::binding::mutation_scalar::predicate_admitted(value))
     {
         return Err(QueryError::Unsupported);
     }

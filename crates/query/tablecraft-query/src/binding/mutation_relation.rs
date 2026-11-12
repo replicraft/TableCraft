@@ -151,7 +151,7 @@ fn find_target(
             condition,
             ..
         } => {
-            if !crate::binding::mutation_scalar::admitted(condition) {
+            if !crate::binding::mutation_scalar::predicate_admitted(condition) {
                 return Err(QueryError::Unsupported);
             }
             find_target(left, selected, leaf, base, target, binder)?;

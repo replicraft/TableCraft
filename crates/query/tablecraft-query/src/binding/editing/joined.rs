@@ -79,7 +79,7 @@ pub(crate) fn bind_joined_update(
         .transpose()?;
     if filter
         .as_ref()
-        .is_some_and(|value| !crate::binding::mutation_scalar::admitted(value))
+        .is_some_and(|value| !crate::binding::mutation_scalar::predicate_admitted(value))
     {
         return Err(QueryError::Unsupported);
     }

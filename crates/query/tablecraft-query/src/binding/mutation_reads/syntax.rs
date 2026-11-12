@@ -7,7 +7,7 @@ use tablecraft_sql::{
 };
 
 enum Visit<'a> {
-    Expression(&'a Expression),
+    Expression(&'a Expression, bool),
     Read(&'a ReadQuery),
 }
 
@@ -16,7 +16,7 @@ pub(crate) fn predicate(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), QueryError> {
-    validate(value, true, budget, cancelled)
+    validate(value, true, true, budget, cancelled)
 }
 
 pub(crate) fn assignment(
@@ -24,21 +24,35 @@ pub(crate) fn assignment(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), QueryError> {
-    validate(value, false, budget, cancelled)
+    validate(value, false, false, budget, cancelled)
+}
+
+pub(crate) fn criteria(
+    value: &Expression,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), QueryError> {
+    validate(value, false, true, budget, cancelled)
 }
 
 fn validate(
     value: &Expression,
     reads: bool,
+    like: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), QueryError> {
     let mut pending = Vec::new();
-    push(&mut pending, Visit::Expression(value), budget, cancelled)?;
+    push(
+        &mut pending,
+        Visit::Expression(value, like),
+        budget,
+        cancelled,
+    )?;
     while let Some(value) = pending.pop() {
         tick(budget, cancelled)?;
         match value {
-            Visit::Expression(value) => match value {
+            Visit::Expression(value, like) => match value {
                 Expression::Field(_)
                 | Expression::Integer(_)
                 | Expression::Text(_)
@@ -50,14 +64,42 @@ fn validate(
                 Expression::Unary { expression, .. } | Expression::IsNull { expression, .. } => {
                     push(
                         &mut pending,
-                        Visit::Expression(expression),
+                        Visit::Expression(expression, like),
                         budget,
                         cancelled,
                     )?;
                 }
                 Expression::Binary { left, right, .. } => {
-                    push(&mut pending, Visit::Expression(right), budget, cancelled)?;
-                    push(&mut pending, Visit::Expression(left), budget, cancelled)?;
+                    push(
+                        &mut pending,
+                        Visit::Expression(right, like),
+                        budget,
+                        cancelled,
+                    )?;
+                    push(
+                        &mut pending,
+                        Visit::Expression(left, like),
+                        budget,
+                        cancelled,
+                    )?;
+                }
+                Expression::Like {
+                    expression,
+                    pattern,
+                    ..
+                } if like => {
+                    push(
+                        &mut pending,
+                        Visit::Expression(pattern, like),
+                        budget,
+                        cancelled,
+                    )?;
+                    push(
+                        &mut pending,
+                        Visit::Expression(expression, like),
+                        budget,
+                        cancelled,
+                    )?;
                 }
                 Expression::Between {
                     expression,
@@ -67,19 +109,19 @@ fn validate(
                 } => {
                     push(
                         &mut pending,
-                        Visit::Expression(second_bound),
+                        Visit::Expression(second_bound, like),
                         budget,
                         cancelled,
                     )?;
                     push(
                         &mut pending,
-                        Visit::Expression(first_bound),
+                        Visit::Expression(first_bound, like),
                         budget,
                         cancelled,
                     )?;
                     push(
                         &mut pending,
-                        Visit::Expression(expression),
+                        Visit::Expression(expression, like),
                         budget,
                         cancelled,
                     )?;
@@ -88,11 +130,16 @@ fn validate(
                     expression, values, ..
                 } => {
                     for value in values.iter().rev() {
-                        push(&mut pending, Visit::Expression(value), budget, cancelled)?;
+                        push(
+                            &mut pending,
+                            Visit::Expression(value, like),
+                            budget,
+                            cancelled,
+                        )?;
                     }
                     push(
                         &mut pending,
-                        Visit::Expression(expression),
+                        Visit::Expression(expression, like),
                         budget,
                         cancelled,
                     )?;
@@ -101,7 +148,12 @@ fn validate(
                     for argument in arguments.iter().rev() {
                         tick(budget, cancelled)?;
                         if let FunctionArgument::Expression(value) = argument {
-                            push(&mut pending, Visit::Expression(value), budget, cancelled)?;
+                            push(
+                                &mut pending,
+                                Visit::Expression(value, like),
+                                budget,
+                                cancelled,
+                            )?;
                         }
                     }
                 }
@@ -114,7 +166,7 @@ fn validate(
                     push(&mut pending, Visit::Read(query), budget, cancelled)?;
                     push(
                         &mut pending,
-                        Visit::Expression(expression),
+                        Visit::Expression(expression, like),
                         budget,
                         cancelled,
                     )?;
@@ -149,14 +201,19 @@ fn validate(
                     if let Projection::Expression { expression, .. } = projection {
                         push(
                             &mut pending,
-                            Visit::Expression(expression),
+                            Visit::Expression(expression, false),
                             budget,
                             cancelled,
                         )?;
                     }
                 }
                 if let Some(value) = &select.selection {
-                    push(&mut pending, Visit::Expression(value), budget, cancelled)?;
+                    push(
+                        &mut pending,
+                        Visit::Expression(value, true),
+                        budget,
+                        cancelled,
+                    )?;
                 }
                 // Bound-plan admission and the normal Binder retain actual
                 // structural/read-scope limits. This preflight adds no new one.

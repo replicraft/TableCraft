@@ -319,6 +319,7 @@ pub(super) fn prepare_with_source<E: EditableTable>(
         options: ExecutionOptions {
             collation: comparison.collation,
             collation_resolver: comparison.collation_resolver,
+            like_mode: comparison.like_mode,
             cancelled: Some(cancelled),
             ..ExecutionOptions::default()
         },

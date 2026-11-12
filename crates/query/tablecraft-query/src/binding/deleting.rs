@@ -102,7 +102,7 @@ fn bind_with(
     if let Some(filter) = &filter {
         if target_columns.is_some() {
             super::mutation_reads::admit(filter, &mut binder)?;
-        } else if !super::mutation_scalar::admitted(filter) {
+        } else if !super::mutation_scalar::predicate_admitted(filter) {
             return Err(QueryError::Unsupported);
         }
     }

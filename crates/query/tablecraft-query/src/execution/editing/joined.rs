@@ -158,6 +158,7 @@ pub fn prepare_joined_batch_update_with_options<E: EditableBatch>(
         options: ExecutionOptions {
             collation: options.mutation.collation,
             collation_resolver: options.mutation.collation_resolver,
+            like_mode: options.mutation.like_mode,
             cancelled: Some(cancelled),
             ..Default::default()
         },

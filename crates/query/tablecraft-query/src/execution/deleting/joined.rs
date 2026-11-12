@@ -133,6 +133,7 @@ pub fn prepare_joined_delete_with_options<E: DeletableTable>(
         options: ExecutionOptions {
             collation: options.mutation.collation,
             collation_resolver: options.mutation.collation_resolver,
+            like_mode: options.mutation.like_mode,
             cancelled: Some(cancelled),
             ..Default::default()
         },

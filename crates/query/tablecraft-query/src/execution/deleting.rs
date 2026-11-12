@@ -188,6 +188,7 @@ fn select_rows_with_source<E: DeletableTable>(
         options: ExecutionOptions {
             collation: options.collation,
             collation_resolver: options.collation_resolver,
+            like_mode: options.like_mode,
             cancelled: Some(cancelled),
             ..ExecutionOptions::default()
         },

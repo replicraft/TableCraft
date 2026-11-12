@@ -299,6 +299,7 @@ fn field_policy_overrides_default_for_typed_text_parameter_in_both_orders() {
             &mut budget(),
             &mut budget(),
             MutationOptions {
+                like_mode: None,
                 parameters: Some(&parameters),
                 collation: Some(&DEFAULT_COMPARER),
                 collation_resolver: Some(&resolver),

@@ -13,6 +13,8 @@ pub struct MutationOptions<'a> {
     pub collation: Option<&'a dyn Collation>,
     /// Resolve field identities in the source's stable policy namespace.
     pub collation_resolver: Option<&'a dyn CollationResolver>,
+    /// Explicit database wildcard syntax. None refuses LIKE when evaluated.
+    pub like_mode: Option<tablecraft_expressions::predicates::LikeMode>,
     /// Policies aligned with snapshot columns; empty supplies no column identities.
     pub text_collations: &'a [Option<TextCollationId>],
 }
