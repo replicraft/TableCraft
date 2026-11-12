@@ -60,10 +60,10 @@ fn unique_index_review_has_truthful_confirmation_and_normal_disabled_ribbon() {
             let cut = harness.get_by_role_and_label(Role::Button, &cut);
             assert!(cut.accesskit_node().is_disabled());
             assert_eq!(
-                cut.accesskit_node().description(),
+                cut.accesskit_node().data().description(),
                 Some(unavailable.as_str())
             );
-            assert!(!cut.accesskit_node().supports_action(Action::Click));
+            assert!(!cut.accesskit_node().data().supports_action(Action::Click));
 
             let mut arguments = FluentArgs::new();
             arguments.set("count", fixtures::TOTAL_ROWS.to_string());
