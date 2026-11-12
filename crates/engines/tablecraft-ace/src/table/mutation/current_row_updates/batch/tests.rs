@@ -1,6 +1,7 @@
 //! Independent original rows, complete fixed-field effects and atomic refusals.
 mod currency;
 mod scale;
+use super::Policy;
 use crate::{EditError, FittedColumnUpdates, FixedScalarUpdate, NativeImage};
 use std::{cell::Cell, io::Cursor};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
@@ -242,6 +243,7 @@ fn independent_batch_proof_rejects_changed_scope_and_protected_bytes() {
         case.table,
         &groups,
         &case.expected,
+        Policy::Long,
         &mut budget(),
         &|| false,
     )
@@ -253,6 +255,7 @@ fn independent_batch_proof_rejects_changed_scope_and_protected_bytes() {
             case.table,
             &groups,
             &wrong_cell,
+            Policy::Long,
             &mut budget(),
             &|| false
         )
@@ -267,6 +270,7 @@ fn independent_batch_proof_rejects_changed_scope_and_protected_bytes() {
                 case.table,
                 &groups,
                 &forged,
+                Policy::Long,
                 &mut budget(),
                 &|| false
             )
