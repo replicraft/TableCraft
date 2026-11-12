@@ -1,6 +1,6 @@
 //! Real exclusive files and independent full-image index/recovery witnesses.
 use super::*;
-use crate::editing::offline::{CompletionKind, SessionState, VerifiedImage};
+use crate::editing::offline::{Cause, CompletionKind, SessionState, VerifiedImage};
 use std::{fs, io::Cursor, path::Path};
 use tablecraft_ace::{NativeImage, SecondaryIndexCreate};
 use tablecraft_io::journal::{self, RecoveryOutcome, filesystem::OfflineJournalPair};
