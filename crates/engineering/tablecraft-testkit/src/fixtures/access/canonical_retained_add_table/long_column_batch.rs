@@ -245,3 +245,53 @@ pub fn materializing() -> Source {
         cells,
     }
 }
+
+/// All 16,385 originals are supplied, crossing the older 16,384 assignment bound.
+/// The one-pass literal replacement avoids repeated full-image fixture copies.
+pub fn all_rows_above_legacy_limit() -> Source {
+    let seed = fields::source(fields::Case::FirstNumber).bytes;
+    let definition = (seed.len() / PAGE) as u32;
+    let values = (0..16_385_i32)
+        .map(|row| (row % 17 != 0).then_some(row))
+        .collect::<Vec<_>>();
+    let before = populated::numbers(&seed, "BatchValues", &values);
+    let mut expected = before.to_vec();
+    let mut cells = Vec::with_capacity(values.len());
+    for (ordinal, old) in values.into_iter().enumerate() {
+        let page = (definition as usize + 1 + ordinal / 255) * PAGE;
+        let slot = ordinal % 255;
+        assert_eq!(&before[page..page + 2], &[1, 1]);
+        assert_eq!(&before[page + 4..page + 8], &definition.to_le_bytes());
+        let count = usize::from(u16::from_le_bytes(
+            before[page + 12..page + 14].try_into().unwrap(),
+        ));
+        assert!(slot < count);
+        let at = page
+            + usize::from(u16::from_le_bytes(
+                before[page + 14 + slot * 2..page + 16 + slot * 2]
+                    .try_into()
+                    .unwrap(),
+            ));
+        assert_eq!(&before[at..at + 2], &[1, 0]);
+        assert_eq!(before[at + 6] & 1 != 0, old.is_some());
+        if let Some(value) = old {
+            assert_eq!(&before[at + 2..at + 6], &value.to_le_bytes());
+        }
+        let value = old.unwrap_or(0) + 5;
+        expected[at + 2..at + 6].copy_from_slice(&value.to_le_bytes());
+        expected[at + 6] |= 1;
+        cells.push(Cell {
+            row: ordinal,
+            expected: old,
+            value: Some(value),
+        });
+    }
+    Source {
+        before,
+        expected,
+        table: "BatchValues",
+        column: "CopiedScore",
+        definition,
+        cells,
+    }
+}
