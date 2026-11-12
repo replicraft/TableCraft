@@ -1,0 +1,850 @@
+{
+  "date": "2026-11-12",
+  "platform": "macOS 14.7.2 arm64",
+  "qualification_status": "passed_with_separate_ignored_and_explicit_large_checks",
+  "scope": "Retained atomic one-column Currency UPDATE through native TCNI0027 originals, independent proof/V3 recovery and existing Access/Runtime/headless Desktop services.",
+  "qualification": "Local complete-image, cold recovery and headless interaction evidence only. No Microsoft Access or Windows API execution claim.",
+  "observations": [
+    "Exact TCNI0027/profile27 retains one named Fixed Currency column, only Currency/NULL expected and replacement carriers, and zero or at least two distinct original rows. Singleton Currency remains TCNI19; old LONG and other original grammars remain closed.",
+    "Existing RetainedCurrency source, native declaration/carrier/constraint/program owners are reused. Selected indexed/generated/unsupported fields remain refused. Empty and unchanged requests still qualify the actual field and complete source.",
+    "All original requests and roots bind before cumulative placement. Producer and proof independently capture BEFORE; separate record reconstruction/Placement compares whole AFTER, preserving companions, metadata, indexes, maps and LVAL. Native tests include NULL/extrema,20-hop forwarded roots, historical missing-field growth and all 16,385 selected rows.",
+    "V3 reconstruction binds the complete original source and exact new language; pending/mixed/committed/settled states retain the same checked owner. V1/V2 and journal-only constructive recovery refuse before effects. Mixed-target tests assert changed cases differ from both full images; equal/noop images do not determine the journal outcome.",
+    "Current selected retained UPDATE namespace setup derives its allowance from the complete paid native encoding. Nonselected actions and generic I/O defaults are unchanged. Recovery retains its existing paid native representation allowance.",
+    "An explicit 470,000-row real native TCNI25 no-op candidate with an original above 16 MiB passed actual adapter apply and paid cold reopen/cancel/resource ownership. Its test execution was 3.53 seconds in this local release run, not a benchmark. The normal Access aggregate ignores this test; only its separate explicit run is passing evidence. This does not establish Windows API execution.",
+    "Runtime and Desktop actual SQL reviews, No/Yes, Save/ACK/reopen, truthful matched/changed counts, full raw AFTER, prior-result preservation and late Currency overflow all pass. The nullable observation uses an explicitly NULL-preserving eager-safe read expression; it does not mask a failed mutation or change expected native bytes.",
+    "Final native 93, Access 326, Runtime 474, Desktop 79 and nine-package strict checks pass. Narrow journal-only/minimal/creation/preview feature checks and Rustdoc pass. Counts overlap; the ignored normal heavy test and explicit run are distinct, and the separate Runtime Jet4 fixture ignore remains excluded."
+  ],
+  "checks": [
+    {
+      "job": "native",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "current_row_updates",
+        "retained_currency_row_updates",
+        "transaction::intent::fitted",
+        "transaction::retained_update_recovery",
+        "transaction::native_recovery"
+      ],
+      "returncode": 0,
+      "seconds": 100.92,
+      "log": {
+        "path": ".cache/ace-sql-currency-repaired-native-20261112.log",
+        "sha256": "e2c6e6fcc4c2adb8c8de3696e7ef0be9a2fb3cd3affc767aff9b98cb62c47b1d"
+      },
+      "source_commit": "bdb6e3c690ef83109e4aaeed19bc7cc80a1683ca",
+      "test_summaries": [
+        {
+          "passed": 93,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "access",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 69.32,
+      "log": {
+        "path": ".cache/ace-sql-currency-connected-access-20261112.log",
+        "sha256": "1a2417ea0ea7f67492c47308b919e62aec4892b1df17fb97839aa98958d8efed"
+      },
+      "source_commit": "1afe4b01998b58c352732316ca5c15bf8be9c385",
+      "test_summaries": [
+        {
+          "passed": 326,
+          "failed": 0,
+          "ignored": 1
+        }
+      ]
+    },
+    {
+      "job": "runtime",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-runtime",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 49.33,
+      "log": {
+        "path": ".cache/ace-sql-currency-repaired-runtime-20261112.log",
+        "sha256": "32ed3c597d8621e488b01660cf05c76212e9f7599b94e1b846ddf90e0b9aa5a0"
+      },
+      "source_commit": "bdb6e3c690ef83109e4aaeed19bc7cc80a1683ca",
+      "test_summaries": [
+        {
+          "passed": 474,
+          "failed": 0,
+          "ignored": 1
+        }
+      ]
+    },
+    {
+      "job": "desktop",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-desktop",
+        "--bin",
+        "tablecraft-desktop",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "query_action::tests",
+        "query_parameters::tests",
+        "query_formats",
+        "workspace::objects::tests"
+      ],
+      "returncode": 0,
+      "seconds": 17.77,
+      "log": {
+        "path": ".cache/ace-sql-currency-repaired-desktop-20261112.log",
+        "sha256": "1bddd8eea97a5fe1779cf3fabf112dffbd3712f32fb96ac7c1f1e54655594942"
+      },
+      "source_commit": "bdb6e3c690ef83109e4aaeed19bc7cc80a1683ca",
+      "test_summaries": [
+        {
+          "passed": 79,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "large-intent",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "editing::offline::apply::tests::large_retained_native_plan_applies_and_reopens_with_paid_limits_and_cancel_ownership",
+        "--ignored",
+        "--nocapture"
+      ],
+      "returncode": 0,
+      "seconds": 3.96,
+      "log": {
+        "path": ".cache/ace-sql-currency-connected-large-intent-20261112.log",
+        "sha256": "f8aae0b4df010be1a81502231c4d45fc548943a60e27a250b86af723519a1b62"
+      },
+      "source_commit": "1afe4b01998b58c352732316ca5c15bf8be9c385",
+      "test_summaries": [
+        {
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "strict",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-query",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-testkit",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-runtime",
+        "-p",
+        "tablecraft-ui",
+        "-p",
+        "tablecraft-desktop",
+        "-p",
+        "tablecraft-cli",
+        "-p",
+        "tablecraft-mcp",
+        "--all-targets",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "seconds": 35.15,
+      "log": {
+        "path": ".cache/ace-sql-currency-repaired-strict-20261112.log",
+        "sha256": "f9fe451053251968233c4f8397df68b2686ba724ec5eee15c2c21ec703d4fecb"
+      },
+      "source_commit": "bdb6e3c690ef83109e4aaeed19bc7cc80a1683ca",
+      "test_summaries": []
+    },
+    {
+      "job": "journal-only",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "journal",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "transaction::intent::fitted"
+      ],
+      "returncode": 0,
+      "seconds": 62.37,
+      "log": {
+        "path": ".cache/ace-sql-currency-connected-journal-only-20261112.log",
+        "sha256": "cfc1765ece2acf13b667a3d9c672f32c7a860ddfde641eaf8bb358708120a659"
+      },
+      "source_commit": "1afe4b01998b58c352732316ca5c15bf8be9c385",
+      "test_summaries": [
+        {
+          "passed": 44,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "access-no-create",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "offline-write-session",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "manual_indexed_tests",
+        "like_mode::tests"
+      ],
+      "returncode": 0,
+      "seconds": 30.08,
+      "log": {
+        "path": ".cache/ace-sql-currency-connected-access-no-create-20261112.log",
+        "sha256": "454d0bfb71bbb7f2b7efac0f988806668c136fa05ba03ed4bbd0d8ccafd7cbdb"
+      },
+      "source_commit": "1afe4b01998b58c352732316ca5c15bf8be9c385",
+      "test_summaries": [
+        {
+          "passed": 4,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "runtime-minimal",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-runtime",
+        "--no-default-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 1.94,
+      "log": {
+        "path": ".cache/ace-sql-currency-connected-runtime-minimal-20261112.log",
+        "sha256": "2cfffe074899b788668cf73dec2d6e9c85aa44537d079f1354ef6facd5d076f1"
+      },
+      "source_commit": "1afe4b01998b58c352732316ca5c15bf8be9c385",
+      "test_summaries": []
+    },
+    {
+      "job": "native-minimal",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--no-default-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "seconds": 3.95,
+      "log": {
+        "path": ".cache/ace-sql-currency-connected-native-minimal-20261112.log",
+        "sha256": "0de27df32b928ed3dffd7292838c92c8eb052fd97ecbff8c60499428bb08c0ed"
+      },
+      "source_commit": "1afe4b01998b58c352732316ca5c15bf8be9c385",
+      "test_summaries": []
+    },
+    {
+      "job": "create-no-journal",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "ace16-create",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "seconds": 2.51,
+      "log": {
+        "path": ".cache/ace-sql-currency-connected-create-no-journal-20261112.log",
+        "sha256": "53fa27d836e8d9a6f9577580b93a99c0af0a135d6031e06ce7fb4f4da7724f1a"
+      },
+      "source_commit": "1afe4b01998b58c352732316ca5c15bf8be9c385",
+      "test_summaries": []
+    },
+    {
+      "job": "preview-create-no-journal",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "ace16-create,ace16-write-preview",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "seconds": 6.26,
+      "log": {
+        "path": ".cache/ace-sql-currency-connected-preview-create-no-journal-20261112.log",
+        "sha256": "4e1c56830d0462d6bd11ec97f41f97559e869a90abab23c8e39eb3e3d89ac73c"
+      },
+      "source_commit": "1afe4b01998b58c352732316ca5c15bf8be9c385",
+      "test_summaries": []
+    },
+    {
+      "job": "rustdoc",
+      "command": [
+        "cargo",
+        "doc",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-runtime",
+        "--all-features",
+        "--no-deps",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 17.02,
+      "log": {
+        "path": ".cache/ace-sql-currency-connected-rustdoc-20261112.log",
+        "sha256": "72504f061a06fb04f450a2e6fd08a03186f5be71c57fecf3a5dda8bec713d7cc"
+      },
+      "source_commit": "1afe4b01998b58c352732316ca5c15bf8be9c385",
+      "test_summaries": []
+    }
+  ],
+  "prior_attempts": [
+    {
+      "status": "terminal_failed_with_preserved_positive_subsets",
+      "reason": "Native/strict could not compile three preexisting Long proof calls missing the explicit Long policy after shared helper extraction; no native tests executed in that attempt. Runtime473+1failed+1ignored and Desktop78+1failed reached real Currency saves/full raw AFTER before direct CLng(NULL) observation correctly failed. Mutation SQL, expected NULL values and complete images were unchanged by the observation-only correction.",
+      "checks": [
+        {
+          "job": "native",
+          "command": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--lib",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--release",
+            "--",
+            "current_row_updates",
+            "retained_currency_row_updates",
+            "transaction::intent::fitted",
+            "transaction::retained_update_recovery",
+            "transaction::native_recovery"
+          ],
+          "returncode": 101,
+          "seconds": 68.98,
+          "log": {
+            "path": ".cache/ace-sql-currency-connected-native-20261112.log",
+            "sha256": "f68633c48367f9ed9a2fc38bfa0f945ea7d55d96c9f50b6fd148610503ffd8c5"
+          },
+          "source_commit": "1afe4b01998b58c352732316ca5c15bf8be9c385",
+          "test_summaries": []
+        },
+        {
+          "job": "access",
+          "command": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-access",
+            "--lib",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--release"
+          ],
+          "returncode": 0,
+          "seconds": 69.32,
+          "log": {
+            "path": ".cache/ace-sql-currency-connected-access-20261112.log",
+            "sha256": "1a2417ea0ea7f67492c47308b919e62aec4892b1df17fb97839aa98958d8efed"
+          },
+          "source_commit": "1afe4b01998b58c352732316ca5c15bf8be9c385",
+          "test_summaries": [
+            {
+              "passed": 326,
+              "failed": 0,
+              "ignored": 1
+            }
+          ]
+        },
+        {
+          "job": "runtime",
+          "command": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-runtime",
+            "--lib",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--release"
+          ],
+          "returncode": 101,
+          "seconds": 78.44,
+          "log": {
+            "path": ".cache/ace-sql-currency-connected-runtime-20261112.log",
+            "sha256": "d82ec9ead33ecb1fb1a39d4a4ba98ec18115cd108f59de72d5059bb4b12b99e6"
+          },
+          "source_commit": "1afe4b01998b58c352732316ca5c15bf8be9c385",
+          "test_summaries": [
+            {
+              "passed": 473,
+              "failed": 1,
+              "ignored": 1
+            }
+          ]
+        },
+        {
+          "job": "desktop",
+          "command": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-desktop",
+            "--bin",
+            "tablecraft-desktop",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--release",
+            "--",
+            "query_action::tests",
+            "query_parameters::tests",
+            "query_formats",
+            "workspace::objects::tests"
+          ],
+          "returncode": 101,
+          "seconds": 49.35,
+          "log": {
+            "path": ".cache/ace-sql-currency-connected-desktop-20261112.log",
+            "sha256": "013de0cc0a3494639ba9fc3036a0af0ab76595ef98873e455774eef4984b4e2b"
+          },
+          "source_commit": "1afe4b01998b58c352732316ca5c15bf8be9c385",
+          "test_summaries": [
+            {
+              "passed": 78,
+              "failed": 1,
+              "ignored": 0
+            }
+          ]
+        },
+        {
+          "job": "large-intent",
+          "command": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-access",
+            "--lib",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--release",
+            "--",
+            "editing::offline::apply::tests::large_retained_native_plan_applies_and_reopens_with_paid_limits_and_cancel_ownership",
+            "--ignored",
+            "--nocapture"
+          ],
+          "returncode": 0,
+          "seconds": 3.96,
+          "log": {
+            "path": ".cache/ace-sql-currency-connected-large-intent-20261112.log",
+            "sha256": "f8aae0b4df010be1a81502231c4d45fc548943a60e27a250b86af723519a1b62"
+          },
+          "source_commit": "1afe4b01998b58c352732316ca5c15bf8be9c385",
+          "test_summaries": [
+            {
+              "passed": 1,
+              "failed": 0,
+              "ignored": 0
+            }
+          ]
+        },
+        {
+          "job": "strict",
+          "command": [
+            "cargo",
+            "clippy",
+            "-p",
+            "tablecraft-query",
+            "-p",
+            "tablecraft-ace",
+            "-p",
+            "tablecraft-testkit",
+            "-p",
+            "tablecraft-access",
+            "-p",
+            "tablecraft-runtime",
+            "-p",
+            "tablecraft-ui",
+            "-p",
+            "tablecraft-desktop",
+            "-p",
+            "tablecraft-cli",
+            "-p",
+            "tablecraft-mcp",
+            "--all-targets",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--release",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "returncode": 101,
+          "seconds": 59.51,
+          "log": {
+            "path": ".cache/ace-sql-currency-connected-strict-20261112.log",
+            "sha256": "d6199a3d8689f99f8e2852cf5758b25f3d043a0561c162fa7051ef5173aa1c16"
+          },
+          "source_commit": "1afe4b01998b58c352732316ca5c15bf8be9c385",
+          "test_summaries": []
+        },
+        {
+          "job": "journal-only",
+          "command": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--lib",
+            "--no-default-features",
+            "--features",
+            "journal",
+            "--offline",
+            "--locked",
+            "--release",
+            "--",
+            "transaction::intent::fitted"
+          ],
+          "returncode": 0,
+          "seconds": 62.37,
+          "log": {
+            "path": ".cache/ace-sql-currency-connected-journal-only-20261112.log",
+            "sha256": "cfc1765ece2acf13b667a3d9c672f32c7a860ddfde641eaf8bb358708120a659"
+          },
+          "source_commit": "1afe4b01998b58c352732316ca5c15bf8be9c385",
+          "test_summaries": [
+            {
+              "passed": 44,
+              "failed": 0,
+              "ignored": 0
+            }
+          ]
+        },
+        {
+          "job": "access-no-create",
+          "command": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-access",
+            "--lib",
+            "--no-default-features",
+            "--features",
+            "offline-write-session",
+            "--offline",
+            "--locked",
+            "--release",
+            "--",
+            "manual_indexed_tests",
+            "like_mode::tests"
+          ],
+          "returncode": 0,
+          "seconds": 30.08,
+          "log": {
+            "path": ".cache/ace-sql-currency-connected-access-no-create-20261112.log",
+            "sha256": "454d0bfb71bbb7f2b7efac0f988806668c136fa05ba03ed4bbd0d8ccafd7cbdb"
+          },
+          "source_commit": "1afe4b01998b58c352732316ca5c15bf8be9c385",
+          "test_summaries": [
+            {
+              "passed": 4,
+              "failed": 0,
+              "ignored": 0
+            }
+          ]
+        },
+        {
+          "job": "runtime-minimal",
+          "command": [
+            "cargo",
+            "check",
+            "-p",
+            "tablecraft-runtime",
+            "--no-default-features",
+            "--offline",
+            "--locked",
+            "--release"
+          ],
+          "returncode": 0,
+          "seconds": 1.94,
+          "log": {
+            "path": ".cache/ace-sql-currency-connected-runtime-minimal-20261112.log",
+            "sha256": "2cfffe074899b788668cf73dec2d6e9c85aa44537d079f1354ef6facd5d076f1"
+          },
+          "source_commit": "1afe4b01998b58c352732316ca5c15bf8be9c385",
+          "test_summaries": []
+        },
+        {
+          "job": "native-minimal",
+          "command": [
+            "cargo",
+            "clippy",
+            "-p",
+            "tablecraft-ace",
+            "--lib",
+            "--no-default-features",
+            "--offline",
+            "--locked",
+            "--release",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "returncode": 0,
+          "seconds": 3.95,
+          "log": {
+            "path": ".cache/ace-sql-currency-connected-native-minimal-20261112.log",
+            "sha256": "0de27df32b928ed3dffd7292838c92c8eb052fd97ecbff8c60499428bb08c0ed"
+          },
+          "source_commit": "1afe4b01998b58c352732316ca5c15bf8be9c385",
+          "test_summaries": []
+        },
+        {
+          "job": "create-no-journal",
+          "command": [
+            "cargo",
+            "clippy",
+            "-p",
+            "tablecraft-ace",
+            "--lib",
+            "--no-default-features",
+            "--features",
+            "ace16-create",
+            "--offline",
+            "--locked",
+            "--release",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "returncode": 0,
+          "seconds": 2.51,
+          "log": {
+            "path": ".cache/ace-sql-currency-connected-create-no-journal-20261112.log",
+            "sha256": "53fa27d836e8d9a6f9577580b93a99c0af0a135d6031e06ce7fb4f4da7724f1a"
+          },
+          "source_commit": "1afe4b01998b58c352732316ca5c15bf8be9c385",
+          "test_summaries": []
+        },
+        {
+          "job": "preview-create-no-journal",
+          "command": [
+            "cargo",
+            "clippy",
+            "-p",
+            "tablecraft-ace",
+            "--lib",
+            "--no-default-features",
+            "--features",
+            "ace16-create,ace16-write-preview",
+            "--offline",
+            "--locked",
+            "--release",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "returncode": 0,
+          "seconds": 6.26,
+          "log": {
+            "path": ".cache/ace-sql-currency-connected-preview-create-no-journal-20261112.log",
+            "sha256": "4e1c56830d0462d6bd11ec97f41f97559e869a90abab23c8e39eb3e3d89ac73c"
+          },
+          "source_commit": "1afe4b01998b58c352732316ca5c15bf8be9c385",
+          "test_summaries": []
+        },
+        {
+          "job": "rustdoc",
+          "command": [
+            "cargo",
+            "doc",
+            "-p",
+            "tablecraft-ace",
+            "-p",
+            "tablecraft-access",
+            "-p",
+            "tablecraft-runtime",
+            "--all-features",
+            "--no-deps",
+            "--offline",
+            "--locked",
+            "--release"
+          ],
+          "returncode": 0,
+          "seconds": 17.02,
+          "log": {
+            "path": ".cache/ace-sql-currency-connected-rustdoc-20261112.log",
+            "sha256": "72504f061a06fb04f450a2e6fd08a03186f5be71c57fecf3a5dda8bec713d7cc"
+          },
+          "source_commit": "1afe4b01998b58c352732316ca5c15bf8be9c385",
+          "test_summaries": []
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Other scalar/multiple-column/indexed Currency batches, general page allocation, required programs and unqualified source/profile combinations remain separate work.",
+    "Native retained wire counts/lengths use checked representation limits; per-consumer source/snapshot/work allowances remain independent. No arbitrary native batch quota is introduced by this profile.",
+    "Ignored aggregate entries are not passes. The heavy boundary case has a separate explicit passing job; the Runtime fixture-dependent Jet4 ignore remains unexecuted. Counts overlap and are not an additive conformance score.",
+    "ACE16 evidence does not qualify older Jet/ACE writes, Microsoft save bytes/timestamps, native UI behavior or Windows API execution."
+  ],
+  "source_commit": "bdb6e3c690ef83109e4aaeed19bc7cc80a1683ca",
+  "production_source_commit": "1afe4b01998b58c352732316ca5c15bf8be9c385",
+  "final_batch": {
+    "initial_session": 87879,
+    "followup_session": 12586,
+    "status": "passed_after_test_only_repairs",
+    "initial_script": ".cache/ace-sql-currency-connected-batch-20261112.py",
+    "followup_script": ".cache/ace-sql-currency-repaired-batch-20261112.py",
+    "note": "Only Native/Runtime/Desktop/strict required rerun after three test-leaf repairs. The other nine initial jobs passed at the unchanged production source."
+  },
+  "large_boundary": {
+    "test": "editing::offline::apply::tests::large_retained_native_plan_applies_and_reopens_with_paid_limits_and_cancel_ownership",
+    "rows": 470000,
+    "native_profile": "TCNI0025",
+    "matched_rows": 470000,
+    "changed_rows": 0,
+    "original_exceeds_bytes": 16777216,
+    "explicit_job": "large-intent",
+    "explicit_test_execution_seconds": 3.53,
+    "test_pool": {
+      "bytes": 68719476736,
+      "rows": 64000000,
+      "steps": 200000000000
+    },
+    "note": "Caller work allowances are not resident-memory measurements or native row capacity. Genuine native qualification, complete original/AFTER identity, actual committed journal state, paid reopening, cancellation, retained ownership and cleanup are exercised."
+  },
+  "native_scale_case": {
+    "test": "table::mutation::current_row_updates::batch::tests::currency::currency_batches_match_full_raw_after_for_null_extrema_forwarded_growth_and_scale",
+    "all_selected_rows": 16385,
+    "fixture": "canonical_retained_add_table::currency::batch::all_selected",
+    "proof": "Complete independently authored raw AFTER and fresh native requalification; every request is supplied, rather than selecting a sparse handful from a large source."
+  },
+  "ignored_in_aggregates": [
+    {
+      "name": "editing::offline::apply::tests::large_retained_native_plan_applies_and_reopens_with_paid_limits_and_cancel_ownership",
+      "reason": "explicit release boundary: a real 470000-row native plan and retained original",
+      "aggregate_job": "access",
+      "aggregate_passing_evidence": false,
+      "separate_explicit_passing_job": "large-intent"
+    },
+    {
+      "name": "tests::editing::genuine_jet4::genuine_jet4_reviewed_cell_save_matches_independent_whole_image",
+      "reason": "requires explicit hash-pinned TABLECRAFT_JET4_SCALAR_SOURCE",
+      "aggregate_job": "runtime",
+      "aggregate_passing_evidence": false
+    }
+  ]
+}

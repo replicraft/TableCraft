@@ -1,5 +1,26 @@
 # Implementation status
 
+## Retained Currency batches — 12 November 2026
+
+TCNI0027 supports updates to one existing Currency column with zero or at least
+two fixed Currency/NULL requests, reusing existing retained source/carrier/record services
+and independent whole-image proof. Singleton TCNI19 and all older update originals
+remain distinct. Checked V3 recovery preserves complete source binding and
+pending/committed state even when the images are equal.
+
+The [Currency checkpoint](../tests/results/queries/retained-currency-batch-workflows-2026-11-12.json)
+records 93 native passes, 326 adapter passes, 474 Runtime passes with one explicit
+fixture-dependent ignore, and 79 selected headless Desktop workflows. Native
+cases supply all 16,385 selected rows and check full raw AFTER plus requalification.
+Strict lint across nine packages, narrow feature checks and Rustdoc pass. The
+initial proof-call compilation and nullable observation failures remain separate.
+
+A real 470,000-row native intent apply/reopen test also passed its explicit run;
+its normal aggregate ignore is not counted as a pass. Actual matched/changed facts,
+committed state, paid reopening/cancellation, retained resources and cleanup are
+checked independently of equal images. This is local evidence, not native Windows
+or complete SQL compatibility.
+
 ## UNIQUE LONG and SQL View contexts — 12 November 2026
 
 Qualified ACE16 retained manual LONG fields now have distinct UNIQUE creation

@@ -81,6 +81,44 @@ This profile does not qualify broader multi-column or
 typed batches, indexed-target changes, required programs, other Jet/ACE writers,
 Windows/Access behavior or general concurrent editing.
 
+## Retained atomic Currency column batches
+
+The distinct TCNI0027/profile27 original retains one ordinary unindexed native
+Currency column and zero or at least two original fixed assignments. Expected
+and replacement values are exact scaled Currency or NULL; Int64/Double/Decimal
+carriers are not interchangeable originals. Distinct row identities, actual native
+field shape and source/program/constraint/ownership checks remain mandatory.
+A singleton retains TCNI19, while LONG keeps its own TCNI24/17/25/26 selection.
+Selection is positive metadata/cardinality admission, never a failed-plan retry.
+
+The producer reuses the existing RetainedCurrency field and record language.
+It binds every original witness and selected root before record construction,
+space reservations and one cumulative page plan. Independent proof recaptures
+BEFORE and reconstructs records and placement separately, then compares the
+complete AFTER. Original inactive NULL bytes, historical record layouts,
+Currency/Unicode companions, indexes, properties, catalog, maps and LVAL remain
+protected outside the operation's exact edit scope. Unsupported growth or source
+metadata refuses the complete operation.
+
+Empty and wholly unchanged groups retain full source and field qualification;
+they do not synthesize assignments or infer commit state from equal images.
+Original intent, fresh requalification and cold recovery retain complete source
+binding. V3 pending/mixed/committed/settled recovery uses the same checked owner;
+V1/V2 and missing-create construction remain closed. Old native languages are
+unchanged by the common Long/Currency placement extraction.
+
+The [Currency checkpoint](../../../tests/results/queries/retained-currency-batch-workflows-2026-11-12.json)
+records 93 native passes, 326 adapter passes, 474 Runtime passes with one explicit
+fixture ignore, and 79 selected headless Desktop workflows. Exact scaled values,
+NULL/no-op/zero/singleton counts, 20-hop forwarded roots, historical growth, all
+16,385 selected requests, late overflow, No/Yes and Save/ACK/reopen are checked
+against independent complete images. Strict, feature and Rustdoc checks pass;
+initial proof-call and nullable observation fixture failures remain preserved.
+A separately invoked 470,000-row real native plan crosses durable setup and paid
+cold reopening, retaining resource/cancellation and committed-state checks. Its
+normal aggregate ignore is not passing evidence. This is not general typed or
+multiple-column batch, Windows API or native Access qualification.
+
 ## Retained indexed LONG updates
 
 The TCNI0026/profile26 route retains one ordinary indexed LONG column
@@ -128,6 +166,19 @@ BEFORE digest verification, native reconstruction and borrowed request traversal
 also consume the caller's work allowance. Cancellation is checked on no-op and
 empty operations too. Hosts must fund those complete proof traversals explicitly;
 requalification does not enlarge budgets or retry failed work.
+
+The offline adapter encodes the complete selected native original under the
+caller's save allowance before establishing its durable namespace. For retained
+fitted UPDATE originals, namespace setup receives that actual paid encoded byte
+length within the native u32 frame. This allowance describes the original's
+representation; it does not select a database row count or widen write eligibility.
+
+Cold association pays the actual intent allocation, reads and digest work. Native
+original decoding still validates its own framing and complete source binding;
+checked recovery then reconstructs and compares the entire BEFORE/AFTER. A budget
+or cancellation refusal preserves the actual resource owner and namespace for an
+explicit next action. Image equality does not replace the journal's committed or
+rolled-back state, and recovery does not invent matched/changed counts.
 
 `requalify_with_budgets` keeps native reconstruction and original request
 traversal in the caller's native pool, while complete image comparisons and

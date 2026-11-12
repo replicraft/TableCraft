@@ -880,8 +880,11 @@ TCNI17 plan. Other scalar and opaque empty-action profiles remain separately
 qualified. Constructive TCNI24 planning currently requires `journal` and
 `ace16-create`, matching TCNI17's actual retained source closure. Journal-only
 original decoding and typed refusal before effects do not qualify construction.
- Evaluated LIKE still requires a supplied wildcard mode and is refused
-in this action route; it does not silently assume ANSI-89 for an ANSI-92 database.
+Criteria LIKE follows the [mutation scalar policy](../query/MUTATION_SCALAR_FUNCTIONS.md):
+a known native ANSI-89/ANSI-92 setting selects its grammar. SQL View supplies its
+ANSI-89 application default only for observed setting absence; an unknown setting
+is not defaulted. LIKE remains refused in stored assignment expressions and
+nested action-read projections.
 
 The retained LONG batch route selects TCNI25 for one actual ordinary
 unindexed Int32 column with at least two original requests. Zero and singleton
@@ -924,6 +927,15 @@ Fresh retained capture and exact V3 reconstruction must preserve source identity
 all final keys, protected companions and prior results on refusal. The
 [connected checkpoint](../../tests/results/queries/retained-indexed-long-workflows-2026-11-12.json)
 records local acceptance, separately from native Windows parity.
+
+For selected retained fitted UPDATE plans, complete native original encoding
+consumes the save allowance before journal namespace setup. Setup receives the
+actual paid encoded byte length, checked against the native original's u32
+framing. This does not change table, field, record, index or constraint admission.
+Cold reopening pays actual intent allocation, reads and digest work before native
+original validation and exact BEFORE/AFTER reconstruction. Budget or cancellation
+refusal retains the actual source and any associated resources for explicit
+release or recovery; no fallback or automatic replay is introduced.
 
 Review returns `QueryUpdateReview` display facts (table, document revision,
 matched and effectively changed rows, review identifier) plus a separate opaque
