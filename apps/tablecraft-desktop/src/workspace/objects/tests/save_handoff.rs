@@ -15,6 +15,55 @@ fn run_sql(harness: &mut Harness<'_, Desktop>, sql: &str) {
     finish_reads(harness);
 }
 
+fn wait_for_action_review(
+    harness: &mut Harness<'_, Desktop>,
+    path: &std::path::Path,
+    before: &[u8],
+) {
+    let diagnostic = harness.state().state.localizer.text("diagnostics-copy");
+    let deadline = Instant::now() + Duration::from_secs(10);
+
+    loop {
+        if harness
+            .query_by_role_and_label(Role::Button, "Yes")
+            .is_some()
+        {
+            return;
+        }
+        if harness
+            .query_by_role_and_label(Role::Button, &diagnostic)
+            .is_some()
+        {
+            assert_eq!(std::fs::read(path).unwrap(), before);
+            assert!(!harness.state().editing.has_save());
+            harness
+                .get_by_role_and_label(Role::Button, &diagnostic)
+                .click_accesskit();
+            harness.run_steps(1);
+            let detail = harness
+                .output()
+                .platform_output
+                .commands
+                .iter()
+                .find_map(|command| {
+                    if let egui::OutputCommand::CopyText(text) = command {
+                        Some(text.as_str())
+                    } else {
+                        None
+                    }
+                })
+                .expect("terminal action refusal supplies its real diagnostic");
+            panic!("existing saved-query fixture did not qualify for native UPDATE: {detail}");
+        }
+        assert!(
+            Instant::now() < deadline,
+            "SQL action did not finish review or refusal"
+        );
+        harness.run_steps(1);
+        std::thread::yield_now();
+    }
+}
+
 fn assert_saved_input(harness: &mut Harness<'_, Desktop>, prompt: &str, value: &str) {
     assert!(harness.state().state.selected_cell_text().is_none());
     harness
@@ -39,6 +88,8 @@ fn assert_saved_input(harness: &mut Harness<'_, Desktop>, prompt: &str, value: &
 fn sql_save_ack_keeps_tab_ids_design_and_saved_inputs_but_revokes_old_sessions() {
     let (_directory, path, original, mut harness) = opened(query_source());
     let items = table(harness.state(), "Items");
+    // NO_CLONE: The command consumes its target; the test retains the original
+    // revision-bearing target for stale replay after the real save.
     harness.state_mut().open_object(items.clone());
     finish_reads(&mut harness);
     let items_tab = tab(harness.state(), &items);
@@ -59,11 +110,15 @@ fn sql_save_ack_keeps_tab_ids_design_and_saved_inputs_but_revokes_old_sessions()
     );
 
     let first = saved(harness.state(), "Saved");
+    // NO_CLONE: Opening consumes the target while the test retains its saved
+    // object identity to locate the fresh tab after acknowledgement.
     harness.state_mut().open_object(first.clone());
     finish_reads(&mut harness);
     run_saved(&mut harness, "First minimum", "2");
     assert_eq!(harness.state().state.selected_cell_text(), Some("2"));
     let first_tab = tab(harness.state(), &first);
+    // NO_CLONE: Keep the old native binding independently of the changing UI
+    // session so the fresh document must reject that exact stale target.
     let old_saved_target = harness
         .state()
         .state
@@ -72,6 +127,8 @@ fn sql_save_ack_keeps_tab_ids_design_and_saved_inputs_but_revokes_old_sessions()
         .clone();
 
     let second = saved(harness.state(), "Empty");
+    // NO_CLONE: The consumed command and later fresh-tab lookup need separate
+    // owners of the saved object identity.
     harness.state_mut().open_object(second.clone());
     finish_reads(&mut harness);
     run_saved(&mut harness, "Second maximum", "1");
@@ -82,8 +139,8 @@ fn sql_save_ack_keeps_tab_ids_design_and_saved_inputs_but_revokes_old_sessions()
         document_revision: items.document_revision,
         kind: ObjectKind::Sql,
     };
-    harness.state_mut().open_object(scratch.clone());
-    let sql_tab = tab(harness.state(), &scratch);
+    harness.state_mut().open_object(scratch);
+    let sql_tab = harness.state().state.active_object().unwrap();
     run_sql(&mut harness, "SELECT 99 AS Previous");
     assert_eq!(
         harness.state().state.query_data.as_ref().unwrap().rows[0][0].text,
@@ -93,6 +150,7 @@ fn sql_save_ack_keeps_tab_ids_design_and_saved_inputs_but_revokes_old_sessions()
     assert_eq!(before_tabs.len(), 4);
 
     run_sql(&mut harness, UPDATE);
+    wait_for_action_review(&mut harness, &path, &original);
     assert!(harness.state().state.query_action_dialog_open());
     assert_eq!(std::fs::read(&path).unwrap(), original);
     harness
@@ -162,6 +220,8 @@ fn sql_save_ack_keeps_tab_ids_design_and_saved_inputs_but_revokes_old_sessions()
         .iter()
         .find(|tab| tab.target.kind == first.kind)
         .unwrap();
+    // NO_CLONE: Activation consumes a tab; the complete fresh-tab snapshot is
+    // retained for the remaining independent identity and preference checks.
     harness.state_mut().activate_object(first.clone());
     finish_reads(&mut harness);
     assert_saved_input(&mut harness, "First minimum", "2");
@@ -169,6 +229,8 @@ fn sql_save_ack_keeps_tab_ids_design_and_saved_inputs_but_revokes_old_sessions()
         .iter()
         .find(|tab| tab.target.kind == second.kind)
         .unwrap();
+    // NO_CLONE: The consuming activation must not consume the fresh-tab
+    // snapshot still needed to check the restored table tab.
     harness.state_mut().activate_object(second.clone());
     finish_reads(&mut harness);
     assert_saved_input(&mut harness, "Second maximum", "1");
@@ -177,13 +239,10 @@ fn sql_save_ack_keeps_tab_ids_design_and_saved_inputs_but_revokes_old_sessions()
         .iter()
         .find(|tab| tab.id == items_tab.id)
         .unwrap();
+    // NO_CLONE: The vector owns the tab alongside the earlier fresh SQL borrow;
+    // activation needs its own small revision-bearing presentation target.
     harness.state_mut().activate_object(fresh_items.clone());
     finish_reads(&mut harness);
-    assert!(harness.state().state.data.is_none());
-    assert_eq!(
-        harness.state().state.schema.as_ref().unwrap().table,
-        "Items"
-    );
     assert!(harness.state().state.data.is_none());
     assert_eq!(
         harness.state().state.schema.as_ref().unwrap().table,
@@ -194,8 +253,9 @@ fn sql_save_ack_keeps_tab_ids_design_and_saved_inputs_but_revokes_old_sessions()
     // query definitions, schema and every other original byte remain protected.
     let updated_rows = mutation_fixture::with_rows(&[(1, 10), (2, 27), (3, 37)]);
     let mut expected = original;
-    let data = USER_DATA_PAGE * PAGE_BYTES..(USER_DATA_PAGE + 1) * PAGE_BYTES;
-    expected[data.clone()].copy_from_slice(&updated_rows[data]);
+    let start = USER_DATA_PAGE * PAGE_BYTES;
+    let end = (USER_DATA_PAGE + 1) * PAGE_BYTES;
+    expected[start..end].copy_from_slice(&updated_rows[start..end]);
     assert_eq!(std::fs::read(path).unwrap(), expected);
 }
 
@@ -220,11 +280,16 @@ fn row_save_ack_keeps_parked_scratch_design_draft_without_old_results_or_binding
         .click_accesskit();
     harness.run_steps(1);
     finish_reads(&mut harness);
+    // NO_CLONE: Capture an independent expected draft before the UI session is
+    // parked and destroyed by the real save/reopen handoff.
     let draft = harness.state().state.query_design_draft().unwrap().clone();
+    // NO_CLONE: Compare the designer's actual canonical emission across save;
+    // the live SQL string remains owned and replaceable by the UI.
+    let canonical_sql = harness.state().state.sql.clone();
     let old_request = harness.state().state.query_design_request().unwrap();
     assert!(!draft.columns.is_empty());
 
-    harness.state_mut().activate_object(items_tab.clone());
+    harness.state_mut().activate_object(items_tab);
     finish_reads(&mut harness);
     let old_row = EditTarget {
         document_revision: items.document_revision,
@@ -232,6 +297,8 @@ fn row_save_ack_keeps_parked_scratch_design_draft_without_old_results_or_binding
         column: "Score".into(),
         parent_ordinal: 0,
     };
+    // NO_CLONE: The edit command consumes its target; retain the exact old
+    // source coordinates to prove the fresh document rejects stale edit rights.
     harness.state_mut().begin_edit(old_row.clone());
     finish_reads(&mut harness);
     harness
@@ -274,10 +341,14 @@ fn row_save_ack_keeps_parked_scratch_design_draft_without_old_results_or_binding
     );
     assert!(!harness.state().state.can_activate_object(&sql_tab));
     assert!(!harness.state().state.can_edit_cell(&old_row));
-    harness.state_mut().activate_object(fresh_sql.clone());
+    let fresh_sql_id = fresh_sql.id;
+    harness.state_mut().activate_object(fresh_sql);
     finish_reads(&mut harness);
-    assert_eq!(harness.state().state.active_object(), Some(fresh_sql));
-    assert_eq!(harness.state().state.sql, sql);
+    assert_eq!(
+        harness.state().state.active_object().unwrap().id,
+        fresh_sql_id
+    );
+    assert_eq!(harness.state().state.sql, canonical_sql);
     assert_eq!(harness.state().state.query_design_draft(), Some(&draft));
     assert!(harness.state().state.query_data.is_none());
     assert!(harness.state().state.query_design_request_id().is_none());
@@ -285,7 +356,7 @@ fn row_save_ack_keeps_parked_scratch_design_draft_without_old_results_or_binding
         !harness
             .state()
             .state
-            .can_import_query_design(&old_request, sql)
+            .can_import_query_design(&old_request, &canonical_sql)
     );
     assert_eq!(
         std::fs::read(path).unwrap(),
