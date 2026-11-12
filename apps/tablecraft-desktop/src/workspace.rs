@@ -147,9 +147,6 @@ enum PendingOperation {
         request_id: u64,
         request: QueryDesignRequest,
     },
-    QueryDesignRun {
-        request_id: u64,
-    },
     TotalsDescribe {
         request_id: u64,
         target: TotalsTarget,
@@ -874,9 +871,7 @@ impl Desktop {
                 }) => {
                     let query_owner = if matches!(
                         self.pending,
-                        PendingOperation::Query { .. }
-                            | PendingOperation::SavedRun { .. }
-                            | PendingOperation::QueryDesignRun { .. }
+                        PendingOperation::Query { .. } | PendingOperation::SavedRun { .. }
                     ) {
                         self.state.active_object()
                     } else {
@@ -902,14 +897,6 @@ impl Desktop {
                         has_more,
                     };
                     match &self.pending {
-                        PendingOperation::QueryDesignRun { request_id } => {
-                            if !self.state.set_query_design_results(*request_id, data) {
-                                self.state.fail_query_design(
-                                    *request_id,
-                                    self.state.localizer.text("qbe-invalid-result"),
-                                );
-                            }
-                        }
                         PendingOperation::Query { request_id } => {
                             self.state.set_query_run_data(*request_id, data);
                         }
@@ -1391,8 +1378,7 @@ impl eframe::App for Desktop {
                             }
                             PendingOperation::QueryDesignDescribe { request_id, .. }
                             | PendingOperation::QueryDesignBuild { request_id, .. }
-                            | PendingOperation::QueryDesignImport { request_id, .. }
-                            | PendingOperation::QueryDesignRun { request_id } => {
+                            | PendingOperation::QueryDesignImport { request_id, .. } => {
                                 self.state.fail_query_design(
                                     *request_id,
                                     self.state.localizer.text("shell-operation-cancelled"),

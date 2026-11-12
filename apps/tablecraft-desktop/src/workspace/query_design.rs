@@ -123,15 +123,17 @@ impl Desktop {
     }
 
     pub(super) fn cancel_query_design(&mut self, request_id: u64) {
-        let owned = matches!(
+        let design_operation = matches!(
             self.pending,
             PendingOperation::QueryDesignDescribe { request_id: expected, .. }
                 | PendingOperation::QueryDesignBuild { request_id: expected, .. }
                 | PendingOperation::QueryDesignImport { request_id: expected, .. }
-                | PendingOperation::QueryDesignRun { request_id: expected }
                 if expected == request_id
         );
-        if self.state.cancel_query_design(request_id) && owned {
+        let design_run = matches!(self.pending, PendingOperation::Query { request_id: expected }
+            if expected == request_id)
+            && self.state.query_design_request_id() == Some(request_id);
+        if (design_operation || design_run) && self.state.cancel_query_design(request_id) {
             self.worker.cancel();
             self.state.busy = false;
         }

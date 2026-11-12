@@ -121,8 +121,7 @@ impl Desktop {
             }
             PendingOperation::QueryDesignDescribe { request_id, .. }
             | PendingOperation::QueryDesignBuild { request_id, .. }
-            | PendingOperation::QueryDesignImport { request_id, .. }
-            | PendingOperation::QueryDesignRun { request_id } => {
+            | PendingOperation::QueryDesignImport { request_id, .. } => {
                 self.state.fail_query_design(*request_id, error.to_string());
             }
             PendingOperation::TotalsDescribe { request_id, .. }
