@@ -1,4 +1,6 @@
 //! Unsupported platforms cannot mint a native schema-review capability.
+#[cfg(feature = "ace16-create")]
+use crate::query::parameters::ParameterInput;
 use crate::{Error, Response, document::Document, editing::EditError};
 #[cfg(feature = "ace16-create")]
 use tablecraft_expressions::functions::dates::clock::Clock;
@@ -18,6 +20,7 @@ pub(in crate::editing) fn review(
 pub(in crate::editing) fn review_make_table(
     _document: &mut Document,
     _query: Query,
+    _parameters: &[ParameterInput],
     _clock: &dyn Clock,
     _cancelled: &dyn Fn() -> bool,
 ) -> Result<Response, Error> {

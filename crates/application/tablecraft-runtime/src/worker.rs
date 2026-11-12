@@ -634,6 +634,11 @@ impl Worker {
                 cancelled,
             ),
             #[cfg(feature = "offline-edit")]
+            Command::ReviewParameterizedSchemaSql { target, parameters } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .review_parameterized_schema_sql(target, parameters, clock.as_ref(), cancelled),
+            #[cfg(feature = "offline-edit")]
             Command::ReviewSchemaSql { target } => document
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
@@ -831,6 +836,10 @@ impl Worker {
                         Command::ReviewQueryDelete { .. } => "review_query_delete",
                         #[cfg(feature = "offline-edit")]
                         Command::ReviewSchemaSql { .. } => "review_schema_sql",
+                        #[cfg(feature = "offline-edit")]
+                        Command::ReviewParameterizedSchemaSql { .. } => {
+                            "review_parameterized_schema_sql"
+                        }
                         #[cfg(feature = "offline-edit")]
                         Command::ReviewQueryInsert { .. } => "review_query_insert",
                         Command::DiscoverQueryParameters { .. } => "discover_query_parameters",

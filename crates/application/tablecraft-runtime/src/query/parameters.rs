@@ -2,7 +2,7 @@
 use crate::{Error, display::Presentation, scalar_input};
 use tablecraft_core::values::Value;
 use tablecraft_query::{ParameterType, resolve_parameter_type};
-use tablecraft_schema::ScalarType;
+use tablecraft_schema::{NameComparison, ScalarType};
 use tablecraft_sql::query::Query;
 
 /// Host input envelope; SQL/native declaration limits can be narrower.
@@ -54,12 +54,27 @@ pub(crate) fn specs(
 }
 
 pub(crate) fn bindings<'a>(
-    query: &'a Query,
-    inputs: &[ParameterInput],
+    query: &Query,
+    inputs: &'a [ParameterInput],
     output: &mut Presentation<'_>,
 ) -> Result<Vec<(&'a str, Value)>, Error> {
     if inputs.len() > MAX_QUERY_PARAMETERS || inputs.len() != query.parameters.len() {
         return Err(Error::ParameterInput);
+    }
+    // Validate the complete declaration/input namespace before parsing any
+    // values. Query binding uses this same ASCII-insensitive identifier policy;
+    // the prompt protocol deliberately requires exact original input spelling.
+    for (position, declaration) in query.parameters.iter().enumerate() {
+        let name = declaration.name.as_str();
+        for previous in &query.parameters[..position] {
+            output.work(1 + name.len() as u64 + previous.name.as_str().len() as u64)?;
+            if NameComparison::AsciiInsensitive.equals(name, previous.name.as_str()) {
+                return Err(Error::ParameterInput);
+            }
+        }
+        selected_input(name, inputs, output)?;
+        output.work(1 + declaration.data_type.arguments.len() as u64)?;
+        resolve_parameter_type(&declaration.data_type)?;
     }
     output.allocation(inputs.len(), size_of::<(&str, Value)>())?;
     let mut result = Vec::new();
@@ -70,7 +85,9 @@ pub(crate) fn bindings<'a>(
         output.work(1 + input.kind.len() as u64 + declaration.data_type.arguments.len() as u64)?;
         let declared = resolve_parameter_type(&declaration.data_type)?;
         let value = parse_parameter_input(declared, input, output)?;
-        result.push((name, value));
+        // Exact matched spelling above lets the staged caller move its parsed
+        // Query while these borrowed names remain owned by the supplied inputs.
+        result.push((input.name.as_str(), value));
     }
     Ok(result)
 }
@@ -271,5 +288,50 @@ mod tests {
             validate_input_limits(&inputs[..1], &mut Presentation::new(&|| true)),
             Err(Error::Cancelled)
         ));
+    }
+
+    #[test]
+    fn binding_names_borrow_supplied_inputs_and_the_complete_namespace_is_checked() {
+        let query = parse_query(
+            "PARAMETERS [Min] LONG; SELECT [Min]",
+            ParseLimits::default(),
+        )
+        .unwrap()
+        .into_query();
+        let inputs = [ParameterInput {
+            name: "Min".into(),
+            kind: "int32".into(),
+            text: "5".into(),
+            is_null: false,
+        }];
+        let values = bindings(&query, &inputs, &mut Presentation::new(&|| false)).unwrap();
+        drop(query);
+        assert_eq!(values, [("Min", Value::Int32(5))]);
+        assert_eq!(values[0].0.as_ptr(), inputs[0].name.as_ptr());
+
+        for sql in [
+            "PARAMETERS [Min] LONG, [Min] LONG; SELECT [Min]",
+            "PARAMETERS [Min] LONG, [min] LONG; SELECT [Min]",
+        ] {
+            let query = parse_query(sql, ParseLimits::default()).unwrap();
+            let inputs = [
+                ParameterInput {
+                    name: "Min".into(),
+                    kind: "int32".into(),
+                    text: "5".into(),
+                    is_null: false,
+                },
+                ParameterInput {
+                    name: "min".into(),
+                    kind: "int32".into(),
+                    text: "9".into(),
+                    is_null: false,
+                },
+            ];
+            assert!(matches!(
+                bindings(query.query(), &inputs, &mut Presentation::new(&|| false)),
+                Err(Error::ParameterInput)
+            ));
+        }
     }
 }

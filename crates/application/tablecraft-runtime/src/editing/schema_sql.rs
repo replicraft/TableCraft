@@ -4,6 +4,7 @@ use crate::{
     Error, InspectedQuery, QueryOperation, Response,
     controls::{action_query_budget, check},
     document::Document,
+    query::parameters::ParameterInput,
 };
 use tablecraft_core::limits::Resource;
 use tablecraft_expressions::functions::dates::clock::Clock;
@@ -22,6 +23,26 @@ impl Document {
         _clock: &dyn Clock,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Response, Error> {
+        self.review_schema_sql_with_inputs(target, None, _clock, cancelled)
+    }
+
+    pub(crate) fn review_parameterized_schema_sql(
+        &mut self,
+        target: &InspectedQuery,
+        parameters: &[ParameterInput],
+        clock: &dyn Clock,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Response, Error> {
+        self.review_schema_sql_with_inputs(target, Some(parameters), clock, cancelled)
+    }
+
+    fn review_schema_sql_with_inputs(
+        &mut self,
+        target: &InspectedQuery,
+        parameters: Option<&[ParameterInput]>,
+        _clock: &dyn Clock,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Response, Error> {
         self.require_query_inspection(target, cancelled)?;
         if target.operation() != QueryOperation::Schema {
             return Err(Error::SchemaSqlUnsupported);
@@ -33,7 +54,7 @@ impl Document {
         work.charge(Resource::Bytes, target.sql().len() as u64)?;
         work.charge(Resource::Steps, target.sql().len() as u64)?;
         let parsed = parse_query(target.sql(), ParseLimits::default())?;
-        if !parsed.query().parameters.is_empty() {
+        if parameters.is_none() && !parsed.query().parameters.is_empty() {
             return Err(Error::SchemaSqlUnsupported);
         }
         if matches!(&parsed.query().statement, Statement::MakeTable(_)) {
@@ -41,10 +62,16 @@ impl Document {
             return platform::schema_sql::review_make_table(
                 self,
                 parsed.into_query(),
+                parameters.unwrap_or(&[]),
                 _clock,
                 cancelled,
             );
             #[cfg(not(feature = "ace16-create"))]
+            return Err(Error::SchemaSqlUnsupported);
+        }
+        if !parsed.query().parameters.is_empty()
+            || parameters.is_some_and(|inputs| !inputs.is_empty())
+        {
             return Err(Error::SchemaSqlUnsupported);
         }
         let Statement::Definition(definition) = &parsed.query().statement else {

@@ -321,6 +321,13 @@ pub enum Command {
     ReviewSchemaSql {
         target: Arc<InspectedQuery>,
     },
+    /// Review declared-parameter SELECT INTO from the exact issued inspection.
+    /// Inputs are literal typed carriers; this grants no direct save authority.
+    #[cfg(feature = "offline-edit")]
+    ReviewParameterizedSchemaSql {
+        target: Arc<InspectedQuery>,
+        parameters: Vec<ParameterInput>,
+    },
     #[cfg(feature = "offline-edit")]
     ReviewQueryInsert {
         target: Arc<InspectedQuery>,
