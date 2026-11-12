@@ -15,6 +15,14 @@ use tablecraft_core::{
 use tablecraft_db::{ColumnUpdates, EditableTable, UpdateProfile};
 use tablecraft_schema::ScalarType;
 
+/// Positive target metadata chooses the consuming original before qualification.
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(super) enum FittedRoute {
+    Existing,
+    #[cfg(feature = "ace16-create")]
+    RetainedIndexedLong,
+}
+
 const COPY_BYTES: usize = 4096;
 
 #[cfg(feature = "ace16-create")]
@@ -106,10 +114,13 @@ impl NativeJournalEditor {
         self,
         columns: &[ColumnUpdates<'_>],
         count: usize,
+        selection: FittedRoute,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(RecoverableNativeEditPlan, usize), Error> {
         let _span = tracing::debug_span!("access.journal.plan_variable_columns").entered();
+        #[cfg(not(feature = "ace16-create"))]
+        let _ = selection;
         check(budget, cancelled)?;
         if (self.route != JournalRoute::Ordinary
             && !self.route.historical_rows()
@@ -176,7 +187,8 @@ impl NativeJournalEditor {
             positions.push(position);
         }
         #[cfg(feature = "ace16-create")]
-        let retained_long_batch = self.route == JournalRoute::RetainedRows
+        let retained_long_batch = selection == FittedRoute::Existing
+            && self.route == JournalRoute::RetainedRows
             && columns.len() == 1
             && self.snapshot().columns()[positions[0]].data_type() == ScalarType::Int32
             && columns[0].updates.len() >= 2;
@@ -287,7 +299,14 @@ impl NativeJournalEditor {
             let retained_fixed =
                 self.route == JournalRoute::RetainedRows && retained_fixed_scalar(kind);
             #[cfg(feature = "ace16-create")]
-            let group = if retained_long_batch {
+            let group = if selection == FittedRoute::RetainedIndexedLong {
+                NativeFittedIntentGroup::new_retained_indexed_long(
+                    target.name(),
+                    requests,
+                    budget,
+                    cancelled,
+                )
+            } else if retained_long_batch {
                 NativeFittedIntentGroup::new_retained_long_column_batch(
                     target.name(),
                     requests,
@@ -340,7 +359,10 @@ impl NativeJournalEditor {
                 .plan_recoverable_retained_opaque_rows(groups, budget, cancelled)?,
             #[cfg(feature = "ace16-create")]
             JournalRoute::RetainedRows => {
-                if retained_long_batch {
+                if selection == FittedRoute::RetainedIndexedLong {
+                    self.editor
+                        .plan_recoverable_retained_indexed_long(groups, budget, cancelled)?
+                } else if retained_long_batch {
                     self.editor
                         .plan_recoverable_retained_long_column_batch(groups, budget, cancelled)?
                 } else if positions.first().is_some_and(|&position| {

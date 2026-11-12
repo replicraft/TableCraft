@@ -1,5 +1,5 @@
 //! Exact original-snapshot carriers for the normal fixed batch intent.
-use super::{Error, JournalRoute, NativeJournalEditor};
+use super::{Error, JournalRoute, NativeJournalEditor, fitted::FittedRoute};
 use crate::editing::NativeEditError;
 use tablecraft_ace::{
     FixedScalarUpdate, InspectError, NativeFixedIntentGroup, NativeImage, RecoverableEditError,
@@ -122,6 +122,27 @@ impl NativeJournalEditor {
                 .map_err(NativeEditError::from)?;
         }
         #[cfg(feature = "ace16-create")]
+        if self.route == JournalRoute::RetainedRows
+            && let [column] = columns
+        {
+            let position = self.fixed_position(column.column, budget, cancelled)?;
+            if self.snapshot().columns()[position].data_type() == ScalarType::Int32
+                && self.editor.select_retained_indexed_long_column(
+                    self.snapshot().columns()[position].name(),
+                    budget,
+                    cancelled,
+                )?
+            {
+                return self.plan_variable_columns_with_count(
+                    columns,
+                    count,
+                    FittedRoute::RetainedIndexedLong,
+                    budget,
+                    cancelled,
+                );
+            }
+        }
+        #[cfg(feature = "ace16-create")]
         if self.retained_empty_long_columns(columns, budget, cancelled)? {
             return self.plan_empty_long_columns(columns, budget, cancelled);
         }
@@ -129,7 +150,13 @@ impl NativeJournalEditor {
             || ((self.route == JournalRoute::Ordinary || self.route.historical_rows())
                 && self.variable_columns_requested(columns, budget, cancelled)?)
         {
-            return self.plan_variable_columns_with_count(columns, count, budget, cancelled);
+            return self.plan_variable_columns_with_count(
+                columns,
+                count,
+                FittedRoute::Existing,
+                budget,
+                cancelled,
+            );
         }
         let mut positions = vector(columns.len(), budget)?;
         let mut groups = vector(columns.len(), budget)?;

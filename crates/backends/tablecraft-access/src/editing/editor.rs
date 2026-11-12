@@ -61,6 +61,23 @@ impl NativeEditor {
                     Err(error) => Err(error.into()),
                 };
             }
+            if self.image.select_native_retained_indexed_long_table(
+                self.snapshot.name(),
+                budget,
+                cancelled,
+            )? {
+                return match self.image.check_native_retained_indexed_long_table(
+                    self.snapshot.name(),
+                    budget,
+                    cancelled,
+                ) {
+                    Ok(()) => Ok((UpdateProfile::StoredScalar, JournalRoute::RetainedRows)),
+                    Err(EditError::Unsupported(_)) => {
+                        Ok((UpdateProfile::Unavailable, JournalRoute::RetainedRows))
+                    }
+                    Err(error) => Err(error.into()),
+                };
+            }
             return match self.image.check_native_retained_cell_updates_table(
                 self.snapshot.name(),
                 budget,
@@ -521,6 +538,36 @@ impl NativeEditor {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<RecoverableNativeEditPlan, RecoverableEditError> {
         self.image.plan_recoverable_retained_opaque_row_updates(
+            self.snapshot.name(),
+            groups,
+            budget,
+            cancelled,
+        )
+    }
+
+    #[cfg(feature = "ace16-create")]
+    pub(super) fn select_retained_indexed_long_column(
+        &self,
+        column: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<bool, NativeEditError> {
+        Ok(self.image.select_native_retained_indexed_long_column(
+            self.snapshot.name(),
+            column,
+            budget,
+            cancelled,
+        )?)
+    }
+
+    #[cfg(feature = "ace16-create")]
+    pub(super) fn plan_recoverable_retained_indexed_long(
+        self,
+        groups: Vec<NativeFittedIntentGroup>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<RecoverableNativeEditPlan, RecoverableEditError> {
+        self.image.plan_recoverable_retained_indexed_long_updates(
             self.snapshot.name(),
             groups,
             budget,
