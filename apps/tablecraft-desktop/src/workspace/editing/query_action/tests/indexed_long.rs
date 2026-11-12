@@ -1,4 +1,6 @@
 //! An actual created index remains usable through normal reviewed SQL UPDATE.
+mod inserting;
+
 use super::{
     assert_image, cancel_refused_action, finish_reads, finish_refused_action, finish_save,
     journal_path, opened, reviewed, run,
