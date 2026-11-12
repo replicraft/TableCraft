@@ -2,14 +2,22 @@
 use super::Requests;
 use crate::table::indexes::{
     composite::DecimalValue,
+    key::TestKeyProfile,
     mutation::{
         IndexKeyUpdate, NumericKey,
+        composite::TupleProfile,
         profile::{SingleProfile, WriteProfile},
     },
 };
-use crate::{EditError, InspectError};
-use tablecraft_core::limits::{LimitError, Resource, ResourceBudget};
+use crate::{EditError, InspectError, inspect_table_indexes};
+use std::io::Cursor;
+use tablecraft_core::{
+    limits::{LimitError, Resource, ResourceBudget},
+    values::Value,
+};
+use tablecraft_model::CatalogScope;
 use tablecraft_schema::ScalarType;
+use tablecraft_testkit::fixtures::access::index_tuples::numeric_fixture;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(1024 * 1024, 1000, 100_000)
@@ -176,4 +184,51 @@ fn paid_lookup_cancellation_and_allocation_work_limits_are_typed_refusals() {
             remaining: 0,
         })))
     ));
+}
+
+#[test]
+fn real_tuple_profile_keeps_interleaved_components_in_written_row_order() {
+    let bytes = numeric_fixture::database(
+        1,
+        &[4, 4, 4],
+        &[(1, false), (2, false)],
+        &[vec![Some(0), Some(1), Some(8)]],
+        0,
+    );
+    let inspection = inspect_table_indexes(
+        &mut Cursor::new(bytes),
+        CatalogScope::new(32630),
+        "Items",
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    let profile = TupleProfile::<i64>::new(
+        &inspection.indexes()[0],
+        inspection.schema(),
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    let updates = updates();
+    let lookup = Requests::new(&updates, &profile, &mut budget(), &|| false).unwrap();
+    assert_eq!(lookup.count(), 7);
+    let selected = lookup.row(7, &mut budget(), &|| false).unwrap();
+    assert_eq!(selected, &[1, 2, 4, 5]);
+    let mut key = profile
+        .row_key_test(&[Value::Int32(0), Value::Int32(1), Value::Int32(8)])
+        .unwrap();
+    let expected = [
+        (Some(2), Some(8)),
+        (Some(2), Some(9)),
+        (None, Some(9)),
+        (None, Some(10)),
+    ];
+    for (&position, expected) in selected.iter().zip(expected) {
+        let update = &updates[position];
+        profile
+            .update(&mut key, update.column, update.expected, update.value)
+            .unwrap();
+        assert_eq!((key.get(0), key.get(1)), expected);
+    }
 }
