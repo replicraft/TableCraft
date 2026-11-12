@@ -1253,8 +1253,8 @@ match the effect. Review holds no exclusive native lease or journal.
 
 `SaveWorker::start_query_insert` consumes this distinct capability through the
 same nonreplaceable action-save owner. Its private INSERT plan retains the exact
-`NativeJournalInsertPlan` family: Complete, AllocateEof, CompleteTyped, Omitted or
-Clock. Fresh `stage_reviewed_insert_with_budgets` checks the complete reviewed
+`NativeJournalInsertPlan` family: Complete, AllocateEof, CompleteTyped, Omitted,
+Retained or Clock. Fresh `stage_reviewed_insert_with_budgets` checks the complete reviewed
 source, rederives native admission and deterministic defaults from original
 requests and retained inputs, and requires complete rebuilt images and
 inserted-count agreement before journal creation. SQL, parameters and host
@@ -1273,6 +1273,18 @@ and expression contexts, required-program execution and remaining native profile
 qualification stay unfinished. See the
 [sealed INSERT contract](../access/writes/REVIEWED_INSERTS.md) and
 [scratch action workflow](../ui/SQL_WORKSPACE.md#reviewed-local-action-queries).
+
+Retained nongenerated tables with manual single-LONG indexes use the distinct
+TCNA11 original through the existing Retained plan and V3 recovery owner. Actual
+CREATE/save/reopen and indexed UPDATE/save/reopen sources can then accept normal
+VALUES/SELECT insertion. Source/default/program/constraint checks remain native;
+metadata selection never substitutes for consuming admission. Multiple indexed
+fields and ordinary companions are supported within existing DATA/INDEX capacity.
+The [indexed insertion checkpoint](../../tests/results/queries/manual-indexed-insert-workflows-2026-11-12.json)
+checks SQL NULL/values, real row-add omission, compressed-index companions,
+self/join/aggregate SELECT staging and late-error preservation through actual
+save/acknowledgment/reopen. General key families, allocation and native Access
+qualification remain separate.
 
 ## Reviewed offline row insertion
 

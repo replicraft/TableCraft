@@ -1,5 +1,20 @@
 # Implementation status
 
+## Retained indexed INSERT workflows — 12 November 2026
+
+The [indexed INSERT checkpoint](../tests/results/queries/manual-indexed-insert-workflows-2026-11-12.json)
+records TCNA11 insertion into manual single-LONG indexes after actual ordinary
+CREATE and indexed UPDATE saves. Multiple indexed fields and ordinary companions
+retain exact source/default/constraint checks, complete independent AFTER proof
+and V3 recovery. Compressed Guard indexes and Currency/Unicode companions are
+covered; old insertion original languages remain closed.
+
+Normal headless SQL Run verifies VALUES and joined/aggregate SELECT insertion
+with No/Yes/save/acknowledgment/reopen. Runtime also checks original self-source,
+NULL/empty results, real row-add omission and TOP-omitted late errors without a
+partial save. General indexed carriers, allocation and complete Access parity
+remain unfinished. These are local tests, not native Windows comparisons.
+
 ## Indexed retained LONG workflows — 12 November 2026
 
 The [indexed workflow checkpoint](../tests/results/queries/retained-indexed-long-workflows-2026-11-12.json)

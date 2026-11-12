@@ -1,0 +1,328 @@
+{
+  "date": "2026-11-12",
+  "platform": "macOS 14.7.2 arm64",
+  "source_commit": "b7184e8af7928dbf60c6353536713ffc4d8213fa",
+  "scope": "TCNA11 retained manual single-LONG-per-index insertion; actual CREATE INDEX and indexed UPDATE outputs consumed by normal VALUES/SELECT and row-add workflows.",
+  "qualification": "Local independent complete-image, cold recovery and headless application evidence. No Windows/Microsoft Access comparison.",
+  "observations": [
+    "Distinct TCNA0011 original retains exact omitted/supplied NULL/supplied value inputs and complete BEFORE identity. Metadata positively selects this route before generated/keyless insertion; failed proof is terminal.",
+    "Each physical index has one ordinary manual LONG key. Multiple such fields and ordinary scalar companions coexist. Source/default/program/constraint/ownership checks remain consuming and apply to empty operations.",
+    "Independent proof reconstructs original presence and defaults, records, DATA placement, complete final key/ROW populations and historical counters without producer patches. Complete AFTER and final source qualification retain protected companions and metadata.",
+    "A preexisting compressed Guard index survives actual second-index CREATE and TCNI26 UPDATE; TCNA11 inserts NULL Guard plus Currency/Unicode companions, changes the prefix to fit the new key population and matches complete independently authored images.",
+    "Existing unique and Required constraints accept valid inserts and refuse violations. Old original decoders and V1 preparation/recovery stay closed. V3 pending/mixed/committed/settled reconstruction is checked independently; journal-only/no-create cases refuse native effects.",
+    "Runtime and Desktop actual CREATE/save/reopen -> indexed UPDATE/save/reopen -> VALUES NULL/77 INSERT use consuming reviews, No/Yes, save acknowledgment and guarded reopen. A real Runtime row-add draft separately verifies omission becomes NULL only for this checked nullable no-default source.",
+    "INSERT SELECT stages the complete original relation before any native effects: self-source, joined duplicate outputs, aggregate Sum, explicit NULL and empty result. TOP-omitted late DivisionByZero creates no saved prefix or journal and preserves prior results/source.",
+    "Counts overlap across boundaries and are not an additive conformance total. Ignored fixture-dependent tests are not passing evidence. All Cargo commands use release mode and root target/."
+  ],
+  "checks": [
+    {
+      "job": "native",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "normal_insert",
+        "indexes::mutation::insertion",
+        "transaction::intent::omitted_insert",
+        "transaction::native_recovery",
+        "current_row_updates::indexed"
+      ],
+      "returncode": 0,
+      "seconds": 140.75,
+      "log": {
+        "path": ".cache/ace-sql-manual-indexed-insert-connected-native-20261112.log",
+        "sha256": "04536b5d185aab129dd0be36a88931d073ed9c6034b21cb60dd19985a919fa6e"
+      },
+      "test_summaries": [
+        {
+          "passed": 88,
+          "failed": 0,
+          "ignored": 47
+        }
+      ]
+    },
+    {
+      "job": "access",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 69.86,
+      "log": {
+        "path": ".cache/ace-sql-manual-indexed-insert-connected-access-20261112.log",
+        "sha256": "9107f5b79c2938d778c29d132637d878f5b27cd4831c0ebb3e1d071885eee4f0"
+      },
+      "test_summaries": [
+        {
+          "passed": 321,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "runtime",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-runtime",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 76.22,
+      "log": {
+        "path": ".cache/ace-sql-manual-indexed-insert-connected-runtime-20261112.log",
+        "sha256": "89fb9a8eede09cf442cf485756d3fe5e064d21180fe782fe51fe609c2cc63eef"
+      },
+      "test_summaries": [
+        {
+          "passed": 450,
+          "failed": 0,
+          "ignored": 1
+        }
+      ]
+    },
+    {
+      "job": "desktop",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-desktop",
+        "--bin",
+        "tablecraft-desktop",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "query_action::tests",
+        "query_parameters::tests"
+      ],
+      "returncode": 0,
+      "seconds": 48.51,
+      "log": {
+        "path": ".cache/ace-sql-manual-indexed-insert-connected-desktop-20261112.log",
+        "sha256": "aa3a91c61dec64a5ea7a3ed672735196df3cc9ca7919aa41c0fd409b64ae84fe"
+      },
+      "test_summaries": [
+        {
+          "passed": 56,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "strict",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-testkit",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-runtime",
+        "-p",
+        "tablecraft-desktop",
+        "-p",
+        "tablecraft-cli",
+        "-p",
+        "tablecraft-mcp",
+        "--all-targets",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "seconds": 59.78,
+      "log": {
+        "path": ".cache/ace-sql-manual-indexed-insert-connected-strict-20261112.log",
+        "sha256": "c802b18d5f2e6334b03af030e9252fcc20bd843cb0a7960012f7525955c2af36"
+      }
+    },
+    {
+      "job": "journal-only",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "journal",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "manual_indexed_tests"
+      ],
+      "returncode": 0,
+      "seconds": 61.18,
+      "log": {
+        "path": ".cache/ace-sql-manual-indexed-insert-connected-journal-only-20261112.log",
+        "sha256": "bdce51efd328b1667661c2f10c27c6f475efe9db8a8d104be251547f3c84b47f"
+      },
+      "test_summaries": [
+        {
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "access-no-create",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "offline-write-session",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "manual_indexed_tests"
+      ],
+      "returncode": 0,
+      "seconds": 30.08,
+      "log": {
+        "path": ".cache/ace-sql-manual-indexed-insert-connected-access-no-create-20261112.log",
+        "sha256": "d32b24261b3d61c6c9dc012fe14c7a4de5fa7ff4ea21c8537258f092c566a38c"
+      },
+      "test_summaries": [
+        {
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "minimal",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 0.41,
+      "log": {
+        "path": ".cache/ace-sql-manual-indexed-insert-connected-minimal-20261112.log",
+        "sha256": "a2f9f7889e88ba38ddcfecdb5afc8516742ad9186965960a94adbbe4ac21b5ad"
+      }
+    },
+    {
+      "job": "creation-only",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "ace16-create",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 0.22,
+      "log": {
+        "path": ".cache/ace-sql-manual-indexed-insert-connected-creation-only-20261112.log",
+        "sha256": "a50f4a953f17e887d3844be51c0df233623b83d4462c96d5392c2671458d7fef"
+      }
+    },
+    {
+      "job": "preview-create-no-journal",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "ace16-create,ace16-write-preview",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "seconds": 6.58,
+      "log": {
+        "path": ".cache/ace-sql-manual-indexed-insert-connected-preview-create-no-journal-20261112.log",
+        "sha256": "12b018f2aa333a28597c7d02936e681d91fed8b753b5869ec08f1058d7b4bf19"
+      }
+    },
+    {
+      "job": "rustdoc",
+      "command": [
+        "cargo",
+        "doc",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-runtime",
+        "--all-features",
+        "--no-deps",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 17.41,
+      "log": {
+        "path": ".cache/ace-sql-manual-indexed-insert-connected-rustdoc-20261112.log",
+        "sha256": "e1cab6e0b48912c0a55af61c09cd233606240068b2ef16781d3b65921bb28314"
+      }
+    }
+  ],
+  "limits": [
+    "Existing DATA/INDEX page capacity is required; general splits, promotion, allocation and broader indexed key families are not supplied.",
+    "Native source, defaults, programs and constraint qualification remain explicit. New UNIQUE construction, generated insertion languages and default-bearing profile expansion are separate work.",
+    "The tested no-default source does not establish every native DefaultValue behavior. Complete ACE SQL, platform-native graphical appearance and Microsoft Access parity remain unqualified."
+  ]
+}

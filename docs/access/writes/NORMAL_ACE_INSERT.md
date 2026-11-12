@@ -6,6 +6,39 @@ manual proof; engineering candidates retain their separate admission policies.
 The retained-tree, original-omission and inline Memo/OLE sections below extend
 the initial complete scalar profile; their remaining limits stay explicit.
 
+## Retained manual LONG indexes
+
+`TCNA0011` inserts into retained, nongenerated tables whose physical indexes each
+have one ordinary manual LONG key. Multiple indexed fields and ordinary scalar
+companions can coexist. Actual metadata selects this family before generated or
+keyless insertion; failed source proof never selects another family. Complete
+source, program, defaults, constraints, storage ownership and row declarations
+are checked again during consuming preparation, including empty operations.
+
+Original omitted, supplied NULL and supplied values remain distinct. Defaults
+come only from the surviving field's checked metadata. A nullable field without
+a default resolves omission to NULL. Existing unique and Required indexes retain
+their enforcement; this route neither creates constraints nor invents generation.
+
+All fresh records and index changes form one atomic candidate. Independent
+reconstruction derives original presence/defaults, record bytes, DATA placement,
+complete key/ROW membership and historical counters from BEFORE, then compares
+the complete AFTER and freshly qualifies its source. Compressed manual root
+leaves retain their checked framing; ordinary Currency and Unicode companions
+remain protected. Existing DATA and INDEX capacity is required. General index
+splits, promotion, page allocation and required-program execution remain separate.
+
+Exact original framing is distinct from TCNA8/9/10. Checked V3 reconstruction and
+settled confirmation reuse the retained save owner without SQL replay. Old
+original decoders and V1 preparation stay closed; journal-only builds can decode
+data without acquiring native reconstruction authority.
+
+The [workflow checkpoint](../../../tests/results/queries/manual-indexed-insert-workflows-2026-11-12.json)
+records actual CREATE INDEX, indexed UPDATE and then VALUES/SELECT insertion,
+including omission through real row-add review, explicit NULL, full-image proofs,
+No/Yes/save/acknowledgment/reopen and late-error source preservation. Local
+independent tests and headless workflows do not establish native Access parity.
+
 ## Retained keyless tables
 
 The distinct `TCNA0010` family inserts into qualified retained tables without
