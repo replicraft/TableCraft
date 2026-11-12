@@ -203,29 +203,10 @@ impl Desktop {
     }
 
     fn run_query_design(&mut self, options: QueryRunOptions) {
-        if self.editing.has_save() {
-            return;
-        }
-        let Some(request_id) = request_read(
-            Command::Query {
-                options,
-                // NO_CLONE: The UI keeps its SQL buffer and result provenance; background query
-                // execution requires an independent owned command string.
-                sql: self.state.sql.clone(),
-            },
-            &self.worker,
-            &mut self.state,
-        ) else {
-            self.read_request_rejected();
-            return;
-        };
-        if !self.state.begin_query_design_run(request_id) {
-            self.worker.cancel();
-            return;
-        }
-        self.generation = request_id;
-        self.pending = PendingOperation::QueryDesignRun { request_id };
-        self.state.busy = true;
+        // A completed Build supplies SQL and its exact Design owner. Parameter
+        // acquisition and execution use the same issued runtime services as SQL
+        // View while the shared UI retains Design result provenance.
+        self.inspect_query_parameters_with_options(options);
     }
 }
 

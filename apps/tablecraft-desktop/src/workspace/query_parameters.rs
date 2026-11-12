@@ -63,6 +63,12 @@ impl Desktop {
     }
 
     pub(super) fn inspect_query_parameters(&mut self) {
+        self.inspect_query_parameters_with_options(self.read_query_options());
+    }
+
+    /// Both SQL and completed Design runs retain the options captured by their
+    /// own originating request while sharing the same typed acquisition service.
+    pub(super) fn inspect_query_parameters_with_options(&mut self, options: QueryRunOptions) {
         if self.editing.has_save()
             || self.creating.is_busy()
             || self.recovery.is_some()
@@ -109,7 +115,7 @@ impl Desktop {
 
         self.pending = PendingOperation::QueryInspection {
             request_id,
-            options: self.read_query_options(),
+            options,
         };
         self.editing.clear_review();
         self.state.busy = true;
