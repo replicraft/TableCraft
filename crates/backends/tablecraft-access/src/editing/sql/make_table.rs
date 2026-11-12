@@ -122,6 +122,7 @@ pub fn prepare_native_make_table(
             options,
             snapshot_limits,
             native_comparison: None,
+            declared_parameters: false,
         },
     )
 }
@@ -152,6 +153,50 @@ pub fn prepare_native_make_table_with_native_comparison(
             options,
             snapshot_limits,
             native_comparison: Some(comparison),
+            declared_parameters: false,
+        },
+    )
+}
+
+/// Typed inputs and read controls for explicitly parameterized SELECT INTO.
+/// Parameters are supplied stored carriers, never defaults or SQL expressions.
+pub struct NativeMakeTableOptions<'a> {
+    /// Complete bindings for the original declared parameter namespace.
+    pub parameters: &'a [(&'a str, Value)],
+    /// Query evaluation providers and cumulative cancellation policy.
+    pub execution: ExecutionOptions<'a>,
+    /// Native consumer limits, independent from query execution allowances.
+    pub snapshot_limits: TableSnapshotLimits,
+}
+
+/// Prepare a declared-parameter SELECT INTO using the same captured image for
+/// native fields, comparison policies and complete row evaluation. Parameter
+/// values are consumed only during preparation; finish never reruns the query.
+/// Direct projections retain their actual native declarations. Computed output
+/// qualification remains unchanged and does not infer sizes from supplied values.
+///
+/// # Errors
+/// Refuses invalid or incomplete bindings, unsupported source/output shapes,
+/// existing destinations, native/query failures, cancellation and exhausted pools.
+pub fn prepare_parameterized_native_make_table_with_native_comparison(
+    image: NativeImage,
+    query: Query,
+    native: &RefCell<ResourceBudget>,
+    comparison: &RefCell<ResourceBudget>,
+    query_budget: &mut ResourceBudget,
+    options: NativeMakeTableOptions<'_>,
+) -> Result<PreparedNativeMakeTable, NativeMakeTableError> {
+    prepare_with_policy(
+        image,
+        query,
+        native,
+        query_budget,
+        Preparation {
+            parameters: options.parameters,
+            options: options.execution,
+            snapshot_limits: options.snapshot_limits,
+            native_comparison: Some(comparison),
+            declared_parameters: true,
         },
     )
 }
@@ -161,6 +206,7 @@ struct Preparation<'a> {
     options: ExecutionOptions<'a>,
     snapshot_limits: TableSnapshotLimits,
     native_comparison: Option<&'a RefCell<ResourceBudget>>,
+    declared_parameters: bool,
 }
 
 fn prepare_with_policy(
@@ -175,6 +221,7 @@ fn prepare_with_policy(
         options,
         snapshot_limits,
         native_comparison: comparison,
+        declared_parameters,
     } = preparation;
     let _span = tracing::debug_span!("access.prepare_native_make_table").entered();
     let never_cancelled = || false;
@@ -190,7 +237,7 @@ fn prepare_with_policy(
     {
         return Err(NativeMakeTableError::Shape);
     }
-    let select = shape::select(&query)?;
+    let select = shape::select(&query, declared_parameters)?;
     let destination = select.into.as_ref().ok_or(NativeMakeTableError::Shape)?;
     let scope = image.catalog().catalog().scope();
     let (schema, direct_definition) = {

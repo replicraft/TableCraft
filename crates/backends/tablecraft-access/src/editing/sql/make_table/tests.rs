@@ -1,6 +1,7 @@
 //! Independent raw source images; preparation cannot accept foreign result data.
 mod computed;
 mod computed_declarations;
+mod parameters;
 mod selection;
 
 use super::*;
@@ -64,7 +65,7 @@ fn native_text_capacity_comes_from_actual_metadata_for_empty_and_populated_resul
     assert_eq!(empty.definition().primary_position(), None);
 
     let query = syntax("SELECT i.ID AS CopiedId, i.Name AS Label INTO Archive FROM Items AS i");
-    let select = shape::select(&query).unwrap();
+    let select = shape::select(&query, false).unwrap();
     let schema = inspect_table_schema(
         &mut Cursor::new(&bytes),
         SCOPE,
@@ -208,7 +209,7 @@ fn decimal_declared_precision_and_scale_survive_aliasing_without_row_inference()
     )
     .unwrap();
     let columns = shape::columns(
-        shape::select(&query).unwrap(),
+        shape::select(&query, false).unwrap(),
         &schema,
         &mut budget(),
         &|| false,

@@ -32,11 +32,14 @@ pub(super) fn charge_name(
     Ok(())
 }
 
-pub(super) fn select(query: &Query) -> Result<&Select, NativeMakeTableError> {
+pub(super) fn select(
+    query: &Query,
+    declared_parameters: bool,
+) -> Result<&Select, NativeMakeTableError> {
     let Statement::MakeTable(select) = &query.statement else {
         return Err(NativeMakeTableError::Shape);
     };
-    if !query.parameters.is_empty()
+    if (!declared_parameters && !query.parameters.is_empty())
         || select.into_external.is_some()
         || select.external.is_some()
         || select.owner_access
