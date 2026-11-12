@@ -349,3 +349,6 @@ mod empty;
 
 #[cfg(feature = "ace16-create")]
 mod currency_batch;
+
+#[cfg(feature = "ace16-create")]
+mod fixed_scalar_batch;
