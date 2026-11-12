@@ -7,6 +7,7 @@ use egui_kittest::{
     kittest::{NodeT, Queryable},
 };
 use std::time::{Duration, Instant};
+use tablecraft_builders::query::QueryDesignError;
 use tablecraft_display::ScalarPresentation;
 use tablecraft_runtime::Response;
 use tablecraft_testkit::fixtures::access::mutation_fixture;
@@ -257,11 +258,10 @@ fn unsupported_and_malformed_sql_import_preserve_the_literal_editor_and_previous
                 .get_all_by_role(Role::Label)
                 .filter_map(|node| node.value())
                 .collect::<Vec<_>>();
+            let expected = QueryDesignError::Unsupported.to_string();
             assert!(
-                labels.iter().any(|value| {
-                    value.starts_with("unsupported clause or extra statement at ")
-                }),
-                "SQL-only UNION must expose the parser diagnosis in a visible label: {labels:?}"
+                labels.iter().any(|value| value == &expected),
+                "SQL-only UNION must expose the design owner's refusal in a visible label: {labels:?}"
             );
         }
         assert!(!harness.state().state.busy);

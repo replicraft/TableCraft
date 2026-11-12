@@ -178,6 +178,26 @@ fn later_aggregate_error_and_unsupported_import_keep_prior_result_and_literal_sq
         .get_by_role_and_label(Role::Button, "SQL View")
         .click_accesskit();
     harness.run_steps(2);
+    // The failed Run deliberately retained its global diagnosis. Recover through
+    // a real healthy read before testing an independent unsupported import.
+    sql(&mut harness, "SELECT 99 AS Recovered");
+    run(&mut harness);
+    assert!(harness.state().state.error.is_none());
+    assert_eq!(
+        harness.state().state.query_data.as_ref().unwrap().rows[0][0].text,
+        "99"
+    );
+    let previous = harness
+        .state()
+        .state
+        .query_data
+        .as_ref()
+        .unwrap()
+        .rows
+        .as_ptr();
+    assert_eq!(fs::read(&path).unwrap(), original);
+    assert!(!tablecraft_runtime::journal_path(&path).exists());
+
     let unsupported = "SELECT Id FROM Items UNION SELECT Id FROM Items";
     sql(&mut harness, unsupported);
     design(&mut harness);
