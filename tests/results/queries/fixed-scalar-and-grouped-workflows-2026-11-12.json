@@ -12,7 +12,8 @@
     "Private dispatch wrappers cannot erase descriptor metadata before borrowed native request construction. Immutable data-grammar agreement is checked at terminal reconstruction; legacy profiles that deliberately share one grammar retain that existing policy. Forged old wrappers and checked reverse conversion refuse before effects, including fresh V3 recovery.",
     "Single-local-table GROUP BY/HAVING and aggregate/computed ordering use complete existing query staging. Direct Text/Decimal fields preserve actual native declarations; fixed computed/parameter outputs use static query declarations including empty results. No type or width is inferred from result rows.",
     "NULL groups, COUNT(*) versus COUNT(field), explicit declared inputs, empty global COUNT, aggregate ordering and late/TOP-omitted eager errors are covered. The current uncast COUNT Int64 descriptor is an implementation observation, not a native Access metadata equivalence claim.",
-    "Existing consuming review/No/Yes/save/acknowledgment/reopen services publish one complete native image with actual matched/changed counts. Exact BIGINT prompts, prior-result preservation, stale capabilities and complete raw AFTER are observed through headless Desktop journeys."
+    "Existing consuming review/No/Yes/save/acknowledgment/reopen services publish one complete native image with actual matched/changed counts. Exact BIGINT prompts, prior-result preservation, stale capabilities and complete raw AFTER are observed through headless Desktop journeys.",
+    "The creation-specific grouping unit target unifies journal support through development dependencies. A separate library-only check records actual compiler-artifact features [ace16-create] and establishes the isolated journal-disabled boundary; the two scopes are not interchangeable."
   ],
   "checks": [
     {
@@ -432,7 +433,7 @@
       "ignored_entries": []
     },
     {
-      "job": "access-create-no-journal",
+      "job": "access-create-grouping-with-support-features",
       "command": [
         "cargo",
         "test",
@@ -463,7 +464,48 @@
           "ignored": 0
         }
       ],
-      "ignored_entries": []
+      "ignored_entries": [],
+      "requested_job_name": "access-create-no-journal",
+      "actual_features": [
+        "ace16-create",
+        "journal",
+        "offline-write-session"
+      ],
+      "feature_evidence": {
+        "path": ".cache/ace-sql-fixed-and-grouped-create-test-feature-unification-20261112.json",
+        "sha256": "6a0fdc4c3f7232a4e1b4f354315905b4fff985e899fce112d311ae4bc71a9989",
+        "bytes": 1832
+      },
+      "note": "Development support unifies journal and offline-write-session for this unit-test target; this passing run does not isolate journal-disabled code."
+    },
+    {
+      "job": "access-create-library-boundary",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-access",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "ace16-create",
+        "--offline",
+        "--locked",
+        "--release",
+        "--message-format=json-render-diagnostics"
+      ],
+      "returncode": 0,
+      "seconds": 5.47,
+      "log": ".cache/ace-sql-fixed-and-grouped-access-library-boundary-20261112.log",
+      "actual_features": [
+        "ace16-create"
+      ],
+      "artifact": {
+        "path": ".cache/ace-sql-fixed-and-grouped-access-library-boundary-20261112.log",
+        "sha256": "b893be0bc340045225c76e5e85024891c5e2cb5165689560e792714f2e1f4b33",
+        "bytes": 108096
+      },
+      "note": "Compiler artifact JSON confirms the library itself was checked with only ace16-create; journal and offline-write-session are absent."
     }
   ],
   "prior_attempts": [
@@ -1023,6 +1065,11 @@
       "path": ".cache/ace-sql-fixed-and-grouped-final-batch-20261112.py",
       "sha256": "60b5dad868925e52b3558e01ddf96502f7e63ca3210c6ee884ea3d144704e739",
       "bytes": 2068
+    },
+    {
+      "path": ".cache/ace-sql-fixed-and-grouped-access-library-boundary.py",
+      "sha256": "19c54b7aa279c05ce1f625d0705b94afb82d0455e881890790af61341c8d589d",
+      "bytes": 1340
     }
   ],
   "code_artifacts": [
