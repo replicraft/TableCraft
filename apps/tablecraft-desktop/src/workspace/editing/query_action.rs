@@ -128,13 +128,16 @@ impl Desktop {
         let inputs = runtime_inputs(&parameters);
         let command = match kind {
             QueryActionKind::Schema => {
-                if !inputs.is_empty() {
-                    return;
-                }
                 // NO_CLONE: The command and pending review retain the same issued
                 // immutable SQL/source identity across the asynchronous callback.
-                Command::ReviewSchemaSql {
-                    target: Arc::clone(&target),
+                let target = Arc::clone(&target);
+                if inputs.is_empty() {
+                    Command::ReviewSchemaSql { target }
+                } else {
+                    Command::ReviewParameterizedSchemaSql {
+                        target,
+                        parameters: inputs,
+                    }
                 }
             }
             QueryActionKind::Update => Command::ReviewQueryUpdate {
