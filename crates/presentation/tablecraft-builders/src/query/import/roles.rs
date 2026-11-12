@@ -75,24 +75,21 @@ pub(super) fn imported(
         name,
         arguments,
     } = &value
+        && qualifier.is_empty()
     {
-        if qualifier.is_empty() {
-            for total in [
-                DesignTotal::Sum,
-                DesignTotal::Avg,
-                DesignTotal::Min,
-                DesignTotal::Max,
-                DesignTotal::Count,
-                DesignTotal::First,
-                DesignTotal::Last,
-            ] {
-                if aggregate(total)
-                    .is_some_and(|function| name.as_str().eq_ignore_ascii_case(function))
-                {
-                    if let [FunctionArgument::Expression(operand)] = arguments.as_slice() {
-                        return (DesignExpression::Expression(operand.to_string()), total);
-                    }
-                }
+        for total in [
+            DesignTotal::Sum,
+            DesignTotal::Avg,
+            DesignTotal::Min,
+            DesignTotal::Max,
+            DesignTotal::Count,
+            DesignTotal::First,
+            DesignTotal::Last,
+        ] {
+            if aggregate(total).is_some_and(|function| name.as_str().eq_ignore_ascii_case(function))
+                && let [FunctionArgument::Expression(operand)] = arguments.as_slice()
+            {
+                return (DesignExpression::Expression(operand.to_string()), total);
             }
         }
     }
@@ -132,10 +129,10 @@ fn normalize_expression(value: &mut Expression) -> Result<(), QueryDesignError> 
             name: function,
             arguments,
         } => {
-            if qualifier.is_empty() {
-                if let Some(spelling) = canonical_aggregate(function.as_str()) {
-                    *function = name(spelling)?;
-                }
+            if qualifier.is_empty()
+                && let Some(spelling) = canonical_aggregate(function.as_str())
+            {
+                *function = name(spelling)?;
             }
             for argument in arguments {
                 if let FunctionArgument::Expression(value) = argument {
