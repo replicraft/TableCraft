@@ -1,4 +1,5 @@
 //! All original predicate results precede a single consuming deletion finish.
+mod joined;
 mod read_source;
 use crate::{
     ExecutionOptions, QueryError,
@@ -10,6 +11,7 @@ use crate::{
     },
     source::validate_text_collations,
 };
+pub use joined::{PreparedJoinedDelete, prepare_joined_delete_with_options};
 pub use read_source::{
     PreparedReadSourceDelete, ReadSourceDeleteOptions, prepare_read_source_delete_with_options,
 };

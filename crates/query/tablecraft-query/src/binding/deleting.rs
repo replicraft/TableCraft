@@ -7,6 +7,7 @@ use tablecraft_sql::{
     select::TableSource,
 };
 
+pub(crate) mod joined;
 pub(crate) mod read_source;
 
 pub(crate) struct BoundDelete {

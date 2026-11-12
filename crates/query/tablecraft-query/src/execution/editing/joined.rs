@@ -1,5 +1,4 @@
 //! Explicit read-source joins never replace the editor's original target identity.
-mod relation;
 
 use super::{
     UpdateError, UpdatePlan,
@@ -10,13 +9,16 @@ use crate::{
     ExecutionOptions, MutationOptions, QueryError, Source,
     binding::{JoinedTargetSource, bind_joined_update},
     discovery::DiscoveryState,
-    execution::{Environment, Runtime, cell::CellValue},
+    execution::{
+        Environment, Runtime,
+        mutation_relations::{self as relation, push},
+    },
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
 };
-use tablecraft_db::{CellUpdate, EditableBatch, RowHandle, SnapshotId, UpdateProfile};
+use tablecraft_db::{CellUpdate, EditableBatch, SnapshotId, UpdateProfile};
 use tablecraft_expressions::logic::Truth;
 use tablecraft_schema::{NameComparison, ScalarType};
 use tablecraft_sql::query::Query;
@@ -80,11 +82,6 @@ struct JoinedColumn {
     values: Vec<Option<Value>>,
 }
 
-struct Frame {
-    cells: Vec<CellValue>,
-    target: Option<RowHandle>,
-}
-
 /// Evaluate scalar local joins and all selected SET expressions before one
 /// staged action. No backend budget is borrowed during read-source scans.
 /// Selected target rows always come from the editor's
@@ -143,6 +140,7 @@ pub fn prepare_joined_batch_update_with_options<E: EditableBatch>(
             table: snapshot.name(),
             qualifier: options.target_qualifier,
             columns: snapshot.columns(),
+            text_collations: reads.text_collations(snapshot.name())?,
         },
         query_budget,
         options.mutation.parameters.is_some(),
@@ -323,24 +321,6 @@ pub fn plan_joined_batch_update_with_options<E: EditableBatch>(
         cancelled,
     )?
     .finish(backend_budget, cancelled)
-}
-
-fn push<T>(runtime: &mut Runtime<'_, '_>, values: &mut Vec<T>, value: T) -> Result<(), QueryError> {
-    runtime.tick()?;
-    if values.len() == values.capacity() {
-        let added = values.capacity().max(1);
-        runtime
-            .budget
-            .charge(Resource::Steps, values.len() as u64)?;
-        runtime
-            .budget
-            .charge_allocation(added as u64, size_of::<T>() as u64)?;
-        values
-            .try_reserve_exact(added)
-            .map_err(|_| QueryError::Allocation)?;
-    }
-    values.push(value);
-    Ok(())
 }
 
 #[cfg(test)]

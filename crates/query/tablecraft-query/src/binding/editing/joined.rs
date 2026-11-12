@@ -1,29 +1,13 @@
 //! One explicitly selected local target occurrence in a scalar joined UPDATE.
 use super::BoundAssignment;
+use crate::binding::mutation_relation::{self, JoinedTargetSource, Target};
 use crate::{
     QueryError, Source,
     binding::{Binder, Parameter, resolve},
-    external_sources::SourceNamespace,
-    plan::{Expr, Relation, RelationNode},
+    plan::{Expr, Relation},
 };
-use std::ops::Range;
 use tablecraft_core::limits::{Resource, ResourceBudget};
-use tablecraft_schema::Column;
-use tablecraft_sql::{
-    query::{Query, Statement},
-    select::TableSource,
-};
-
-pub(crate) struct JoinedTargetSource<'a> {
-    pub table: &'a str,
-    pub qualifier: &'a str,
-    pub columns: &'a [Column],
-}
-
-pub(crate) struct Target {
-    pub leaf: usize,
-    pub columns: Range<usize>,
-}
+use tablecraft_sql::query::{Query, Statement};
 
 pub(crate) struct BoundJoinedUpdate {
     pub parameters: Vec<Parameter>,
@@ -56,13 +40,7 @@ pub(crate) fn bind_joined_update(
     let mut binder = Binder::mutation(source, budget, cancelled);
     binder.parameters = binder.bind_parameters(&query.parameters)?;
     binder.parameter_scope = binder.scope_indices(binder.parameters.len())?;
-    for relation in &update.sources {
-        syntax(relation, 1, &mut binder)?;
-    }
-    let relation = bind_sources(&update.sources, &mut binder, 1)?;
-    let mut target = None;
-    find_target(&relation, &selected, &mut 0, 0, &mut target, &mut binder)?;
-    let target = target.ok_or(QueryError::UnknownName)?;
+    let (relation, target) = mutation_relation::bind(&update.sources, &selected, &mut binder)?;
     binder.charge(
         update
             .assignments
@@ -112,125 +90,4 @@ pub(crate) fn bind_joined_update(
         assignments,
         filter,
     })
-}
-
-fn bind_sources(
-    sources: &[TableSource],
-    binder: &mut Binder<'_>,
-    depth: usize,
-) -> Result<Relation, QueryError> {
-    binder.tick(depth)?;
-    if let [source] = sources {
-        return binder.relation(source, &[], depth, SourceNamespace::Root);
-    }
-    let middle = sources.len() / 2;
-    if middle == 0 {
-        return Err(QueryError::Unsupported);
-    }
-    let left = bind_sources(&sources[..middle], binder, depth + 1)?;
-    let right = bind_sources(&sources[middle..], binder, depth + 1)?;
-    let slots = binder.combine_slots(&left.slots, &right.slots)?;
-    binder.charge(2 * size_of::<Relation>())?;
-    Ok(Relation {
-        slots,
-        node: RelationNode::Cross(Box::new(left), Box::new(right)),
-    })
-}
-
-fn syntax(source: &TableSource, depth: usize, binder: &mut Binder<'_>) -> Result<(), QueryError> {
-    binder.tick(depth)?;
-    match source {
-        TableSource::Table(table) if table.database.is_none() => Ok(()),
-        TableSource::Join { left, right, .. } => {
-            syntax(left, depth + 1, binder)?;
-            syntax(right, depth + 1, binder)
-        }
-        TableSource::Group {
-            source,
-            alias: None,
-        } => syntax(source, depth + 1, binder),
-        _ => Err(QueryError::Unsupported),
-    }
-}
-
-fn find_target(
-    relation: &Relation,
-    selected: &JoinedTargetSource<'_>,
-    leaf: &mut usize,
-    base: usize,
-    target: &mut Option<Target>,
-    binder: &mut Binder<'_>,
-) -> Result<(), QueryError> {
-    binder.work()?;
-    match &relation.node {
-        RelationNode::Table {
-            name,
-            columns,
-            multivalues,
-            members,
-            recordsets,
-            ..
-        } => {
-            if !multivalues.is_empty()
-                || !members.is_empty()
-                || !recordsets.is_empty()
-                || relation
-                    .slots
-                    .iter()
-                    .any(|slot| !slot.available || slot.member.is_some())
-            {
-                return Err(QueryError::Unsupported);
-            }
-            let matches = relation
-                .slots
-                .first()
-                .and_then(|slot| slot.qualifier.as_deref())
-                .is_some_and(|name| name.eq_ignore_ascii_case(selected.qualifier));
-            if matches {
-                if !name.eq_ignore_ascii_case(selected.table) {
-                    return Err(QueryError::Source);
-                }
-                if columns != selected.columns {
-                    return Err(QueryError::SchemaChanged);
-                }
-                let end = base
-                    .checked_add(relation.row_width())
-                    .ok_or(QueryError::StructureLimit)?;
-                if target
-                    .replace(Target {
-                        leaf: *leaf,
-                        columns: base..end,
-                    })
-                    .is_some()
-                {
-                    return Err(QueryError::AmbiguousName);
-                }
-            }
-            *leaf = leaf.checked_add(1).ok_or(QueryError::StructureLimit)?;
-        }
-        RelationNode::Join {
-            left,
-            right,
-            condition,
-            ..
-        } => {
-            if !crate::binding::mutation_scalar::admitted(condition) {
-                return Err(QueryError::Unsupported);
-            }
-            find_target(left, selected, leaf, base, target, binder)?;
-            let base = base
-                .checked_add(left.row_width())
-                .ok_or(QueryError::StructureLimit)?;
-            find_target(right, selected, leaf, base, target, binder)?;
-        }
-        RelationNode::Cross(left, right) => {
-            find_target(left, selected, leaf, base, target, binder)?;
-            let base = base
-                .checked_add(left.row_width())
-                .ok_or(QueryError::StructureLimit)?;
-            find_target(right, selected, leaf, base, target, binder)?;
-        }
-        _ => return Err(QueryError::Unsupported),
-    }
-    Ok(())
 }

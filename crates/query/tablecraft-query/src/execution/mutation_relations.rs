@@ -1,11 +1,11 @@
 //! Joined scalar frames keep the selected occurrence's original handle separately.
-use super::{Frame, push};
+use crate::execution::cell::CellValue;
 use crate::{
     QueryError,
     execution::{Environment, Runtime},
     plan::{Relation, RelationNode},
 };
-use tablecraft_db::{ProjectedRow, Snapshot};
+use tablecraft_db::{ProjectedRow, RowHandle, Snapshot};
 use tablecraft_sql::select::JoinKind;
 
 pub(super) fn frames(
@@ -164,4 +164,31 @@ fn join(
         }
     }
     Ok(output)
+}
+
+pub(super) struct Frame {
+    pub(super) cells: Vec<CellValue>,
+    pub(super) target: Option<RowHandle>,
+}
+
+pub(super) fn push<T>(
+    runtime: &mut Runtime<'_, '_>,
+    values: &mut Vec<T>,
+    value: T,
+) -> Result<(), QueryError> {
+    runtime.tick()?;
+    if values.len() == values.capacity() {
+        let added = values.capacity().max(1);
+        runtime
+            .budget
+            .charge(Resource::Steps, values.len() as u64)?;
+        runtime
+            .budget
+            .charge_allocation(added as u64, size_of::<T>() as u64)?;
+        values
+            .try_reserve_exact(added)
+            .map_err(|_| QueryError::Allocation)?;
+    }
+    values.push(value);
+    Ok(())
 }

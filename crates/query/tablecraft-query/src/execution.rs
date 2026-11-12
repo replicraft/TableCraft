@@ -14,6 +14,7 @@ mod declarations;
 mod deleting;
 mod domain;
 pub use deleting::{DeleteError, DeletePlan, plan_delete, plan_delete_with_options};
+pub use deleting::{PreparedJoinedDelete, prepare_joined_delete_with_options};
 pub use deleting::{
     PreparedReadSourceDelete, ReadSourceDeleteOptions, prepare_read_source_delete_with_options,
 };
@@ -22,6 +23,7 @@ mod inserting;
 mod make_table;
 pub use make_table::{MakeTableColumn, MakeTableError, MakeTablePlan, plan_make_table};
 mod mutation;
+mod mutation_relations;
 pub use inserting::{
     InsertError, PreparedInsertSelect, PreparedOmittingInsertSelect, local_insert_table,
     plan_insert, plan_insert_with_omissions, plan_insert_with_omissions_and_options,

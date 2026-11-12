@@ -58,6 +58,7 @@ pub use execution::{
     prepare_joined_batch_update_with_options,
 };
 pub use execution::{MakeTableColumn, MakeTableError, MakeTablePlan, plan_make_table};
+pub use execution::{PreparedJoinedDelete, prepare_joined_delete_with_options};
 pub use execution::{
     PreparedReadSourceDelete, ReadSourceDeleteOptions, prepare_read_source_delete_with_options,
 };
