@@ -1,4 +1,4 @@
-# Retained LONG secondary-index candidates
+# Retained secondary-index candidates
 
 `NativeImage::prepare_retained_long_index_creation` builds a separate,
 source-bound `NativeLongIndexCandidate` for a qualified ACE 16 retained table.
@@ -19,7 +19,8 @@ The source must have the actual retained catalog cohort, complete inventory and
 retained ordinary-schema/program/constraint qualification. The selected field
 must be an ordinary unindexed native LONG with its exact fixed/updatable flags,
 zero extended flags and four-byte storage. Generated, calculated, already
-indexed and other scalar fields remain refused. Existing index-name conflicts,
+indexed fields remain refused. This LONG entry does not select the separate
+numeric construction profile below. Existing index-name conflicts,
 logical-identity collisions, dependencies, malformed ownership and actual
 native definition/allocation capacity remain checked.
 
@@ -126,6 +127,57 @@ reason to retry fresh construction. Count-free sources, including their existing
 Unicode name profile, retain the original producer. Both original and fresh
 plans use the same staging/save owner and schema-only `IndexCreated` receipt.
 Actual DROP → ADD LONG → CREATE workflows preserve nondense logical histories.
+
+## Numeric index profile and host qualification
+
+`NativeImage::prepare_retained_numeric_index_creation` returns the distinct,
+non-journalable `NativeNumericIndexCandidate`. Its selected field is one ordinary,
+unindexed Boolean, Byte, Integer (Int16), LONG (Int32), Large Number (Int64),
+Currency, Single, Double or legacy Date/Time. Native widths, fixed/updatable flags,
+zero extended flags and exact carriers are checked. Boolean has no payload or
+NULL storage state: False and True retain native key order, including True=-1.
+Other admitted kinds retain nullable keys. Currency uses exact scaled integers;
+Single and Double require finite values and preserve signed-zero bit ordering.
+Legacy DATE ordering uses the stored carrier without calendar conversion.
+Both directions preserve ascending physical ROW ties for duplicate values.
+
+The numeric constructor uses checked fresh logical identities and an ASCII
+index-name namespace. Table names and record payloads do not acquire a global
+ASCII restriction. Existing generated fields, DATA, primary/companion indexes,
+properties, catalog and LVAL bytes remain protected. Selected generated,
+calculated or already indexed fields, unsupported programs/dependencies,
+ambiguous ownership and actual native capacity refuse the operation.
+
+Numeric construction has a separate readonly schema certificate for its BEFORE
+and AFTER proofs, including subsequent creation beside qualified existing numeric
+indexes. Complete catalog, program, property, constraint, row, index and allocation
+checks remain mandatory. This certificate cannot satisfy the existing row-write
+or generic retained-schema purposes. Existing LONG/action source languages remain
+separate.
+
+The consuming extension uses `NativeNumericIndexCreateIntent`, exact
+TCIC0003/profile3 framing and `RecoverableNativeNumericIndexCreatePlan`.
+Its request retains original source binding, selected native scalar/field identity,
+name and direction. V3 preparation, cold recovery and settled confirmation freshly
+reconstruct the operation and compare complete images; no old-intent decoder or
+failed-planner fallback supplies authority. Journal-only builds recognize the new
+original but refuse constructive recovery without the required creation feature.
+
+The Runtime route keeps Int32 selection on the existing TCIC0001/0002
+metadata policy. The other eight supported categories select TCIC0003 directly
+from actual native field metadata. The adapter reuses `StagedIndexCreation`,
+`ReviewedIndexCreation` and `IndexCreatedReopen` with a schema-only `IndexCreated`
+receipt. Normal SQL Run retains the same No/Yes, exclusive save, acknowledgment and
+guarded complete-AFTER reopen; indexed population is not a changed-row count.
+
+The [numeric workflow checkpoint](../../../tests/results/indexes/numeric-index-workflows-2026-11-12.json)
+records 56 native checks, 11 adapter checks, 441 Runtime passes with one explicit
+fixture-dependent ignore, and five selected headless Desktop workflows. Strict
+lint, minimal-feature checks and Rustdoc pass. Counts overlap across layers.
+The numeric profile does not qualify
+Text, Binary, Decimal, GUID, extended Date/Time or complex keys; compound, UNIQUE,
+PRIMARY and foreign-key creation remain unsupported. It does not broaden DROP
+INDEX, expose MCP schema SQL or establish Windows/Access save or timestamp parity.
 
 ## Design-timestamp parity gap
 

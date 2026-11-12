@@ -997,8 +997,10 @@ same confirmation and guarded publication flow.
 ### Reviewed CREATE INDEX
 
 With creation and offline editing, an issued schema inspection can review one
-ordinary nullable, nonunique LONG secondary index in ascending or descending
-order. The native source qualifies the actual field identity, declaration,
+ordinary nonunique secondary index over Boolean, Byte, Int16, Int32, Int64,
+Currency, Single, Double or legacy Date/Time, in either direction. Boolean retains
+its native nonnullable state; other admitted fields retain nullable keys.
+The native source qualifies the actual field identity, declaration,
 existing indexes, programs, dependencies and ownership. UNIQUE, PRIMARY,
 compound keys and explicit NULL-policy clauses remain unsupported. Ordinary
 native field0 is distinct from a generated identity field.
@@ -1015,6 +1017,32 @@ requires the full expected AFTER image and original target identities before
 publication. No releases the review without acquiring a save lease or changing
 bytes. MCP currently lacks the shared schema-review endpoint and explicitly
 refuses this capability; Desktop SQL Run is the implemented host consumer.
+
+#### Numeric CREATE INDEX
+
+The numeric extension retains the same issued `ReviewedIndexCreation`,
+nonreplaceable save worker, schema-only receipt and guarded reopen. Actual Int32
+metadata continues to select TCIC0001 or TCIC0002 before planning; ordinary
+Boolean, Byte, Int16, Int64, Currency, Single, Double and legacy Date/Time select
+TCIC0003 directly. A failed producer is never retried through another language.
+Native source, declaration, index namespace, finite IEEE, constraint/program,
+capacity and complete-image checks remain authoritative.
+
+The adapter's distinct numeric staging branch reconstructs against the actual
+exclusive source with separate cumulative native/proof pools. Terminal exact
+TCIC0003 decoding, V3 active recovery and settled confirmation retain its own
+typed errors; cancellation and resource failures retain their original class.
+The shared warning shows the actual target, name, field, direction and population.
+No data-row count or mutation capability is inferred from that display metadata.
+
+The [numeric workflow checkpoint](../../tests/results/indexes/numeric-index-workflows-2026-11-12.json)
+records the actual native, adapter, Runtime and headless Desktop checks, including
+No/Yes, schema-only receipts, cold recovery and guarded full-image publication.
+Text/Binary/Decimal/GUID and extended
+Date/Time keys, compound/UNIQUE/PRIMARY/foreign-key creation and broader source
+profiles remain unqualified. The existing Int32 name/source policy is unchanged;
+the numeric route's index-name namespace is separately restricted. Neither this
+extension nor the existing headless host evidence establishes native Windows parity.
 
 ### Reviewed DROP INDEX
 

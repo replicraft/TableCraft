@@ -6,7 +6,7 @@ Captured evidence retains its original bytes, paths and execution identities. Hi
 - [development](development/): 10 files
 - [encryption](encryption/): 3 files
 - [general](general/): 135 files
-- [indexes](indexes/): 166 files
+- [indexes](indexes/): 167 files
 - [queries](queries/): 147 files
 - [reading](reading/): 30 files
 - [recovery](recovery/): 8 files

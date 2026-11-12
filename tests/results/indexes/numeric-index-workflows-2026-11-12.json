@@ -1,0 +1,479 @@
+{
+  "date": "2026-11-12",
+  "platform": "macOS 14.7.2 arm64",
+  "source_commit": "8ff34308f4881a39a736f7f3356e83368c7d495a",
+  "scope": "Ordinary single-field numeric CREATE INDEX through native candidate/original, adapter staging and cold recovery, Runtime review/save, and normal headless Desktop SQL Run.",
+  "qualification": "Local release-mode complete-image, recovery and headless application checks; no native Microsoft Access/Windows comparison.",
+  "observations": [
+    "All final Cargo commands use --release and workspace-root target/; no custom Cargo target directory.",
+    "Nine native key kinds are tested. Runtime keeps Int32 on existing original/fresh LONG metadata dispatch; eight other categories select TCIC0003 directly, without failure fallback.",
+    "Producer BEFORE, independent proof BEFORE and proof AFTER retain separate complete inventories. Each phase reuses only its own image-bound inventory. Equal bytes in another NativeImage do not grant certificate reuse.",
+    "Numeric schema certificates cannot satisfy the existing row/action or generic retained-schema purposes. Existing LONG source and original languages stay closed.",
+    "Cold pending/committed/settled recovery retains the exact numeric original and full image proof. Schema-only IndexCreated receipts invent no changed-row count.",
+    "Desktop checks use actual SQL Run, No/Yes, save, acknowledgment and guarded reopen. No native window was launched.",
+    "Runtime full suite passes 441 tests with one explicit fixture-dependent ignore; selected Desktop scope passes five tests. Boundary counts overlap and are not additive compatibility coverage."
+  ],
+  "checks": [
+    {
+      "job": "native",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "normal_numeric_index_creation",
+        "bulk_numeric::tests",
+        "normal_index_creation",
+        "normal_index_drop",
+        "transaction::intent::index_create",
+        "transaction::intent::fresh_index_create",
+        "transaction::intent::numeric_index_create",
+        "transaction::intent::index_drop"
+      ],
+      "returncode": 0,
+      "seconds": 206.07,
+      "log": {
+        "path": ".cache/ace-sql-numeric-connected-native-20261112.log",
+        "sha256": "ce0dc51af5587d1c3fc14a554438cbad31994d90cedfa6bada53eeb803854c8c"
+      },
+      "test_summaries": [
+        {
+          "passed": 56,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "access",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "editing::offline::index_creation",
+        "editing::offline::plan::index_creation_tests"
+      ],
+      "returncode": 0,
+      "seconds": 81.36,
+      "log": {
+        "path": ".cache/ace-sql-numeric-connected-access-20261112.log",
+        "sha256": "830936c2d94133900175212f8a437170ccb970efd9dbdc337b4be80becbd889d"
+      },
+      "test_summaries": [
+        {
+          "passed": 11,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "journal-only",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "journal",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "numeric_index_create::tests",
+        "fresh_index_create::tests"
+      ],
+      "returncode": 0,
+      "seconds": 77.28,
+      "log": {
+        "path": ".cache/ace-sql-numeric-connected-journal-only-20261112.log",
+        "sha256": "cc32776719a3cb105bcb54bcc94f02b8e777cf2376167ef0e1452613a7255586"
+      },
+      "test_summaries": [
+        {
+          "passed": 6,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "access-minimal",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--lib",
+        "--no-default-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "numeric_index_tests",
+        "fresh_index_tests"
+      ],
+      "returncode": 0,
+      "seconds": 38.99,
+      "log": {
+        "path": ".cache/ace-sql-numeric-connected-access-minimal-20261112.log",
+        "sha256": "b9609b5e38e388eace80b26a24b2c5025e9f2c5aee90471863ff71fe6b8fbcce"
+      },
+      "test_summaries": [
+        {
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "runtime-minimal",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-runtime",
+        "--no-default-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 4.72,
+      "log": {
+        "path": ".cache/ace-sql-numeric-connected-runtime-minimal-20261112.log",
+        "sha256": "ad2dc03f5f0c371af2d2c0b9fd84e6fff1d55c55e9f5008d0ff1d0df0d363b63"
+      }
+    },
+    {
+      "job": "creation-only",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "ace16-create",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 3.09,
+      "log": {
+        "path": ".cache/ace-sql-numeric-connected-creation-only-20261112.log",
+        "sha256": "2a898648c89c4c8f51af579560f5951a7c0dd6488ed5ab337e554469c1523861"
+      }
+    },
+    {
+      "job": "minimal",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 2.64,
+      "log": {
+        "path": ".cache/ace-sql-numeric-connected-minimal-20261112.log",
+        "sha256": "28d940c74e7e57a9332fb30e8dceebee3ab13bde61680f95d4b05a8fe1260ca5"
+      }
+    },
+    {
+      "job": "rustdoc",
+      "command": [
+        "cargo",
+        "doc",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-runtime",
+        "--all-features",
+        "--no-deps",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 21.73,
+      "log": {
+        "path": ".cache/ace-sql-numeric-connected-rustdoc-20261112.log",
+        "sha256": "eb90e60fdfefdb2fde88aaa5013adcd1730881107254f6f661fb5fb55a3d5c74"
+      }
+    },
+    {
+      "job": "runtime",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-runtime",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 48.02,
+      "log": {
+        "path": ".cache/ace-sql-numeric-repaired-runtime-20261112.log",
+        "sha256": "16c00353bfa93b1ce1ad747af76b640d3d40861a7ad18f464cd06879750725c9"
+      },
+      "test_summaries": [
+        {
+          "passed": 441,
+          "failed": 0,
+          "ignored": 1
+        }
+      ]
+    },
+    {
+      "job": "desktop",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-desktop",
+        "--bin",
+        "tablecraft-desktop",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "query_action::tests::schema::index_creation",
+        "query_action::tests::schema::index_drop"
+      ],
+      "returncode": 0,
+      "seconds": 53.73,
+      "log": {
+        "path": ".cache/ace-sql-numeric-repaired-desktop-20261112.log",
+        "sha256": "4dda9cf4be912058972ae76d2053d9849555826f47b1c801f6d39bac481ef7e9"
+      },
+      "test_summaries": [
+        {
+          "passed": 5,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "strict",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-runtime",
+        "-p",
+        "tablecraft-desktop",
+        "-p",
+        "tablecraft-cli",
+        "-p",
+        "tablecraft-mcp",
+        "--all-targets",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "seconds": 50.02,
+      "log": {
+        "path": ".cache/ace-sql-numeric-repaired-strict-20261112.log",
+        "sha256": "52d229927a4993ec901aaf81a9e994911bd31b807ac0235f36995dc610ddca26"
+      }
+    }
+  ],
+  "repaired_failures": [
+    {
+      "job": "runtime",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-runtime",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 101,
+      "seconds": 46.68,
+      "log": {
+        "path": ".cache/ace-sql-numeric-connected-runtime-20261112.log",
+        "sha256": "80a16614360cb246b04d72ab587eafafa4e4c7f473a06d928e8ea9b7956448ad"
+      }
+    },
+    {
+      "job": "desktop",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-desktop",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "query_action::tests::schema::index_creation",
+        "query_action::tests::schema::index_drop"
+      ],
+      "returncode": 101,
+      "seconds": 0.61,
+      "log": {
+        "path": ".cache/ace-sql-numeric-connected-desktop-20261112.log",
+        "sha256": "894d28b5f049e0b4041ce5b9fa8324d84dd722e24409dd7b4860a8e07f5b1240"
+      }
+    },
+    {
+      "job": "strict",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-runtime",
+        "-p",
+        "tablecraft-desktop",
+        "-p",
+        "tablecraft-cli",
+        "-p",
+        "tablecraft-mcp",
+        "--all-targets",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 101,
+      "seconds": 29.15,
+      "log": {
+        "path": ".cache/ace-sql-numeric-connected-strict-20261112.log",
+        "sha256": "70d2ac9ec17a04290f23014606eea60c06a9c5ae08392b6204de8c2442774cad"
+      }
+    }
+  ],
+  "repair_notes": [
+    "Initial numeric AFTER certification used the older retained-schema declaration family and refused newly indexed Boolean/IEEE/Date fields. Commit 817545d59 gives numeric BEFORE/AFTER observation a separate readonly purpose without changing old row/action eligibility.",
+    "Runtime and strict compile failures referenced a nonexistent UnsupportedColumn variant. Commit 8ff34308f changes the unsupported metadata branch and its assertion to the existing InspectError::Unsupported.",
+    "The initial Desktop harness incorrectly selected --lib for a binary-only package. The repaired command selects --bin tablecraft-desktop and executes all five selected workflows."
+  ],
+  "resource_measurement": {
+    "kind": "Temporary ignored test overlay using the same complete independent-image comparison; removed after execution.",
+    "log": {
+      "path": ".cache/ace-sql-numeric-total-cost-20261112.log",
+      "sha256": "393c9179a73cc43eb6c2e61cf6d3cce3fca842e7c705b87ab36855f035826d07"
+    },
+    "diagnostic_pool_bytes": 8589934592,
+    "measurements": [
+      {
+        "rows": 3000,
+        "descending": false,
+        "before_bytes": 212992,
+        "after_bytes": 262144,
+        "spent_bytes": 49721026,
+        "remaining_bytes": 8540213566,
+        "spent_rows": 62174,
+        "remaining_rows": 337826,
+        "spent_steps": 6918792,
+        "remaining_steps": 129081208
+      },
+      {
+        "rows": 3000,
+        "descending": true,
+        "before_bytes": 212992,
+        "after_bytes": 262144,
+        "spent_bytes": 49702530,
+        "remaining_bytes": 8540232062,
+        "spent_rows": 62174,
+        "remaining_rows": 337826,
+        "spent_steps": 6818304,
+        "remaining_steps": 129181696
+      },
+      {
+        "rows": 200000,
+        "descending": false,
+        "before_bytes": 8122368,
+        "after_bytes": 10608640,
+        "spent_bytes": 2396606162,
+        "remaining_bytes": 6193328430,
+        "spent_rows": 4002174,
+        "remaining_rows": 16097826,
+        "spent_steps": 1730788831,
+        "remaining_steps": 6285211169
+      },
+      {
+        "rows": 200000,
+        "descending": true,
+        "before_bytes": 8122368,
+        "after_bytes": 10612736,
+        "spent_bytes": 2396684381,
+        "remaining_bytes": 6193250211,
+        "spent_rows": 4002174,
+        "remaining_rows": 16097826,
+        "spent_steps": 1724395234,
+        "remaining_steps": 6291604766
+      }
+    ],
+    "meaning": "Bytes are cumulative charged reads/allocations, not resident memory or an Access file-size limit. Active fixture allowances scale with row population; the final normal acceptance tests pass.",
+    "prior_budget_failures": [
+      {
+        "log": ".cache/ace-sql-numeric-native-native-20261112.log",
+        "sha256": "0457f74509cd9aec728dd1fc1f75097bc885787ac3e1c1fe74802e9fd2619308"
+      },
+      {
+        "log": ".cache/ace-sql-numeric-reuse-native-20261112.log",
+        "sha256": "7349e1920e151d0ec9818caaa562d2e711be7b9ab4e20e40f04a8db70a768db1"
+      }
+    ]
+  },
+  "limitations": [
+    "Text/Binary/Decimal/GUID, extended Date/Time, compound, UNIQUE, PRIMARY and foreign-key index construction remain unsupported by this numeric route.",
+    "Numeric CREATE does not qualify numeric DROP INDEX or additional row-write source languages.",
+    "Index-name namespace and retained-source/native geometry restrictions remain explicit. Native Access timestamp/order parity is not established.",
+    "Runtime ignored genuine_jet4_reviewed_cell_save_matches_independent_whole_image requires its separate pinned fixture and did not execute.",
+    "No new native window, Windows/Access execution or full ACE SQL compatibility is claimed."
+  ]
+}

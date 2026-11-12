@@ -1,5 +1,22 @@
 # Implementation status
 
+## Numeric index creation workflows — 12 November 2026
+
+The [numeric index checkpoint](../tests/results/indexes/numeric-index-workflows-2026-11-12.json)
+records ordinary single-field Boolean, Byte, Int16/Int64, Currency, Single/Double
+and legacy Date/Time index creation through the native TCIC0003 original,
+source-bound adapter, shared Runtime and normal headless Desktop SQL Run. Int32
+retains its existing original/fresh metadata policy. Full-image tests cover
+56 native checks, 11 adapter checks, 441 Runtime passes with one explicit ignore,
+and five selected Desktop workflows. Strict lint, feature boundaries and Rustdoc
+pass. These counts overlap; they do not establish complete ACE SQL compatibility.
+
+Producer, independent BEFORE proof and AFTER proof keep separate inventories;
+each reuses only its own immutable image-bound certificate. Resource accounting
+for the largest fixture was measured before scaling its test allowance. Numeric
+creation does not expand row-write languages, numeric DROP, constrained/compound
+keys, unsupported source profiles or native Windows/Access qualification.
+
 ## Release SQL workflow checkpoint — 12 November 2026
 
 The [release checkpoint](../tests/results/queries/ace-sql-release-workflows-2026-11-12.json)
