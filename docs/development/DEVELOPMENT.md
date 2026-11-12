@@ -79,6 +79,13 @@ the desktop, and `cargo run -- --mock` starts the presentation preview. Select
 `-p tablecraft-cli` for the CLI. Use `--workspace` or an explicit `-p` selection
 for checks that must cover more than the default desktop package.
 
+Local Cargo verification uses the default workspace-root `target/` directory.
+Use `--release` for `cargo build`, `run`, `test`, `check` and `clippy`, and do not
+set a custom `CARGO_TARGET_DIR` or create dated target caches. Reuse the release
+artifacts between batches. The initial optimized build takes longer; subsequent
+checks reuse that same output. CI retains the profiles declared in its workflows.
+Fixtures, source snapshots and verification records are not compiler output.
+
 Run from the repository root:
 
 ```sh
@@ -87,34 +94,34 @@ python3 scripts/check_documentation_links.py
 python3 scripts/check_dependency_boundaries.py
 python3 -m unittest discover -s scripts -p 'test_*.py'
 python3 -m unittest discover -s scripts/tests -p 'test_*.py'
-cargo check -p tablecraft-schema --no-default-features --locked
-cargo check -p tablecraft-query --no-default-features --locked
-cargo check -p tablecraft-model --no-default-features --locked
-cargo check -p tablecraft-db --no-default-features --locked
-cargo check -p tablecraft-io --no-default-features --locked
-cargo check -p tablecraft-crypto --no-default-features --locked
-cargo check -p tablecraft-formats --no-default-features --locked
-cargo check -p tablecraft-testkit --no-default-features --locked
-cargo check -p tablecraft-ace --no-default-features --locked
-cargo clippy -p tablecraft-ace --all-targets --all-features --locked -- -D warnings
-cargo test -p tablecraft-ace --all-features --locked
-cargo check -p tablecraft-access --no-default-features --locked
-cargo check -p tablecraft-sqlite --no-default-features --locked
-cargo clippy -p tablecraft-sqlite --all-targets --all-features --locked -- -D warnings
-cargo test -p tablecraft-sqlite --all-features --locked
-cargo clippy --workspace --all-targets --no-default-features --locked -- -D warnings
-cargo test --workspace --no-default-features --locked
-cargo clippy -p tablecraft-io --all-targets --all-features --locked -- -D warnings
-cargo test -p tablecraft-io --all-features --locked
-cargo clippy -p tablecraft-expressions --all-targets --no-default-features --locked -- -D warnings
-cargo test -p tablecraft-expressions --no-default-features --locked
-cargo clippy -p tablecraft-expressions --all-targets --all-features --locked -- -D warnings
-cargo test -p tablecraft-expressions --all-features --locked
-cargo clippy -p tablecraft-core --all-targets --all-features --locked -- -D warnings
-cargo test -p tablecraft-core --all-features --locked
+cargo check --release -p tablecraft-schema --no-default-features --locked
+cargo check --release -p tablecraft-query --no-default-features --locked
+cargo check --release -p tablecraft-model --no-default-features --locked
+cargo check --release -p tablecraft-db --no-default-features --locked
+cargo check --release -p tablecraft-io --no-default-features --locked
+cargo check --release -p tablecraft-crypto --no-default-features --locked
+cargo check --release -p tablecraft-formats --no-default-features --locked
+cargo check --release -p tablecraft-testkit --no-default-features --locked
+cargo check --release -p tablecraft-ace --no-default-features --locked
+cargo clippy --release -p tablecraft-ace --all-targets --all-features --locked -- -D warnings
+cargo test --release -p tablecraft-ace --all-features --locked
+cargo check --release -p tablecraft-access --no-default-features --locked
+cargo check --release -p tablecraft-sqlite --no-default-features --locked
+cargo clippy --release -p tablecraft-sqlite --all-targets --all-features --locked -- -D warnings
+cargo test --release -p tablecraft-sqlite --all-features --locked
+cargo clippy --release --workspace --all-targets --no-default-features --locked -- -D warnings
+cargo test --release --workspace --no-default-features --locked
+cargo clippy --release -p tablecraft-io --all-targets --all-features --locked -- -D warnings
+cargo test --release -p tablecraft-io --all-features --locked
+cargo clippy --release -p tablecraft-expressions --all-targets --no-default-features --locked -- -D warnings
+cargo test --release -p tablecraft-expressions --no-default-features --locked
+cargo clippy --release -p tablecraft-expressions --all-targets --all-features --locked -- -D warnings
+cargo test --release -p tablecraft-expressions --all-features --locked
+cargo clippy --release -p tablecraft-core --all-targets --all-features --locked -- -D warnings
+cargo test --release -p tablecraft-core --all-features --locked
 cargo build --workspace --release --no-default-features --locked
-RUSTDOCFLAGS="-D warnings" cargo doc --workspace --all-features --no-deps --locked
-cargo run --locked -p tablecraft-cli -- --version
+RUSTDOCFLAGS="-D warnings" cargo doc --release --workspace --all-features --no-deps --locked
+cargo run --release --locked -p tablecraft-cli -- --version
 ```
 
 `check_rust_format.py` uses locked Cargo metadata to retain every workspace

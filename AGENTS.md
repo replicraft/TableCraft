@@ -500,6 +500,12 @@ before large builds. Prune obsolete compiler cache states when needed; preserve
 retained fixtures, pinned reference tools, executed binaries used as evidence and
 verification records. Do not disable incremental compilation as a cleanup policy.
 
+For local Cargo verification, use the workspace-root `target/` directory and
+`--release` for builds, tests, checks and Clippy. Do not create custom or dated
+Cargo target directories or override `CARGO_TARGET_DIR`. CI retains its explicitly
+configured profiles. Keep generated compiler output separate from fixtures,
+source snapshots and captured verification records.
+
 Run applicable formatting, lint, test and build checks from the development
 guide. Report unavailable environments and unrun checks accurately. A native
 Access compatibility claim requires actual Access comparison evidence; a
