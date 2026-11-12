@@ -13,28 +13,55 @@ use tablecraft_testkit::fixtures::access::{
 
 fn source(mode: Option<i32>) -> (Vec<u8>, u32) {
     let source = joined_update::source();
-    let bytes = mode.unwrap_or(0).to_le_bytes();
-    let properties = match mode {
-        Some(_) => database_properties::query_modes(&[(1, 4, &bytes)]),
-        None => database_properties::query_modes(&[]),
+    let bytes = match mode {
+        Some(mode) => database_properties::with_native17_properties(
+            &source.bytes,
+            &database_properties::name_auto_correct_disabled_with_query_mode(mode),
+        ),
+        None => source.bytes,
     };
-    (
-        database_properties::with_native17_properties(&source.bytes, &properties),
-        source.target_definition,
+    (bytes, source.target_definition)
+}
+
+#[cfg(feature = "ace16-create")]
+fn native_image(before: &[u8]) -> tablecraft_ace::NativeImage {
+    tablecraft_ace::NativeImage::capture_retained(
+        &mut std::io::Cursor::new(before),
+        crate::controls::SCOPE,
+        &mut crate::controls::budget(),
+        &|| false,
     )
+    .unwrap()
+}
+
+#[cfg(feature = "ace16-create")]
+fn require_native_update_source(before: &[u8], table: &str) {
+    let observed = native_image(before).check_native_retained_cell_updates_table(
+        table,
+        &mut crate::controls::budget(),
+        &|| false,
+    );
+    assert!(
+        observed.is_ok(),
+        "LIKE fixture native source for {table}: {observed:?}"
+    );
 }
 
 #[test]
-fn update_like_binds_native_ansi_modes_and_saves_only_original_matching_handles() {
+fn update_nullable_text_like_binds_native_ansi_modes_and_original_matching_handles() {
     for (mode, pattern, matched) in [(0, "1*", 1), (0, "1%", 0), (1, "1%", 1), (1, "1*", 0)] {
         let (before, definition) = source(Some(mode));
+        #[cfg(feature = "ace16-create")]
+        require_native_update_source(&before, "Table1");
         let expected = if matched == 0 {
             before.clone()
         } else {
             field_changes::update_score(&before, definition, 0, Some(25))
         };
         let (_directory, path, worker, revision) = opened(&before);
-        let sql = format!("UPDATE Table1 SET Score=25 WHERE Score LIKE '{pattern}'");
+        let sql = format!(
+            "UPDATE Table1 SET Score=25 WHERE IIf(Score IS NULL,NULL,'17') LIKE '{pattern}'"
+        );
         let (target, _) = inspect(&worker, revision, &sql);
         let Response::QueryUpdateReviewed { review, capability } = request(
             &worker,
@@ -79,9 +106,12 @@ fn update_like_binds_native_ansi_modes_and_saves_only_original_matching_handles(
 fn delete_not_like_preserves_null_unknown_and_exact_native_after_in_both_modes() {
     for (mode, pattern) in [(0, "z*"), (1, "z%")] {
         let (before, definition) = source(Some(mode));
+        #[cfg(feature = "ace16-create")]
+        require_native_update_source(&before, "Table1");
         let expected = deletes::after(&before, definition, &[0]);
         let (_directory, path, worker, revision) = opened(&before);
-        let sql = format!("DELETE FROM Table1 WHERE Score NOT LIKE '{pattern}'");
+        let sql =
+            format!("DELETE FROM Table1 WHERE IIf(Score IS NULL,NULL,'17') NOT LIKE '{pattern}'");
         let (target, _) = inspect(&worker, revision, &sql);
         let Response::QueryDeleteReviewed { review, capability } = request(
             &worker,
@@ -131,17 +161,21 @@ fn missing_unknown_modes_and_eager_late_errors_never_issue_a_save_capability() {
         let (before, _) = source(mode);
         let (_directory, path, worker, revision) = opened(&before);
         let (sql, expected) = match mode {
-            None | Some(2) => (
+            None => (
                 "UPDATE Table1 SET Score=25 WHERE '17' LIKE '1*'".to_string(),
-                EvalError::LikeModeRequired,
+                QueryError::Evaluation(EvalError::LikeModeRequired),
+            ),
+            Some(2) => (
+                "UPDATE Table1 SET Score=25 WHERE '17' LIKE '1*'".to_string(),
+                QueryError::Unsupported,
             ),
             _ => {
                 let pattern = if mode == Some(0) { "1*" } else { "1%" };
                 (
                     format!(
-                        "UPDATE Table1 SET Score=25 WHERE Score LIKE IIf(ID=2,CStr(10 \\ (2-ID)),'{pattern}')"
+                        "UPDATE Table1 SET Score=25 WHERE '17' LIKE IIf(ID=2,10 \\ (2-ID),'{pattern}')"
                     ),
-                    EvalError::DivisionByZero,
+                    QueryError::Evaluation(EvalError::DivisionByZero),
                 )
             }
         };
@@ -153,12 +187,40 @@ fn missing_unknown_modes_and_eager_late_errors_never_issue_a_save_capability() {
                 parameters: Vec::new(),
             },
         );
-        assert!(
-            matches!(result,
-            Err(Error::QueryUpdate(RecoverableError::Plan(UpdateError::Query(QueryError::Evaluation(actual)))))
-            if actual == expected),
-            "mode {mode:?}: {sql}"
-        );
+        let actual = match result {
+            Err(Error::QueryUpdate(RecoverableError::Plan(UpdateError::Query(actual)))) => actual,
+            Err(error) => panic!("unexpected action error for mode {mode:?}, {sql}: {error:?}"),
+            Ok(_) => panic!("failed criteria issued a capability for mode {mode:?}: {sql}"),
+        };
+        assert_eq!(actual, expected, "mode {mode:?}: {sql}");
+        #[cfg(feature = "ace16-create")]
+        if mode == Some(2) {
+            let image = native_image(&before);
+            assert!(
+                tablecraft_access::editing::sql::native_mutation_like_mode(
+                    &image,
+                    tablecraft_sql::parse_query(&sql, tablecraft_sql::ParseLimits::default())
+                        .unwrap()
+                        .query(),
+                    &mut crate::controls::budget(),
+                    &mut crate::controls::budget(),
+                    &|| false,
+                )
+                .unwrap()
+                .is_none(),
+                "unknown setting is observed without a fabricated mode"
+            );
+            assert!(
+                image
+                    .check_native_retained_cell_updates_table(
+                        "Table1",
+                        &mut crate::controls::budget(),
+                        &|| false
+                    )
+                    .is_err(),
+                "unknown setting is not native source authority"
+            );
+        }
         assert_image(&std::fs::read(&path).unwrap(), &before);
         assert!(!crate::journal_path(&path).exists());
         // The absent native setting does not prevent unrelated criteria.
@@ -193,8 +255,10 @@ fn stored_text_criteria_keep_native_policy_and_typed_companions_through_review_s
         before = mixed::update_text(&before, definition, 0, Some("Apple"));
         before = mixed::update_number(&before, definition, 1, None);
         before = mixed::update_currency(&before, definition, 1, None);
-        let properties = database_properties::query_modes(&[(1, 4, &mode.to_le_bytes())]);
+        let properties = database_properties::name_auto_correct_disabled_with_query_mode(mode);
         let before = database_properties::with_native17_properties(&before, &properties);
+        #[cfg(feature = "ace16-create")]
+        require_native_update_source(&before, "Measurements");
         let expected = mixed::update_number(&before, definition, 0, Some(25));
         let (_directory, path, worker, revision) = opened(&before);
         let sql = format!("UPDATE Measurements SET Score=25 WHERE Label LIKE '{pattern}'");
@@ -249,7 +313,7 @@ fn conflicting_stored_text_policies_refuse_joined_like_without_source_effects() 
     let sort = other as usize * 4096 + 150 + 11;
     assert_eq!(&before[sort..sort + 4], &[9, 4, 0, 1]);
     before[sort..sort + 4].copy_from_slice(&[9, 4, 0, 0]);
-    let properties = database_properties::query_modes(&[(1, 4, &0_i32.to_le_bytes())]);
+    let properties = database_properties::name_auto_correct_disabled_with_query_mode(0);
     let before = database_properties::with_native17_properties(&before, &properties);
     let (_directory, path, worker, revision) = opened(&before);
     let sql = "UPDATE Measurements AS a INNER JOIN Patterns AS b ON a.ID=b.ID SET a.Score=25 WHERE a.Label LIKE b.Label";
@@ -261,12 +325,60 @@ fn conflicting_stored_text_policies_refuse_joined_like_without_source_effects() 
             parameters: Vec::new(),
         },
     );
-    assert!(matches!(
-        result,
-        Err(Error::QueryUpdate(RecoverableError::Plan(
-            UpdateError::Query(QueryError::CollationConflict)
-        )))
-    ));
+    let actual = match result {
+        Err(Error::QueryUpdate(RecoverableError::Plan(UpdateError::Query(actual)))) => actual,
+        Err(error) => panic!("unexpected joined LIKE action error: {error:?}"),
+        Ok(_) => panic!("conflicting stored policies issued a capability"),
+    };
+    assert_eq!(actual, QueryError::CollationConflict);
     assert_image(&std::fs::read(&path).unwrap(), &before);
     assert!(!crate::journal_path(&path).exists());
+}
+
+#[test]
+fn numeric_like_requires_an_explicit_number_format_before_update_or_delete_review() {
+    for mode in [0, 1] {
+        let (before, _) = source(Some(mode));
+        #[cfg(feature = "ace16-create")]
+        require_native_update_source(&before, "Table1");
+        let (_directory, path, worker, revision) = opened(&before);
+        for delete in [false, true] {
+            let sql = if delete {
+                "DELETE FROM Table1 WHERE Score LIKE '1*'"
+            } else {
+                "UPDATE Table1 SET Score=25 WHERE Score LIKE '1*'"
+            };
+            let (target, _) = inspect(&worker, revision, sql);
+            let command = if delete {
+                Command::ReviewQueryDelete {
+                    target,
+                    parameters: Vec::new(),
+                }
+            } else {
+                Command::ReviewQueryUpdate {
+                    target,
+                    parameters: Vec::new(),
+                }
+            };
+            let actual = match request(&worker, command) {
+                Err(Error::QueryUpdate(RecoverableError::Plan(UpdateError::Query(actual)))) => {
+                    actual
+                }
+                Err(Error::QueryDelete(
+                    tablecraft_access::editing::sql::RecoverableDeleteError::Plan(
+                        tablecraft_query::DeleteError::Query(actual),
+                    ),
+                )) => actual,
+                Err(error) => panic!("unexpected numeric LIKE failure for {sql}: {error:?}"),
+                Ok(_) => panic!("numeric LIKE invented a number-format policy for {sql}"),
+            };
+            assert_eq!(
+                actual,
+                QueryError::Evaluation(EvalError::NumberFormatRequired),
+                "mode {mode}: {sql}"
+            );
+            assert_image(&std::fs::read(&path).unwrap(), &before);
+            assert!(!crate::journal_path(&path).exists());
+        }
+    }
 }

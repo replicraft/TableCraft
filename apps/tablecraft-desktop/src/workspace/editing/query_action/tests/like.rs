@@ -13,7 +13,7 @@ use tablecraft_testkit::fixtures::access::{
 
 fn source(mode: i32) -> (Vec<u8>, u32) {
     let source = joined_update::source();
-    let properties = database_properties::query_modes(&[(1, 4, &mode.to_le_bytes())]);
+    let properties = database_properties::name_auto_correct_disabled_with_query_mode(mode);
     (
         database_properties::with_native17_properties(&source.bytes, &properties),
         source.target_definition,
@@ -33,7 +33,7 @@ fn normal_run_like_update_observes_database_mode_no_yes_save_ack_and_reopen() {
         before = mixed::update_currency(&before, definition, 0, Some(12345));
         before = mixed::update_text(&before, definition, 0, Some("Apple"));
         before = mixed::update_number(&before, definition, 1, None);
-        let properties = database_properties::query_modes(&[(1, 4, &mode.to_le_bytes())]);
+        let properties = database_properties::name_auto_correct_disabled_with_query_mode(mode);
         let before = database_properties::with_native17_properties(&before, &properties);
         let expected = mixed::update_number(&before, definition, 0, Some(25));
         let (_directory, path, before, mut harness) = opened(before);
@@ -116,9 +116,7 @@ fn like_late_error_and_unknown_mode_retain_previous_result_without_review_or_sav
             "UPDATE Table1 SET Score=25 WHERE '17' LIKE '1*'".into()
         } else {
             let pattern = if mode == 0 { "1*" } else { "1%" };
-            format!(
-                "UPDATE Table1 SET Score=25 WHERE Score LIKE IIf(ID=2,CStr(10 \\ (2-ID)),'{pattern}')"
-            )
+            format!("UPDATE Table1 SET Score=25 WHERE '17' LIKE IIf(ID=2,10 \\ (2-ID),'{pattern}')")
         };
         assert!(harness.state_mut().state.replace_query_sql(sql));
         harness.run_steps(2);

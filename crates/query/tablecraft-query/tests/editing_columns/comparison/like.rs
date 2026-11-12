@@ -57,12 +57,12 @@ fn criteria_like_retains_mode_errors_eager_operands_and_assignment_refusal() {
             QueryError::Evaluation(EvalError::LikeModeRequired),
         ),
         (
-            "UPDATE Items SET Score=77 WHERE Null LIKE CStr(10 \\ 0)",
+            "UPDATE Items SET Score=77 WHERE Null LIKE (10 \\ 0)",
             Some(LikeMode::Ansi89),
             QueryError::Evaluation(EvalError::DivisionByZero),
         ),
         (
-            "UPDATE Items SET Score=77 WHERE False AND Name LIKE CStr(10 \\ 0)",
+            "UPDATE Items SET Score=77 WHERE False AND Name LIKE (10 \\ 0)",
             Some(LikeMode::Ansi89),
             QueryError::Evaluation(EvalError::DivisionByZero),
         ),
@@ -86,10 +86,12 @@ fn criteria_like_retains_mode_errors_eager_operands_and_assignment_refusal() {
             },
             &|| false,
         );
-        assert!(
-            matches!(result, Err(UpdateError::Query(actual)) if actual == expected),
-            "{sql}"
-        );
+        let actual = match result {
+            Err(UpdateError::Query(actual)) => actual,
+            Err(error) => panic!("unexpected backend error for {sql}: {error:?}"),
+            Ok(_) => panic!("criteria unexpectedly produced a plan for {sql}"),
+        };
+        assert_eq!(actual, expected, "{sql}");
         assert_eq!(calls.get(), 0, "no backend prefix for {sql}");
     }
 }
