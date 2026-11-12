@@ -102,3 +102,5 @@ fn create_index_run_preserves_source_on_no_then_saves_one_schema_only_operation(
         assert_image(&std::fs::read(path).unwrap(), &expected);
     }
 }
+
+mod numeric;
