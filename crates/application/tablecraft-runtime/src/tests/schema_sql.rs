@@ -16,6 +16,8 @@ mod index_creation;
 mod index_drop;
 #[cfg(feature = "ace16-create")]
 mod make_table;
+#[cfg(feature = "ace16-create")]
+mod unique_lifecycle;
 
 fn inspect(worker: &Worker, revision: u64, sql: &str) -> Arc<InspectedQuery> {
     let Response::QueryParameters { target, .. } = request(
