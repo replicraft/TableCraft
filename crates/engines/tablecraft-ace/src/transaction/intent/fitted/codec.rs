@@ -343,6 +343,37 @@ impl NativeFittedEditIntent {
         )
     }
 
+    /// Encode exactly TCNI27 one-column original Currency batches.
+    ///
+    /// # Errors
+    /// Rejects a different original grammar, invalid record representation,
+    /// allocation failure, cancellation or exhausted caller work.
+    pub fn encode_retained_currency_column_batch(
+        &self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<u8>, NativeIntentError> {
+        self.encode_profile(WireProfile::RetainedCurrencyColumnBatch, budget, cancelled)
+    }
+
+    /// Decode TCNI27 data without granting native source or recovery authority.
+    ///
+    /// # Errors
+    /// Rejects unknown framing, names, carriers, cardinality or identities and
+    /// propagates allocation, cancellation and caller-work failures.
+    pub fn decode_retained_currency_column_batch(
+        bytes: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        read::decode(
+            bytes,
+            WireProfile::RetainedCurrencyColumnBatch,
+            budget,
+            cancelled,
+        )
+    }
+
     /// Encode only TCNI24 named fixed groups with zero row assignments.
     /// Native source and target qualification remain consuming checks.
     ///

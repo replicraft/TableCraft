@@ -1,4 +1,4 @@
-//! Atomic retained LONG column batches bind every original before staging pages.
+//! Atomic retained scalar batches bind every original before staging pages.
 mod proof;
 #[cfg(test)]
 mod tests;
@@ -29,18 +29,21 @@ use tablecraft_core::{
 #[derive(Clone, Copy)]
 enum Policy {
     Long,
+    Currency,
 }
 
 impl Policy {
     fn family(self) -> Family {
         match self {
             Self::Long => Family::Retained,
+            Self::Currency => Family::RetainedCurrency,
         }
     }
 
     fn accepts_count(self, count: usize) -> bool {
         match self {
             Self::Long => count >= 2,
+            Self::Currency => count != 1,
         }
     }
 }
@@ -73,7 +76,25 @@ fn bind<'value>(
     // Validate the whole original group, including duplicate target identities,
     // before the old single-cell binder inspects each borrowed request.
     let family = policy.family();
-    retained_column_shape(source, group, family, budget, cancelled)?;
+    let position = retained_column_shape(source, group, family, budget, cancelled)?;
+    if matches!(policy, Policy::Currency) && updates.is_empty() {
+        let schema = source.facts().table.schema();
+        let field = &schema.columns()[position];
+        for index in source.facts().indexes.indexes() {
+            for key in index.columns() {
+                check(budget, cancelled)?;
+                if key.number() == field.number() {
+                    return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+                }
+            }
+        }
+
+        for record in &source.facts().records {
+            check(budget, cancelled)?;
+            family.qualify_record(schema, position, &record.data, budget, cancelled)?;
+        }
+    }
+
     budget
         .charge_allocation(updates.len() as u64, size_of::<Request<'_>>() as u64)
         .map_err(InspectError::from)?;
@@ -104,6 +125,17 @@ impl NativeImage {
     ) -> Result<NativeEditPlan, EditError> {
         let _span = tracing::debug_span!("native.retained_long_column_batch.plan").entered();
         plan(self, table, groups, Policy::Long, budget, cancelled)
+    }
+
+    pub(crate) fn plan_retained_currency_column_batch_updates(
+        self,
+        table: &str,
+        groups: &[FittedColumnUpdates<'_>],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<NativeEditPlan, EditError> {
+        let _span = tracing::debug_span!("native.retained_currency_column_batch.plan").entered();
+        plan(self, table, groups, Policy::Currency, budget, cancelled)
     }
 }
 

@@ -39,6 +39,10 @@ const RETAINED_LONG_COLUMN_BATCH_PROFILE: u16 = 25;
 pub(in crate::transaction::intent) const RETAINED_INDEXED_LONG_MAGIC: &[u8; 8] = b"TCNI0026";
 const RETAINED_INDEXED_LONG_PROFILE: u16 = 26;
 
+pub(in crate::transaction::intent) const RETAINED_CURRENCY_COLUMN_BATCH_MAGIC: &[u8; 8] =
+    b"TCNI0027";
+const RETAINED_CURRENCY_COLUMN_BATCH_PROFILE: u16 = 27;
+
 #[derive(Clone, Copy)]
 pub(in crate::transaction::intent) enum WireProfile {
     Fitted,
@@ -55,6 +59,7 @@ pub(in crate::transaction::intent) enum WireProfile {
     RetainedBooleanMaterialization,
     RetainedEmptyRows,
     RetainedLongColumnBatch,
+    RetainedCurrencyColumnBatch,
     RetainedIndexedLong,
 }
 
@@ -63,6 +68,7 @@ impl WireProfile {
         match self {
             Self::RetainedIndexedLong => Grammar::RetainedIndexedLong,
             Self::RetainedLongColumnBatch => Grammar::RetainedLongColumnBatch,
+            Self::RetainedCurrencyColumnBatch => Grammar::RetainedCurrencyColumnBatch,
             Self::RetainedEmptyRows => Grammar::RetainedEmpty,
             Self::RetainedFixedScalarRows => Grammar::RetainedFixedScalars,
             Self::RetainedWideValueRows => Grammar::RetainedWideValues,
@@ -79,6 +85,7 @@ impl WireProfile {
         match self {
             Self::RetainedIndexedLong => RETAINED_INDEXED_LONG_MAGIC,
             Self::RetainedLongColumnBatch => RETAINED_LONG_COLUMN_BATCH_MAGIC,
+            Self::RetainedCurrencyColumnBatch => RETAINED_CURRENCY_COLUMN_BATCH_MAGIC,
             Self::RetainedEmptyRows => RETAINED_EMPTY_ROWS_MAGIC,
             Self::Fitted => MAGIC,
             Self::OwnedOnly => OWNED_GROWTH_MAGIC,
@@ -99,6 +106,7 @@ impl WireProfile {
         match self {
             Self::RetainedIndexedLong => RETAINED_INDEXED_LONG_PROFILE,
             Self::RetainedLongColumnBatch => RETAINED_LONG_COLUMN_BATCH_PROFILE,
+            Self::RetainedCurrencyColumnBatch => RETAINED_CURRENCY_COLUMN_BATCH_PROFILE,
             Self::RetainedEmptyRows => RETAINED_EMPTY_ROWS_PROFILE,
             Self::Fitted => PROFILE,
             Self::OwnedOnly => OWNED_GROWTH_PROFILE,

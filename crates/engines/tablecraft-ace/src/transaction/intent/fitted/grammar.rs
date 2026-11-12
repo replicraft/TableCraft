@@ -11,6 +11,7 @@ pub(super) enum Grammar {
     Legacy,
     RetainedEmpty,
     RetainedLongColumnBatch,
+    RetainedCurrencyColumnBatch,
     RetainedIndexedLong,
     Retained,
     RetainedFixedScalars,
@@ -26,6 +27,7 @@ impl Grammar {
             | Self::RetainedWideValues
             | Self::RetainedEmpty
             | Self::RetainedLongColumnBatch
+            | Self::RetainedCurrencyColumnBatch
             | Self::RetainedIndexedLong => u32::MAX as usize,
         }
     }
@@ -38,13 +40,16 @@ impl Grammar {
             | Self::RetainedFixedScalars
             | Self::RetainedWideValues
             | Self::RetainedLongColumnBatch
+            | Self::RetainedCurrencyColumnBatch
             | Self::RetainedIndexedLong => u32::MAX as usize,
         }
     }
 
     pub(super) const fn groups(self) -> usize {
         match self {
-            Self::RetainedLongColumnBatch | Self::RetainedIndexedLong => 1,
+            Self::RetainedLongColumnBatch
+            | Self::RetainedCurrencyColumnBatch
+            | Self::RetainedIndexedLong => 1,
             Self::Legacy => NativeImage::MAX_FIXED_BATCH_GROUPS,
             Self::Retained
             | Self::RetainedFixedScalars
@@ -73,6 +78,7 @@ impl Grammar {
             | Self::RetainedWideValues
             | Self::RetainedEmpty
             | Self::RetainedLongColumnBatch
+            | Self::RetainedCurrencyColumnBatch
             | Self::RetainedIndexedLong => binding::retained_length(length),
         }
     }
@@ -90,6 +96,7 @@ impl Grammar {
             | Self::RetainedWideValues
             | Self::RetainedEmpty
             | Self::RetainedLongColumnBatch
+            | Self::RetainedCurrencyColumnBatch
             | Self::RetainedIndexedLong => binding::digest_retained(before, budget, cancelled),
         }
     }
@@ -100,6 +107,12 @@ impl Grammar {
         family: Family,
     ) -> Result<carrier::Encoded<'_>, NativeIntentError> {
         match self {
+            Self::RetainedCurrencyColumnBatch => {
+                if family != Family::Fixed || !matches!(value, Value::Null | Value::Currency(_)) {
+                    return Err(NativeIntentError::InvalidRecord);
+                }
+                carrier::length_prefixed_view(value, family)
+            }
             Self::RetainedLongColumnBatch | Self::RetainedIndexedLong => {
                 if family != Family::Fixed || !matches!(value, Value::Null | Value::Int32(_)) {
                     return Err(NativeIntentError::InvalidRecord);
@@ -123,6 +136,19 @@ impl Grammar {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<carrier::Borrowed<'a>, NativeIntentError> {
         match self {
+            Self::RetainedCurrencyColumnBatch => {
+                if family != Family::Fixed {
+                    return Err(NativeIntentError::InvalidRecord);
+                }
+                let value = carrier::length_prefixed_parse(tag, bytes, family, budget, cancelled)?;
+                if !matches!(
+                    value,
+                    carrier::Borrowed::Scalar(Value::Null | Value::Currency(_))
+                ) {
+                    return Err(NativeIntentError::InvalidRecord);
+                }
+                Ok(value)
+            }
             Self::RetainedLongColumnBatch | Self::RetainedIndexedLong => {
                 if family != Family::Fixed {
                     return Err(NativeIntentError::InvalidRecord);

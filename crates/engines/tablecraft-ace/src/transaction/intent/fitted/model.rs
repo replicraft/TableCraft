@@ -102,6 +102,26 @@ impl NativeFittedIntentGroup {
         )
     }
 
+    /// Original TCNI27 exact Currency group, retaining every requested row.
+    ///
+    /// # Errors
+    /// Rejects invalid names, singleton groups, non-Currency carriers, duplicate
+    /// identities, allocation failure, cancellation and exhausted caller work.
+    pub fn new_retained_currency_column_batch(
+        column: &str,
+        updates: NativeFittedUpdates,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        Self::new_with_grammar(
+            column,
+            updates,
+            Grammar::RetainedCurrencyColumnBatch,
+            budget,
+            cancelled,
+        )
+    }
+
     /// Retain only TCNI21 original exact fixed-scalar carriers.
     pub fn new_retained_fixed_scalars(
         column: &str,
@@ -150,12 +170,16 @@ impl NativeFittedIntentGroup {
             Grammar::RetainedFixedScalars
                 | Grammar::RetainedEmpty
                 | Grammar::RetainedLongColumnBatch
+                | Grammar::RetainedCurrencyColumnBatch
                 | Grammar::RetainedIndexedLong
         ) && !matches!(updates, NativeFittedUpdates::Fixed(_))
         {
             return Err(NativeIntentError::InvalidRecord);
         }
         if grammar == Grammar::RetainedLongColumnBatch && updates.len() < 2 {
+            return Err(NativeIntentError::InvalidRecord);
+        }
+        if grammar == Grammar::RetainedCurrencyColumnBatch && updates.len() == 1 {
             return Err(NativeIntentError::InvalidRecord);
         }
         grammar.name(column, budget, cancelled)?;
@@ -319,6 +343,29 @@ impl NativeFittedEditIntent {
         )
     }
 
+    /// Bind the distinct TCNI27 one-column Currency batch to all BEFORE bytes.
+    ///
+    /// # Errors
+    /// Rejects invalid group/name/carrier framing, source-length representation,
+    /// allocation failure, cancellation or exhausted caller work. Native source
+    /// eligibility remains a separate consuming qualification.
+    pub fn new_retained_currency_column_batch(
+        table: &str,
+        groups: Vec<NativeFittedIntentGroup>,
+        before: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        Self::new_with_grammar(
+            table,
+            groups,
+            before,
+            Grammar::RetainedCurrencyColumnBatch,
+            budget,
+            cancelled,
+        )
+    }
+
     /// Bind the closed TCNI21 scalar language to a complete native-sized image.
     pub fn new_retained_fixed_scalars(
         table: &str,
@@ -400,6 +447,15 @@ impl NativeFittedEditIntent {
             before_length,
             before_binding,
         })
+    }
+
+    pub(in crate::transaction) fn require_retained_currency_column_batch(
+        &self,
+    ) -> Result<(), NativeIntentError> {
+        if self.grammar != Grammar::RetainedCurrencyColumnBatch {
+            return Err(NativeIntentError::UnsupportedProfile);
+        }
+        Ok(())
     }
 
     /// Exact original source table spelling; no file or namespace selector.
@@ -486,7 +542,9 @@ pub(super) fn validate_groups(
     }
     if matches!(
         grammar,
-        Grammar::RetainedLongColumnBatch | Grammar::RetainedIndexedLong
+        Grammar::RetainedLongColumnBatch
+            | Grammar::RetainedCurrencyColumnBatch
+            | Grammar::RetainedIndexedLong
     ) {
         let [group] = groups else {
             return Err(NativeIntentError::InvalidRecord);
@@ -495,6 +553,9 @@ pub(super) fn validate_groups(
             return Err(NativeIntentError::InvalidRecord);
         };
         if grammar == Grammar::RetainedLongColumnBatch && updates.len() < 2 {
+            return Err(NativeIntentError::InvalidRecord);
+        }
+        if grammar == Grammar::RetainedCurrencyColumnBatch && updates.len() == 1 {
             return Err(NativeIntentError::InvalidRecord);
         }
         for update in updates {
@@ -511,6 +572,7 @@ pub(super) fn validate_groups(
             Grammar::RetainedFixedScalars
                 | Grammar::RetainedEmpty
                 | Grammar::RetainedLongColumnBatch
+                | Grammar::RetainedCurrencyColumnBatch
                 | Grammar::RetainedIndexedLong
         ) && !matches!(group.updates(), NativeFittedUpdates::Fixed(_))
         {

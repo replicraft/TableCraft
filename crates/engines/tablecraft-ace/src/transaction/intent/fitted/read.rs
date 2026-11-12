@@ -99,12 +99,16 @@ impl<'a> Cursor<'a> {
             Grammar::RetainedFixedScalars
                 | Grammar::RetainedEmpty
                 | Grammar::RetainedLongColumnBatch
+                | Grammar::RetainedCurrencyColumnBatch
                 | Grammar::RetainedIndexedLong
         ) && family != Family::Fixed
         {
             return Err(NativeIntentError::InvalidRecord);
         }
         if self.grammar == Grammar::RetainedLongColumnBatch && count < 2 {
+            return Err(NativeIntentError::InvalidRecord);
+        }
+        if self.grammar == Grammar::RetainedCurrencyColumnBatch && count == 1 {
             return Err(NativeIntentError::InvalidRecord);
         }
         if count > self.grammar.assignments() {
@@ -261,6 +265,9 @@ fn scan<'a>(
         return Err(InspectError::StructureLimit.into());
     }
     if grammar == Grammar::RetainedLongColumnBatch && assignments < 2 {
+        return Err(NativeIntentError::InvalidRecord);
+    }
+    if grammar == Grammar::RetainedCurrencyColumnBatch && assignments == 1 {
         return Err(NativeIntentError::InvalidRecord);
     }
     let mut cursor = Cursor {
