@@ -11,9 +11,10 @@ use tablecraft_ace::{
 };
 use tablecraft_ace::{
     CurrentFieldAdditionIntentError, DeclaredFieldAdditionIntentError, FieldDropIntentError,
-    FieldRenameIntentError, InspectError, NativeIntentError, NativeRecoveryQualificationError,
-    QueryExpressionEditsIntentError, QueryExpressionIntentError, QueryExpressionRecoveryError,
-    TableDropIntentError, TableRenameIntentError, UnadornedFieldAdditionIntentError,
+    FieldRenameIntentError, FreshIndexCreateIntentError, IndexDropIntentError, InspectError,
+    NativeIntentError, NativeRecoveryQualificationError, QueryExpressionEditsIntentError,
+    QueryExpressionIntentError, QueryExpressionRecoveryError, TableDropIntentError,
+    TableRenameIntentError, UnadornedFieldAdditionIntentError,
 };
 use tablecraft_io::{
     IoError,
@@ -63,6 +64,12 @@ pub enum Phase {
 /// Sanitized typed cause. Resources remain in Failure rather than being discarded.
 #[derive(Debug, Error)]
 pub enum Cause {
+    /// Fresh-identity original CREATE, source or exact-image proof refused.
+    #[error(transparent)]
+    FreshIndexCreationIntent(FreshIndexCreateIntentError),
+    /// Original index DROP, source, native identity or complete effect proof refused.
+    #[error(transparent)]
+    IndexDropIntent(IndexDropIntentError),
     /// Original secondary-index request, source or full-image proof refused.
     #[cfg(feature = "ace16-create")]
     #[error(transparent)]

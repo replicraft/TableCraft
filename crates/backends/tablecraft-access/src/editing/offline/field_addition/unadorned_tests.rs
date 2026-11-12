@@ -107,12 +107,13 @@ fn unadorned_parameterized_text_cold_pending_committed_and_settled_rebuild_origi
             let original = plan(&source.bytes, true);
             let encoded = original.intent().encode(&mut budget(), &|| false).unwrap();
             assert!(encoded.starts_with(b"TCAC0014"));
-            super::retained_recovery_tests::cold_case(
+            crate::editing::offline::test_support::retained_schema_recovery::cold_case(
                 &source.bytes,
                 &expected,
                 encoded,
                 committed,
                 retired,
+                SchemaChange::ColumnAdded,
                 |pair, committed, retired| {
                     let (mut target, mut journal) = pair.resizable_storage().unwrap();
                     let prepared = original

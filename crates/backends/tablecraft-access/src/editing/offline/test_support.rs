@@ -57,3 +57,6 @@ pub(super) fn assert_terminal_entries(directory: &Path, retired_count: usize) {
     let expected = 1 + retired_count;
     assert_eq!(fs::read_dir(directory).unwrap().count(), expected);
 }
+
+#[cfg(feature = "ace16-create")]
+pub(super) mod retained_schema_recovery;

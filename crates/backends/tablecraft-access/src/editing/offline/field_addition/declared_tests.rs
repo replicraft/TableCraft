@@ -78,12 +78,13 @@ fn declared_currency_cold_pending_committed_and_settled_recovery_rebuilds_origin
             let original = plan(&source.bytes);
             let encoded = original.intent().encode(&mut budget(), &|| false).unwrap();
             assert!(encoded.starts_with(b"TCAC0013"));
-            super::retained_recovery_tests::cold_case(
+            crate::editing::offline::test_support::retained_schema_recovery::cold_case(
                 &source.bytes,
                 &expected,
                 encoded,
                 committed,
                 retired,
+                SchemaChange::ColumnAdded,
                 |pair, committed, retired| {
                     let (mut target, mut journal) = pair.resizable_storage().unwrap();
                     let prepared = original

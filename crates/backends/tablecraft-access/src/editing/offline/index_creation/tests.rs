@@ -229,7 +229,7 @@ fn index_creation_dispatch_keeps_its_family_and_unknown_versions_terminal() {
     ));
     for raw in [
         b"TCIC0001".as_slice(),
-        b"TCIC0002".as_slice(),
+        b"TCIC0003".as_slice(),
         b"TCIC".as_slice(),
     ] {
         assert!(matches!(
@@ -237,4 +237,13 @@ fn index_creation_dispatch_keeps_its_family_and_unknown_versions_terminal() {
             Err(Cause::IndexCreationIntent(_))
         ));
     }
+}
+
+#[test]
+fn exact_fresh_prefix_is_owned_before_the_frozen_original_family_decoder() {
+    use crate::editing::offline::plan::MutationIntent;
+    assert!(matches!(
+        MutationIntent::decode(b"TCIC0002", &mut budget(), &|| false),
+        Err(Cause::FreshIndexCreationIntent(_))
+    ));
 }

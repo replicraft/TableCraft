@@ -223,6 +223,3 @@ mod declared_tests;
 
 #[cfg(test)]
 mod unadorned_tests;
-
-#[cfg(test)]
-mod retained_recovery_tests;

@@ -377,6 +377,32 @@ impl OfflineWriteSession {
                         .map_err(Cause::Recovery)
                 }
                 #[cfg(feature = "ace16-create")]
+                MutationIntent::FreshIndexCreation(intent) => {
+                    let (mut target, mut journal) =
+                        pair.resizable_storage().map_err(Cause::Pair)?;
+                    let checked =
+                        inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = intent
+                        .qualify_retained_recovery(checked, slot.scope, budget, cancelled)
+                        .map_err(Cause::FreshIndexCreationIntent)?;
+                    qualified
+                        .recover_retained(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
+                #[cfg(feature = "ace16-create")]
+                MutationIntent::IndexDrop(intent) => {
+                    let (mut target, mut journal) =
+                        pair.resizable_storage().map_err(Cause::Pair)?;
+                    let checked =
+                        inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = intent
+                        .qualify_retained_recovery(checked, slot.scope, budget, cancelled)
+                        .map_err(Cause::IndexDropIntent)?;
+                    qualified
+                        .recover_retained(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
+                #[cfg(feature = "ace16-create")]
                 MutationIntent::PopulatedTable(intent) => {
                     let (mut target, mut journal) =
                         pair.resizable_storage().map_err(Cause::Pair)?;
@@ -873,6 +899,28 @@ impl OfflineWriteSession {
                         .map_err(Cause::Recovery)
                 }
                 #[cfg(feature = "ace16-create")]
+                MutationIntent::FreshIndexCreation(intent) => {
+                    let checked =
+                        inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = intent
+                        .qualify_retained_recovery(checked, slot.scope, budget, cancelled)
+                        .map_err(Cause::FreshIndexCreationIntent)?;
+                    qualified
+                        .confirm_completed(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
+                #[cfg(feature = "ace16-create")]
+                MutationIntent::IndexDrop(intent) => {
+                    let checked =
+                        inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = intent
+                        .qualify_retained_recovery(checked, slot.scope, budget, cancelled)
+                        .map_err(Cause::IndexDropIntent)?;
+                    qualified
+                        .confirm_completed(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
+                #[cfg(feature = "ace16-create")]
                 MutationIntent::PopulatedTable(intent) => {
                     let checked =
                         inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
@@ -1076,7 +1124,9 @@ impl OfflineWriteSession {
         let slot = self.slot_mut()?;
         slot.current = None;
         let target = slot.target.take().ok_or(Cause::InvalidState)?;
-        let limit = NativeQueryExpressionIntent::MAX_ENCODED_BYTES
+        let limit = tablecraft_ace::NativeIndexDropIntent::MAX_ENCODED_BYTES
+            .max(tablecraft_ace::NativeFreshIndexCreateIntent::MAX_ENCODED_BYTES)
+            .max(NativeQueryExpressionIntent::MAX_ENCODED_BYTES)
             .max(NativeQueryExpressionEditsIntent::MAX_ENCODED_BYTES)
             .max(NativeTableRenameIntent::MAX_ENCODED_BYTES)
             .max(NativeTableDropIntent::MAX_ENCODED_BYTES)
