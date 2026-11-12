@@ -39,7 +39,7 @@ fn make_table_parameters_use_normal_prompts_and_no_yes_atomic_save_and_guarded_r
     run(&mut harness, SQL);
     harness.get_by_role_and_label(Role::TextInput, "Min");
     assert!(!harness.state().editing.has_save());
-    assert!(harness.state().editing.query_action_review.is_none());
+    assert!(!harness.state().state.query_action_dialog_open());
     harness
         .get_by_role_and_label(Role::Button, "Cancel")
         .click_accesskit();
