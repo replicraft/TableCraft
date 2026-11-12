@@ -1,12 +1,14 @@
 //! Conservative SQL-to-grid import with a canonical round-trip proof.
-use super::build::{expression, source_name, validate_shape, visit};
+mod roles;
+use super::build::{expression, source_name, validate_shape, visit_with_aggregates};
 use super::{
     BuiltQueryDesign, DesignColumn, DesignExpression, DesignField, DesignJoin, DesignJoinKind,
-    DesignSort, DesignSource, DesignTableMetadata, MAX_DESIGN_COLUMNS, MAX_DESIGN_CRITERIA_ROWS,
-    QueryDesignDraft, QueryDesignError, build, build_ast,
+    DesignSort, DesignSource, DesignTableMetadata, DesignTotal, MAX_DESIGN_COLUMNS,
+    MAX_DESIGN_CRITERIA_ROWS, QueryDesignDraft, QueryDesignError, build, build_ast,
 };
 use tablecraft_sql::{
-    ParseLimits, parse_select,
+    ParseLimits, parse_query,
+    query::{Parameter, Query, ReadBody, Statement},
     select::{
         BinaryOperator, Expression, FieldReference, JoinKind, Projection, Select, SelectPredicate,
         TableSource,
@@ -118,9 +120,18 @@ fn operand(value: &Expression) -> Result<&Expression, QueryDesignError> {
 fn column_for(
     draft: &mut QueryDesignDraft,
     operand: &Expression,
+    role: DesignTotal,
 ) -> Result<usize, QueryDesignError> {
     for (index, column) in draft.columns.iter().enumerate() {
-        if expression(draft, &column.expression).ok().as_ref() == Some(operand) {
+        if matches!(column.expression, DesignExpression::AllFields(_)) {
+            continue;
+        }
+        let current = roles::operand(draft, column)?;
+        if (!draft.totals
+            || column.total == role
+            || (role == DesignTotal::Expression && column.total != DesignTotal::Where))
+            && &current == operand
+        {
             return Ok(index);
         }
     }
@@ -128,6 +139,7 @@ fn column_for(
         return Err(QueryDesignError::Limit);
     }
     draft.columns.push(DesignColumn {
+        total: role,
         expression: DesignExpression::Expression(operand.to_string()),
         alias: None,
         show: false,
@@ -140,6 +152,7 @@ fn column_for(
 fn grid_criteria(
     draft: &mut QueryDesignDraft,
     selection: Expression,
+    role: DesignTotal,
 ) -> Result<(), QueryDesignError> {
     let mut alternatives = Vec::new();
     flatten(selection, BinaryOperator::Or, &mut alternatives);
@@ -150,7 +163,7 @@ fn grid_criteria(
         let mut terms = Vec::new();
         flatten(alternative, BinaryOperator::And, &mut terms);
         for term in terms {
-            let column = column_for(draft, operand(&term)?)?;
+            let column = column_for(draft, operand(&term)?, role)?;
             let criteria = &mut draft.columns[column].criteria;
             criteria.resize_with(row + 1, String::new);
             let old = &mut criteria[row];
@@ -164,10 +177,11 @@ fn grid_criteria(
     Ok(())
 }
 
-fn imported(select: &Select) -> Result<QueryDesignDraft, QueryDesignError> {
+fn imported(
+    mut select: Select,
+    parameters: Vec<Parameter>,
+) -> Result<QueryDesignDraft, QueryDesignError> {
     if select.predicate != SelectPredicate::All
-        || !select.group_by.is_empty()
-        || select.having.is_some()
         || select.into.is_some()
         || select.into_external.is_some()
         || select.external.is_some()
@@ -175,29 +189,39 @@ fn imported(select: &Select) -> Result<QueryDesignDraft, QueryDesignError> {
     {
         return Err(QueryDesignError::Unsupported);
     }
-    if let Some(selection) = &select.selection {
-        // NO_CLONE: The mutable visitor validates a separate selection expression without
-        // altering the parsed original used for canonical SQL round-trip equality.
-        let mut selection = selection.clone();
-        visit(&mut selection, &mut |_| Ok(()))?;
-    }
-    let mut draft = QueryDesignDraft::default();
+    let totals = !select.group_by.is_empty()
+        || select.having.is_some()
+        || select.projection.iter().any(|projection| match projection {
+            Projection::Expression { expression, .. } => roles::contains_aggregate(expression),
+            _ => false,
+        })
+        || select
+            .order_by
+            .iter()
+            .any(|sort| roles::contains_aggregate(&sort.expression));
+    let mut draft = QueryDesignDraft {
+        totals,
+        parameters,
+        ..QueryDesignDraft::default()
+    };
     for source in &select.from {
         relation(source, &mut draft)?;
     }
-    for projection in &select.projection {
-        let (value, alias) = match projection {
-            // NO_CLONE: An owned expression wrapper supplies canonical Access field spelling
-            // while the borrowed parsed projection remains required for subsequent
-            // validation/round-trip proof.
-            Projection::Field { field, alias } => (
-                DesignExpression::Expression(Expression::Field(field.clone()).to_string()),
-                alias,
-            ),
+    for projection in std::mem::take(&mut select.projection) {
+        let (value, total, alias) = match projection {
+            Projection::Field { field, alias } => {
+                let (value, total) =
+                    roles::imported(Expression::Field(field), totals, &select.group_by);
+                (value, total, alias)
+            }
             Projection::Expression { expression, alias } => {
-                (DesignExpression::Expression(expression.to_string()), alias)
+                let (value, total) = roles::imported(expression, totals, &select.group_by);
+                (value, total, alias)
             }
             Projection::Wildcard(qualifier) => {
+                if totals {
+                    return Err(QueryDesignError::Unsupported);
+                }
                 let id = qualifier
                     .as_ref()
                     .map(|qualifier| {
@@ -212,6 +236,7 @@ fn imported(select: &Select) -> Result<QueryDesignDraft, QueryDesignError> {
                     })
                     .transpose()?;
                 draft.columns.push(DesignColumn {
+                    total: DesignTotal::GroupBy,
                     expression: DesignExpression::AllFields(id),
                     alias: None,
                     show: true,
@@ -222,6 +247,7 @@ fn imported(select: &Select) -> Result<QueryDesignDraft, QueryDesignError> {
             }
         };
         draft.columns.push(DesignColumn {
+            total,
             expression: value,
             alias: alias.as_ref().map(|alias| alias.as_str().to_owned()),
             show: true,
@@ -229,8 +255,11 @@ fn imported(select: &Select) -> Result<QueryDesignDraft, QueryDesignError> {
             criteria: Vec::new(),
         });
     }
+    for key in &select.group_by {
+        column_for(&mut draft, key, DesignTotal::GroupBy)?;
+    }
     for sort in &select.order_by {
-        let index = column_for(&mut draft, &sort.expression)?;
+        let index = column_for(&mut draft, &sort.expression, DesignTotal::Expression)?;
         if draft.columns[index].sort.is_some() {
             return Err(QueryDesignError::Unsupported);
         }
@@ -240,25 +269,51 @@ fn imported(select: &Select) -> Result<QueryDesignDraft, QueryDesignError> {
             DesignSort::Ascending
         });
     }
-    if let Some(selection) = &select.selection {
-        // NO_CLONE: Criteria flattening consumes and splits this independent selection tree;
-        // the parsed original is retained for complete canonical round-trip
-        // comparison.
-        grid_criteria(&mut draft, selection.clone())?;
+    if let Some(selection) = select.selection.take() {
+        let role = if totals {
+            DesignTotal::Where
+        } else {
+            DesignTotal::GroupBy
+        };
+        grid_criteria(&mut draft, selection, role)?;
+    }
+    if let Some(having) = select.having.take() {
+        grid_criteria(&mut draft, having, DesignTotal::Expression)?;
     }
     validate_shape(&draft)?;
     for column in &draft.columns {
         if !matches!(column.expression, DesignExpression::AllFields(_)) {
             let mut value = expression(&draft, &column.expression)?;
-            visit(&mut value, &mut |_| Ok(()))?;
+            visit_with_aggregates(
+                &mut value,
+                totals && column.total == DesignTotal::Expression,
+                &mut |_| Ok(()),
+            )?;
         }
     }
     Ok(draft)
 }
 
+fn into_select(query: Query) -> Result<(Select, Vec<Parameter>), QueryDesignError> {
+    let Statement::Read(read) = query.statement else {
+        return Err(QueryDesignError::Unsupported);
+    };
+    let ReadBody::Select(mut select) = read.body else {
+        return Err(QueryDesignError::Unsupported);
+    };
+    if !select.order_by.is_empty() && !read.order_by.is_empty() {
+        return Err(QueryDesignError::Unsupported);
+    }
+    select.order_by.extend(read.order_by);
+    select.owner_access |= read.owner_access;
+    Ok((*select, query.parameters))
+}
+
 pub fn import_unbound(sql: &str) -> Result<QueryDesignDraft, QueryDesignError> {
-    let parsed = parse_select(sql, ParseLimits::default())?;
-    imported(parsed.query())
+    let parsed = parse_query(sql, ParseLimits::default())?.into_query();
+    let (mut select, parameters) = into_select(parsed)?;
+    roles::normalize(&mut select)?;
+    imported(select, parameters)
 }
 
 fn strip_groups(source: TableSource) -> TableSource {
@@ -286,15 +341,29 @@ pub fn import(
     sql: &str,
     metadata: &[DesignTableMetadata],
 ) -> Result<BuiltQueryDesign, QueryDesignError> {
-    let parsed = parse_select(sql, ParseLimits::default())?;
-    let draft = imported(parsed.query())?;
+    let mut original = parse_query(sql, ParseLimits::default())?.into_query();
+    let Statement::Read(read) = &mut original.statement else {
+        return Err(QueryDesignError::Unsupported);
+    };
+    let ReadBody::Select(select) = &mut read.body else {
+        return Err(QueryDesignError::Unsupported);
+    };
+    select.from = std::mem::take(&mut select.from)
+        .into_iter()
+        .map(strip_groups)
+        .collect();
+    let (mut select, parameters) = into_select(original)?;
+    roles::normalize(&mut select)?;
+    let mut original = Query::from_select(select);
+    original.parameters = parameters;
+    let canonical = original.to_string();
+    let (select, parameters) = into_select(original)?;
+    let draft = imported(select, parameters)?;
     let built = build(&draft, metadata)?;
     let rebuilt = build_ast(&draft, metadata)?;
-    let mut original = parsed.into_query();
-    original.from = original.from.into_iter().map(strip_groups).collect();
-    // Only transparent parenthesis groups are normalized. Criteria ordering,
-    // joins, aliases, sort and every unsupported clause must otherwise survive.
-    if tablecraft_sql::query::Query::from_select(original).to_string() != rebuilt.to_string() {
+    // Projection/group/filter/order and declarations must all survive exactly.
+    // No SQL-equivalence rewrite or cross-phase OR factoring is inferred.
+    if canonical != rebuilt.to_string() {
         return Err(QueryDesignError::Unsupported);
     }
     Ok(built)

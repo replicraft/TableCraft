@@ -1,3 +1,6 @@
+mod parameters;
+mod totals;
+
 use super::*;
 use tablecraft_schema::ScalarType;
 use tablecraft_sql::{
@@ -27,6 +30,8 @@ fn metadata() -> Vec<DesignTableMetadata> {
 
 fn draft() -> QueryDesignDraft {
     QueryDesignDraft {
+        totals: false,
+        parameters: Vec::new(),
         sources: vec![DesignSource {
             id: 1,
             table: "Customers".into(),
@@ -101,8 +106,6 @@ fn supported_sql_round_trips_and_unsupported_clauses_are_not_dropped() {
     for sql in [
         "SELECT DISTINCT Name FROM Customers",
         "SELECT TOP 1 Name FROM Customers",
-        "SELECT Name FROM Customers GROUP BY Name",
-        "SELECT Sum(Amount) FROM Customers",
         "SELECT Name FROM Customers UNION SELECT Name FROM Orders",
         "SELECT Name FROM Customers IN 'other.accdb'",
         "SELECT Name FROM Customers WHERE EXISTS (SELECT ID FROM Orders)",

@@ -25,6 +25,7 @@ pub(super) fn validate_shape(draft: &QueryDesignDraft) -> Result<(), QueryDesign
         return Err(QueryDesignError::Limit);
     }
     draft_text_bytes(draft)?;
+    super::parameters::render_parameters(&draft.parameters)?;
     for (index, source) in draft.sources.iter().enumerate() {
         if let Some(alias) = &source.alias {
             name(alias)?;
@@ -70,6 +71,13 @@ pub fn draft_text_bytes(draft: &QueryDesignDraft) -> Result<usize, QueryDesignEr
         }
         Ok(())
     };
+    for parameter in &draft.parameters {
+        charge(parameter.name.as_str())?;
+        charge(&parameter.data_type.name)?;
+        for argument in &parameter.data_type.arguments {
+            charge(&argument.to_string())?;
+        }
+    }
     for source in &draft.sources {
         charge(&source.table)?;
         if let Some(alias) = &source.alias {
@@ -147,11 +155,11 @@ pub fn expression_text(
     }
 }
 
-pub(super) fn resolve_field<'a>(
+fn resolve_optional_field<'a>(
     draft: &'a QueryDesignDraft,
     metadata: &'a [DesignTableMetadata],
     field: &FieldReference,
-) -> Result<&'a super::DesignFieldMetadata, QueryDesignError> {
+) -> Result<Option<&'a super::DesignFieldMetadata>, QueryDesignError> {
     let mut found = None;
     for source in &draft.sources {
         if field
@@ -176,29 +184,66 @@ pub(super) fn resolve_field<'a>(
             found = Some(candidate);
         }
     }
-    found.ok_or(QueryDesignError::InvalidReference)
+    Ok(found)
+}
+
+pub(super) fn resolve_field<'a>(
+    draft: &'a QueryDesignDraft,
+    metadata: &'a [DesignTableMetadata],
+    field: &FieldReference,
+) -> Result<&'a super::DesignFieldMetadata, QueryDesignError> {
+    resolve_optional_field(draft, metadata, field)?.ok_or(QueryDesignError::InvalidReference)
+}
+
+pub(super) fn resolve_symbol<'a>(
+    draft: &'a QueryDesignDraft,
+    metadata: &'a [DesignTableMetadata],
+    field: &FieldReference,
+) -> Result<Option<&'a super::DesignFieldMetadata>, QueryDesignError> {
+    if let Some(native) = resolve_optional_field(draft, metadata, field)? {
+        return Ok(Some(native));
+    }
+    if field.qualifier.is_none()
+        && draft.parameters.iter().any(|parameter| {
+            parameter
+                .name
+                .as_str()
+                .eq_ignore_ascii_case(field.name.as_str())
+        })
+    {
+        return Ok(None);
+    }
+    Err(QueryDesignError::InvalidReference)
 }
 
 pub(super) fn visit(
     expression: &mut Expression,
     action: &mut impl FnMut(&mut FieldReference) -> Result<(), QueryDesignError>,
 ) -> Result<(), QueryDesignError> {
+    visit_with_aggregates(expression, false, action)
+}
+
+pub(super) fn visit_with_aggregates(
+    expression: &mut Expression,
+    aggregates: bool,
+    action: &mut impl FnMut(&mut FieldReference) -> Result<(), QueryDesignError>,
+) -> Result<(), QueryDesignError> {
     match expression {
         Expression::Field(field) => action(field),
         Expression::Unary { expression, .. } | Expression::IsNull { expression, .. } => {
-            visit(expression, action)
+            visit_with_aggregates(expression, aggregates, action)
         }
         Expression::Binary { left, right, .. } => {
-            visit(left, action)?;
-            visit(right, action)
+            visit_with_aggregates(left, aggregates, action)?;
+            visit_with_aggregates(right, aggregates, action)
         }
         Expression::Like {
             expression,
             pattern,
             ..
         } => {
-            visit(expression, action)?;
-            visit(pattern, action)
+            visit_with_aggregates(expression, aggregates, action)?;
+            visit_with_aggregates(pattern, aggregates, action)
         }
         Expression::Between {
             expression,
@@ -206,16 +251,16 @@ pub(super) fn visit(
             second_bound,
             ..
         } => {
-            visit(expression, action)?;
-            visit(first_bound, action)?;
-            visit(second_bound, action)
+            visit_with_aggregates(expression, aggregates, action)?;
+            visit_with_aggregates(first_bound, aggregates, action)?;
+            visit_with_aggregates(second_bound, aggregates, action)
         }
         Expression::InList {
             expression, values, ..
         } => {
-            visit(expression, action)?;
+            visit_with_aggregates(expression, aggregates, action)?;
             for value in values {
-                visit(value, action)?;
+                visit_with_aggregates(value, aggregates, action)?;
             }
             Ok(())
         }
@@ -225,19 +270,24 @@ pub(super) fn visit(
             arguments,
         } => {
             if !qualifier.is_empty()
-                || [
-                    "COUNT", "SUM", "AVG", "MIN", "MAX", "FIRST", "LAST", "STDEV", "STDEVP", "VAR",
-                    "VARP",
-                ]
-                .iter()
-                .any(|aggregate| name.as_str().eq_ignore_ascii_case(aggregate))
+                || (!aggregates
+                    && [
+                        "COUNT", "SUM", "AVG", "MIN", "MAX", "FIRST", "LAST", "STDEV", "STDEVP",
+                        "VAR", "VARP",
+                    ]
+                    .iter()
+                    .any(|aggregate| name.as_str().eq_ignore_ascii_case(aggregate)))
             {
                 return Err(QueryDesignError::Unsupported);
             }
             for argument in arguments {
                 match argument {
-                    FunctionArgument::Expression(expression) => visit(expression, action)?,
+                    FunctionArgument::Expression(expression) => {
+                        visit_with_aggregates(expression, aggregates, action)?
+                    }
                     FunctionArgument::Missing => {}
+                    FunctionArgument::Wildcard
+                        if aggregates && name.as_str().eq_ignore_ascii_case("COUNT") => {}
                     FunctionArgument::Wildcard => return Err(QueryDesignError::Unsupported),
                 }
             }
@@ -260,7 +310,20 @@ fn validated(
     mut value: Expression,
 ) -> Result<Expression, QueryDesignError> {
     visit(&mut value, &mut |field| {
-        resolve_field(draft, metadata, field)?;
+        resolve_symbol(draft, metadata, field)?;
+        Ok(())
+    })?;
+    Ok(value)
+}
+
+pub(super) fn validated_with_aggregates(
+    draft: &QueryDesignDraft,
+    metadata: &[DesignTableMetadata],
+    mut value: Expression,
+    aggregates: bool,
+) -> Result<Expression, QueryDesignError> {
+    visit_with_aggregates(&mut value, aggregates, &mut |field| {
+        resolve_symbol(draft, metadata, field)?;
         Ok(())
     })?;
     Ok(value)
@@ -274,7 +337,7 @@ fn table(source: &super::DesignSource) -> Result<TableSource, QueryDesignError> 
     }))
 }
 
-fn relations(
+pub(super) fn relations(
     draft: &QueryDesignDraft,
     metadata: &[DesignTableMetadata],
 ) -> Result<Vec<TableSource>, QueryDesignError> {
@@ -408,6 +471,11 @@ pub fn build_ast(
             return Err(QueryDesignError::InvalidReference);
         }
     }
+    if draft.totals {
+        return super::totals::build_ast(draft, metadata);
+    }
+    super::totals::validate_totals_off(draft)?;
+
     let mut projection = Vec::new();
     let mut order = Vec::new();
     for column in &draft.columns {
@@ -475,7 +543,11 @@ pub fn build_ast(
     let mut select = Select::from_projection(projection, relations(draft, metadata)?);
     select.order_by = order;
     select.selection = super::criteria::selection(draft, metadata)?;
-    Ok(Query::from_select(select))
+    let mut query = Query::from_select(select);
+    // NO_CLONE: The returned owned SQL AST and the caller's editable draft have
+    // independent lifetimes; the AST cannot borrow its declaration namespace.
+    query.parameters = draft.parameters.clone();
+    Ok(query)
 }
 
 pub fn build(

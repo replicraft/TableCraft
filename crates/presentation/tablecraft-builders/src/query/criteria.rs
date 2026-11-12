@@ -1,9 +1,10 @@
 //! Native grid grouping: fields on one row AND, alternative rows OR.
-use super::build::{column_expression, resolve_field, visit};
+mod context;
+use super::build::{column_expression, resolve_symbol, visit_with_aggregates};
 use super::{DesignTableMetadata, QueryDesignDraft, QueryDesignError};
 use tablecraft_schema::ScalarType;
 use tablecraft_sql::{
-    ParseLimits, parse_expression_strict, parse_field_rule,
+    ParseErrorKind, ParseLimits, parse_expression_strict, parse_field_rule,
     select::{BinaryOperator, Expression, UnaryOperator},
 };
 
@@ -42,12 +43,12 @@ fn predicate(value: &Expression) -> bool {
     )
 }
 
-fn bare_text(text: &str) -> bool {
+fn bare_text(text: &str) -> Result<bool, QueryDesignError> {
     if text.is_empty()
-        || text.starts_with(['\'', '"', '#', '[', '(', '<', '>', '='])
+        || text.starts_with(['\'', '\"', '#', '[', '(', '<', '>', '='])
         || text.contains(['[', ']', '(', ')', ';', '<', '>', '=', '*', '?', '%'])
     {
-        return false;
+        return Ok(false);
     }
     if text.split_whitespace().any(|word| {
         [
@@ -56,30 +57,62 @@ fn bare_text(text: &str) -> bool {
         .iter()
         .any(|keyword| word.eq_ignore_ascii_case(keyword))
     }) {
-        return false;
+        return Ok(false);
     }
-    matches!(
-        parse_expression_strict(text, ParseLimits::default()),
-        Ok(Expression::Field(_) | Expression::Integer(_) | Expression::Number(_)) | Err(_)
-    )
+    match parse_expression_strict(text, ParseLimits::default()) {
+        Ok(Expression::Field(_) | Expression::Integer(_) | Expression::Number(_)) => Ok(true),
+        Ok(_) => Ok(false),
+        Err(error) => match error.kind {
+            ParseErrorKind::Limit => Err(error.into()),
+            ParseErrorKind::Syntax | ParseErrorKind::Unsupported => Ok(true),
+        },
+    }
 }
 
-fn criterion(
+fn criterion_word(text: &str) -> (&str, &str) {
+    let end = text
+        .find(|character: char| !character.is_ascii_alphanumeric() && character != '_')
+        .unwrap_or(text.len());
+    (&text[..end], text[end..].trim_start())
+}
+
+fn shorthand(text: &str) -> bool {
+    if text.starts_with(['<', '>', '=']) {
+        return true;
+    }
+    let (first, rest) = criterion_word(text);
+    if ["LIKE", "BETWEEN", "IN", "IS"]
+        .iter()
+        .any(|word| first.eq_ignore_ascii_case(word))
+    {
+        return true;
+    }
+    if first.eq_ignore_ascii_case("NOT") {
+        let (second, _) = criterion_word(rest);
+        return ["LIKE", "BETWEEN", "IN"]
+            .iter()
+            .any(|word| second.eq_ignore_ascii_case(word));
+    }
+    false
+}
+
+pub(super) fn criterion(
     draft: &QueryDesignDraft,
     metadata: &[DesignTableMetadata],
     current: &Expression,
     text: &str,
+    aggregates: bool,
 ) -> Result<Expression, QueryDesignError> {
     let text = text.trim();
     let mut value = if let Expression::Field(field) = current {
-        let kind = resolve_field(draft, metadata, field)?.scalar_type;
-        if kind == Some(ScalarType::Text) && bare_text(text) {
+        let kind = resolve_symbol(draft, metadata, field)?.and_then(|field| field.scalar_type);
+        if kind == Some(ScalarType::Text) && bare_text(text)? {
             Expression::Text(text.to_owned())
         } else {
             let mut parsed = parse_field_rule(text, field.name.as_str(), ParseLimits::default())?;
             // Qualify the contextual column as one owned identifier. Explicitly
             // qualified references to other columns retain their own identity.
-            visit(&mut parsed, &mut |reference| {
+            visit_with_aggregates(&mut parsed, aggregates, &mut |reference| {
                 if reference.qualifier.is_none()
                     && reference
                         .name
@@ -95,13 +128,13 @@ fn criterion(
             })?;
             parsed
         }
+    } else if shorthand(text) {
+        context::parse(text, current)?
     } else {
-        // A computed grid operand accepts explicit complete predicate syntax or
-        // a scalar operand; bare comparisons need a declared contextual field.
         parse_expression_strict(text, ParseLimits::default())?
     };
-    visit(&mut value, &mut |reference| {
-        resolve_field(draft, metadata, reference)?;
+    visit_with_aggregates(&mut value, aggregates, &mut |reference| {
+        resolve_symbol(draft, metadata, reference)?;
         Ok(())
     })?;
     if matches!(value, Expression::Null) {
@@ -143,7 +176,7 @@ pub(super) fn selection(
                 continue;
             };
             let current = column_expression(draft, metadata, column)?;
-            terms.push(criterion(draft, metadata, &current, text)?);
+            terms.push(criterion(draft, metadata, &current, text, false)?);
         }
         if let Some(row) = combine(BinaryOperator::And, terms) {
             alternatives.push(row);

@@ -3,13 +3,18 @@ mod build;
 mod criteria;
 mod import;
 mod model;
+mod parameters;
+mod totals;
 
 pub use build::{build, build_ast, draft_text_bytes, expression_text, validate_metadata};
 pub use import::{import, import_unbound};
 pub use model::{
     BuiltQueryDesign, DesignColumn, DesignExpression, DesignField, DesignFieldMetadata, DesignJoin,
-    DesignJoinKind, DesignSort, DesignSource, DesignTableMetadata, QueryDesignDraft,
+    DesignJoinKind, DesignSort, DesignSource, DesignTableMetadata, DesignTotal, QueryDesignDraft,
 };
+
+pub use parameters::{parse_parameters, render_parameters};
+pub use totals::validate_totals_off;
 
 use thiserror::Error;
 

@@ -1,7 +1,10 @@
 use tablecraft_schema::ScalarType;
+use tablecraft_sql::query::Parameter;
 
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct QueryDesignDraft {
+    pub totals: bool,
+    pub parameters: Vec<Parameter>,
     pub sources: Vec<DesignSource>,
     pub joins: Vec<DesignJoin>,
     pub columns: Vec<DesignColumn>,
@@ -47,8 +50,25 @@ pub enum DesignSort {
     Descending,
 }
 
+/// Explicit query-design Total row choice, not a datasheet footer operation.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum DesignTotal {
+    #[default]
+    GroupBy,
+    Sum,
+    Avg,
+    Min,
+    Max,
+    Count,
+    First,
+    Last,
+    Expression,
+    Where,
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct DesignColumn {
+    pub total: DesignTotal,
     pub expression: DesignExpression,
     pub alias: Option<String>,
     pub show: bool,
@@ -60,6 +80,7 @@ pub struct DesignColumn {
 impl DesignColumn {
     pub fn field(source_id: u64, column: String) -> Self {
         Self {
+            total: DesignTotal::GroupBy,
             expression: DesignExpression::Field(DesignField { source_id, column }),
             alias: None,
             show: true,
