@@ -1,9 +1,11 @@
 //! Shared original-key update, ordering and constraint proof before serialization.
+mod requests;
 use super::super::{IndexKeyUpdate, encoding::Mode, profile::WriteProfile, tree::Tree};
 use crate::{
     EditError, InspectError, NativeImage, NativeIndex, format::reader::Reader,
     table::indexes::page::KeyRef,
 };
+use requests::Requests;
 use std::io::Cursor;
 
 pub(in crate::table::indexes::mutation) struct Prepared<K> {
@@ -30,29 +32,27 @@ pub(in crate::table::indexes::mutation) fn prepare<P: WriteProfile, const N: usi
         0,
         &mut entries,
     )?;
-    let mut matched = 0;
+    let requests = Requests::new(updates, profile, reader.budget, reader.cancelled)?;
+    let mut matched = 0_usize;
     for key in &mut entries {
         reader.tick()?;
-        reader.work(updates.len())?;
-        for update in updates
-            .iter()
-            .filter(|update| update.reference == key.row && profile.includes(update.column))
-        {
+        for &position in requests.row(key.row, reader.budget, reader.cancelled)? {
+            reader.work(profile.components())?;
+            let update = &updates[position];
             profile.update(&mut key.key, update.column, update.expected, update.value)?;
-            matched += 1;
+            matched = matched.checked_add(1).ok_or(InspectError::StructureLimit)?;
         }
     }
-    reader.work(updates.len() * profile.components())?;
-    if matched
-        != updates
-            .iter()
-            .filter(|update| profile.includes(update.column))
-            .count()
-    {
+    if matched != requests.count() {
         return Err(EditError::Preservation);
     }
     let levels = entries.len().checked_ilog2().unwrap_or(0) as usize + 1;
-    reader.work(entries.len() * levels * size_of::<KeyRef<P::Key>>())?;
+    let sorting = entries
+        .len()
+        .checked_mul(levels)
+        .and_then(|work| work.checked_mul(size_of::<KeyRef<P::Key>>()))
+        .ok_or(InspectError::StructureLimit)?;
+    reader.work(sorting)?;
     entries.sort_unstable_by(|a, b| a.compare_with(b, profile));
     let constraints = index.constraints().ok_or(InspectError::Unsupported)?;
     let mut previous = None;
@@ -69,9 +69,8 @@ pub(in crate::table::indexes::mutation) fn prepare<P: WriteProfile, const N: usi
     }
     let mode = if profile.requires_repack()
         || profile.components() > 1
-        || updates.iter().any(|update| {
-            profile.includes(update.column) && (update.expected.is_none() || update.value.is_none())
-        }) {
+        || requests.has_null_transition()
+    {
         Mode::Repack
     } else {
         Mode::Fixed
