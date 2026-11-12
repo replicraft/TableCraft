@@ -259,10 +259,7 @@ fn wrong_wildcard_qualifiers_duplicates_and_unsupported_native_fields_are_not_si
     ));
     let unsupported = initial::source(initial::Case::Mixed).bytes;
     assert!(matches!(
-        prepare(
-            &unsupported,
-            "SELECT * INTO Archive FROM Table1 WHERE False"
-        ),
+        prepare(&unsupported, "SELECT * INTO Archive FROM Items WHERE False"),
         Err(NativeMakeTableError::Shape)
     ));
 }
