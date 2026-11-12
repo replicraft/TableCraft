@@ -9,7 +9,9 @@ use crate::{
 };
 pub(in crate::editing) use plan::Plan;
 use std::sync::{Arc, atomic::AtomicBool};
-use tablecraft_ace::{InspectError, NativeImage, SecondaryIndexCreate, inspect_table_schema};
+use tablecraft_ace::{
+    InspectError, NativeImage, SecondaryIndexCreate, UniqueLongIndexCreate, inspect_table_schema,
+};
 use tablecraft_core::limits::Resource;
 use tablecraft_schema::ScalarType;
 
@@ -26,6 +28,7 @@ pub(in crate::editing) fn review(
     index: &str,
     column: &str,
     descending: bool,
+    unique: bool,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Response, Error> {
     check(cancelled)?;
@@ -52,45 +55,58 @@ pub(in crate::editing) fn review(
     }
     let column = selected.ok_or(InspectError::UnknownColumn)?;
     let request = SecondaryIndexCreate::new(index, column.name(), descending);
-    let plan = match column.scalar_type() {
-        Some(ScalarType::Int32) => {
-            let needs_fresh = image.select_native_fresh_long_index_creation_source(
-                schema.name(),
-                &mut work,
-                cancelled,
-            )?;
-            if needs_fresh {
-                Plan::Fresh(image.plan_recoverable_retained_fresh_long_index_creation(
-                    schema.name(),
-                    &request,
-                    &mut work,
-                    cancelled,
-                )?)
-            } else {
-                Plan::Original(image.plan_recoverable_retained_long_index_creation(
-                    schema.name(),
-                    &request,
-                    &mut work,
-                    cancelled,
-                )?)
-            }
+    let plan = if unique {
+        if column.scalar_type() != Some(ScalarType::Int32) {
+            return Err(Error::SchemaSqlUnsupported);
         }
-        Some(
-            ScalarType::Boolean
-            | ScalarType::Byte
-            | ScalarType::Int16
-            | ScalarType::Int64
-            | ScalarType::Currency
-            | ScalarType::Single
-            | ScalarType::Double
-            | ScalarType::DateTime,
-        ) => Plan::Numeric(image.plan_recoverable_retained_numeric_index_creation(
+        let request = UniqueLongIndexCreate::new(index, column.name(), descending);
+        Plan::UniqueLong(image.plan_recoverable_retained_unique_long_index_creation(
             schema.name(),
             &request,
             &mut work,
             cancelled,
-        )?),
-        _ => return Err(InspectError::Unsupported.into()),
+        )?)
+    } else {
+        match column.scalar_type() {
+            Some(ScalarType::Int32) => {
+                let needs_fresh = image.select_native_fresh_long_index_creation_source(
+                    schema.name(),
+                    &mut work,
+                    cancelled,
+                )?;
+                if needs_fresh {
+                    Plan::Fresh(image.plan_recoverable_retained_fresh_long_index_creation(
+                        schema.name(),
+                        &request,
+                        &mut work,
+                        cancelled,
+                    )?)
+                } else {
+                    Plan::Original(image.plan_recoverable_retained_long_index_creation(
+                        schema.name(),
+                        &request,
+                        &mut work,
+                        cancelled,
+                    )?)
+                }
+            }
+            Some(
+                ScalarType::Boolean
+                | ScalarType::Byte
+                | ScalarType::Int16
+                | ScalarType::Int64
+                | ScalarType::Currency
+                | ScalarType::Single
+                | ScalarType::Double
+                | ScalarType::DateTime,
+            ) => Plan::Numeric(image.plan_recoverable_retained_numeric_index_creation(
+                schema.name(),
+                &request,
+                &mut work,
+                cancelled,
+            )?),
+            _ => return Err(InspectError::Unsupported.into()),
+        }
     };
     let target = plan.target();
     let mut output = Presentation::new(cancelled);
@@ -111,6 +127,7 @@ pub(in crate::editing) fn review(
         native_number: target.number,
         column_id: target.column_id,
         descending: target.descending,
+        unique: plan.unique(),
         indexed_rows: plan.indexed_rows(),
     });
     check(cancelled)?;

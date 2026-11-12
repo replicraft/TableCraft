@@ -1,4 +1,4 @@
-//! SQL flags select only the closed ordinary single-LONG index operation.
+//! SQL flags select only the closed ordinary or unique LONG index operation.
 use crate::{Error, Response, document::Document};
 use tablecraft_sql::query::definition::CreateIndex;
 
@@ -10,7 +10,7 @@ pub(in crate::editing) fn review(
     let [field] = index.fields.as_slice() else {
         return Err(Error::SchemaSqlUnsupported);
     };
-    if index.unique || index.policy.is_some() {
+    if index.policy.is_some() {
         return Err(Error::SchemaSqlUnsupported);
     }
     super::super::index_creation::review(
@@ -19,6 +19,7 @@ pub(in crate::editing) fn review(
         index.name.as_str(),
         field.name.as_str(),
         field.descending,
+        index.unique,
         cancelled,
     )
 }

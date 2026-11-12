@@ -21,6 +21,7 @@ pub struct IndexCreatedReopen {
     pub(super) native_number: u16,
     pub(super) column_id: u16,
     pub(super) descending: bool,
+    pub(super) unique: bool,
     pub(super) indexed_rows: usize,
 }
 
@@ -65,6 +66,11 @@ impl IndexCreatedReopen {
     pub fn descending(&self) -> bool {
         self.descending
     }
+    /// Whether the exact reviewed native plan enforces non-NULL uniqueness.
+    pub fn unique(&self) -> bool {
+        self.unique
+    }
+
     /// Existing source population, never an affected-row receipt.
     pub fn indexed_rows(&self) -> usize {
         self.indexed_rows

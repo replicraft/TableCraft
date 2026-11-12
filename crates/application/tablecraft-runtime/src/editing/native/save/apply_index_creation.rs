@@ -50,6 +50,12 @@ pub(super) fn apply_index_creation(
             &mut proof,
             &cancel,
         ),
+        Plan::UniqueLong(plan) => session.stage_reviewed_unique_long_index_creation_with_budgets(
+            plan,
+            &mut native,
+            &mut proof,
+            &cancel,
+        ),
         Plan::Numeric(plan) => session.stage_reviewed_numeric_index_creation_with_budgets(
             plan,
             &mut native,

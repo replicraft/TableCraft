@@ -3,6 +3,7 @@ use super::{
     RetainedOwner,
     outcomes::{failed_open, finish, no_session, retain},
 };
+use crate::editing::platform::index_drop::plan::Plan;
 use crate::{
     controls::{SCOPE, action_persistence_budget, action_proof_budget, budget},
     editing::{ReviewedIndexDrop, SaveFailureKind, SaveOutcome},
@@ -39,12 +40,18 @@ pub(super) fn apply_index_drop(
             Err(error) => return failed_open(&error),
         };
 
-    let staged = match session.stage_reviewed_index_drop_with_budgets(
-        reviewed.plan,
-        &mut native,
-        &mut proof,
-        &cancel,
-    ) {
+    let staged = match reviewed.plan {
+        Plan::Original(plan) => {
+            session.stage_reviewed_index_drop_with_budgets(plan, &mut native, &mut proof, &cancel)
+        }
+        Plan::UniqueLong(plan) => session.stage_reviewed_unique_long_index_drop_with_budgets(
+            plan,
+            &mut native,
+            &mut proof,
+            &cancel,
+        ),
+    };
+    let staged = match staged {
         Ok(staged) => staged,
         Err(failure) => return retain(failure, retained),
     };
