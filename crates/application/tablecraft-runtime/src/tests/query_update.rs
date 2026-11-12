@@ -595,3 +595,6 @@ mod math;
 
 #[cfg(feature = "ace16-create")]
 mod date_intervals;
+
+#[cfg(feature = "ace16-create")]
+mod currency_batch;

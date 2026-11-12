@@ -346,3 +346,6 @@ mod retained_recovery;
 
 #[cfg(feature = "ace16-create")]
 mod empty;
+
+#[cfg(feature = "ace16-create")]
+mod currency_batch;

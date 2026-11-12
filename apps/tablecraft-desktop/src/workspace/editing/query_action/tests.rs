@@ -597,3 +597,5 @@ mod like;
 mod math;
 
 mod date_intervals;
+
+mod currency_batch;
