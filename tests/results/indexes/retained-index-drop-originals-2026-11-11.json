@@ -1,0 +1,189 @@
+{
+  "date": "2026-11-11",
+  "platform": "macOS 14.7.2 ARM64",
+  "source_commits": [
+    "d48a81740",
+    "ec00bbd80",
+    "46453b9d1",
+    "511539f95",
+    "fd4fcd02c"
+  ],
+  "scope": "Native TCID0001 DROP INDEX original and checked V3 reconstruction; combined computed make-table host failures retained separately.",
+  "qualification": "Local native/raw image, protocol and build checks. No native Microsoft Access execution.",
+  "observations": [
+    "The six original DROP tests join thirty existing/native construction and recovery cases. Actual native DROP then unadorned LONG ADD then fresh CREATE now executes against independent complete images.",
+    "TCID0001/profile1 retains original table/index names, signed table ID, definition and logical/physical index IDs, complete source length and digest. Decoded requests supply no retired-page list or alias decision.",
+    "Native reconstruction derives aliases, ownership, complete retirement and AFTER anew. Pending, mixed, committed and settled V3 outcomes use the same checked reconstruction; V1/V2 and foreign AFTER images refuse.",
+    "Journal-only builds validate request data and explicitly refuse native construction. Minimal, creation-only and warnings-denied library documentation checks pass."
+  ],
+  "checks": [
+    {
+      "job": "native",
+      "command": "cargo test -p tablecraft-ace --lib --all-features --offline --locked -- normal_index_drop normal_index_creation transaction::intent::index_create transaction::intent::fresh_index_create transaction::intent::index_drop table::mutation::index_creation",
+      "returncode": 0,
+      "seconds": 128.3,
+      "log": {
+        "path": ".cache/ace-sql-drop-computed-native-20261111.log",
+        "sha256": "29c94dc9b6ce8a7e8649b8ae8c7e789e6afafaaaab18903b0ba92fb0610fcba5"
+      },
+      "test_summaries": [
+        {
+          "passed": 36,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "raw",
+      "command": "cargo test -p tablecraft-testkit --lib --all-features --offline --locked -- secondary_index::normal",
+      "returncode": 0,
+      "seconds": 22.58,
+      "log": {
+        "path": ".cache/ace-sql-drop-computed-raw-20261111.log",
+        "sha256": "629a8aeb26fde4a44750798fe0498934306fd8305db3c58d0e38473c12180e0d"
+      },
+      "test_summaries": [
+        {
+          "passed": 4,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "journal-data",
+      "command": "cargo test -p tablecraft-ace --lib --no-default-features --features journal --offline --locked -- index_drop",
+      "returncode": 0,
+      "seconds": 53.16,
+      "log": {
+        "path": ".cache/ace-sql-drop-computed-journal-data-20261111.log",
+        "sha256": "89a805fb5725b31a6601d5d0709e827ffd0326afb0915c7c8dca90b172359f12"
+      },
+      "test_summaries": [
+        {
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "access",
+      "command": "cargo test -p tablecraft-access --lib --all-features --offline --locked -- editing::sql::make_table",
+      "returncode": 101,
+      "seconds": 51.14,
+      "log": {
+        "path": ".cache/ace-sql-drop-computed-access-20261111.log",
+        "sha256": "cd11e6057607da0c24d0a59c041634f28a1b31a756366d5d424495128954497b"
+      },
+      "test_summaries": [
+        {
+          "passed": 21,
+          "failed": 2,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "runtime",
+      "command": "cargo test -p tablecraft-runtime --lib --all-features --offline --locked",
+      "returncode": 101,
+      "seconds": 32.0,
+      "log": {
+        "path": ".cache/ace-sql-drop-computed-runtime-20261111.log",
+        "sha256": "a57b75fc2eb8df404573a92ebe716daa14f21a0365ca9371d9082019ada32239"
+      },
+      "test_summaries": []
+    },
+    {
+      "job": "strict",
+      "command": "cargo clippy -p tablecraft-ace -p tablecraft-testkit -p tablecraft-access -p tablecraft-runtime --all-targets --all-features --offline --locked -- -D warnings",
+      "returncode": 0,
+      "seconds": 86.63,
+      "log": {
+        "path": ".cache/ace-sql-drop-computed-strict-20261111.log",
+        "sha256": "f8dfa6e5484a4641f8dbcfac5e1efa964c6a9d8abdc93fd8045bb7b02cb61ded"
+      },
+      "test_summaries": []
+    },
+    {
+      "job": "journal-only",
+      "command": "cargo clippy -p tablecraft-ace --lib --no-default-features --features journal --offline --locked -- -D warnings",
+      "returncode": 0,
+      "seconds": 7.78,
+      "log": {
+        "path": ".cache/ace-sql-drop-computed-journal-only-20261111.log",
+        "sha256": "ecdbf1621f05f12862f11e7d1e882bdc29347a87ac9253f5410703e480ecef5d"
+      },
+      "test_summaries": []
+    },
+    {
+      "job": "creation-only",
+      "command": "cargo check -p tablecraft-ace --lib --no-default-features --features ace16-create --offline --locked",
+      "returncode": 0,
+      "seconds": 1.63,
+      "log": {
+        "path": ".cache/ace-sql-drop-computed-creation-only-20261111.log",
+        "sha256": "1b7d2928e8165f85cfb95ccd44dc4298917edaede28981ab1265c8148211d1cb"
+      },
+      "test_summaries": []
+    },
+    {
+      "job": "minimal",
+      "command": "cargo check -p tablecraft-ace --lib --no-default-features --offline --locked",
+      "returncode": 0,
+      "seconds": 1.29,
+      "log": {
+        "path": ".cache/ace-sql-drop-computed-minimal-20261111.log",
+        "sha256": "45cb0541cff6291882bb7e24ace987c0d226f0bead3f74325956cb0b34c9b8ec"
+      },
+      "test_summaries": []
+    },
+    {
+      "job": "runtime-offline",
+      "command": "cargo check -p tablecraft-runtime --lib --no-default-features --features offline-edit --offline --locked",
+      "returncode": 0,
+      "seconds": 8.93,
+      "log": {
+        "path": ".cache/ace-sql-drop-computed-runtime-offline-20261111.log",
+        "sha256": "44d9ab6cba61e581e82714ec8c37e74bcf2c1611a61a0e1cdaf270fe305b143e"
+      },
+      "test_summaries": []
+    },
+    {
+      "job": "runtime-minimal",
+      "command": "cargo check -p tablecraft-runtime --lib --no-default-features --offline --locked",
+      "returncode": 0,
+      "seconds": 1.73,
+      "log": {
+        "path": ".cache/ace-sql-drop-computed-runtime-minimal-20261111.log",
+        "sha256": "c9afbd1d2edf81159c3dd998d1aa447e17a74fa63d566f5f9dd6b7cdbcb6a6c7"
+      },
+      "test_summaries": []
+    },
+    {
+      "job": "rustdoc",
+      "command": "cargo doc -p tablecraft-ace -p tablecraft-access -p tablecraft-runtime --no-deps --all-features --offline --locked",
+      "returncode": 0,
+      "seconds": 27.89,
+      "log": {
+        "path": ".cache/ace-sql-drop-computed-rustdoc-20261111.log",
+        "sha256": "afcd19ff490d8d4dae4525488684e03ec55da3014dcc5cdb6d92977faa75220d"
+      },
+      "test_summaries": []
+    }
+  ],
+  "retained_failures": [
+    "Computed make-table adapter phase passed21 and failed2: a CStr negative omitted its required formatting provider, and TOP0 was refused before its intended eager-error observation. Later tests retain the actual missing-provider error and use valid TOP1.",
+    "Runtime phase failed compilation because a test called private TableSchema::physical_layout. fd4fcd02c uses public inspect_table_indexes instead. This checkpoint does not claim Runtime execution passed.",
+    "Strict lint ran after the public-API test repair; that later compile pass does not turn the earlier failed Runtime execution into a pass."
+  ],
+  "limitations": [
+    "No native Windows/Access, other index key family or older-profile write qualification.",
+    "Adapter and normal GUI DROP workflow qualification belongs to the subsequent connected checkpoint.",
+    "The complete-image retirement construction policy and catalog timestamp parity gap remain explicit."
+  ],
+  "counting": "36 native, 4 raw and 3 journal-only checks describe separate overlapping boundaries, not a conformance total.",
+  "presentation": "No native window or new presentation surface in this native checkpoint."
+}

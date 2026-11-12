@@ -2,8 +2,8 @@
 
 `NativeImage::prepare_retained_index_drop` prepares a separate
 `NativeIndexDropCandidate` for qualified ACE16 retained tables. It removes one
-ordinary nonunique single-LONG index declaration. The candidate supplies no
-journal, Runtime, CLI or GUI save authority.
+ordinary nonunique single-LONG index declaration. The candidate itself supplies no journal or application save authority. A
+separate original-intent plan provides the checked persistence route below.
 
 ## Source and preservation
 
@@ -51,3 +51,25 @@ Later index creation has a separate identity-allocation contract. Preserving a
 surviving logical ID while reducing descriptor count can leave that count already
 occupied; an existing count-based CREATE request must not silently change its
 replay language or renumber the survivor to hide the collision.
+
+## Original request and checked persistence
+
+`plan_recoverable_retained_index_drop` binds the proved candidate to a distinct
+`NativeIndexDropIntent`. TCID0001/profile1 records the original table/index names,
+native table and definition identities, logical and physical index identities,
+and complete source length/digest. Logical index zero is valid. No decoded
+retired-page list or alias choice selects physical effects.
+
+Fresh reconstruction checks the entire original image, repeats source/ownership
+qualification and compares both target identities and complete AFTER bytes.
+`RecoverableNativeIndexDropPlan` and `QualifiedNativeIndexDropRecovery` use only
+the expected-image V3 journal. Pending, mixed, committed and settled states keep
+the same owner and qualification; failed V1/V2 or another request decoder is not
+a fallback. Journal-only builds can validate request data but refuse native
+construction explicitly.
+
+The [original-request checkpoint](../../../tests/results/indexes/retained-index-drop-originals-2026-11-11.json)
+records native recovery, actual DROP → ADD LONG → fresh CREATE composition and
+feature/build checks. It preserves failures from the accompanying computed
+make-table work separately. Native persistence checks do not establish normal
+GUI workflow or Microsoft Access parity.
