@@ -35,6 +35,8 @@ struct Build<'a> {
 #[derive(Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
 struct Draft<'a> {
+    totals: Option<bool>,
+    parameters_sql: Option<&'a str>,
     #[serde(borrow)]
     sources: Vec<Source<'a>>,
     #[serde(borrow)]
@@ -79,6 +81,7 @@ struct Field<'a> {
 #[derive(Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
 struct Column<'a> {
+    total: Option<Total>,
     #[serde(borrow)]
     expression: Operand<'a>,
     alias: Option<&'a str>,
@@ -94,6 +97,21 @@ enum Operand<'a> {
     Field { source_id: u64, column: &'a str },
     AllFields { source_id: Option<u64> },
     Expression { text: &'a str },
+}
+
+#[derive(Deserialize, JsonSchema)]
+#[serde(rename_all = "snake_case")]
+enum Total {
+    GroupBy,
+    Sum,
+    Avg,
+    Min,
+    Max,
+    Count,
+    First,
+    Last,
+    Expression,
+    Where,
 }
 
 #[derive(Deserialize, JsonSchema)]

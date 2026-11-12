@@ -4,8 +4,8 @@ use serde_json::{Value, json};
 use std::sync::Arc;
 use tablecraft_builders::query::{
     DesignColumn, DesignExpression, DesignField, DesignJoin, DesignJoinKind, DesignSort,
-    DesignSource, DesignTableMetadata, MAX_DESIGN_COLUMNS, MAX_DESIGN_CRITERIA_ROWS,
-    MAX_DESIGN_JOINS, MAX_DESIGN_SOURCES, QueryDesignDraft,
+    DesignSource, DesignTableMetadata, DesignTotal, MAX_DESIGN_COLUMNS, MAX_DESIGN_CRITERIA_ROWS,
+    MAX_DESIGN_JOINS, MAX_DESIGN_SOURCES, QueryDesignDraft, parse_parameters, render_parameters,
 };
 use tablecraft_runtime::{Command, QueryDesignTarget, Response};
 
@@ -72,7 +72,14 @@ impl Session {
                     );
                 }
                 let id = self.next_handle()?;
-                let result = json!({"document_revision": revision, "design_id": id, "sql": built.sql, "draft": draft_json(&built.draft), "metadata": tables.iter().map(metadata).collect::<Vec<_>>()});
+                let draft = draft_json(&built.draft)?;
+                let result = json!({
+                    "document_revision": revision,
+                    "design_id": id,
+                    "sql": built.sql,
+                    "draft": draft,
+                    "metadata": tables.iter().map(metadata).collect::<Vec<_>>(),
+                });
                 self.design_state.draft = Some((id, revision, Arc::new(built.draft)));
                 Ok(result)
             }
@@ -89,18 +96,107 @@ fn field_json(field: &DesignField) -> Value {
     json!({"source_id": field.source_id, "column": field.column})
 }
 
-fn draft_json(draft: &QueryDesignDraft) -> Value {
-    json!({
-        "sources": draft.sources.iter().map(|source| json!({"id": source.id, "table": source.table, "alias": source.alias})).collect::<Vec<_>>(),
-        "joins": draft.joins.iter().map(|join| json!({"left": field_json(&join.left), "right": field_json(&join.right), "kind": match join.kind { DesignJoinKind::Inner => "inner", DesignJoinKind::Left => "left", DesignJoinKind::Right => "right" }})).collect::<Vec<_>>(),
-        "columns": draft.columns.iter().map(|column| {
+fn draft_json(draft: &QueryDesignDraft) -> Result<Value, String> {
+    let parameters_sql = render_parameters(&draft.parameters).map_err(|error| error.to_string())?;
+    let sources = draft
+        .sources
+        .iter()
+        .map(|source| {
+            json!({
+                "id": source.id,
+                "table": source.table,
+                "alias": source.alias,
+            })
+        })
+        .collect::<Vec<_>>();
+    let joins = draft
+        .joins
+        .iter()
+        .map(|join| {
+            json!({
+                "left": field_json(&join.left),
+                "right": field_json(&join.right),
+                "kind": match join.kind {
+                    DesignJoinKind::Inner => "inner",
+                    DesignJoinKind::Left => "left",
+                    DesignJoinKind::Right => "right",
+                },
+            })
+        })
+        .collect::<Vec<_>>();
+    let columns = draft
+        .columns
+        .iter()
+        .map(|column| {
             let expression = match &column.expression {
-                DesignExpression::Field(field) => json!({"kind": "field", "source_id": field.source_id, "column": field.column}),
-                DesignExpression::AllFields(source_id) => json!({"kind": "all_fields", "source_id": source_id}),
-                DesignExpression::Expression(text) => json!({"kind": "expression", "text": text}),
+                DesignExpression::Field(field) => json!({
+                    "kind": "field",
+                    "source_id": field.source_id,
+                    "column": field.column,
+                }),
+                DesignExpression::AllFields(source_id) => json!({
+                    "kind": "all_fields",
+                    "source_id": source_id,
+                }),
+                DesignExpression::Expression(text) => json!({
+                    "kind": "expression",
+                    "text": text,
+                }),
             };
-            json!({"expression": expression, "alias": column.alias, "show": column.show, "sort": column.sort.map(|sort| match sort { DesignSort::Ascending => "ascending", DesignSort::Descending => "descending" }), "criteria": column.criteria})
-        }).collect::<Vec<_>>()
+            json!({
+                "expression": expression,
+                "total": total_name(column.total),
+                "alias": column.alias,
+                "show": column.show,
+                "sort": column.sort.map(|sort| match sort {
+                    DesignSort::Ascending => "ascending",
+                    DesignSort::Descending => "descending",
+                }),
+                "criteria": column.criteria,
+            })
+        })
+        .collect::<Vec<_>>();
+
+    Ok(json!({
+        "totals": draft.totals,
+        "parameters_sql": parameters_sql,
+        "sources": sources,
+        "joins": joins,
+        "columns": columns,
+    }))
+}
+
+fn total_name(total: DesignTotal) -> &'static str {
+    match total {
+        DesignTotal::GroupBy => "group_by",
+        DesignTotal::Sum => "sum",
+        DesignTotal::Avg => "avg",
+        DesignTotal::Min => "min",
+        DesignTotal::Max => "max",
+        DesignTotal::Count => "count",
+        DesignTotal::First => "first",
+        DesignTotal::Last => "last",
+        DesignTotal::Expression => "expression",
+        DesignTotal::Where => "where",
+    }
+}
+
+fn parse_total(column: &Value) -> Result<DesignTotal, String> {
+    Ok(match column.get("total").filter(|value| !value.is_null()) {
+        None => DesignTotal::GroupBy,
+        Some(value) => match value.as_str().ok_or("total must be a string")? {
+            "group_by" => DesignTotal::GroupBy,
+            "sum" => DesignTotal::Sum,
+            "avg" => DesignTotal::Avg,
+            "min" => DesignTotal::Min,
+            "max" => DesignTotal::Max,
+            "count" => DesignTotal::Count,
+            "first" => DesignTotal::First,
+            "last" => DesignTotal::Last,
+            "expression" => DesignTotal::Expression,
+            "where" => DesignTotal::Where,
+            _ => return Err("Unsupported design Total role".into()),
+        },
     })
 }
 
@@ -194,6 +290,7 @@ fn parse_draft(args: &Value) -> Result<QueryDesignDraft, String> {
             };
             Ok(DesignColumn {
                 expression,
+                total: parse_total(column)?,
                 alias: optional_text(column, "alias")?,
                 show: arg::boolean(column, "show", true)?,
                 sort,
@@ -201,7 +298,16 @@ fn parse_draft(args: &Value) -> Result<QueryDesignDraft, String> {
             })
         })
         .collect::<Result<Vec<_>, String>>()?;
+    let parameters = parse_parameters(
+        arg::optional(args, "parameters_sql")
+            .map(|_| arg::text(args, "parameters_sql"))
+            .transpose()?
+            .unwrap_or(""),
+    )
+    .map_err(|error| error.to_string())?;
     Ok(QueryDesignDraft {
+        totals: arg::boolean(args, "totals", false)?,
+        parameters,
         sources,
         joins,
         columns,
@@ -293,3 +399,6 @@ mod tests {
         assert_eq!(std::fs::read(path).unwrap(), source);
     }
 }
+
+#[cfg(test)]
+mod totals_tests;
