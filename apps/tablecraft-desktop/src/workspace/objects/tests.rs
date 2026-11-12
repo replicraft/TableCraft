@@ -800,3 +800,6 @@ fn failed_lazy_filter_restore_retries_the_definition_instead_of_plain_page() {
     }
     assert_eq!(std::fs::read(path).unwrap(), changed);
 }
+
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
+mod save_handoff;
