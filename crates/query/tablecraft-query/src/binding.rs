@@ -44,7 +44,7 @@ mod mutation_parameters;
 pub(crate) use inserting::{BoundInsertValues, ValuesSource, bind_insert_values};
 mod mutation_reads;
 mod mutation_relation;
-mod mutation_scalar;
+pub(crate) mod mutation_scalar;
 mod named;
 mod parameter_discovery;
 mod parameters;

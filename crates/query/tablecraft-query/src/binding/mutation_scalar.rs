@@ -23,7 +23,7 @@ pub(super) fn bind_call(
     scopes: &[&[Slot]],
     depth: usize,
 ) -> Result<Expr, QueryError> {
-    if !qualifier.is_empty() {
+    if !qualifier.is_empty() || !call_allowed(name.as_str(), arguments) {
         return Err(QueryError::Unsupported);
     }
 
@@ -139,6 +139,55 @@ pub(super) fn bind_call(
             Ok(Expr::ConstructorCall(function, values))
         }
         _ => Err(QueryError::Unsupported),
+    }
+}
+
+/// Classify the same closed scalar call language before metadata or binding.
+/// This observes only call identity and written argument slots; callers must
+/// recursively validate children and bind/evaluate them with their own context.
+pub(crate) fn call_allowed(name: &str, arguments: &[FunctionArgument]) -> bool {
+    let expressions = || {
+        arguments
+            .iter()
+            .all(|argument| matches!(argument, FunctionArgument::Expression(_)))
+    };
+    match Builtin::resolve(name) {
+        Some(Builtin::IsNull | Builtin::Convert(_) | Builtin::Date(_)) => {
+            arguments.len() == 1 && expressions()
+        }
+        Some(Builtin::IIf) => arguments.len() == 3 && expressions(),
+        Some(Builtin::Nz) => matches!(arguments.len(), 1 | 2) && expressions(),
+        Some(Builtin::Text(function)) => {
+            text_allowed(function) && sql_arguments::normalize(function, arguments).is_some()
+        }
+        Some(Builtin::Math(function)) => {
+            math_allowed(function) && function.accepts_arity(arguments.len()) && expressions()
+        }
+        Some(Builtin::DateConvert(function)) => {
+            date_conversion_allowed(function) && arguments.len() == 1 && expressions()
+        }
+        Some(Builtin::DateConstructor(function)) => {
+            function.accepts_arity(arguments.len()) && expressions()
+        }
+        Some(Builtin::DateAdd) => arguments.len() == 3 && expressions(),
+        Some(function @ (Builtin::DateDiff | Builtin::DatePart)) => {
+            let required = if matches!(function, Builtin::DateDiff) {
+                3
+            } else {
+                2
+            };
+            (required..=required + 2).contains(&arguments.len())
+                && arguments[..required]
+                    .iter()
+                    .all(|argument| matches!(argument, FunctionArgument::Expression(_)))
+                && arguments[required..].iter().all(|argument| {
+                    matches!(
+                        argument,
+                        FunctionArgument::Expression(_) | FunctionArgument::Missing
+                    )
+                })
+        }
+        _ => false,
     }
 }
 

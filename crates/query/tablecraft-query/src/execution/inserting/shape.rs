@@ -105,6 +105,10 @@ fn expression_shape(
         budget.charge(Resource::Steps, text.len() as u64)?;
     }
 
+    if let Expression::Call { name, .. } = expression {
+        budget.charge(Resource::Steps, name.as_str().len() as u64)?;
+    }
+
     let mut child = |expression: &Expression| {
         expression_shape(expression, parameters, depth + 1, nodes, budget, cancelled)
     };
@@ -165,25 +169,20 @@ fn expression_shape(
             qualifier,
             name,
             arguments,
-        } if qualifier.is_empty() && conversion(name.as_str()) => {
+        } => {
+            if !qualifier.is_empty() {
+                return Err(QueryError::Unsupported);
+            }
+            if !crate::binding::mutation_scalar::call_allowed(name.as_str(), arguments) {
+                return Err(QueryError::Unsupported);
+            }
             for argument in arguments {
-                let FunctionArgument::Expression(expression) = argument else {
-                    return Err(QueryError::Unsupported);
-                };
-                child(expression)?;
+                if let FunctionArgument::Expression(expression) = argument {
+                    child(expression)?;
+                }
             }
             Ok(())
         }
         _ => Err(QueryError::Unsupported),
     }
-}
-
-fn conversion(name: &str) -> bool {
-    // Existing query-available deterministic carrier constructors only. No
-    // ambient clock/locale, dynamic Eval, domains, aggregates or UDF dispatch.
-    [
-        "CBool", "CByte", "CInt", "CLng", "CCur", "CDec", "CSng", "CDbl",
-    ]
-    .iter()
-    .any(|candidate| name.eq_ignore_ascii_case(candidate))
 }

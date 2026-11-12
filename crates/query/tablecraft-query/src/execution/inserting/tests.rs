@@ -388,3 +388,5 @@ fn duplicate_or_overwide_metadata_is_bounded_before_expression_evaluation() {
 }
 
 mod budgets;
+
+mod scalar_calls;
