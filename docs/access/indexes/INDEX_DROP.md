@@ -73,3 +73,25 @@ records native recovery, actual DROP → ADD LONG → fresh CREATE composition a
 feature/build checks. It preserves failures from the accompanying computed
 make-table work separately. Native persistence checks do not establish normal
 GUI workflow or Microsoft Access parity.
+
+## Reviewed application operation
+
+An issued schema inspection can request qualified `DROP INDEX name ON table`
+through `ReviewedIndexDrop`. Its separate read-only `IndexDroppedReopen` witness
+retains the complete expected AFTER image and original native target identities.
+Desktop forwards the actual capability to the existing nonreplaceable save
+worker. It does not compute native retirement or reuse field-drop authority.
+
+The Access stage requalifies complete BEFORE and AFTER against the exclusive
+source before journal setup. Direct, cold and settled receipts consistently
+report `IndexDropped`, with no matched or changed record counts. No releases the
+review without changing bytes. Yes, acknowledgment and exact guarded reopen are
+separate steps; stale SQL/document revisions, uncertain outcomes and a receipt
+for another operation cannot publish a replacement.
+
+The warning names the actual table and index and states that the operation has
+no Undo. Physical retirement and native identities are not user-facing affected
+record counts. Source rows, generated history and surviving aliases/indexes stay
+protected by the native proof. MCP still does not expose the shared schema-SQL
+review endpoint. The application route does not widen the native source profile
+or establish Microsoft Access comparison evidence.

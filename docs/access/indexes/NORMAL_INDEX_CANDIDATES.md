@@ -118,6 +118,15 @@ records raw post-deletion histories, native identity/recovery checks, journal-on
 refusal and minimal-feature builds. It does not qualify application selection
 of that new route or native Access allocation and timestamp behavior.
 
+The Runtime consumer selects the fresh producer only when actual native index
+metadata shows the original count identity is occupied. Metadata selection grants
+no mutation authority: the chosen consuming producer requalifies the entire
+source. Metadata errors propagate; failure of the original producer is never a
+reason to retry fresh construction. Count-free sources, including their existing
+Unicode name profile, retain the original producer. Both original and fresh
+plans use the same staging/save owner and schema-only `IndexCreated` receipt.
+Actual DROP → ADD LONG → CREATE workflows preserve nondense logical histories.
+
 ## Design-timestamp parity gap
 
 Current index construction preserves the original `MSysObjects.DateUpdate` and

@@ -1016,6 +1016,23 @@ publication. No releases the review without acquiring a save lease or changing
 bytes. MCP currently lacks the shared schema-review endpoint and explicitly
 refuses this capability; Desktop SQL Run is the implemented host consumer.
 
+### Reviewed DROP INDEX
+
+With creation and offline editing, issued schema SQL can request the qualified
+ordinary nonunique single-LONG `DROP INDEX` operation. `ReviewedIndexDrop` owns
+its distinct recoverable plan; `IndexDroppedReopen` shares the immutable complete
+AFTER allocation and original table/definition/logical/physical identities.
+The existing save worker acquires the exclusive owner only after acceptance and
+requalifies that source before V3 journal setup. No field-drop capability or
+caller-supplied retirement list substitutes for the native operation.
+
+`SaveSchemaChange::IndexDropped` is schema-only: matched/changed row counts are
+absent. Direct, cold and settled outcomes retain that classification. Wrong
+receipts and uncertain outcomes cannot authorize replacement; acknowledgment and
+`Command::OpenIndexDropped` must verify complete AFTER before publication.
+The native [removal contract](../access/indexes/INDEX_DROP.md) retains alias,
+retirement, source and parity limitations.
+
 ### Reviewed SELECT INTO
 
 With creation and offline editing, the same issued `ReviewSchemaSql` service
@@ -1028,9 +1045,18 @@ evaluator's NULL, eager-error, rounding and ordered boundary-tie semantics. The
 captured source supplies its stored LIKE mode; unknown/absent mode stays unset.
 The worker supplies the existing statement expression context, including its
 clock. Inspection and stale requests do not read it; save/recovery do not rerun
-provider expressions. Computed/wildcard outputs, parameters and broader source/declaration contexts
-remain refused by this native preparation slice; the query-only planner has its
-own wider contract.
+provider expressions. Explicit fixed computed outputs and native wildcard
+expansions retain their established declarations, including empty results, without
+inheriting generation, keys or defaults. Computed Text/Decimal physical sizes,
+NULL-only/Dynamic outputs and broader native source shapes remain unqualified.
+
+`ReviewParameterizedSchemaSql` uses the same issued inspection for explicitly
+declared inputs. Source/revision and operation checks precede input parsing;
+shared literal binding validates the complete declaration/input namespace.
+Confirmed values, including explicit NULL, affect complete query staging only.
+The strict no-input `ReviewSchemaSql` command retains its declaration refusal.
+Normal desktop Run forwards its existing typed prompt result into this distinct
+command; it adds no SQL parser or editing policy to the desktop host.
 
 The table-creation review owns a distinct populated request. It does not infer an
 empty first/appended-table profile or fabricate a Design snapshot. Materialized

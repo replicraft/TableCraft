@@ -134,6 +134,15 @@ English/German light/dark index confirmations at 1280×820 and 1×. No matching
 retained Access CREATE INDEX warning capture exists; the compact modal is an
 adaptation. Its source population is not a changed-row count.
 
+Qualified `DROP INDEX` uses a distinct runtime capability and guarded-reopen
+witness. The warning shows the table/index and Yes/No with no Undo; it shows no
+retired-page or affected-record count. No preserves source and prior results.
+Yes saves the original TCID request through V3, then acknowledgment and complete
+AFTER verification publish schema-only `IndexDropped`. Stale SQL or document
+revisions cannot reuse the earlier confirmation. The native
+[index removal contract](../access/indexes/INDEX_DROP.md) retains the exact source
+and key-profile restrictions.
+
 Normal Run routes qualified `CREATE TABLE`, `ALTER TABLE … DROP COLUMN` and
 `DROP TABLE` through the shared runtime's [schema statement service](../application/RUNTIME.md#reviewed-sql-schema-statements).
 The confirmation shows the actual reviewed table, declared field count, deleted
@@ -142,7 +151,12 @@ consumes the original runtime capability through the existing native save worker
 SQL creation has its own source origin and does not fabricate a Design draft.
 
 Qualified `SELECT … INTO` Run now uses that same issued review/save/acknowledge
-flow for one atomic populated-table operation. Its confirmation shows destination,
+flow for one atomic populated-table operation. Declared parameters first use the
+existing typed-input prompt; canceling it or declining the subsequent make-table
+warning preserves source, SQL and prior results. Fixed computed outputs and
+native wildcard expansion use the same runtime preparation. The desktop forwards
+confirmed literal inputs and the issued capability, and never reevaluates SQL
+during save or guarded reopen. Its confirmation shows destination,
 field count and selected record count. It does not show an invented old-row
 matched count or issue an empty CREATE followed by INSERT. No keeps the source and
 previous results; Yes saves the complete reviewed relation once. A zero-row result

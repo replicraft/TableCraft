@@ -2120,3 +2120,13 @@ and desktop action dispatch into the existing runtime/save workers, using the
 shared independent native INSERT fixture. This adds no production dependency,
 new registry version or native-window automation. Review, stale-input refusal,
 terminal owner acknowledgement and same-table refresh remain distinct observations.
+
+## Native computed make-table qualification (11 November 2026)
+
+`tablecraft-access` enables the existing local `tablecraft-expressions/sql`
+feature for its working builtin/array-constructor registry checks in source-closed
+computed SELECT INTO projections. This is an existing workspace dependency with
+a direct consumer; no registry package or version is added. Expression and query
+owners retain function semantics and typed declarations, while Access resolves
+actual native fields and physical sizes. No GUI, network or application host
+enters reusable query or native engine dependencies.

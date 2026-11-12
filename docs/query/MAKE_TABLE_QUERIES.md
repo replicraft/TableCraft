@@ -73,9 +73,33 @@ admits explicit field projections and aliases from one local table, with WHERE,
 DISTINCT, single-table DISTINCTROW and TOP/PERCENT, including ordered boundary
 ties and percentage rounding, plus direct source-field ordering. The original
 retrieval is evaluated completely before native construction; TOP or an eager
-false predicate cannot hide an expression error. It refuses groups, computed/wildcard projections,
-parameters, named/joined/external sources, Binary, Long Text and extended date/time
-declarations rather than guessing their physical shape. The native-comparison
+false predicate cannot hide an expression error.
+
+Explicitly named, source-closed computed outputs can use an established fixed
+query scalar declaration: Boolean, Byte, Int16/32/64, Single, Double, Currency,
+legacy DateTime or GUID. The declaration remains established for empty and
+wholly NULL result sets; selected rows never supply a native type or width.
+Computed Text/Decimal, Dynamic and NULL-only declarations do not acquire guessed
+native sizes. Complete evaluation precedes destination declaration lowering, so
+an actual missing function provider or eager evaluation error still propagates.
+
+Bare and table/alias-qualified wildcards expand against that same native schema
+in source order. Each expanded query declaration is checked against its exact
+native field name/type before borrowing its Text capacity or Decimal parameters.
+Mixed wildcard/computed projections retain written output order. A generated
+source ID becomes an ordinary manual destination value; no generation, key,
+default or other field property is inherited.
+
+Explicit declared-parameter preparation uses
+`prepare_parameterized_native_make_table_with_native_comparison` and
+`NativeMakeTableOptions`. Inputs are typed stored carriers, including explicit
+NULL, rather than SQL expressions or defaults. Missing, unexpected or invalid
+bindings refuse. The earlier strict preparation entry points retain their
+parameter refusal. Finish and recovery retain only declarations and complete
+cells, not a need to evaluate those input providers again.
+
+Groups, named/joined/external sources, Binary, Long Text and extended date/time
+declarations remain refused rather than guessing their physical shape. The native-comparison
 entry point constructs the database-default and exact field-policy resolver from
 that same captured image, using a separate cumulative comparison budget. Unknown
 policies never silently become binary comparison.

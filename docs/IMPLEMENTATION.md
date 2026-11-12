@@ -50,8 +50,14 @@ TCIC original request, V3 adapter recovery and the same issued Runtime/desktop
 review/save/acknowledge/whole-image reopen. Receipts are schema-only, without data
 row effects. The [host checkpoint](../tests/results/indexes/reviewed-create-index-hosts-2026-11-11.json)
 retains initial integration failures, repairs and headless presentation evidence.
-UNIQUE/compound/other key families, DROP INDEX, older profiles and native design
-timestamp chronology remain unfinished.
+Qualified ordinary single-LONG DROP INDEX now has its own original request,
+checked V3 recovery and issued Runtime/desktop save/reopen path. Alias survival
+and complete exclusive retirement preserve original row and generated history.
+Fresh index creation after deletion selects its distinct identity policy from
+actual metadata, without retrying a failed original producer. UNIQUE/compound/
+other key families, older profiles and native design timestamp chronology remain
+unfinished. See [removal](access/indexes/INDEX_DROP.md) and
+[identity construction](access/indexes/NORMAL_INDEX_CANDIDATES.md).
 
 Retained keyless VALUES/SELECT
 appends now use their checked original-presence intent after field deletion, including full
