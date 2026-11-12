@@ -883,6 +883,29 @@ original decoding and typed refusal before effects do not qualify construction.
  Evaluated LIKE still requires a supplied wildcard mode and is refused
 in this action route; it does not silently assume ANSI-89 for an ANSI-92 database.
 
+The retained LONG batch route selects TCNI25 for one actual ordinary
+unindexed Int32 column with at least two original requests. Zero and singleton
+requests retain TCNI24 and TCNI17. All predicates and assignments finish against
+the original snapshot before one native finish; a later row error cannot publish
+a successful prefix. Nullable, unchanged and NULL-preserving requests retain
+native source/constraint/program and original-identity checks.
+
+The same issued review, No/Yes confirmation and consuming SaveWorker stage the
+whole source-bound plan once. Fresh exclusive capture explicitly retains the
+profile25 source; complete BEFORE and reconstructed AFTER checks precede one V3
+journal. SQL is not rerun at save. No preserves source bytes and prior results;
+acknowledgment followed by fresh read publication invalidates stale capabilities
+without fabricating UPDATE result rows. Matched/changed counts remain distinct,
+and the receipt carries no schema change. Existing companion indexes/values,
+forwarding and admitted record-growth constraints remain protected.
+
+The [batch and read-workflow checkpoint](../../tests/results/queries/retained-batch-and-read-workflows-2026-11-12.json)
+records complete native images/recovery and actual consuming Runtime/Desktop
+workflows, including nullable/no-op assignments and same-record Currency/Unicode
+preservation. This extension does not admit
+other carriers, multiple columns or indexed targets, bypass required programs,
+expand source profiles or establish native Windows parity.
+
 Review returns `QueryUpdateReview` display facts (table, document revision,
 matched and effectively changed rows, review identifier) plus a separate opaque
 `ReviewedQueryUpdate`. No exclusive native lease or journal is retained while a

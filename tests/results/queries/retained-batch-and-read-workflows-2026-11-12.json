@@ -1,0 +1,482 @@
+{
+  "date": "2026-11-12",
+  "platform": "macOS 14.7.2 arm64",
+  "source_commit": "c7bccb8ee056dd7d012e4f86596f21e71c274944",
+  "scope": "Atomic retained single-column LONG UPDATE with TCNI25, original-image reconstruction and V3 recovery; normal headless Desktop action and parameterized UNION/crosstab read workflows.",
+  "qualification": "Local complete independent-image, recovery and headless application checks. No native Microsoft Access/Windows execution.",
+  "observations": [
+    "Native batch accepts one ordinary unindexed LONG group with at least two original requests. All original cells bind before reservations and one merged DATA placement plan; independent source/record/placement reconstruction compares complete AFTER.",
+    "Native cases cover shared pages, cross-page references at the 255-slot boundary, forwarded roots, two-record materialization/growth, NULL/no-op values, stale expectations and protected-byte forgeries.",
+    "Original TCNI25 retains all selected requests, including noops, source digest and typed NULL/Int32 carriers. Exact decoder and V3 source reconstruction do not retry old families. Actual V1 and V2 qualification refusals are tested separately.",
+    "Access uses positive type/cardinality selection, explicit retained recapture and V3 prepare. Unindexed zero/singleton requests retain original TCNI24/17 behavior.",
+    "Runtime evaluates complete original-snapshot assignments before native finish. Late-row DivisionByZero returns no plan/journal. Saved receipts distinguish matched and changed counts without schema changes.",
+    "Desktop SQL Run tests exercise No/Yes, save, acknowledgment, stale capabilities and guarded reopen for actual two-row updates. No native windows are opened.",
+    "Normal UNION/UNION ALL Run verifies duplicate/NULL membership, first-arm names, typed prompts, cancellation, readonly result authority and late-arm error preservation.",
+    "Scratch and actual native saved crosstabs Run through typed prompts; static empty headings, included late aggregate failure, cancel/error result retention and tab-owned results are observed via existing state and rendered widgets.",
+    "All Cargo commands use --release with workspace-root target/. Selected boundary counts overlap and are not an additive conformance total."
+  ],
+  "checks": [
+    {
+      "job": "native",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "current_row_updates",
+        "transaction::intent::fitted",
+        "transaction::retained_update_recovery",
+        "transaction::native_recovery"
+      ],
+      "returncode": 0,
+      "seconds": 146.94,
+      "log": {
+        "path": ".cache/ace-sql-retained-batch-connected-native-20261112.log",
+        "sha256": "de15ae98f92f40e9c0994ebed0c4a6f309f7e467bd81d62c340e5d3244df04a3"
+      },
+      "test_summaries": [
+        {
+          "passed": 71,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "access",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "editing::offline::reviewed_update",
+        "editing::offline::index_creation",
+        "editing::journal::fitted"
+      ],
+      "returncode": 0,
+      "seconds": 64.99,
+      "log": {
+        "path": ".cache/ace-sql-retained-batch-connected-access-20261112.log",
+        "sha256": "9e3f27c17e5167921489b6217bad51ab832c755498e581298d0099a3a538003e"
+      },
+      "test_summaries": [
+        {
+          "passed": 30,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "journal-only",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "journal",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "long_column_batch_tests",
+        "retained_fitted_tests",
+        "retained_empty_tests"
+      ],
+      "returncode": 0,
+      "seconds": 65.82,
+      "log": {
+        "path": ".cache/ace-sql-retained-batch-connected-journal-only-20261112.log",
+        "sha256": "4d004c3ae6f92c228cbffbd9932f66e9acf79f5e14383f39cc647b47f5ee8346"
+      },
+      "test_summaries": [
+        {
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "access-minimal",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--lib",
+        "--no-default-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "numeric_index_tests",
+        "fresh_index_tests"
+      ],
+      "returncode": 0,
+      "seconds": 31.78,
+      "log": {
+        "path": ".cache/ace-sql-retained-batch-connected-access-minimal-20261112.log",
+        "sha256": "c072965e2e843414b5662c6a398bf3956e616b1611c6971a2bb7e99c94f8ffc6"
+      },
+      "test_summaries": [
+        {
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "runtime-minimal",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-runtime",
+        "--no-default-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 2.1,
+      "log": {
+        "path": ".cache/ace-sql-retained-batch-connected-runtime-minimal-20261112.log",
+        "sha256": "11674c60fc904dad50fa01611992834d1b446e8a3434875b9f58dd7d27c12b4d"
+      }
+    },
+    {
+      "job": "creation-only",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "ace16-create",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 0.22,
+      "log": {
+        "path": ".cache/ace-sql-retained-batch-connected-creation-only-20261112.log",
+        "sha256": "a50f4a953f17e887d3844be51c0df233623b83d4462c96d5392c2671458d7fef"
+      }
+    },
+    {
+      "job": "minimal",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 0.21,
+      "log": {
+        "path": ".cache/ace-sql-retained-batch-connected-minimal-20261112.log",
+        "sha256": "a70da5408e7a6da7efe97b23011504833b16a7875bda14543f2504b5b8c7d97a"
+      }
+    },
+    {
+      "job": "rustdoc",
+      "command": [
+        "cargo",
+        "doc",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-runtime",
+        "--all-features",
+        "--no-deps",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 17.22,
+      "log": {
+        "path": ".cache/ace-sql-retained-batch-connected-rustdoc-20261112.log",
+        "sha256": "50457d0c4f134628776faa6cf72b433a61e0518103367ae28617b2f37ce7161c"
+      }
+    },
+    {
+      "job": "runtime",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-runtime",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 45.98,
+      "log": {
+        "path": ".cache/ace-sql-retained-batch-repaired-runtime-20261112.log",
+        "sha256": "9992f6d476167875c3e0ace4c5525e412b19c96783614abcd1073e0c1f03e42b"
+      },
+      "test_summaries": [
+        {
+          "passed": 444,
+          "failed": 0,
+          "ignored": 1
+        }
+      ]
+    },
+    {
+      "job": "strict",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-testkit",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-runtime",
+        "-p",
+        "tablecraft-desktop",
+        "-p",
+        "tablecraft-cli",
+        "-p",
+        "tablecraft-mcp",
+        "--all-targets",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "seconds": 7.79,
+      "log": {
+        "path": ".cache/ace-sql-retained-batch-repaired-strict-20261112.log",
+        "sha256": "ed00f5f99d5bf967ce15ed8f2a614b90a1287dd1cda673b29673464d770e959c"
+      }
+    },
+    {
+      "job": "desktop-final",
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--release",
+        "-p",
+        "tablecraft-desktop",
+        "--bin",
+        "tablecraft-desktop",
+        "--all-features",
+        "--",
+        "query_action::tests",
+        "query_parameters::tests"
+      ],
+      "returncode": 0,
+      "log": {
+        "path": ".cache/ace-sql-retained-batch-desktop-final-20261112.log",
+        "sha256": "05dc12cd4fd2a11a53afa53963f409e71afebcfa8501a0a5f519e32b6aa3505f"
+      },
+      "test_summaries": [
+        {
+          "passed": 50,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "desktop-final-clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--offline",
+        "--locked",
+        "--release",
+        "-p",
+        "tablecraft-desktop",
+        "--all-targets",
+        "--all-features",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "log": {
+        "path": ".cache/ace-sql-retained-batch-desktop-final-clippy-20261112.log",
+        "sha256": "29e321883023d10926f46dd9d8ba57b162c29d26f814454459399e31c0afe5e4"
+      }
+    }
+  ],
+  "repaired_failures": [
+    {
+      "job": "runtime",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-runtime",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 101,
+      "seconds": 78.31,
+      "log": {
+        "path": ".cache/ace-sql-retained-batch-connected-runtime-20261112.log",
+        "sha256": "6c637232934bbcf9583b157d269e9c5c876e8f30a7b24494f7ba3c28278da6c9"
+      },
+      "test_summaries": [
+        {
+          "passed": 443,
+          "failed": 1,
+          "ignored": 1
+        }
+      ]
+    },
+    {
+      "job": "desktop",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-desktop",
+        "--bin",
+        "tablecraft-desktop",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "query_action::tests",
+        "query_parameters::tests"
+      ],
+      "returncode": 101,
+      "seconds": 49.73,
+      "log": {
+        "path": ".cache/ace-sql-retained-batch-connected-desktop-20261112.log",
+        "sha256": "63b33e29e93f7c2724fb23ee75623bcfa5cbf8d63eec22ce6ab87a1f43b4e400"
+      },
+      "test_summaries": [
+        {
+          "passed": 48,
+          "failed": 2,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "strict",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-testkit",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-runtime",
+        "-p",
+        "tablecraft-desktop",
+        "-p",
+        "tablecraft-cli",
+        "-p",
+        "tablecraft-mcp",
+        "--all-targets",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 101,
+      "seconds": 61.29,
+      "log": {
+        "path": ".cache/ace-sql-retained-batch-connected-strict-20261112.log",
+        "sha256": "72d7823d4b5f582a70e3a86ceff1f3eb2f72e3fc0ee8ec2e87d6ab465bf546ee"
+      }
+    },
+    {
+      "job": "desktop",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-desktop",
+        "--bin",
+        "tablecraft-desktop",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "query_action::tests",
+        "query_parameters::tests"
+      ],
+      "returncode": 101,
+      "seconds": 15.24,
+      "log": {
+        "path": ".cache/ace-sql-retained-batch-repaired-desktop-20261112.log",
+        "sha256": "5a18a3dfb9f983275f6913b3cb746c787b4d9b593610e264acbb6b92caf88d5f"
+      },
+      "test_summaries": [
+        {
+          "passed": 49,
+          "failed": 1,
+          "ignored": 0
+        }
+      ]
+    }
+  ],
+  "repair_notes": [
+    "An independently authored mixed-record fixture appended its second logical row after text growth created hidden slots. Commit 406d2521c establishes both live roots before text growth; production placement eligibility was not relaxed.",
+    "Commit 23af551fe removes two redundant let-and-return bindings in tests found by strict lint.",
+    "The crosstab error test excluded its failing pivot from literal IN. Commit 81c1e8ce8 includes that heading and reads saved results through existing widgets/public selection instead of the unrelated ordinary-table data slot.",
+    "ColumnHeader containers have their index while child labels own visible captions. Commit c7bccb8ee verifies captions within each indexed header rather than assuming a container label. No UI visibility or production accessor was widened."
+  ],
+  "limitations": [
+    "One explicit Runtime ignore requires the separate hash-pinned genuine Jet4 fixture; it did not execute.",
+    "Broader scalar/multi-column or indexed-target retained batches are not qualified by TCNI25. Required programs and unsupported constraints remain blocked.",
+    "The selected native samples do not establish very large-batch performance or capacity; source-language widths and actual configured budgets remain separate.",
+    "UNION/crosstab checks qualify the selected GUI read journeys, not general saved-definition creation, visual designer support, full query semantics or native Access error ordering.",
+    "No native Windows comparison, older-profile write expansion or complete ACE SQL compatibility is claimed."
+  ]
+}

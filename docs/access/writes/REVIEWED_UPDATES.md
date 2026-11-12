@@ -39,6 +39,48 @@ matches the retained source, while journal-only inert decode cannot grant effect
 The specialized Jet 4 checked-journal API retains its existing path. A failed
 profile decoder is never retried as another action.
 
+## Retained atomic LONG column batches
+
+The TCNI0025/profile25 original describes exactly one ordinary unindexed
+LONG column and at least two distinct original row assignments. Expected and
+replacement carriers are Int32 or NULL. The actual retained source, field
+identity, required-program/constraint checks, existing indexes, record ownership
+and preserved definition history remain mandatory. Selected indexed/generated
+fields, other scalar carriers and multiple-column batches are not admitted by
+this language.
+
+The producer binds the complete original group and captures every selected root
+before building records or reserving destinations. One cumulative placement plan
+then stages the complete image. A separate proof recaptures the original source,
+reconstructs records and placement independently, and compares the full AFTER.
+Original primary/companion indexes, unrelated rows, Currency/Unicode companions,
+properties, catalog and LVAL bytes remain protected. Forwarded roots and record
+growth retain the existing placement/ownership qualification; unsupported growth
+or unavailable qualified space refuses rather than publishing a partial batch.
+
+Actual one-column Int32 metadata and request cardinality choose this language
+before native qualification. Zero assignments retain TCNI24; a singleton retains
+TCNI17. Neither failed proof nor changed-row count selects another profile.
+A batch with unchanged or NULL-preserving requests still undergoes full admission.
+Matched rows count original selected rows; changed rows count actual changed
+records. A wholly unchanged batch retains identical bytes without inventing a
+schema change or inferring commit/rollback from image equality.
+
+The original uses the existing checked V3 prepare/recovery owner. Requalification
+binds complete BEFORE, freshly reconstructs through profile25 and compares the
+entire AFTER without SQL evaluation. Constructive planning has the same
+`journal`/`ace16-create` source boundary as the retained LONG writer; journal-only
+decode does not grant construction or effects. Other original languages stay
+closed, and no failed decoder is retried.
+
+The [batch and read-workflow checkpoint](../../../tests/results/queries/retained-batch-and-read-workflows-2026-11-12.json)
+records 71 selected native checks, 30 adapter checks, 444 Runtime passes with one
+explicit ignore, and 50 selected headless Desktop workflows. Strict lint,
+feature boundaries and Rustdoc pass; these counts overlap across layers.
+This profile does not qualify broader multi-column or
+typed batches, indexed-target changes, required programs, other Jet/ACE writers,
+Windows/Access behavior or general concurrent editing.
+
 ## Work and failure handling
 
 Fresh image capture has its normal allocation/read budget. Complete comparisons,

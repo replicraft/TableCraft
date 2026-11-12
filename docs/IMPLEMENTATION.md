@@ -1,5 +1,20 @@
 # Implementation status
 
+## Atomic retained LONG batches and read workflows — 12 November 2026
+
+The [connected checkpoint](../tests/results/queries/retained-batch-and-read-workflows-2026-11-12.json)
+passes 71 selected native checks, 30 adapter checks, 444 Runtime tests with one
+explicit fixture-dependent ignore, and 50 selected headless Desktop workflows.
+One ordinary unindexed LONG column can update multiple original rows through one
+TCNI25 plan, V3 journal and guarded reopen. Tests cover shared/cross-page records,
+forwarding, materialization growth, NULL/no-op values and late failure without a
+partial save. Other carriers, multiple columns and indexed targets remain separate.
+
+Actual SQL Run also verifies UNION/UNION ALL and scratch/native saved crosstabs,
+with typed prompts, cancel/error result retention and read-only publication.
+Strict lint, feature-minimal checks and Rustdoc pass. Repaired fixture, test and
+lint failures remain recorded; no native Windows or full ACE SQL claim is made.
+
 ## Numeric index creation workflows — 12 November 2026
 
 The [numeric index checkpoint](../tests/results/indexes/numeric-index-workflows-2026-11-12.json)

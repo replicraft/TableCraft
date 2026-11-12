@@ -8,6 +8,14 @@ review and confirmation workflow.
 Editing the draft, selecting a cached result view or switching object tabs does
 not execute SQL.
 
+Normal Run also executes the qualified read profiles for UNION/UNION ALL and
+TRANSFORM crosstabs; these result sets remain read-only. Declared parameters use
+the existing typed dialog. Cancel or a later evaluation error preserves the
+previous complete result. Saved native crosstabs inspect inertly, then Run with
+their own parameters and tab-owned results. The [headless workflow checkpoint](../../tests/results/queries/retained-batch-and-read-workflows-2026-11-12.json)
+verifies duplicate/NULL membership, heading order, empty results and tab switching.
+This does not add UNION/crosstab visual design or saved-definition creation.
+
 Scratch and saved retrieval execution share the runtime's
 [query context](../application/RUNTIME.md#read-query-execution-context): lazy local
 Date/Time/Now and admitted Timer projections, a per-Run default-seeded Rnd
