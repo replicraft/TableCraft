@@ -6,7 +6,7 @@ use crate::format::{
 };
 use crate::table::{
     indexes::mutation::normal_index_audit::Ownership,
-    mutation::fixed_records::indexed::i32_updates::I32UpdateIndexes, record_layout,
+    mutation::fixed_records::indexed::retained_long::RetainedLongIndexes, record_layout,
 };
 use crate::{
     EditError, IndexInspection, InspectError, NativeImage, WriteBlocker, header::check,
@@ -141,8 +141,9 @@ impl NativeImage {
                 cancelled,
             )?;
         }
-        let facts = I32UpdateIndexes::capture(self, table, source.facts(), budget, cancelled)?;
-        let _ownership = Ownership::capture(self, facts.checked(), budget, cancelled)?;
+        let facts = RetainedLongIndexes::capture(self, table, source.facts(), budget, cancelled)?;
+        let _ownership =
+            Ownership::capture_retained_long(self, facts.checked(), budget, cancelled)?;
         Ok(())
     }
 }

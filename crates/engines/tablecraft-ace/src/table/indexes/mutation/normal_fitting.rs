@@ -36,6 +36,24 @@ pub(in crate::table) fn patches(
     )
 }
 
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(in crate::table) fn patches_retained_long(
+    image: &NativeImage,
+    checked: &TableCheck,
+    updates: &[IndexKeyUpdate],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<IndexDataPatch>, EditError> {
+    patches_with(
+        image,
+        checked,
+        updates,
+        Selection::RetainedLong,
+        budget,
+        cancelled,
+    )
+}
+
 #[cfg(feature = "journal")]
 pub(in crate::table) fn patches_retained_i32(
     image: &NativeImage,
@@ -75,6 +93,8 @@ pub(in crate::table) fn patches_i32_omissions(
 enum Selection {
     Legacy,
     RetainedBinary,
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    RetainedLong,
     Omitted,
 }
 
@@ -92,7 +112,16 @@ fn patches_with(
     // Qualify every original physical declaration even when updates are empty.
     // The caller separately qualifies required programs or complete ordinary
     // content. These physical index facts supply neither kind of admission.
-    let ownership = if selected == Selection::Omitted {
+    let ownership = if retained_long(selected) {
+        #[cfg(all(feature = "journal", feature = "ace16-create"))]
+        {
+            Ownership::capture_retained_long(image, checked, budget, cancelled)?
+        }
+        #[cfg(not(all(feature = "journal", feature = "ace16-create")))]
+        {
+            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+        }
+    } else if selected == Selection::Omitted {
         Ownership::capture_i32_omissions(image, checked, budget, cancelled)?
     } else if selected == Selection::RetainedBinary {
         #[cfg(feature = "journal")]
@@ -207,7 +236,7 @@ fn patches_with(
                 kind: NumericKey::new(ScalarType::Int32)?,
                 descending: index.columns()[0].descending(),
             };
-            rewrite::<_, { encoding::MAX_ENTRY_BYTES }>(
+            rewrite_with_population_limit::<_, { encoding::MAX_ENTRY_BYTES }>(
                 image,
                 &mut reader,
                 index,
@@ -215,10 +244,11 @@ fn patches_with(
                 updates,
                 &profile,
                 &mut patches,
+                retained_long(selected),
             )?;
         } else {
             let profile = TupleProfile::<i64>::new(index, schema, reader.budget, cancelled)?;
-            rewrite::<_, { composite::MAX_ENTRY_BYTES }>(
+            rewrite_with_population_limit::<_, { composite::MAX_ENTRY_BYTES }>(
                 image,
                 &mut reader,
                 index,
@@ -226,6 +256,7 @@ fn patches_with(
                 updates,
                 &profile,
                 &mut patches,
+                retained_long(selected),
             )?;
         }
     }
@@ -242,17 +273,68 @@ pub(super) fn rewrite<P: WriteProfile, const N: usize>(
     profile: &P,
     patches: &mut Vec<IndexDataPatch>,
 ) -> Result<(), EditError> {
+    rewrite_with_population_limit::<_, N>(
+        image, reader, index, schema, updates, profile, patches, false,
+    )
+}
+
+fn retained_long(selected: Selection) -> bool {
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    {
+        selected == Selection::RetainedLong
+    }
+    #[cfg(not(all(feature = "journal", feature = "ace16-create")))]
+    {
+        let _ = selected;
+        false
+    }
+}
+
+fn rewrite_with_population_limit<P: WriteProfile, const N: usize>(
+    image: &NativeImage,
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+    index: &NativeIndex,
+    schema: &TableSchema,
+    updates: &[IndexKeyUpdate],
+    profile: &P,
+    patches: &mut Vec<IndexDataPatch>,
+    retained_long: bool,
+) -> Result<(), EditError> {
     // Select the fitting layout before preparation/serialization. No Fixed
     // encoder is attempted, and no encoding failure selects another profile.
     let selected = Mode::Repack;
-    let prepared = keys::prepare::<_, N>(
-        image,
-        reader,
-        index,
-        schema.definition_page(),
-        updates,
-        profile,
-    )?;
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    let prepared = if retained_long {
+        keys::prepare_retained_long::<_, N>(
+            image,
+            reader,
+            index,
+            schema.definition_page(),
+            updates,
+            profile,
+        )?
+    } else {
+        keys::prepare::<_, N>(
+            image,
+            reader,
+            index,
+            schema.definition_page(),
+            updates,
+            profile,
+        )?
+    };
+    #[cfg(not(all(feature = "journal", feature = "ace16-create")))]
+    let prepared = {
+        let _ = retained_long;
+        keys::prepare::<_, N>(
+            image,
+            reader,
+            index,
+            schema.definition_page(),
+            updates,
+            profile,
+        )?
+    };
     let mut remaining = prepared.entries.as_slice();
     prepared.tree.rewrite::<_, N>(
         image,

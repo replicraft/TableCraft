@@ -22,16 +22,69 @@ pub(in crate::table::indexes::mutation) fn prepare<P: WriteProfile, const N: usi
     updates: &[IndexKeyUpdate],
     profile: &P,
 ) -> Result<Prepared<P::Key>, EditError> {
+    prepare_with_population_limit::<_, N>(image, reader, index, owner, updates, profile, false)
+}
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(in crate::table::indexes::mutation) fn prepare_retained_long<
+    P: WriteProfile,
+    const N: usize,
+>(
+    image: &NativeImage,
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+    index: &NativeIndex,
+    owner: u32,
+    updates: &[IndexKeyUpdate],
+    profile: &P,
+) -> Result<Prepared<P::Key>, EditError> {
+    prepare_with_population_limit::<_, N>(image, reader, index, owner, updates, profile, true)
+}
+
+fn prepare_with_population_limit<P: WriteProfile, const N: usize>(
+    image: &NativeImage,
+    reader: &mut Reader<'_, Cursor<&[u8]>>,
+    index: &NativeIndex,
+    owner: u32,
+    updates: &[IndexKeyUpdate],
+    profile: &P,
+    retained_long: bool,
+) -> Result<Prepared<P::Key>, EditError> {
     let mut entries = Vec::new();
-    let tree = Tree::read::<_, N>(
-        image,
-        reader,
-        owner,
-        index.root_page(),
-        profile,
-        0,
-        &mut entries,
-    )?;
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    let tree = if retained_long {
+        Tree::read_retained_long::<_, N>(
+            image,
+            reader,
+            owner,
+            index.root_page(),
+            profile,
+            0,
+            &mut entries,
+        )?
+    } else {
+        Tree::read::<_, N>(
+            image,
+            reader,
+            owner,
+            index.root_page(),
+            profile,
+            0,
+            &mut entries,
+        )?
+    };
+    #[cfg(not(all(feature = "journal", feature = "ace16-create")))]
+    let tree = {
+        let _ = retained_long;
+        Tree::read::<_, N>(
+            image,
+            reader,
+            owner,
+            index.root_page(),
+            profile,
+            0,
+            &mut entries,
+        )?
+    };
     let requests = Requests::new(updates, profile, reader.budget, reader.cancelled)?;
     let mut matched = 0_usize;
     for key in &mut entries {

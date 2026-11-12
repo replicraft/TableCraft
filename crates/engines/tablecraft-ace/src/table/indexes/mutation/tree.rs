@@ -48,6 +48,12 @@ pub(super) struct Tree {
     children: Vec<Tree>,
 }
 
+#[derive(Clone, Copy)]
+struct Traversal {
+    depth: usize,
+    maximum: Option<usize>,
+}
+
 impl Tree {
     #[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
     pub(super) fn number(&self) -> u32 {
@@ -83,6 +89,56 @@ impl Tree {
         depth: usize,
         keys: &mut Vec<KeyRef<P::Key>>,
     ) -> Result<Self, EditError> {
+        Self::read_with::<_, N>(
+            image,
+            reader,
+            owner,
+            number,
+            profile,
+            Traversal {
+                depth,
+                maximum: Some(MAX_LIVE_ROWS),
+            },
+            keys,
+        )
+    }
+
+    /// The retained LONG operation has complete source ownership and uses
+    /// caller resources and actual key representation, not the legacy quota.
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    pub(super) fn read_retained_long<P: KeyProfile, const N: usize>(
+        image: &NativeImage,
+        reader: &mut Reader<'_, std::io::Cursor<&[u8]>>,
+        owner: u32,
+        number: u32,
+        profile: &P,
+        depth: usize,
+        keys: &mut Vec<KeyRef<P::Key>>,
+    ) -> Result<Self, EditError> {
+        Self::read_with::<_, N>(
+            image,
+            reader,
+            owner,
+            number,
+            profile,
+            Traversal {
+                depth,
+                maximum: None,
+            },
+            keys,
+        )
+    }
+
+    fn read_with<P: KeyProfile, const N: usize>(
+        image: &NativeImage,
+        reader: &mut Reader<'_, std::io::Cursor<&[u8]>>,
+        owner: u32,
+        number: u32,
+        profile: &P,
+        traversal: Traversal,
+        keys: &mut Vec<KeyRef<P::Key>>,
+    ) -> Result<Self, EditError> {
+        let Traversal { depth, maximum } = traversal;
         reader.tick()?;
         if depth >= MAX_INDEX_DEPTH {
             return Err(InspectError::StructureLimit.into());
@@ -117,7 +173,11 @@ impl Tree {
             if count == 0 && depth != 0 {
                 return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
             }
-            if keys.len() + count > MAX_LIVE_ROWS {
+            let total = keys
+                .len()
+                .checked_add(count)
+                .ok_or(InspectError::StructureLimit)?;
+            if maximum.is_some_and(|maximum| total > maximum) {
                 return Err(InspectError::StructureLimit.into());
             }
             reader
@@ -142,13 +202,16 @@ impl Tree {
                 .map(|entry| entry.child)
                 .chain((page.tail != 0).then_some(page.tail))
             {
-                children.push(Self::read::<_, N>(
+                children.push(Self::read_with::<_, N>(
                     image,
                     reader,
                     owner,
                     child,
                     profile,
-                    depth + 1,
+                    Traversal {
+                        depth: depth + 1,
+                        maximum,
+                    },
                     keys,
                 )?);
             }

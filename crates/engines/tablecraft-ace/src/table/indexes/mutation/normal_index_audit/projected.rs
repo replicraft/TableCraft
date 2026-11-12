@@ -162,7 +162,16 @@ where
         return Err(EditError::Preservation);
     }
     let schema = checked.schema();
-    let ownership = if selected == Selection::Omitted {
+    let ownership = if selected == Selection::RetainedLong {
+        #[cfg(feature = "ace16-create")]
+        {
+            Ownership::capture_retained_long(image, checked, budget, cancelled)?
+        }
+        #[cfg(not(feature = "ace16-create"))]
+        {
+            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+        }
+    } else if selected == Selection::Omitted {
         Ownership::capture_i32_omissions(image, checked, budget, cancelled)?
     } else if selected == Selection::RetainedBinary {
         #[cfg(feature = "journal")]

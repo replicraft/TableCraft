@@ -9,6 +9,8 @@ pub(in crate::table::mutation) mod guid_updates;
 pub(in crate::table::mutation) mod i32_updates;
 #[cfg(feature = "journal")]
 pub(in crate::table::mutation) mod integral_updates;
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(in crate::table::mutation) mod retained_long;
 #[cfg(feature = "journal")]
 mod text_updates;
 use crate::{

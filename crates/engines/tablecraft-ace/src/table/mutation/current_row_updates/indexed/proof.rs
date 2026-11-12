@@ -4,7 +4,7 @@ use crate::preservation::COPY_CHUNK_BYTES;
 use crate::table::{
     indexes::{check_table_retained, mutation::normal_index_audit},
     mutation::{
-        fixed_records::{self, indexed::i32_updates::I32UpdateIndexes},
+        fixed_records::{self, indexed::retained_long::RetainedLongIndexes},
         preserved_source::validation,
         rows::Directory,
     },
@@ -32,7 +32,7 @@ pub(super) fn prove(
         .facts()
         .require_preserved_definition_tail(image, after, budget, cancelled)?;
     let requests = bind(image, &source, groups, budget, cancelled)?;
-    let facts = I32UpdateIndexes::capture(image, table, source.facts(), budget, cancelled)?;
+    let facts = RetainedLongIndexes::capture(image, table, source.facts(), budget, cancelled)?;
     let mut expected = fixed_records::copy(image.as_bytes(), budget, cancelled)?;
     let mut changed_rows = 0_usize;
     for request in &requests {

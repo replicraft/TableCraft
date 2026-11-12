@@ -8,7 +8,7 @@ use super::Family;
 use crate::table::{
     indexes::{IndexKeyUpdate, MutationKey, mutation::normal_fitting},
     mutation::{
-        fixed_records::{self, indexed::i32_updates::I32UpdateIndexes},
+        fixed_records::{self, indexed::retained_long::RetainedLongIndexes},
         historical_fixed::source::Source,
         normal_fitted::{binding, original_values},
         preserved_source::validation,
@@ -112,7 +112,7 @@ impl NativeImage {
         let _span = tracing::debug_span!("native.retained_indexed_long.plan").entered();
         let source = source::capture(&self, table, budget, cancelled)?;
         let requests = bind(&self, &source, groups, budget, cancelled)?;
-        let facts = I32UpdateIndexes::capture(&self, table, source.facts(), budget, cancelled)?;
+        let facts = RetainedLongIndexes::capture(&self, table, source.facts(), budget, cancelled)?;
         let mut records = Vec::new();
         budget
             .charge_allocation(requests.len() as u64, size_of::<Option<Vec<u8>>>() as u64)
@@ -176,7 +176,13 @@ impl NativeImage {
         }
         // All final keys are submitted together, including simultaneous swaps.
         // INDEX and DATA staging remain private until independent full-image proof.
-        let indexes = normal_fitting::patches(&self, facts.checked(), &updates, budget, cancelled)?;
+        let indexes = normal_fitting::patches_retained_long(
+            &self,
+            facts.checked(),
+            &updates,
+            budget,
+            cancelled,
+        )?;
         let mut after = fixed_records::copy(self.as_bytes(), budget, cancelled)?;
         for (request, bytes) in requests.iter().zip(&records) {
             if let Some(bytes) = bytes {

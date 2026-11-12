@@ -60,6 +60,8 @@ enum CaptureMode {
     IntegralUpdates,
     I32Updates,
     I32Omissions,
+    #[cfg(feature = "ace16-create")]
+    RetainedLong,
     GuidUpdates,
 }
 
@@ -119,6 +121,16 @@ impl Ownership {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
         Self::capture_mode(image, checked, CaptureMode::I32Omissions, budget, cancelled)
+    }
+
+    #[cfg(feature = "ace16-create")]
+    pub(in crate::table) fn capture_retained_long(
+        image: &NativeImage,
+        checked: &TableCheck,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::capture_mode(image, checked, CaptureMode::RetainedLong, budget, cancelled)
     }
 
     pub(in crate::table) fn capture_guid_updates(
