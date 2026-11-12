@@ -97,11 +97,15 @@ fn retained_batch_preserves_same_record_currency_unicode_and_nullable_companions
     let seed = fields::source(fields::Case::FirstNumber).bytes;
     let definition = (seed.len() / 4096) as u32;
     let mut before = mixed::append_table(&seed, "Measurements");
+    // Establish both logical roots before variable text growth appends hidden
+    // terminal slots; physical slot 1 must remain the second live root.
+    for _ in 0..2 {
+        before = mixed::append(&before, definition);
+    }
     for (root, score, amount, label) in [
         (0, Some(17), Some(12345), Some("日本🦀")),
         (1, None, None, Some("")),
     ] {
-        before = mixed::append(&before, definition);
         before = mixed::update_number(&before, definition, root, score);
         before = mixed::update_currency(&before, definition, root, amount);
         before = mixed::update_text(&before, definition, root, label);
