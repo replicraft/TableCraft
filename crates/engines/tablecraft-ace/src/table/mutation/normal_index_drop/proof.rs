@@ -27,7 +27,27 @@ pub(super) fn prove(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
-    let original = source::capture(before, table, requested, budget, cancelled)?;
+    prove_policy(
+        before,
+        after,
+        table,
+        requested,
+        source::Policy::Ordinary,
+        budget,
+        cancelled,
+    )
+}
+
+pub(super) fn prove_policy(
+    before: &NativeImage,
+    after: &NativeImage,
+    table: &str,
+    requested: &str,
+    policy: source::Policy,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    let original = source::capture_policy(before, table, requested, policy, budget, cancelled)?;
     Inventory::capture(after, budget, cancelled)?.require_source(after)?;
     let current = normal_ordinary::capture_retained_schema(after, table, budget, cancelled)?;
     let old_schema = original.content.table.schema();

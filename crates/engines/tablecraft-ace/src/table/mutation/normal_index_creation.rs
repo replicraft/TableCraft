@@ -2,6 +2,8 @@
 mod effect;
 pub(crate) use effect::{NativeIndexCreateEffect, NativeIndexCreateParts};
 mod selection;
+mod unique;
+pub use unique::NativeUniqueLongIndexCandidate;
 #[cfg(test)]
 mod tests;
 
@@ -21,6 +23,7 @@ const LONG_ENTRY_BYTES: usize = 1 + size_of::<i32>() + 2 * size_of::<u32>();
 /// No native Access application save qualification is implied.
 pub struct NativeLongIndexCandidate {
     construction: source::Construction,
+    policy: super::index_creation::IndexPolicy,
     before: NativeImage,
     after: NativeImage,
     table: String,
@@ -40,6 +43,10 @@ pub struct NativeLongIndexCandidate {
 }
 
 impl NativeLongIndexCandidate {
+    pub(crate) fn is_unique_construction(&self) -> bool {
+        matches!(self.policy, super::index_creation::IndexPolicy::UniqueLong)
+    }
+
     pub(crate) fn is_fresh_construction(&self) -> bool {
         self.construction == source::Construction::Fresh
     }
@@ -188,51 +195,57 @@ impl NativeImage {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeLongIndexCandidate, EditError> {
-        if matches!(mode, source::Mode::Numeric) {
+        if !matches!(mode, source::Mode::OriginalLong | source::Mode::FreshLong) {
             return Err(EditError::Preservation);
         }
         let built = super::index_population::build::<LONG_ENTRY_BYTES>(
             self, table, request, mode, budget, cancelled,
         )?;
-        let super::index_population::Built {
-            before,
-            after,
-            construction,
-            table,
-            column,
-            index,
-            native_table,
-            definition,
-            native,
-            column_id,
-            descending,
-            logical,
-            physical,
-            rows,
-            root,
-            pages,
-            height,
-            ..
-        } = built;
-        Ok(NativeLongIndexCandidate {
-            construction,
-            before,
-            after,
-            table,
-            column,
-            native_table,
-            definition,
-            column_id,
-            descending,
-            index,
-            native,
-            logical,
-            physical,
-            rows,
-            root,
-            pages,
-            height,
-        })
+        Ok(candidate(built))
+    }
+}
+
+fn candidate(built: super::index_population::Built) -> NativeLongIndexCandidate {
+    let super::index_population::Built {
+        before,
+        after,
+        construction,
+        policy,
+        table,
+        column,
+        index,
+        native_table,
+        definition,
+        native,
+        column_id,
+        descending,
+        logical,
+        physical,
+        rows,
+        root,
+        pages,
+        height,
+        ..
+    } = built;
+    NativeLongIndexCandidate {
+        construction,
+        policy,
+        before,
+        after,
+        table,
+        column,
+        native_table,
+        definition,
+        column_id,
+        descending,
+        index,
+        native,
+        logical,
+        physical,
+        rows,
+        root,
+        pages,
+        height,
     }
 }
 

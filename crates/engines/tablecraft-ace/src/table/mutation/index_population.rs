@@ -21,6 +21,7 @@ pub(super) struct Built {
     pub before: NativeImage,
     pub after: NativeImage,
     pub construction: source::Construction,
+    pub policy: super::index_creation::IndexPolicy,
     pub scalar: tablecraft_schema::ScalarType,
     pub table: String,
     pub column: String,
@@ -47,15 +48,27 @@ pub(super) fn build<const WIRE_BYTES: usize>(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Built, EditError> {
     let original = source::capture_mode(&image, table, request, mode, budget, cancelled)?;
-    let population = Population::<WIRE_BYTES>::capture(
-        original.keys(budget, cancelled)?,
-        original.native,
-        original.kind,
-        original.descending,
-        original.index_start,
-        budget,
-        cancelled,
-    )?;
+    let population = if original.is_unique() {
+        Population::<WIRE_BYTES>::capture_unique_long(
+            original.keys(budget, cancelled)?,
+            original.native,
+            original.descending,
+            original.index_start,
+            budget,
+            cancelled,
+        )?
+    } else {
+        Population::<WIRE_BYTES>::capture(
+            original.keys(budget, cancelled)?,
+            original.native,
+            original.kind,
+            original.descending,
+            original.index_start,
+            budget,
+            cancelled,
+        )?
+    };
+
     let maps = maps::build(
         original.index_start,
         population.page_count(),
@@ -76,24 +89,36 @@ pub(super) fn build<const WIRE_BYTES: usize>(
         usage: maps.usage,
         root: population.root(),
     };
-    let definition = match original.construction {
-        source::Construction::OriginalCount => definition::compose(
+    let definition = if original.is_unique() {
+        definition::compose_unique_long(
             &image,
             &original.layout,
             &original.name,
             descriptor,
             budget,
             cancelled,
-        )?,
-        source::Construction::Fresh => definition::compose_fresh(
-            &image,
-            &original.layout,
-            &original.name,
-            descriptor,
-            budget,
-            cancelled,
-        )?,
+        )?
+    } else {
+        match original.construction {
+            source::Construction::OriginalCount => definition::compose(
+                &image,
+                &original.layout,
+                &original.name,
+                descriptor,
+                budget,
+                cancelled,
+            )?,
+            source::Construction::Fresh => definition::compose_fresh(
+                &image,
+                &original.layout,
+                &original.name,
+                descriptor,
+                budget,
+                cancelled,
+            )?,
+        }
     };
+
     let length = usize::try_from(maps.after_pages)
         .map_err(|_| InspectError::StructureLimit)?
         .checked_mul(PAGE_BYTES)
@@ -135,7 +160,9 @@ pub(super) fn build<const WIRE_BYTES: usize>(
         budget,
         cancelled,
     )?;
-    if original.is_numeric() {
+    if original.is_unique() {
+        audit::prove_unique(&image, &after, table, request, budget, cancelled)?;
+    } else if original.is_numeric() {
         audit::prove_numeric(&image, &after, table, request, budget, cancelled)?;
     } else {
         match original.construction {
@@ -152,6 +179,11 @@ pub(super) fn build<const WIRE_BYTES: usize>(
     let column = String::from_utf8(buffer::copy(request.column.as_bytes(), budget, cancelled)?)
         .map_err(|_| InspectError::Malformed)?;
     let rows = original.content.records.len();
+    let policy = if original.is_unique() {
+        super::index_creation::IndexPolicy::UniqueLong
+    } else {
+        super::index_creation::IndexPolicy::Ordinary
+    };
     let source::Original {
         inventory,
         scalar,
@@ -171,6 +203,7 @@ pub(super) fn build<const WIRE_BYTES: usize>(
         before: image,
         after,
         construction,
+        policy,
         scalar,
         table,
         column,

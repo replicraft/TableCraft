@@ -16,6 +16,7 @@ pub(crate) struct NativeIndexCreateEffect {
     before: NativeImage,
     after: NativeImage,
     construction: Construction,
+    policy: crate::table::mutation::index_creation::IndexPolicy,
     native_table: i32,
     definition: u32,
     native: usize,
@@ -26,6 +27,13 @@ pub(crate) struct NativeIndexCreateEffect {
     rows: usize,
 }
 impl NativeIndexCreateEffect {
+    pub(crate) fn is_unique_construction(&self) -> bool {
+        matches!(
+            self.policy,
+            crate::table::mutation::index_creation::IndexPolicy::UniqueLong
+        )
+    }
+
     pub(crate) fn is_fresh_construction(&self) -> bool {
         self.construction == Construction::Fresh
     }
@@ -82,6 +90,7 @@ impl NativeLongIndexCandidate {
             before,
             after,
             construction,
+            policy,
             table,
             column,
             index,
@@ -100,6 +109,7 @@ impl NativeLongIndexCandidate {
                 before,
                 after,
                 construction,
+                policy,
                 native_table,
                 definition,
                 native,

@@ -163,7 +163,7 @@ impl NativeIndexCreateIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, IndexCreateIntentError> {
-        if candidate.is_fresh_construction() {
+        if candidate.is_fresh_construction() || candidate.is_unique_construction() {
             return Err(IndexCreateIntentError::InvalidRecord);
         }
         let identity = Identity {

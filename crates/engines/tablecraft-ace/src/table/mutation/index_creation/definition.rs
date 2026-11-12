@@ -27,6 +27,7 @@ const FREE_OFFSET: usize = 2;
 const INDEX_MAGIC: u32 = 1923;
 const LOGICAL_MAGIC: u32 = 1625;
 const ORDINARY_FLAGS: u8 = 0x80;
+const UNIQUE_SECONDARY_FLAGS: u8 = 0x81;
 const RELATED_INDEX_OFFSET: usize = 13;
 const NEW_COUNTER_OFFSET: usize = 4;
 const TRAILER: [u8; 2] = [0xff, 0xff];
@@ -186,6 +187,50 @@ pub(in crate::table::mutation) fn compose_fresh(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, EditError> {
+    compose_with_policy(
+        image,
+        layout,
+        name,
+        descriptor,
+        Policy::Ordinary,
+        budget,
+        cancelled,
+    )
+}
+
+pub(in crate::table::mutation) fn compose_unique_long(
+    image: &NativeImage,
+    layout: &DefinitionLayout,
+    name: &tablecraft_schema::SchemaName,
+    descriptor: CreatedDescriptor,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, EditError> {
+    compose_with_policy(
+        image,
+        layout,
+        name,
+        descriptor,
+        Policy::UniqueLong,
+        budget,
+        cancelled,
+    )
+}
+
+enum Policy {
+    Ordinary,
+    UniqueLong,
+}
+
+fn compose_with_policy(
+    image: &NativeImage,
+    layout: &DefinitionLayout,
+    name: &tablecraft_schema::SchemaName,
+    descriptor: CreatedDescriptor,
+    policy: Policy,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, EditError> {
     let name_units = name.as_str().encode_utf16().count();
     let name_bytes = name_units
         .checked_mul(size_of::<u16>())
@@ -227,7 +272,10 @@ pub(in crate::table::mutation) fn compose_fresh(
         .copy_from_slice(&descriptor.usage.to_le_bytes());
     physical[ROOT_OFFSET..ROOT_OFFSET + size_of::<u32>()]
         .copy_from_slice(&descriptor.root.to_le_bytes());
-    physical[FLAGS_OFFSET] = ORDINARY_FLAGS;
+    physical[FLAGS_OFFSET] = match policy {
+        Policy::Ordinary => ORDINARY_FLAGS,
+        Policy::UniqueLong => UNIQUE_SECONDARY_FLAGS,
+    };
     active.extend_from_slice(&physical);
     // NO_CLONE: Read original column/physical/logical/name spans while the retained layout
     // is needed for index creation. Only range bounds are copied, not the

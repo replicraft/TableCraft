@@ -19,6 +19,13 @@ use crate::{
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const ORDINARY_INDEX_FLAGS: u8 = 0x80;
+const UNIQUE_INDEX_FLAGS: u8 = 0x81;
+
+#[derive(Clone, Copy)]
+pub(super) enum Policy {
+    Ordinary,
+    UniqueLong,
+}
 
 pub(super) struct Original {
     pub content: preserved_source::Source,
@@ -38,6 +45,17 @@ pub(super) fn capture(
     image: &NativeImage,
     table: &str,
     requested: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Original, EditError> {
+    capture_policy(image, table, requested, Policy::Ordinary, budget, cancelled)
+}
+
+pub(super) fn capture_policy(
+    image: &NativeImage,
+    table: &str,
+    requested: &str,
+    policy: Policy,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Original, EditError> {
@@ -82,7 +100,11 @@ pub(super) fn capture(
         .iter()
         .find(|field| field.number() == key.number())
         .ok_or(InspectError::Malformed)?;
-    if selected.flags() != ORDINARY_INDEX_FLAGS
+    let expected_flags = match policy {
+        Policy::Ordinary => ORDINARY_INDEX_FLAGS,
+        Policy::UniqueLong => UNIQUE_INDEX_FLAGS,
+    };
+    if selected.flags() != expected_flags
         || selected.native_type() != 0
         || selected.foreign_reference().is_some()
         || column.native_type() != INT32

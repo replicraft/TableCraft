@@ -35,6 +35,7 @@ pub(super) enum Construction {
 enum Language {
     Long,
     Numeric,
+    UniqueLong,
 }
 
 #[derive(Clone, Copy)]
@@ -42,6 +43,7 @@ pub(super) enum Mode {
     OriginalLong,
     FreshLong,
     Numeric,
+    UniqueLong,
 }
 
 pub(super) struct Original<'image> {
@@ -104,6 +106,7 @@ pub(super) fn capture_mode<'image>(
         Mode::OriginalLong => (Construction::OriginalCount, Language::Long),
         Mode::FreshLong => (Construction::Fresh, Language::Long),
         Mode::Numeric => (Construction::Fresh, Language::Numeric),
+        Mode::UniqueLong => (Construction::Fresh, Language::UniqueLong),
     };
     check(budget, cancelled)?;
     image.require_retained_capture()?;
@@ -123,7 +126,7 @@ pub(super) fn capture_mode<'image>(
         SchemaName::new(String::from_utf8(bytes).map_err(|_| crate::InspectError::Malformed)?)
             .map_err(crate::InspectError::from)?;
     let content = match language {
-        Language::Long => {
+        Language::Long | Language::UniqueLong => {
             normal_ordinary::capture_retained_schema(image, table, budget, cancelled)?
         }
         Language::Numeric => normal_ordinary::capture_retained_numeric_index_schema(
@@ -158,7 +161,7 @@ pub(super) fn capture_mode<'image>(
     }
     let (position, selected) = selected.ok_or(crate::InspectError::UnknownColumn)?;
     let (scalar, kind) = match language {
-        Language::Long => {
+        Language::Long | Language::UniqueLong => {
             if selected.native_type() != INT32
                 || selected.scalar_type() != Some(ScalarType::Int32)
                 || selected.flags() != (FIXED_FLAG | UPDATABLE_FLAG)
@@ -286,13 +289,17 @@ pub(super) fn capture_mode<'image>(
 }
 
 impl Original<'_> {
+    pub(super) fn is_unique(&self) -> bool {
+        self.language == Language::UniqueLong
+    }
+
     pub(super) fn is_numeric(&self) -> bool {
         self.language == Language::Numeric
     }
 
     pub(super) fn value(&self, value: &Value) -> Result<Option<i64>, EditError> {
         match self.language {
-            Language::Long => match value {
+            Language::Long | Language::UniqueLong => match value {
                 Value::Null => Ok(None),
                 Value::Int32(value) => Ok(Some(i64::from(*value))),
                 _ => Err(EditError::Preservation),

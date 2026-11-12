@@ -19,6 +19,7 @@ const USAGE_OFFSET: usize = 34;
 const ROOT_OFFSET: usize = 38;
 const FLAGS_OFFSET: usize = 46;
 const ORDINARY_FLAGS: u8 = 0x80;
+const UNIQUE_SECONDARY_FLAGS: u8 = 0x81;
 const LOGICAL_NUMBER_OFFSET: usize = 4;
 const PHYSICAL_NUMBER_OFFSET: usize = 8;
 const RELATED_INDEX_OFFSET: usize = 13;
@@ -92,7 +93,11 @@ pub(super) fn definition(
             .ok_or(InspectError::StructureLimit)?,
     );
     integer(&mut physical, ROOT_OFFSET, root);
-    physical[FLAGS_OFFSET] = ORDINARY_FLAGS;
+    physical[FLAGS_OFFSET] = if original.is_unique() {
+        UNIQUE_SECONDARY_FLAGS
+    } else {
+        ORDINARY_FLAGS
+    };
     active.extend(physical);
     // NO_CLONE: Read original column/physical/logical/name spans from a borrowed layout
     // during independent index frame reconstruction. Only range bounds are

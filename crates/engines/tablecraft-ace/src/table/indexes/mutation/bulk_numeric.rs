@@ -108,6 +108,40 @@ impl<const WIRE_BYTES: usize> Population<WIRE_BYTES> {
         Ok(result)
     }
 
+    /// Closed unique LONG population. NULL remains a stored key; only present
+    /// duplicate values violate this secondary index's uniqueness contract.
+    pub(in crate::table) fn capture_unique_long(
+        keys: Vec<NumericKeyRow>,
+        column: usize,
+        descending: bool,
+        base: u32,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        let population = Self::capture(
+            keys,
+            column,
+            NumericKey::new(tablecraft_schema::ScalarType::Int32)?,
+            descending,
+            base,
+            budget,
+            cancelled,
+        )?;
+        let mut previous = None;
+        for key in &population.keys {
+            check(budget, cancelled)?;
+            if let Some(value) = key.value {
+                if previous == Some(value) {
+                    return Err(
+                        InspectError::from(crate::IndexConstraintViolation::DuplicateKey).into(),
+                    );
+                }
+                previous = Some(value);
+            }
+        }
+        Ok(population)
+    }
+
     pub(in crate::table) fn page_count(&self) -> usize {
         self.nodes.len()
     }

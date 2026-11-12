@@ -5,6 +5,8 @@ pub(crate) use effect::{NativeIndexDropEffect, NativeIndexDropParts};
 mod proof;
 mod retirement;
 mod source;
+mod unique;
+pub use unique::NativeUniqueLongIndexDropCandidate;
 #[cfg(test)]
 mod tests;
 
@@ -17,6 +19,7 @@ use tablecraft_core::limits::ResourceBudget;
 /// Exclusive retired trees and their dedicated map storage are zeroed. This is
 /// an explicit producer policy, not observed Microsoft Access byte parity.
 pub struct NativeIndexDropCandidate {
+    policy: source::Policy,
     before: NativeImage,
     after: NativeImage,
     table: String,
@@ -85,8 +88,24 @@ impl NativeImage {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeIndexDropCandidate, EditError> {
+        self.build_retained_index_drop(table, index, source::Policy::Ordinary, budget, cancelled)
+    }
+
+    fn build_retained_index_drop(
+        self,
+        table: &str,
+        index: &str,
+        policy: source::Policy,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<NativeIndexDropCandidate, EditError> {
         let _span = tracing::debug_span!("native.index.drop").entered();
-        let original = source::capture(&self, table, index, budget, cancelled)?;
+        let original = match policy {
+            source::Policy::Ordinary => source::capture(&self, table, index, budget, cancelled)?,
+            source::Policy::UniqueLong => {
+                source::capture_policy(&self, table, index, policy, budget, cancelled)?
+            }
+        };
         let mut bytes = buffer::copy(self.as_bytes(), budget, cancelled)?;
         let page = definition::compose(&self, &original, budget, cancelled)?;
         let start = original.layout.definition as usize * crate::format::page::PAGE_BYTES;
@@ -98,7 +117,14 @@ impl NativeImage {
             budget,
             cancelled,
         )?;
-        proof::prove(&self, &after, table, index, budget, cancelled)?;
+        match policy {
+            source::Policy::Ordinary => {
+                proof::prove(&self, &after, table, index, budget, cancelled)?
+            }
+            source::Policy::UniqueLong => {
+                proof::prove_policy(&self, &after, table, index, policy, budget, cancelled)?
+            }
+        }
         let table = String::from_utf8(buffer::copy(table.as_bytes(), budget, cancelled)?)
             .map_err(|_| InspectError::Malformed)?;
         let index = String::from_utf8(buffer::copy(index.as_bytes(), budget, cancelled)?)
@@ -110,6 +136,7 @@ impl NativeImage {
         let definition = original.layout.definition;
         let native_table = original.native_table;
         Ok(NativeIndexDropCandidate {
+            policy,
             before: self,
             after,
             table,

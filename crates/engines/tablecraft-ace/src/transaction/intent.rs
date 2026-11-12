@@ -234,19 +234,22 @@ pub use numeric_index_create::{
 };
 
 mod fresh_index_create;
-#[cfg(feature = "ace16-create")]
-pub use fresh_index_create::RecoverableNativeFreshIndexCreatePlan;
 pub use fresh_index_create::{
-    FreshIndexCreateIntentError, NativeFreshIndexCreateIntent,
+    FreshIndexCreateIntentError, NativeFreshIndexCreateIntent, NativeUniqueLongIndexCreateIntent,
     QualifiedNativeFreshIndexCreateRecovery,
+};
+#[cfg(feature = "ace16-create")]
+pub use fresh_index_create::{
+    RecoverableNativeFreshIndexCreatePlan, RecoverableNativeUniqueLongIndexCreatePlan,
 };
 
 mod index_drop;
-#[cfg(feature = "ace16-create")]
-pub use index_drop::RecoverableNativeIndexDropPlan;
 pub use index_drop::{
-    IndexDropIntentError, NativeIndexDropIntent, QualifiedNativeIndexDropRecovery,
+    IndexDropIntentError, NativeIndexDropIntent, NativeUniqueLongIndexDropIntent,
+    QualifiedNativeIndexDropRecovery,
 };
+#[cfg(feature = "ace16-create")]
+pub use index_drop::{RecoverableNativeIndexDropPlan, RecoverableNativeUniqueLongIndexDropPlan};
 
 mod index_create;
 #[cfg(feature = "ace16-create")]

@@ -10,6 +10,7 @@ pub(crate) struct NativeIndexDropParts {
 
 /// No caller or decoded request can construct this proved image pair.
 pub(crate) struct NativeIndexDropEffect {
+    policy: super::source::Policy,
     before: NativeImage,
     after: NativeImage,
     native_table: i32,
@@ -20,6 +21,10 @@ pub(crate) struct NativeIndexDropEffect {
 }
 
 impl NativeIndexDropEffect {
+    pub(crate) fn is_unique_drop(&self) -> bool {
+        matches!(self.policy, super::source::Policy::UniqueLong)
+    }
+
     pub(crate) fn before_bytes(&self) -> &[u8] {
         self.before.as_bytes()
     }
@@ -58,6 +63,7 @@ impl NativeIndexDropEffect {
 impl NativeIndexDropCandidate {
     pub(crate) fn into_parts(self) -> NativeIndexDropParts {
         let Self {
+            policy,
             before,
             after,
             table,
@@ -70,6 +76,7 @@ impl NativeIndexDropCandidate {
         } = self;
         NativeIndexDropParts {
             effect: NativeIndexDropEffect {
+                policy,
                 before,
                 after,
                 native_table,

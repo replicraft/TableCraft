@@ -1,12 +1,28 @@
 //! Exact TCIC0002 request and identity witnesses; no generated rows/pages or SQL.
-use super::{
-    FreshIndexCreateIntentError as Error, Identity, NativeFreshIndexCreateIntent as Intent, binding,
-};
+use super::{FreshIndexCreateIntentError as Error, Identity, OriginalData as Intent, binding};
 use crate::{format::page::PAGE_BYTES, header::check, identifier};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const MAGIC: &[u8; 8] = b"TCIC0002";
 const PROFILE: u16 = 2;
+const UNIQUE_MAGIC: &[u8; 8] = b"TCIC0004";
+const UNIQUE_PROFILE: u16 = 4;
+
+#[derive(Clone, Copy)]
+enum Family {
+    Original,
+    UniqueLong,
+}
+
+impl Family {
+    const fn framing(self) -> (&'static [u8; 8], u16) {
+        match self {
+            Self::Original => (MAGIC, PROFILE),
+            Self::UniqueLong => (UNIQUE_MAGIC, UNIQUE_PROFILE),
+        }
+    }
+}
+
 const DESCENDING: u16 = 1;
 const TOTAL_AT: usize = MAGIC.len();
 const PROFILE_AT: usize = TOTAL_AT + size_of::<u32>();
@@ -63,6 +79,24 @@ pub(super) fn encode(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, Error> {
+    encode_family(intent, Family::Original, budget, cancelled)
+}
+
+pub(super) fn encode_unique(
+    intent: &Intent,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, Error> {
+    encode_family(intent, Family::UniqueLong, budget, cancelled)
+}
+
+fn encode_family(
+    intent: &Intent,
+    family: Family,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, Error> {
+    let (magic, profile) = family.framing();
     check(budget, cancelled)?;
     let names = [intent.table(), intent.column(), intent.index_name()];
     validate(
@@ -82,13 +116,13 @@ pub(super) fn encode(
     bytes
         .try_reserve_exact(length)
         .map_err(|_| crate::InspectError::Allocation)?;
-    bytes.extend(MAGIC);
+    bytes.extend(magic);
     bytes.extend(
         u32::try_from(length)
             .map_err(|_| Error::InvalidRecord)?
             .to_le_bytes(),
     );
-    bytes.extend(PROFILE.to_le_bytes());
+    bytes.extend(profile.to_le_bytes());
     let flags = if intent.descending { DESCENDING } else { 0 };
     bytes.extend(flags.to_le_bytes());
     bytes.extend(intent.before_length.to_le_bytes());
@@ -122,11 +156,29 @@ pub(super) fn decode(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Intent, Error> {
+    decode_family(bytes, Family::Original, budget, cancelled)
+}
+
+pub(super) fn decode_unique(
+    bytes: &[u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Intent, Error> {
+    decode_family(bytes, Family::UniqueLong, budget, cancelled)
+}
+
+fn decode_family(
+    bytes: &[u8],
+    family: Family,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Intent, Error> {
+    let (magic, profile) = family.framing();
     check(budget, cancelled)?;
     if !(HEADER..=MAX_BYTES).contains(&bytes.len())
-        || bytes.get(..MAGIC.len()) != Some(MAGIC)
+        || bytes.get(..MAGIC.len()) != Some(magic)
         || u32::from_le_bytes(array(bytes, TOTAL_AT)?) as usize != bytes.len()
-        || u16::from_le_bytes(array(bytes, PROFILE_AT)?) != PROFILE
+        || u16::from_le_bytes(array(bytes, PROFILE_AT)?) != profile
         || u16::from_le_bytes(array(bytes, RESERVED_AT)?) != 0
     {
         return Err(Error::InvalidRecord);

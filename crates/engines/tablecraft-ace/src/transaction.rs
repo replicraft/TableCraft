@@ -306,18 +306,23 @@ pub use intent::{
     QualifiedNativeNumericIndexCreateRecovery,
 };
 
-#[cfg(all(feature = "journal", feature = "ace16-create"))]
-pub use intent::RecoverableNativeFreshIndexCreatePlan;
 #[cfg(feature = "journal")]
 pub use intent::{
-    FreshIndexCreateIntentError, NativeFreshIndexCreateIntent,
+    FreshIndexCreateIntentError, NativeFreshIndexCreateIntent, NativeUniqueLongIndexCreateIntent,
     QualifiedNativeFreshIndexCreateRecovery,
 };
-
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
-pub use intent::RecoverableNativeIndexDropPlan;
+pub use intent::{
+    RecoverableNativeFreshIndexCreatePlan, RecoverableNativeUniqueLongIndexCreatePlan,
+};
+
 #[cfg(feature = "journal")]
-pub use intent::{IndexDropIntentError, NativeIndexDropIntent, QualifiedNativeIndexDropRecovery};
+pub use intent::{
+    IndexDropIntentError, NativeIndexDropIntent, NativeUniqueLongIndexDropIntent,
+    QualifiedNativeIndexDropRecovery,
+};
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use intent::{RecoverableNativeIndexDropPlan, RecoverableNativeUniqueLongIndexDropPlan};
 
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub use intent::RecoverableNativeIndexCreatePlan;

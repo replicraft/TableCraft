@@ -2,7 +2,9 @@
 use super::{IndexDropIntentError as Error, NativeIndexDropIntent as Intent};
 use crate::header::check;
 #[cfg(feature = "ace16-create")]
-use crate::{NativeImage, transaction::qualified_recovery::equal_image};
+use crate::{
+    NativeImage, table::NativeIndexDropEffect, transaction::qualified_recovery::equal_image,
+};
 #[cfg(feature = "ace16-create")]
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
@@ -34,38 +36,89 @@ impl Intent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<QualifiedNativeIndexDropRecovery<'a, J>, Error> {
-        let _span = tracing::debug_span!("native.index_drop.recovery_qualify").entered();
+        qualify(self, checked, scope, budget, cancelled)
+    }
+}
+
+pub(super) trait Original {
+    #[cfg(feature = "ace16-create")]
+    fn verify_before(
+        &self,
+        before: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), Error>;
+
+    #[cfg(feature = "ace16-create")]
+    fn effect(
+        self,
+        image: NativeImage,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<NativeIndexDropEffect, Error>;
+}
+
+impl Original for Intent {
+    #[cfg(feature = "ace16-create")]
+    fn verify_before(
+        &self,
+        before: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), Error> {
+        Intent::verify_before(self, before, budget, cancelled)
+    }
+
+    #[cfg(feature = "ace16-create")]
+    fn effect(
+        self,
+        image: NativeImage,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<NativeIndexDropEffect, Error> {
+        self.reconstruct(image, budget, cancelled)
+            .map(|(effect, _)| effect)
+    }
+}
+
+pub(super) fn qualify<'a, I: Original, J: DurableStorage>(
+    original: I,
+    checked: CheckedV3<'a, J>,
+    scope: CatalogScope,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<QualifiedNativeIndexDropRecovery<'a, J>, Error> {
+    let _span = tracing::debug_span!("native.index_drop.recovery_qualify").entered();
+    check(budget, cancelled)?;
+    #[cfg(feature = "ace16-create")]
+    {
+        original.verify_before(checked.before_bytes(), budget, cancelled)?;
+        let image = NativeImage::capture_retained(
+            &mut Cursor::new(checked.before_bytes()),
+            scope,
+            budget,
+            cancelled,
+        )?;
+        let effect = original.effect(image, budget, cancelled)?;
+        equal_image(
+            effect.before_bytes(),
+            checked.before_bytes(),
+            budget,
+            cancelled,
+        )?;
+        equal_image(
+            effect.after_bytes(),
+            checked.after_bytes(),
+            budget,
+            cancelled,
+        )?;
         check(budget, cancelled)?;
-        #[cfg(feature = "ace16-create")]
-        {
-            self.verify_before(checked.before_bytes(), budget, cancelled)?;
-            let image = NativeImage::capture_retained(
-                &mut Cursor::new(checked.before_bytes()),
-                scope,
-                budget,
-                cancelled,
-            )?;
-            let (effect, _original) = self.reconstruct(image, budget, cancelled)?;
-            equal_image(
-                effect.before_bytes(),
-                checked.before_bytes(),
-                budget,
-                cancelled,
-            )?;
-            equal_image(
-                effect.after_bytes(),
-                checked.after_bytes(),
-                budget,
-                cancelled,
-            )?;
-            check(budget, cancelled)?;
-            Ok(QualifiedNativeIndexDropRecovery { checked })
-        }
-        #[cfg(not(feature = "ace16-create"))]
-        {
-            let _ = (checked, scope);
-            Err(Error::UnsupportedSource)
-        }
+        Ok(QualifiedNativeIndexDropRecovery { checked })
+    }
+    #[cfg(not(feature = "ace16-create"))]
+    {
+        let _ = (original, checked, scope);
+        Err(Error::UnsupportedSource)
     }
 }
 

@@ -1,5 +1,9 @@
 //! Fresh logical index construction with exact source-bound generated witnesses.
 mod codec;
+mod unique;
+pub use unique::NativeUniqueLongIndexCreateIntent;
+#[cfg(feature = "ace16-create")]
+pub use unique::RecoverableNativeUniqueLongIndexCreatePlan;
 #[cfg(feature = "ace16-create")]
 mod planning;
 mod recovery;
@@ -63,12 +67,21 @@ struct Identity {
     physical: u32,
 }
 
-/// TCIC0002 original request and fresh logical/physical witnesses bound to all BEFORE bytes.
-/// Count-based identity is retained when free; a collision selects checked
-/// maximum-plus-one without renumbering existing identities. This explicit
-/// construction policy does not claim Microsoft's historical allocation algorithm.
-/// Decoded data grants no source certificate, physical page scope or write authority.
+#[cfg(feature = "ace16-create")]
+#[derive(Clone, Copy)]
+pub(super) enum CapturePolicy {
+    Ordinary,
+    UniqueLong,
+}
+
+/// Nominal original for the unchanged ordinary source language.
 pub struct NativeFreshIndexCreateIntent {
+    data: OriginalData,
+}
+
+/// Inert owned names, native identity and complete original binding.
+/// Exact family and source policy belong to the nominal wrappers.
+pub(super) struct OriginalData {
     table: String,
     column: String,
     index: tablecraft_schema::SchemaName,
@@ -78,7 +91,7 @@ pub struct NativeFreshIndexCreateIntent {
     before_binding: [u8; binding::DIGEST_BYTES],
 }
 
-impl NativeFreshIndexCreateIntent {
+impl OriginalData {
     /// Fixed framing plus three native names of at most 64 UTF-16 units each.
     /// This UTF-8 envelope does not replace native identifier validation.
     pub const MAX_ENCODED_BYTES: usize = codec::MAX_BYTES;
@@ -177,6 +190,7 @@ impl NativeFreshIndexCreateIntent {
     #[cfg(feature = "ace16-create")]
     fn capture(
         parts: NativeIndexCreateParts,
+        policy: CapturePolicy,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(NativeIndexCreateEffect, Self), FreshIndexCreateIntentError> {
@@ -187,6 +201,9 @@ impl NativeFreshIndexCreateIntent {
             index,
         } = parts;
         if !effect.is_fresh_construction() {
+            return Err(FreshIndexCreateIntentError::InvalidRecord);
+        }
+        if effect.is_unique_construction() != matches!(policy, CapturePolicy::UniqueLong) {
             return Err(FreshIndexCreateIntentError::InvalidRecord);
         }
         let identity = Identity::from_effect(&effect)?;
@@ -210,43 +227,6 @@ impl NativeFreshIndexCreateIntent {
         };
         Ok((effect, intent))
     }
-
-    #[cfg(feature = "ace16-create")]
-    fn reconstruct(
-        self,
-        image: NativeImage,
-        budget: &mut ResourceBudget,
-        cancelled: &dyn Fn() -> bool,
-    ) -> Result<(NativeIndexCreateEffect, Self), FreshIndexCreateIntentError> {
-        self.verify_before(image.as_bytes(), budget, cancelled)?;
-        let candidate = image.prepare_retained_fresh_long_index_creation(
-            self.table(),
-            &SecondaryIndexCreate::new(self.index_name(), self.column(), self.descending()),
-            budget,
-            cancelled,
-        )?;
-        let NativeIndexCreateParts {
-            effect,
-            table,
-            column,
-            index,
-        } = candidate.into_parts();
-        if !effect.is_fresh_construction() || Identity::from_effect(&effect)? != self.identity {
-            return Err(FreshIndexCreateIntentError::IdentityMismatch);
-        }
-        // The borrowed public native constructor returns its own paid request
-        // buffers. Move those validated names into the resulting original while
-        // retaining the original binding and identity fields; no buffer is cloned.
-        Ok((
-            effect,
-            Self {
-                table,
-                column,
-                index,
-                ..self
-            },
-        ))
-    }
 }
 
 #[cfg(feature = "ace16-create")]
@@ -268,3 +248,153 @@ impl Identity {
 
 #[cfg(test)]
 mod tests;
+
+impl NativeFreshIndexCreateIntent {
+    /// Maximum closed name/identity wire envelope.
+    pub const MAX_ENCODED_BYTES: usize = OriginalData::MAX_ENCODED_BYTES;
+
+    /// Decode only TCIC0002/profile2. No old mutation family is attempted.
+    ///
+    /// # Errors
+    /// Rejects invalid framing, profile, flags, identity, names, allocation,
+    /// cancellation and caller resource exhaustion before publishing an owner.
+    pub fn decode(
+        bytes: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, FreshIndexCreateIntentError> {
+        OriginalData::decode(bytes, budget, cancelled).map(|data| Self { data })
+    }
+
+    /// Encode the original request and complete source binding, never generated pages.
+    ///
+    /// # Errors
+    /// Rejects invalid representation, allocation, cancellation or caller limits.
+    pub fn encode(
+        &self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<u8>, FreshIndexCreateIntentError> {
+        self.data.encode(budget, cancelled)
+    }
+
+    /// Verify all original bytes before any native reconstruction or target effect.
+    ///
+    /// # Errors
+    /// Returns BeforeMismatch, invalid native geometry, cancellation or caller limits.
+    pub fn verify_before(
+        &self,
+        bytes: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), FreshIndexCreateIntentError> {
+        self.data.verify_before(bytes, budget, cancelled)
+    }
+
+    /// Original resolved table name, without a caller-scoped object capability.
+    pub fn table(&self) -> &str {
+        self.data.table()
+    }
+
+    /// Original selected field name, independent of display ordinal.
+    pub fn column(&self) -> &str {
+        self.data.column()
+    }
+
+    /// Whether native keys are descending; ROW ties remain ascending.
+    pub const fn descending(&self) -> bool {
+        self.data.descending()
+    }
+
+    /// Original native field identity, which may be zero for an ordinary field.
+    pub const fn native_number(&self) -> u16 {
+        self.data.native_number()
+    }
+
+    /// Original creation-time field ID, distinct from native/display position.
+    pub const fn column_id(&self) -> u16 {
+        self.data.column_id()
+    }
+
+    /// Original requested index name.
+    pub fn index_name(&self) -> &str {
+        self.data.index_name()
+    }
+
+    /// Original signed native catalog table identity.
+    pub const fn native_table_id(&self) -> i32 {
+        self.data.native_table_id()
+    }
+
+    /// Original table-definition root page.
+    pub const fn definition_page(&self) -> u32 {
+        self.data.definition_page()
+    }
+
+    /// Generated logical identity, independently rederived from the complete source.
+    pub const fn logical_index_number(&self) -> u32 {
+        self.data.logical_index_number()
+    }
+
+    /// Generated dense physical array identity, separate from logical history.
+    pub const fn physical_index_number(&self) -> u32 {
+        self.data.physical_index_number()
+    }
+
+    /// Complete original image length under native retained-file geometry.
+    pub const fn before_length(&self) -> u64 {
+        self.data.before_length()
+    }
+
+    #[cfg(feature = "ace16-create")]
+    fn capture(
+        parts: NativeIndexCreateParts,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(NativeIndexCreateEffect, Self), FreshIndexCreateIntentError> {
+        OriginalData::capture(parts, CapturePolicy::Ordinary, budget, cancelled)
+            .map(|(effect, data)| (effect, Self { data }))
+    }
+
+    #[cfg(feature = "ace16-create")]
+    fn reconstruct(
+        self,
+        image: NativeImage,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(NativeIndexCreateEffect, Self), FreshIndexCreateIntentError> {
+        self.verify_before(image.as_bytes(), budget, cancelled)?;
+        let candidate = image.prepare_retained_fresh_long_index_creation(
+            self.table(),
+            &SecondaryIndexCreate::new(self.index_name(), self.column(), self.descending()),
+            budget,
+            cancelled,
+        )?;
+        let NativeIndexCreateParts {
+            effect,
+            table,
+            column,
+            index,
+        } = candidate.into_parts();
+        if !effect.is_fresh_construction()
+            || effect.is_unique_construction()
+            || Identity::from_effect(&effect)? != self.data.identity
+        {
+            return Err(FreshIndexCreateIntentError::IdentityMismatch);
+        }
+        // The borrowed public native constructor returns its own paid request
+        // buffers. Move those validated names into the resulting original while
+        // retaining the original binding and identity fields; no buffer is cloned.
+        Ok((
+            effect,
+            Self {
+                data: OriginalData {
+                    table,
+                    column,
+                    index,
+                    ..self.data
+                },
+            },
+        ))
+    }
+}

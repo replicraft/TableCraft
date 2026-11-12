@@ -68,9 +68,11 @@ pub(in crate::table) mod index_creation;
 ))]
 pub use index_creation::SecondaryIndexCreate;
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use index_creation::UniqueLongIndexCreate;
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
 mod normal_index_drop;
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
-pub use normal_index_drop::NativeIndexDropCandidate;
+pub use normal_index_drop::{NativeIndexDropCandidate, NativeUniqueLongIndexDropCandidate};
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub(crate) use normal_index_drop::{NativeIndexDropEffect, NativeIndexDropParts};
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
@@ -88,9 +90,9 @@ pub use normal_numeric_index_creation::NativeNumericIndexCandidate;
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 mod normal_index_creation;
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
-pub use normal_index_creation::NativeLongIndexCandidate;
-#[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub(crate) use normal_index_creation::{NativeIndexCreateEffect, NativeIndexCreateParts};
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use normal_index_creation::{NativeLongIndexCandidate, NativeUniqueLongIndexCandidate};
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 pub(crate) mod current_schema;
 #[cfg(all(feature = "ace16-create", feature = "journal"))]

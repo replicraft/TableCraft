@@ -20,6 +20,8 @@ use crate::{
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const PAGE: usize = 4096;
+const ORDINARY_INDEX_FLAGS: u8 = 0x80;
+const UNIQUE_INDEX_FLAGS: u8 = 0x81;
 
 pub(super) fn prove(
     before: &NativeImage,
@@ -54,6 +56,25 @@ pub(super) fn prove_numeric(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
     let original = source::capture_numeric(before, table, request, budget, cancelled)?;
+    prove_original(before, after, table, request, original, budget, cancelled)
+}
+
+pub(super) fn prove_unique(
+    before: &NativeImage,
+    after: &NativeImage,
+    table: &str,
+    request: &SecondaryIndexCreate<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    let original = source::capture_mode(
+        before,
+        table,
+        request,
+        source::Mode::UniqueLong,
+        budget,
+        cancelled,
+    )?;
     prove_original(before, after, table, request, original, budget, cancelled)
 }
 
@@ -109,7 +130,12 @@ fn prove_original(
     if index.name() != original.name.as_str()
         || index.number() != original.logical
         || index.data_number() != original.layout.physical_count
-        || index.flags() != 128
+        || index.flags()
+            != if original.is_unique() {
+                UNIQUE_INDEX_FLAGS
+            } else {
+                ORDINARY_INDEX_FLAGS
+            }
         || index.native_type() != 0
         || column.number() != original.native
         || column.descending() != request.descending
@@ -201,6 +227,11 @@ fn prove_original(
         }
         seen[low] = true;
         if let Some((old, old_reference)) = previous {
+            if original.is_unique() && value.is_some() && old == value {
+                return Err(
+                    InspectError::from(crate::IndexConstraintViolation::DuplicateKey).into(),
+                );
+            }
             let order = if request.descending {
                 value.cmp(&old).reverse()
             } else {

@@ -63,6 +63,8 @@ pub(crate) use mutation::DeclaredFieldAdditionEffect;
     all(feature = "journal", feature = "ace16-create")
 ))]
 pub use mutation::SecondaryIndexCreate;
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use mutation::UniqueLongIndexCreate;
 #[cfg(feature = "ace16-write-preview")]
 pub use mutation::{
     Ace16AutoNumberInsertPreview, Ace16IncrementingInsertBinding, AutoNumberRowInsert,
@@ -105,6 +107,7 @@ pub(crate) use mutation::{NativeIndexCreateEffect, NativeIndexCreateParts};
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub use mutation::{
     NativeIndexDropCandidate, NativeLongIndexCandidate, NativeNumericIndexCandidate,
+    NativeUniqueLongIndexCandidate, NativeUniqueLongIndexDropCandidate,
 };
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub(crate) use mutation::{NativeIndexDropEffect, NativeIndexDropParts};

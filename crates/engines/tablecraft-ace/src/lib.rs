@@ -112,6 +112,8 @@ pub use table::Ace16IndexCreatePreview;
     all(feature = "journal", feature = "ace16-create")
 ))]
 pub use table::SecondaryIndexCreate;
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use table::UniqueLongIndexCreate;
 #[cfg(feature = "ace16-write-preview")]
 pub use table::{
     Ace16AutoNumberInsertPreview, Ace16IncrementingInsertBinding, AutoNumberRowInsert,
@@ -184,7 +186,10 @@ pub use table::{
     read_multivalue_table_page_with_request,
 };
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
-pub use table::{NativeIndexDropCandidate, NativeLongIndexCandidate, NativeNumericIndexCandidate};
+pub use table::{
+    NativeIndexDropCandidate, NativeLongIndexCandidate, NativeNumericIndexCandidate,
+    NativeUniqueLongIndexCandidate, NativeUniqueLongIndexDropCandidate,
+};
 pub use table::{
     ParentVersionHistory, StoredVersion, VersionHistoryColumn, VersionHistoryMemberDeclaration,
     VersionHistoryReader, inspect_version_history_declarations, read_version_history_column,
@@ -463,20 +468,23 @@ pub use transaction::{
     QualifiedNativeNumericIndexCreateRecovery,
 };
 
-#[cfg(all(feature = "journal", feature = "ace16-create"))]
-pub use transaction::RecoverableNativeFreshIndexCreatePlan;
 #[cfg(feature = "journal")]
 pub use transaction::{
-    FreshIndexCreateIntentError, NativeFreshIndexCreateIntent,
+    FreshIndexCreateIntentError, NativeFreshIndexCreateIntent, NativeUniqueLongIndexCreateIntent,
     QualifiedNativeFreshIndexCreateRecovery,
 };
-
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
-pub use transaction::RecoverableNativeIndexDropPlan;
+pub use transaction::{
+    RecoverableNativeFreshIndexCreatePlan, RecoverableNativeUniqueLongIndexCreatePlan,
+};
+
 #[cfg(feature = "journal")]
 pub use transaction::{
-    IndexDropIntentError, NativeIndexDropIntent, QualifiedNativeIndexDropRecovery,
+    IndexDropIntentError, NativeIndexDropIntent, NativeUniqueLongIndexDropIntent,
+    QualifiedNativeIndexDropRecovery,
 };
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use transaction::{RecoverableNativeIndexDropPlan, RecoverableNativeUniqueLongIndexDropPlan};
 
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub use transaction::RecoverableNativeIndexCreatePlan;
