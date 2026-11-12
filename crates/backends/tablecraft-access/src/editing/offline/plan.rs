@@ -47,6 +47,8 @@ const TABLE_DROP_FAMILY: &[u8; 4] = b"TCTD";
 const POPULATED_TABLE_FAMILY: &[u8; 4] = b"TCPT";
 const INDEX_CREATION_FAMILY: &[u8; 4] = b"TCIC";
 const INDEX_DROP_FAMILY: &[u8; 4] = b"TCID";
+const UNIQUE_LONG_INDEX_CREATION_TAG: &[u8] = b"TCIC0004";
+const UNIQUE_LONG_INDEX_DROP_TAG: &[u8] = b"TCID0002";
 
 #[cfg(all(
     test,
@@ -473,7 +475,7 @@ impl MutationIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, Cause> {
-        if raw.starts_with(b"TCIC0004") {
+        if raw.starts_with(UNIQUE_LONG_INDEX_CREATION_TAG) {
             #[cfg(feature = "ace16-create")]
             return NativeUniqueLongIndexCreateIntent::decode(raw, budget, cancelled)
                 .map(Self::UniqueLongIndexCreation)
@@ -483,7 +485,7 @@ impl MutationIntent {
                 FreshIndexCreateIntentError::UnsupportedSource,
             ));
         }
-        if raw.starts_with(b"TCID0002") {
+        if raw.starts_with(UNIQUE_LONG_INDEX_DROP_TAG) {
             #[cfg(feature = "ace16-create")]
             return NativeUniqueLongIndexDropIntent::decode(raw, budget, cancelled)
                 .map(Self::UniqueLongIndexDrop)
