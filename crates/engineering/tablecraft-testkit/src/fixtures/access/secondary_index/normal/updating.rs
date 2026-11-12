@@ -227,7 +227,7 @@ fn long(bytes: &[u8], at: usize) -> u32 {
     u32::from_le_bytes(bytes[at..at + 4].try_into().unwrap())
 }
 
-fn finish(created: Source, native: usize, cells: Vec<Cell>) -> Case {
+pub(super) fn finish(created: Source, native: usize, cells: Vec<Cell>) -> Case {
     let base = created.target_definition as usize * PAGE;
     let physical = long(&created.expected, base + 51) as usize;
     let field = base + 63 + physical * 12 + native * 25;

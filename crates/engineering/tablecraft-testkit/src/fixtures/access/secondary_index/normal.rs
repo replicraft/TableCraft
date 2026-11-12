@@ -5,6 +5,8 @@ pub mod history;
 /// Literal fresh manual rows after real ordinary index creation and update.
 pub mod inserting;
 pub(super) mod tree;
+/// Actual unique declaration and complete constrained-write/drop chronology.
+pub mod unique_workflow;
 /// Independent existing-tree effects after ordinary CREATE INDEX.
 pub mod updating;
 
@@ -216,6 +218,24 @@ fn finish_named(
     rows: Vec<Row>,
     identity: Identity,
 ) -> Source {
+    finish_named_with_properties(
+        before,
+        owner,
+        target,
+        rows,
+        identity,
+        definition::Properties::Ordinary,
+    )
+}
+
+fn finish_named_with_properties(
+    before: Vec<u8>,
+    owner: u32,
+    target: Target,
+    rows: Vec<Row>,
+    identity: Identity,
+    properties: definition::Properties,
+) -> Source {
     let Target {
         table,
         column,
@@ -257,12 +277,8 @@ fn finish_named(
         distinct: distinct as u32,
     };
     let raw = &before[owner as usize * PAGE..(owner as usize + 1) * PAGE];
-    let count = u32::from_le_bytes(raw[47..51].try_into().unwrap());
-    let declaration = if logical == count {
-        definition::append(raw, declaration_request)
-    } else {
-        definition::append_with_logical(raw, declaration_request, logical)
-    };
+    let declaration =
+        definition::append_with_properties(raw, declaration_request, logical, properties);
     // NO_CLONE: The independent AFTER image coexists with its immutable SOURCE;
     // neither is a production plan or shares writable payload with the caller.
     let mut expected = before.to_vec();

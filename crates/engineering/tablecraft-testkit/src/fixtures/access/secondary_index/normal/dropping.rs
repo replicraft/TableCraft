@@ -19,8 +19,20 @@ pub fn after(source: &Source) -> Vec<u8> {
 }
 
 fn from_indexed(source: &Source, before: &[u8]) -> Vec<u8> {
+    from_indexed_with_properties(source, before, super::definition::Properties::Ordinary)
+}
+
+pub(super) fn from_unique_indexed(source: &Source, before: &[u8]) -> Vec<u8> {
+    from_indexed_with_properties(source, before, super::definition::Properties::Unique)
+}
+
+fn from_indexed_with_properties(
+    source: &Source,
+    before: &[u8],
+    properties: super::definition::Properties,
+) -> Vec<u8> {
     let base = source.target_definition as usize * PAGE;
-    let (declaration, retire) = definition(&before[base..base + PAGE], source);
+    let (declaration, retire) = definition(&before[base..base + PAGE], source, properties);
     // NO_CLONE: Complete independent AFTER coexists with its indexed SOURCE.
     let mut after = before.to_vec();
     after[base..base + PAGE].copy_from_slice(&declaration);
@@ -76,7 +88,11 @@ fn free(after: &mut [u8], page: u32) {
     after[cell] |= bit;
 }
 
-fn definition(original: &[u8], source: &Source) -> (Vec<u8>, bool) {
+fn definition(
+    original: &[u8],
+    source: &Source,
+    properties: super::definition::Properties,
+) -> (Vec<u8>, bool) {
     let logical = long(original, 47);
     let physical = long(original, 51);
     assert!(logical > 0 && physical > 0);
@@ -124,8 +140,8 @@ fn definition(original: &[u8], source: &Source) -> (Vec<u8>, bool) {
     assert_eq!(long(original, selected_physical + 38), source.root as usize);
     assert_eq!(
         original[selected_physical + 46],
-        128,
-        "ordinary nonunique physical index only"
+        properties.flags(),
+        "exact selected physical index policy"
     );
     let aliases = (0..logical)
         .filter(|position| long(original, logical_start + position * 28 + 8) == removed)
@@ -184,6 +200,18 @@ pub struct AliasCase {
 /// Add a literal ordinary alias and remove only the original selected name.
 /// Surviving logical NUMBER is deliberately non-dense after dropping the first.
 pub fn surviving_alias(source: &Source, name: &str) -> AliasCase {
+    surviving_alias_with_properties(source, name, super::definition::Properties::Ordinary)
+}
+
+pub(super) fn surviving_unique_alias(source: &Source, name: &str) -> AliasCase {
+    surviving_alias_with_properties(source, name, super::definition::Properties::Unique)
+}
+
+fn surviving_alias_with_properties(
+    source: &Source,
+    name: &str,
+    properties: super::definition::Properties,
+) -> AliasCase {
     assert!(name.is_ascii() && !name.is_empty() && name.len() <= 64 && name != source.index_name);
     let base = source.target_definition as usize * PAGE;
     let original = &source.expected[base..base + PAGE];
@@ -236,7 +264,7 @@ pub fn surviving_alias(source: &Source, name: &str) -> AliasCase {
     put32(&mut frame, 47, (logical + 1) as u32);
     let mut before = source.expected.to_vec();
     before[base..base + new_length].copy_from_slice(&frame);
-    let expected = from_indexed(source, &before);
+    let expected = from_indexed_with_properties(source, &before, properties);
     AliasCase { before, expected }
 }
 

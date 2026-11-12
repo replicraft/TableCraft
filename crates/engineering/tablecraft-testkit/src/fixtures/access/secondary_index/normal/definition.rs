@@ -9,6 +9,22 @@ fn long(bytes: &[u8], at: usize) -> usize {
     u32::from_le_bytes(bytes[at..at + 4].try_into().unwrap()) as usize
 }
 
+/// Independent descriptor policy; ordinary constructors remain fixed at 0x80.
+#[derive(Clone, Copy)]
+pub(in crate::fixtures::access::secondary_index) enum Properties {
+    Ordinary,
+    Unique,
+}
+
+impl Properties {
+    pub(super) fn flags(self) -> u8 {
+        match self {
+            Self::Ordinary => 0x80,
+            Self::Unique => 0x81,
+        }
+    }
+}
+
 pub(in crate::fixtures::access::secondary_index) struct NewIndex<'a> {
     pub name: &'a str,
     pub column: u16,
@@ -29,6 +45,15 @@ pub(in crate::fixtures::access::secondary_index) fn append_with_logical(
     original: &[u8],
     request: NewIndex<'_>,
     logical_number: u32,
+) -> Vec<u8> {
+    append_with_properties(original, request, logical_number, Properties::Ordinary)
+}
+
+pub(in crate::fixtures::access::secondary_index) fn append_with_properties(
+    original: &[u8],
+    request: NewIndex<'_>,
+    logical_number: u32,
+    properties: Properties,
 ) -> Vec<u8> {
     let length = long(original, 8);
     let logical = long(original, 47);
@@ -64,7 +89,7 @@ pub(in crate::fixtures::access::secondary_index) fn append_with_logical(
     descriptor[6] = u8::from(!request.descending);
     put32(&mut descriptor, 34, request.usage);
     put32(&mut descriptor, 38, request.root);
-    descriptor[46] = 128;
+    descriptor[46] = properties.flags();
     frame.extend(descriptor);
     frame.extend(&original[logical_start..names_start]);
     let mut alias = [0; 28];
