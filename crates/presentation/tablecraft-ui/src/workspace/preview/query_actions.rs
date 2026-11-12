@@ -12,6 +12,7 @@ const UPDATE_SQL: &str =
 const MAKE_TABLE_SQL: &str = "SELECT [CustomerName],[City],[Balance] INTO [CustomerArchive] FROM [Customers] ORDER BY [CustomerName]";
 
 const INDEX_SQL: &str = "CREATE INDEX [ScoreIndex] ON [Archive] ([CopiedScore] DESC)";
+const DROP_INDEX_SQL: &str = "DROP INDEX [ScoreIndex] ON [Archive]";
 
 const ADD_COLUMN_SQL: &str = "ALTER TABLE [Items] ADD COLUMN [Amount] CURRENCY";
 
@@ -59,6 +60,7 @@ impl Preview {
             }
             Scene::QueryMakeTableReview => MAKE_TABLE_SQL,
             Scene::QuerySchemaIndexReview => INDEX_SQL,
+            Scene::QuerySchemaIndexDropReview => DROP_INDEX_SQL,
             Scene::QuerySchemaAddColumnReview => ADD_COLUMN_SQL,
             Scene::QuerySchemaAddTextReview => ADD_TEXT_SQL,
             Scene::QuerySchemaAddDecimalReview => ADD_DECIMAL_SQL,
@@ -77,6 +79,7 @@ impl Preview {
                 | Scene::QueryDeleteReview
                 | Scene::QueryInsertReview
                 | Scene::QuerySchemaIndexReview
+                | Scene::QuerySchemaIndexDropReview
                 | Scene::QuerySchemaAddColumnReview
                 | Scene::QuerySchemaAddTextReview
                 | Scene::QuerySchemaAddDecimalReview
@@ -122,8 +125,10 @@ impl Preview {
             UPDATE_SQL => QueryActionKind::Update,
             DELETE_SQL => QueryActionKind::Delete,
             INSERT_SQL => QueryActionKind::Insert,
-            INDEX_SQL | ADD_COLUMN_SQL | ADD_TEXT_SQL | ADD_DECIMAL_SQL | MAKE_TABLE_SQL
-            | CREATE_SQL | DROP_TABLE_SQL | DROP_COLUMN_SQL => QueryActionKind::Schema,
+            INDEX_SQL | DROP_INDEX_SQL | ADD_COLUMN_SQL | ADD_TEXT_SQL | ADD_DECIMAL_SQL
+            | MAKE_TABLE_SQL | CREATE_SQL | DROP_TABLE_SQL | DROP_COLUMN_SQL => {
+                QueryActionKind::Schema
+            }
             _ => return None,
         };
         let inspection = self.request();
@@ -157,7 +162,7 @@ impl Preview {
                 ADD_COLUMN_SQL | ADD_TEXT_SQL | ADD_DECIMAL_SQL
             ) {
                 "Items"
-            } else if sql == INDEX_SQL {
+            } else if sql == INDEX_SQL || sql == DROP_INDEX_SQL {
                 "Archive"
             } else if sql == MAKE_TABLE_SQL {
                 "CustomerArchive"
@@ -201,6 +206,9 @@ impl Preview {
                                 tablecraft_schema::ScalarType::Currency,
                             )
                             .expect("synthetic Currency declaration"),
+                    },
+                    DROP_INDEX_SQL => QuerySchemaEffect::DropIndex {
+                        index: "ScoreIndex".into(),
                     },
                     INDEX_SQL => QuerySchemaEffect::CreateIndex {
                         index: "ScoreIndex".into(),

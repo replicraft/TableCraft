@@ -4,6 +4,7 @@ use tablecraft_display::{CurrencyChoice, DateFormat, Options, TimeFormat};
 
 mod declared_addition;
 mod index_creation;
+mod index_drop;
 
 #[test]
 fn every_existing_preview_scene_renders_without_a_runtime_or_file_host() {

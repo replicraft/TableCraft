@@ -98,7 +98,7 @@ impl Session {
             Response::InsertReviewed { review, capability } => return self.retain_review(Reviewed::Insert(capability), json!({"native_review_id": review.id, "document_revision": review.target.document_revision, "table": review.target.table, "draft_id": review.draft_id, "inserted_rows": review.inserted_rows})),
             Response::DeleteReviewed { review, capability } => return self.retain_review(Reviewed::Delete(capability), json!({"native_review_id": review.id, "document_revision": review.target.document_revision, "table": review.target.table, "parent_ordinal": review.target.parent_ordinal, "deleted_rows": review.deleted_rows, "columns": columns(&review.columns), "row": review.row.iter().map(cell).collect::<Vec<_>>()})),
             Response::TableRenameReviewed { review, capability } => return self.retain_review(Reviewed::TableRename(capability), json!({"native_review_id": review.id, "document_revision": review.document_revision, "table": review.table, "new_name": review.new_name, "changed": review.changed})),
-            Response::IndexCreationReviewed { .. } => {
+            Response::IndexCreationReviewed { .. } | Response::IndexDropReviewed { .. } => {
                 return Err("This MCP service does not expose SQL schema review yet".into());
             }
             Response::TableCreationReviewed { capability } => {

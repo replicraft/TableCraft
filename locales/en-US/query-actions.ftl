@@ -44,3 +44,6 @@ query-action-schema-index-source-rows = Existing records to index: { $count }
 query-action-schema-index-confirmation = Create this nonunique index in the original database?
 
 query-action-schema-add-confirmation = Add this field to the original table?
+
+query-action-schema-drop-index-name = Index to remove: { $name }
+query-action-schema-drop-index-confirmation = Permanently remove this index from the original database? Record values will remain unchanged.

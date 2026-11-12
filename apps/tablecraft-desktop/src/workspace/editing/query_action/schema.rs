@@ -12,9 +12,10 @@ use std::{
 use tablecraft_builders::table::TypedFieldAdditionDeclaration;
 use tablecraft_runtime::{
     AddedColumnReopen, Command, CreatedTableReopen, FieldAdditionOrigin, FieldAdditionReview,
-    FieldDropReview, FieldDroppedReopen, IndexCreatedReopen, ReviewedFieldAddition,
-    ReviewedFieldDrop, ReviewedIndexCreation, ReviewedTableCreation, ReviewedTableDrop,
-    SaveOutcome, SaveWorker, TableDropReview, TableDroppedReopen,
+    FieldDropReview, FieldDroppedReopen, IndexCreatedReopen, IndexDroppedReopen,
+    ReviewedFieldAddition, ReviewedFieldDrop, ReviewedIndexCreation, ReviewedIndexDrop,
+    ReviewedTableCreation, ReviewedTableDrop, SaveOutcome, SaveWorker, TableDropReview,
+    TableDroppedReopen,
 };
 use tablecraft_ui::{
     Database, QueryActionEffect, QueryActionReview, QuerySchemaEffect, QuerySchemaPublication,
@@ -30,6 +31,10 @@ pub(in crate::workspace::editing) enum ReviewedSchema {
     CreateIndex {
         capability: ReviewedIndexCreation,
         witness: Arc<IndexCreatedReopen>,
+    },
+    DropIndex {
+        capability: ReviewedIndexDrop,
+        witness: Arc<IndexDroppedReopen>,
     },
     Create {
         capability: ReviewedTableCreation,
@@ -47,6 +52,7 @@ pub(in crate::workspace::editing) enum ReviewedSchema {
 
 pub(super) enum Reopen {
     IndexCreated(Arc<IndexCreatedReopen>),
+    IndexDropped(Arc<IndexDroppedReopen>),
     FieldAdded(Arc<AddedColumnReopen>),
     Created(Arc<CreatedTableReopen>),
     FieldDropped(Arc<FieldDroppedReopen>),
@@ -86,6 +92,7 @@ impl ReviewedSchema {
         match self {
             Self::AddField { witness, .. } => witness.document_revision(),
             Self::CreateIndex { witness, .. } => witness.document_revision(),
+            Self::DropIndex { witness, .. } => witness.document_revision(),
             Self::Create { witness, .. } => witness.document_revision(),
             Self::DropField { witness, .. } => witness.document_revision(),
             Self::DropTable { witness, .. } => witness.document_revision(),
@@ -96,6 +103,7 @@ impl ReviewedSchema {
         match self {
             Self::AddField { witness, .. } => witness.source_path(),
             Self::CreateIndex { witness, .. } => witness.source_path(),
+            Self::DropIndex { witness, .. } => witness.source_path(),
             Self::Create { witness, .. } => witness.source_path(),
             Self::DropField { witness, .. } => witness.source_path(),
             Self::DropTable { witness, .. } => witness.source_path(),
@@ -106,6 +114,7 @@ impl ReviewedSchema {
         match self {
             Self::AddField { witness, .. } => witness.table_name(),
             Self::CreateIndex { witness, .. } => witness.table_name(),
+            Self::DropIndex { witness, .. } => witness.table_name(),
             Self::Create { witness, .. } => witness.table_name(),
             Self::DropField { witness, .. } => witness.table_name(),
             Self::DropTable { witness, .. } => witness.table_name(),
@@ -142,6 +151,20 @@ impl ReviewedSchema {
                 Err(error) => {
                     let message = error.to_string();
                     let original = error.into_reviewed().map(|capability| Self::CreateIndex {
+                        capability,
+                        witness,
+                    });
+                    Err((message, original))
+                }
+            },
+            Self::DropIndex {
+                capability,
+                witness,
+            } => match worker.start_index_drop(capability, bundle) {
+                Ok(id) => Ok((id, Reopen::IndexDropped(witness))),
+                Err(error) => {
+                    let message = error.to_string();
+                    let original = error.into_reviewed().map(|capability| Self::DropIndex {
                         capability,
                         witness,
                     });
@@ -200,6 +223,9 @@ impl Reopen {
             Self::FieldAdded(_) => outcome
                 .field_addition_reopen_facts()
                 .is_ok_and(|facts| facts.replacement),
+            Self::IndexDropped(_) => outcome
+                .index_drop_reopen_facts()
+                .is_ok_and(|facts| facts.replacement),
             Self::IndexCreated(_) => outcome
                 .index_creation_reopen_facts()
                 .is_ok_and(|facts| facts.replacement),
@@ -223,6 +249,9 @@ impl Reopen {
                 witness: Arc::clone(witness),
             },
             Self::IndexCreated(witness) => Command::OpenIndexCreated {
+                witness: Arc::clone(witness),
+            },
+            Self::IndexDropped(witness) => Command::OpenIndexDropped {
                 witness: Arc::clone(witness),
             },
             Self::Created(witness) => Command::OpenTableCreated {
@@ -356,6 +385,7 @@ impl Desktop {
         let captured_revision = match &host.reopen {
             Reopen::FieldAdded(witness) => witness.document_revision(),
             Reopen::IndexCreated(witness) => witness.document_revision(),
+            Reopen::IndexDropped(witness) => witness.document_revision(),
             Reopen::Created(witness) => witness.document_revision(),
             Reopen::FieldDropped(witness) => witness.document_revision(),
             Reopen::TableDropped(witness) => witness.document_revision(),
@@ -472,6 +502,10 @@ impl ReviewedSchema {
             ) => witness.column_name() == column && declaration == observed,
 
             (
+                Self::DropIndex { witness, .. },
+                QueryActionEffect::Schema(QuerySchemaEffect::DropIndex { index }),
+            ) => witness.index_name() == index,
+            (
                 Self::CreateIndex { witness, .. },
                 QueryActionEffect::Schema(QuerySchemaEffect::CreateIndex {
                     index,
@@ -563,6 +597,43 @@ impl Desktop {
                 capability,
                 witness,
                 declaration,
+            }),
+        );
+    }
+
+    pub(in crate::workspace) fn publish_query_schema_index_drop(
+        &mut self,
+        request_id: u64,
+        capability: ReviewedIndexDrop,
+    ) {
+        let witness = capability.reopen_witness();
+        let mut table = String::new();
+        let mut index = String::new();
+        if table.try_reserve_exact(witness.table_name().len()).is_err()
+            || index.try_reserve_exact(witness.index_name().len()).is_err()
+        {
+            self.fail_query_action_review(
+                request_id,
+                self.state.localizer.text("objects-memory-limit"),
+            );
+            return;
+        }
+        // Only small presentation names are copied; native bytes, source binding
+        // and mutation authority stay with the issued capability and witness.
+        table.push_str(witness.table_name());
+        index.push_str(witness.index_name());
+        let review = QueryActionReview {
+            id: capability.id(),
+            document_revision: witness.document_revision(),
+            table,
+            effect: QueryActionEffect::Schema(QuerySchemaEffect::DropIndex { index }),
+        };
+        self.publish_query_action_review(
+            request_id,
+            review,
+            ReviewedAction::Schema(ReviewedSchema::DropIndex {
+                capability,
+                witness,
             }),
         );
     }

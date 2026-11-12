@@ -44,3 +44,6 @@ query-action-schema-index-source-rows = Registros existentes a indexar: { $count
 query-action-schema-index-confirmation = Criar este índice não exclusivo no banco de dados original?
 
 query-action-schema-add-confirmation = Adicionar este campo à tabela original?
+
+query-action-schema-drop-index-name = Índice a remover: { $name }
+query-action-schema-drop-index-confirmation = Remover permanentemente este índice do banco de dados original? Os valores dos registros permanecerão inalterados.

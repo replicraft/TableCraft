@@ -27,6 +27,8 @@ pub enum QuerySchemaEffect {
         descending: bool,
         indexed_rows: usize,
     },
+    /// Remove a qualified ordinary index; record values are unchanged.
+    DropIndex { index: String },
     /// Create the named table with its exact declared number of fields.
     CreateTable { column_count: usize },
     /// Create one table and its complete selected scalar rows atomically.
@@ -56,6 +58,7 @@ impl QuerySchemaEffect {
             }
             Self::DropTable { .. } => true,
             Self::DropColumn { column, .. } => !column.is_empty(),
+            Self::DropIndex { index } => !index.is_empty(),
         }
     }
 
@@ -64,6 +67,7 @@ impl QuerySchemaEffect {
             Self::CreateIndex { index, column, .. } => {
                 index.capacity().checked_add(column.capacity())
             }
+            Self::DropIndex { index } => Some(index.capacity()),
             Self::AddColumn { column, .. } | Self::DropColumn { column, .. } => {
                 Some(column.capacity())
             }

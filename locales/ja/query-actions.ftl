@@ -44,3 +44,6 @@ query-action-schema-index-source-rows = インデックスを作成する既存�
 query-action-schema-index-confirmation = 元のデータベースにこの重複を許可するインデックスを作成しますか？
 
 query-action-schema-add-confirmation = 元のテーブルにこのフィールドを追加しますか？
+
+query-action-schema-drop-index-name = 削除するインデックス: { $name }
+query-action-schema-drop-index-confirmation = 元のデータベースからこのインデックスを完全に削除しますか？ レコードの値は変更されません。

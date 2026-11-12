@@ -44,3 +44,6 @@ query-action-schema-index-source-rows = Zu indizierende vorhandene Datensätze: 
 query-action-schema-index-confirmation = Diesen nicht eindeutigen Index in der ursprünglichen Datenbank erstellen?
 
 query-action-schema-add-confirmation = Dieses Feld der ursprünglichen Tabelle hinzufügen?
+
+query-action-schema-drop-index-name = Zu entfernender Index: { $name }
+query-action-schema-drop-index-confirmation = Diesen Index dauerhaft aus der ursprünglichen Datenbank entfernen? Die Datensatzwerte bleiben unverändert.

@@ -44,3 +44,6 @@ query-action-schema-index-source-rows = 인덱싱할 기존 레코드: { $count 
 query-action-schema-index-confirmation = 원본 데이터베이스에 이 중복 허용 인덱스를 만드시겠습니까?
 
 query-action-schema-add-confirmation = 원래 테이블에 이 필드를 추가하시겠습니까?
+
+query-action-schema-drop-index-name = 제거할 인덱스: { $name }
+query-action-schema-drop-index-confirmation = 원본 데이터베이스에서 이 인덱스를 영구적으로 제거하시겠습니까? 레코드 값은 변경되지 않습니다.

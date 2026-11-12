@@ -44,3 +44,6 @@ query-action-schema-index-source-rows = 要编入索引的现有记录数：{ $c
 query-action-schema-index-confirmation = 是否在原始数据库中创建此非唯一索引？
 
 query-action-schema-add-confirmation = 将此字段添加到原始表中？
+
+query-action-schema-drop-index-name = 要删除的索引：{ $name }
+query-action-schema-drop-index-confirmation = 要从原始数据库中永久删除此索引吗？记录值将保持不变。

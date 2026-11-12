@@ -106,6 +106,9 @@ impl State {
                             QueryActionEffect::Schema(QuerySchemaEffect::CreateIndex {
                                 ..
                             }) => "query-action-schema-index-confirmation",
+                            QueryActionEffect::Schema(QuerySchemaEffect::DropIndex { .. }) => {
+                                "query-action-schema-drop-index-confirmation"
+                            }
                             QueryActionEffect::Schema(QuerySchemaEffect::CreateTable {
                                 ..
                             }) => "query-action-schema-create-confirmation",
@@ -321,6 +324,13 @@ fn schema_summary(ui: &mut Ui, effect: &QuerySchemaEffect) {
                 ui,
                 "query-action-schema-index-source-rows",
                 &[("count", indexed_rows.to_string())],
+            ));
+        }
+        QuerySchemaEffect::DropIndex { index } => {
+            ui.label(message(
+                ui,
+                "query-action-schema-drop-index-name",
+                &[("name", index.as_str())],
             ));
         }
         QuerySchemaEffect::CreateTable { column_count } => {

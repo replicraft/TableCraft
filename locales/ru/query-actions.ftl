@@ -44,3 +44,6 @@ query-action-schema-index-source-rows = Существующие записи д
 query-action-schema-index-confirmation = Создать этот неуникальный индекс в исходной базе данных?
 
 query-action-schema-add-confirmation = Добавить это поле в исходную таблицу?
+
+query-action-schema-drop-index-name = Удаляемый индекс: { $name }
+query-action-schema-drop-index-confirmation = Безвозвратно удалить этот индекс из исходной базы данных? Значения записей останутся без изменений.
