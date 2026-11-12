@@ -13,6 +13,8 @@ const ACE_PROFILE: u16 = 2;
 /// A versioned validation route, never a serialized native permission.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum NativeUpdateProfile {
+    /// Atomic descriptor-bound Byte/Int16/Int64/Single/Double/legacy DateTime column batches.
+    Ace16RetainedFixedScalarColumnBatch,
     /// Atomic unindexed Currency column batches; zero or at least two original rows.
     Ace16RetainedCurrencyColumnBatch,
     /// Source-qualified retained indexed manual LONG requests of any cardinality.
@@ -83,7 +85,7 @@ pub enum NativeUpdateBody {
     Int32(NativeInt32EditIntent),
     /// Original ordered fixed groups for closed TCNI0003/4/8/9/10/11/12/13/14 records.
     Fixed(NativeFixedEditIntent),
-    /// Ordered original variable/fixed requests for TCNI0005/15/16/17/18/19/20/21/22/23/24/25/26/27.
+    /// Ordered original variable/fixed requests for TCNI0005/15/16/17/18/19/20/21/22/23/24/25/26/27/28.
     Fitted(NativeFittedEditIntent),
     /// Original fixed/variable groups for explicit TCNI0006 owned-page growth.
     OwnedGrowth(NativeFittedEditIntent),
@@ -92,6 +94,16 @@ pub enum NativeUpdateBody {
 }
 
 impl NativeUpdateIntent {
+    pub(super) fn from_retained_fixed_scalar_column_batch(
+        original: NativeFittedEditIntent,
+    ) -> Result<Self, NativeIntentError> {
+        original.require_retained_fixed_scalar_column_batch()?;
+        Ok(Self {
+            profile: NativeUpdateProfile::Ace16RetainedFixedScalarColumnBatch,
+            body: NativeUpdateBody::Fitted(original),
+        })
+    }
+
     pub(super) fn from_retained_currency_column_batch(
         original: NativeFittedEditIntent,
     ) -> Result<Self, NativeIntentError> {
@@ -416,6 +428,10 @@ impl NativeUpdateIntent {
         match (&self.body, self.profile) {
             (
                 NativeUpdateBody::Fitted(original),
+                NativeUpdateProfile::Ace16RetainedFixedScalarColumnBatch,
+            ) => original.encode_retained_fixed_scalar_column_batch(budget, cancelled),
+            (
+                NativeUpdateBody::Fitted(original),
                 NativeUpdateProfile::Ace16RetainedCurrencyColumnBatch,
             ) => original.encode_retained_currency_column_batch(budget, cancelled),
             (
@@ -525,6 +541,14 @@ impl NativeUpdateIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
+        if bytes.get(..super::fitted::RETAINED_FIXED_SCALAR_COLUMN_BATCH_MAGIC.len())
+            == Some(super::fitted::RETAINED_FIXED_SCALAR_COLUMN_BATCH_MAGIC.as_slice())
+        {
+            return NativeFittedEditIntent::decode_retained_fixed_scalar_column_batch(
+                bytes, budget, cancelled,
+            )
+            .and_then(Self::from_retained_fixed_scalar_column_batch);
+        }
         if bytes.get(..super::fitted::RETAINED_CURRENCY_COLUMN_BATCH_MAGIC.len())
             == Some(super::fitted::RETAINED_CURRENCY_COLUMN_BATCH_MAGIC.as_slice())
         {

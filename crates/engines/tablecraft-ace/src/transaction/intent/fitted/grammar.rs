@@ -12,6 +12,7 @@ pub(super) enum Grammar {
     RetainedEmpty,
     RetainedLongColumnBatch,
     RetainedCurrencyColumnBatch,
+    RetainedFixedScalarColumnBatch,
     RetainedIndexedLong,
     Retained,
     RetainedFixedScalars,
@@ -28,6 +29,7 @@ impl Grammar {
             | Self::RetainedEmpty
             | Self::RetainedLongColumnBatch
             | Self::RetainedCurrencyColumnBatch
+            | Self::RetainedFixedScalarColumnBatch
             | Self::RetainedIndexedLong => u32::MAX as usize,
         }
     }
@@ -41,6 +43,7 @@ impl Grammar {
             | Self::RetainedWideValues
             | Self::RetainedLongColumnBatch
             | Self::RetainedCurrencyColumnBatch
+            | Self::RetainedFixedScalarColumnBatch
             | Self::RetainedIndexedLong => u32::MAX as usize,
         }
     }
@@ -49,6 +52,7 @@ impl Grammar {
         match self {
             Self::RetainedLongColumnBatch
             | Self::RetainedCurrencyColumnBatch
+            | Self::RetainedFixedScalarColumnBatch
             | Self::RetainedIndexedLong => 1,
             Self::Legacy => NativeImage::MAX_FIXED_BATCH_GROUPS,
             Self::Retained
@@ -79,6 +83,7 @@ impl Grammar {
             | Self::RetainedEmpty
             | Self::RetainedLongColumnBatch
             | Self::RetainedCurrencyColumnBatch
+            | Self::RetainedFixedScalarColumnBatch
             | Self::RetainedIndexedLong => binding::retained_length(length),
         }
     }
@@ -97,6 +102,7 @@ impl Grammar {
             | Self::RetainedEmpty
             | Self::RetainedLongColumnBatch
             | Self::RetainedCurrencyColumnBatch
+            | Self::RetainedFixedScalarColumnBatch
             | Self::RetainedIndexedLong => binding::digest_retained(before, budget, cancelled),
         }
     }
@@ -122,7 +128,9 @@ impl Grammar {
             Self::RetainedEmpty => Err(NativeIntentError::InvalidRecord),
             Self::Legacy => carrier::view(value, family),
             Self::Retained => carrier::length_prefixed_view(value, family),
-            Self::RetainedFixedScalars => fixed_scalar_carrier::view(value, family),
+            Self::RetainedFixedScalars | Self::RetainedFixedScalarColumnBatch => {
+                fixed_scalar_carrier::view(value, family)
+            }
             Self::RetainedWideValues => wide_value_carrier::view(value, family),
         }
     }
@@ -165,7 +173,7 @@ impl Grammar {
             Self::RetainedEmpty => Err(NativeIntentError::InvalidRecord),
             Self::Legacy => carrier::parse(tag, bytes, family, budget, cancelled),
             Self::Retained => carrier::length_prefixed_parse(tag, bytes, family, budget, cancelled),
-            Self::RetainedFixedScalars => {
+            Self::RetainedFixedScalars | Self::RetainedFixedScalarColumnBatch => {
                 fixed_scalar_carrier::parse(tag, bytes, family, budget, cancelled)
             }
             Self::RetainedWideValues => {

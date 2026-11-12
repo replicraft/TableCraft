@@ -3,7 +3,9 @@ mod proof;
 #[cfg(test)]
 mod tests;
 
-use super::{Family, Selected, bind_for, retained_column_shape};
+use super::{
+    Family, Selected, bind_for, field, fixed_records, record_serialization, retained_column_shape,
+};
 use crate::format::{
     page::PAGE_BYTES,
     row::{OFFSET_MASK, RELOCATED_MASK},
@@ -18,8 +20,8 @@ use crate::table::mutation::{
     rows::RowAssignment,
 };
 use crate::{
-    EditError, FittedColumnUpdates, InspectError, NativeEditPlan, NativeImage, WriteBlocker,
-    header::check,
+    EditError, FittedColumnUpdates, InspectError, NativeEditPlan, NativeFixedScalarKind,
+    NativeImage, WriteBlocker, header::check, inspect_table_schema,
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -30,6 +32,7 @@ use tablecraft_core::{
 enum Policy {
     Long,
     Currency,
+    FixedScalar(NativeFixedScalarKind),
 }
 
 impl Policy {
@@ -37,13 +40,14 @@ impl Policy {
         match self {
             Self::Long => Family::Retained,
             Self::Currency => Family::RetainedCurrency,
+            Self::FixedScalar(_) => Family::RetainedFixedScalars,
         }
     }
 
     fn accepts_count(self, count: usize) -> bool {
         match self {
             Self::Long => count >= 2,
-            Self::Currency => count != 1,
+            Self::Currency | Self::FixedScalar(_) => count != 1,
         }
     }
 }
@@ -77,7 +81,21 @@ fn bind<'value>(
     // before the old single-cell binder inspects each borrowed request.
     let family = policy.family();
     let position = retained_column_shape(source, group, family, budget, cancelled)?;
-    if matches!(policy, Policy::Currency) && updates.is_empty() {
+    if let Policy::FixedScalar(kind) = policy {
+        let field = &source.facts().table.schema().columns()[position];
+        if NativeFixedScalarKind::from_native_type(field.native_type()) != Some(kind) {
+            return Err(EditError::Unsupported(WriteBlocker::Column));
+        }
+
+        for update in updates {
+            check(budget, cancelled)?;
+            if !kind.accepts(update.expected()) || !kind.accepts(update.value()) {
+                return Err(EditError::Unsupported(WriteBlocker::Column));
+            }
+        }
+    }
+
+    if updates.is_empty() {
         let schema = source.facts().table.schema();
         let field = &schema.columns()[position];
         for index in source.facts().indexes.indexes() {
@@ -116,6 +134,47 @@ fn bind<'value>(
 }
 
 impl NativeImage {
+    /// Read an exact native field descriptor without scanning user records.
+    ///
+    /// This returns metadata, not permission to modify the source. Consuming
+    /// planning independently qualifies the complete source and every effect.
+    ///
+    /// # Errors
+    /// Rejects missing, ambiguous or unsupported declarations, invalid fixed
+    /// widths/flags, allocation failure, cancellation or exhausted caller work.
+    pub fn retained_fixed_scalar_column_kind(
+        &self,
+        table: &str,
+        column: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<NativeFixedScalarKind, EditError> {
+        let schema = inspect_table_schema(
+            &mut self.reader(),
+            self.catalog().catalog().scope(),
+            table,
+            budget,
+            cancelled,
+        )?;
+        let mut selected = None;
+        for (position, field) in schema.columns().iter().enumerate() {
+            check(budget, cancelled)?;
+            fixed_records::name_work(field.name(), column, budget)?;
+            if field.name().eq_ignore_ascii_case(column) && selected.replace(position).is_some() {
+                return Err(EditError::Preservation);
+            }
+        }
+        let position = selected.ok_or(EditError::Unsupported(WriteBlocker::Column))?;
+        let native = schema.columns()[position].native_type();
+        let kind = NativeFixedScalarKind::from_native_type(native)
+            .ok_or(EditError::Unsupported(WriteBlocker::Column))?;
+        let (scalar, width) = record_serialization::current_rows::fixed_scalar_kind(native)
+            .ok_or(EditError::Unsupported(WriteBlocker::Column))?;
+        field::fixed_column_at(&schema, position, scalar, width)?;
+        check(budget, cancelled)?;
+        Ok(kind)
+    }
+
     pub(crate) fn plan_retained_long_column_batch_updates(
         self,
         table: &str,
@@ -136,6 +195,26 @@ impl NativeImage {
     ) -> Result<NativeEditPlan, EditError> {
         let _span = tracing::debug_span!("native.retained_currency_column_batch.plan").entered();
         plan(self, table, groups, Policy::Currency, budget, cancelled)
+    }
+
+    pub(crate) fn plan_retained_fixed_scalar_column_batch_updates(
+        self,
+        table: &str,
+        groups: &[FittedColumnUpdates<'_>],
+        kind: NativeFixedScalarKind,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<NativeEditPlan, EditError> {
+        let _span =
+            tracing::debug_span!("native.retained_fixed_scalar_column_batch.plan").entered();
+        plan(
+            self,
+            table,
+            groups,
+            Policy::FixedScalar(kind),
+            budget,
+            cancelled,
+        )
     }
 }
 

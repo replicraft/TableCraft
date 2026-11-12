@@ -8,7 +8,7 @@ use super::{
     profile::WireProfile,
 };
 use crate::{
-    EditError, FixedScalarUpdate, InspectError, SlotScalarUpdate,
+    EditError, FixedScalarUpdate, InspectError, NativeFixedScalarKind, SlotScalarUpdate,
     header::check,
     transaction::intent::{NativeIntentError, model as names},
 };
@@ -28,6 +28,7 @@ struct Cursor<'a> {
 }
 
 struct Group<'a> {
+    fixed_scalar_kind: Option<NativeFixedScalarKind>,
     name: &'a str,
     count: usize,
     family: Family,
@@ -82,7 +83,18 @@ impl<'a> Cursor<'a> {
         let header = self.take(codec::GROUP_HEADER_BYTES)?;
         let total = u32_at(header, codec::GROUP_TOTAL_AT) as usize;
         let count = u32_at(header, codec::GROUP_COUNT_AT_IN_GROUP) as usize;
-        if header[codec::GROUP_PADDING_AT..codec::GROUP_RESERVED_AT]
+        let fixed_scalar_kind = if self.grammar == Grammar::RetainedFixedScalarColumnBatch {
+            Some(
+                NativeFixedScalarKind::from_native_type(header[codec::GROUP_SCALAR_KIND_AT])
+                    .ok_or(NativeIntentError::InvalidRecord)?,
+            )
+        } else {
+            if header[codec::GROUP_SCALAR_KIND_AT] != 0 {
+                return Err(NativeIntentError::InvalidRecord);
+            }
+            None
+        };
+        if header[codec::GROUP_SCALAR_KIND_AT + 1..codec::GROUP_RESERVED_AT]
             .iter()
             .any(|byte| *byte != 0)
             || u32_at(header, codec::GROUP_RESERVED_AT) != 0
@@ -97,6 +109,7 @@ impl<'a> Cursor<'a> {
         if matches!(
             self.grammar,
             Grammar::RetainedFixedScalars
+                | Grammar::RetainedFixedScalarColumnBatch
                 | Grammar::RetainedEmpty
                 | Grammar::RetainedLongColumnBatch
                 | Grammar::RetainedCurrencyColumnBatch
@@ -108,7 +121,11 @@ impl<'a> Cursor<'a> {
         if self.grammar == Grammar::RetainedLongColumnBatch && count < 2 {
             return Err(NativeIntentError::InvalidRecord);
         }
-        if self.grammar == Grammar::RetainedCurrencyColumnBatch && count == 1 {
+        if matches!(
+            self.grammar,
+            Grammar::RetainedCurrencyColumnBatch | Grammar::RetainedFixedScalarColumnBatch
+        ) && count == 1
+        {
             return Err(NativeIntentError::InvalidRecord);
         }
         if count > self.grammar.assignments() {
@@ -135,6 +152,7 @@ impl<'a> Cursor<'a> {
             return Err(NativeIntentError::InvalidRecord);
         }
         Ok(Group {
+            fixed_scalar_kind,
             name,
             count,
             family,
@@ -267,7 +285,11 @@ fn scan<'a>(
     if grammar == Grammar::RetainedLongColumnBatch && assignments < 2 {
         return Err(NativeIntentError::InvalidRecord);
     }
-    if grammar == Grammar::RetainedCurrencyColumnBatch && assignments == 1 {
+    if matches!(
+        grammar,
+        Grammar::RetainedCurrencyColumnBatch | Grammar::RetainedFixedScalarColumnBatch
+    ) && assignments == 1
+    {
         return Err(NativeIntentError::InvalidRecord);
     }
     let mut cursor = Cursor {
@@ -315,6 +337,16 @@ fn scan<'a>(
         };
         for _ in 0..group.count {
             let update = cells.update(group.family, budget, cancelled)?;
+            if let Some(kind) = group.fixed_scalar_kind {
+                let (Borrowed::Scalar(expected), Borrowed::Scalar(value)) =
+                    (&update.expected, &update.value)
+                else {
+                    return Err(NativeIntentError::InvalidRecord);
+                };
+                if !kind.accepts(expected) || !kind.accepts(value) {
+                    return Err(NativeIntentError::InvalidRecord);
+                }
+            }
             seen.insert(update.row, budget, cancelled)?;
         }
         if cells.at != group.cells.len() {
@@ -405,8 +437,13 @@ pub(super) fn decode(
                 NativeFittedUpdates::Variable(result)
             }
         };
-        groups.push(NativeFittedIntentGroup::new_with_grammar(
-            group.name, updates, grammar, budget, cancelled,
+        groups.push(NativeFittedIntentGroup::new_with_descriptor(
+            group.name,
+            updates,
+            grammar,
+            group.fixed_scalar_kind,
+            budget,
+            cancelled,
         )?);
     }
     NativeFittedEditIntent::from_decoded_with_grammar(

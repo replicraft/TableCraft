@@ -99,6 +99,7 @@ pub fn qualify_native_update_recovery<'a, J: DurableStorage>(
             | NativeUpdateProfile::Ace16RetainedBooleanMaterialization
             | NativeUpdateProfile::Ace16RetainedEmptyRows
             | NativeUpdateProfile::Ace16RetainedCurrencyColumnBatch
+            | NativeUpdateProfile::Ace16RetainedFixedScalarColumnBatch
             | NativeUpdateProfile::Ace16RetainedLongColumnBatch
             | NativeUpdateProfile::Ace16RetainedIndexedLongRows
     ) {
@@ -152,6 +153,7 @@ pub fn qualify_native_update_recovery<'a, J: DurableStorage>(
         | NativeUpdateProfile::Ace16RetainedBooleanMaterialization
         | NativeUpdateProfile::Ace16RetainedEmptyRows
         | NativeUpdateProfile::Ace16RetainedCurrencyColumnBatch
+        | NativeUpdateProfile::Ace16RetainedFixedScalarColumnBatch
         | NativeUpdateProfile::Ace16RetainedLongColumnBatch
         | NativeUpdateProfile::Ace16RetainedIndexedLongRows => {
             return Err(super::NativeIntentError::UnsupportedProfile.into());

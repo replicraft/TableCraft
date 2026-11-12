@@ -60,7 +60,11 @@ pub use creation::{
 };
 mod encryption;
 mod error;
+#[cfg(feature = "journal")]
+mod fixed_scalar_kind;
 mod format;
+#[cfg(feature = "journal")]
+pub use fixed_scalar_kind::NativeFixedScalarKind;
 mod header;
 #[cfg(any(feature = "ace16-create", feature = "journal"))]
 mod identifier;

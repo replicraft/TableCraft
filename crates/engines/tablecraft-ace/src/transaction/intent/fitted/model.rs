@@ -1,5 +1,6 @@
 //! Owned immutable original fitted requests, without native admission authority.
 use super::{carrier, codec, grammar::Grammar};
+use crate::NativeFixedScalarKind;
 use crate::{
     EditError, FittedColumnUpdates, FixedScalarUpdate, InspectError, SlotScalarUpdate,
     header::check,
@@ -44,6 +45,7 @@ impl NativeFittedUpdates {
 
 /// An owned column spelling and moved original requests, never final cells.
 pub struct NativeFittedIntentGroup {
+    fixed_scalar_kind: Option<NativeFixedScalarKind>,
     column: SchemaName,
     updates: NativeFittedUpdates,
 }
@@ -122,6 +124,33 @@ impl NativeFittedIntentGroup {
         )
     }
 
+    /// Retain TCNI28 exact typed fixed-scalar original witnesses.
+    ///
+    /// # Errors
+    /// Rejects a wrong carrier or request shape, duplicate rows, invalid names,
+    /// allocation failure, cancellation or exhausted caller resources.
+    pub fn new_retained_fixed_scalar_column_batch(
+        column: &str,
+        kind: NativeFixedScalarKind,
+        updates: NativeFittedUpdates,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        Self::new_with_descriptor(
+            column,
+            updates,
+            Grammar::RetainedFixedScalarColumnBatch,
+            Some(kind),
+            budget,
+            cancelled,
+        )
+    }
+
+    /// Exact TCNI28 descriptor, absent from every older original group.
+    pub const fn fixed_scalar_kind(&self) -> Option<NativeFixedScalarKind> {
+        self.fixed_scalar_kind
+    }
+
     /// Retain only TCNI21 original exact fixed-scalar carriers.
     pub fn new_retained_fixed_scalars(
         column: &str,
@@ -164,10 +193,26 @@ impl NativeFittedIntentGroup {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
+        Self::new_with_descriptor(column, updates, grammar, None, budget, cancelled)
+    }
+
+    pub(super) fn new_with_descriptor(
+        column: &str,
+        updates: NativeFittedUpdates,
+        grammar: Grammar,
+        fixed_scalar_kind: Option<NativeFixedScalarKind>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        if (grammar == Grammar::RetainedFixedScalarColumnBatch) != fixed_scalar_kind.is_some() {
+            return Err(NativeIntentError::UnsupportedProfile);
+        }
+
         check(budget, cancelled)?;
         if matches!(
             grammar,
             Grammar::RetainedFixedScalars
+                | Grammar::RetainedFixedScalarColumnBatch
                 | Grammar::RetainedEmpty
                 | Grammar::RetainedLongColumnBatch
                 | Grammar::RetainedCurrencyColumnBatch
@@ -179,9 +224,25 @@ impl NativeFittedIntentGroup {
         if grammar == Grammar::RetainedLongColumnBatch && updates.len() < 2 {
             return Err(NativeIntentError::InvalidRecord);
         }
-        if grammar == Grammar::RetainedCurrencyColumnBatch && updates.len() == 1 {
+        if matches!(
+            grammar,
+            Grammar::RetainedCurrencyColumnBatch | Grammar::RetainedFixedScalarColumnBatch
+        ) && updates.len() == 1
+        {
             return Err(NativeIntentError::InvalidRecord);
         }
+        if let Some(kind) = fixed_scalar_kind {
+            let NativeFittedUpdates::Fixed(cells) = &updates else {
+                return Err(NativeIntentError::InvalidRecord);
+            };
+            for cell in cells {
+                check(budget, cancelled)?;
+                if !kind.accepts(cell.expected()) || !kind.accepts(cell.value()) {
+                    return Err(NativeIntentError::InvalidRecord);
+                }
+            }
+        }
+
         grammar.name(column, budget, cancelled)?;
         if updates.len() > grammar.assignments() {
             return Err(InspectError::StructureLimit.into());
@@ -225,7 +286,11 @@ impl NativeFittedIntentGroup {
         codec::group_parts_length(column, &updates, grammar, budget, cancelled)?;
         let column = names::copy_name(column, budget)?;
         check(budget, cancelled)?;
-        Ok(Self { column, updates })
+        Ok(Self {
+            column,
+            updates,
+            fixed_scalar_kind,
+        })
     }
 
     /// Original column spelling, resolved afresh by every native planner.
@@ -364,6 +429,42 @@ impl NativeFittedEditIntent {
             budget,
             cancelled,
         )
+    }
+
+    /// Bind TCNI28 typed original groups to exact complete BEFORE bytes.
+    ///
+    /// # Errors
+    /// Rejects invalid descriptor, carrier, cardinality, name or source framing,
+    /// allocation failure, cancellation and caller resource exhaustion.
+    pub fn new_retained_fixed_scalar_column_batch(
+        table: &str,
+        groups: Vec<NativeFittedIntentGroup>,
+        before: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        Self::new_with_grammar(
+            table,
+            groups,
+            before,
+            Grammar::RetainedFixedScalarColumnBatch,
+            budget,
+            cancelled,
+        )
+    }
+
+    pub(in crate::transaction) fn require_retained_fixed_scalar_column_batch(
+        &self,
+    ) -> Result<NativeFixedScalarKind, NativeIntentError> {
+        if self.grammar != Grammar::RetainedFixedScalarColumnBatch {
+            return Err(NativeIntentError::UnsupportedProfile);
+        }
+        let [group] = self.groups.as_slice() else {
+            return Err(NativeIntentError::InvalidRecord);
+        };
+        group
+            .fixed_scalar_kind
+            .ok_or(NativeIntentError::InvalidRecord)
     }
 
     /// Bind the closed TCNI21 scalar language to a complete native-sized image.
@@ -543,6 +644,7 @@ pub(super) fn validate_groups(
     if matches!(
         grammar,
         Grammar::RetainedLongColumnBatch
+            | Grammar::RetainedFixedScalarColumnBatch
             | Grammar::RetainedCurrencyColumnBatch
             | Grammar::RetainedIndexedLong
     ) {
@@ -555,7 +657,11 @@ pub(super) fn validate_groups(
         if grammar == Grammar::RetainedLongColumnBatch && updates.len() < 2 {
             return Err(NativeIntentError::InvalidRecord);
         }
-        if grammar == Grammar::RetainedCurrencyColumnBatch && updates.len() == 1 {
+        if matches!(
+            grammar,
+            Grammar::RetainedCurrencyColumnBatch | Grammar::RetainedFixedScalarColumnBatch
+        ) && updates.len() == 1
+        {
             return Err(NativeIntentError::InvalidRecord);
         }
         for update in updates {
@@ -564,12 +670,32 @@ pub(super) fn validate_groups(
             grammar.view(update.value(), Family::Fixed)?;
         }
     }
+    for group in groups {
+        check(budget, cancelled)?;
+        if (grammar == Grammar::RetainedFixedScalarColumnBatch) != group.fixed_scalar_kind.is_some()
+        {
+            return Err(NativeIntentError::UnsupportedProfile);
+        }
+        if let Some(kind) = group.fixed_scalar_kind {
+            let NativeFittedUpdates::Fixed(updates) = group.updates() else {
+                return Err(NativeIntentError::InvalidRecord);
+            };
+            for update in updates {
+                check(budget, cancelled)?;
+                if !kind.accepts(update.expected()) || !kind.accepts(update.value()) {
+                    return Err(NativeIntentError::InvalidRecord);
+                }
+            }
+        }
+    }
+
     let mut count = 0_usize;
     for (position, group) in groups.iter().enumerate() {
         check(budget, cancelled)?;
         if matches!(
             grammar,
             Grammar::RetainedFixedScalars
+                | Grammar::RetainedFixedScalarColumnBatch
                 | Grammar::RetainedEmpty
                 | Grammar::RetainedLongColumnBatch
                 | Grammar::RetainedCurrencyColumnBatch

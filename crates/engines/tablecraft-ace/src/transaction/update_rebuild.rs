@@ -29,6 +29,33 @@ pub(super) fn rebuild_verified_binding(
     let plan = match (intent.profile(), intent.body()) {
         #[cfg(feature = "ace16-create")]
         (
+            NativeUpdateProfile::Ace16RetainedFixedScalarColumnBatch,
+            NativeUpdateBody::Fitted(original),
+        ) => {
+            let kind = original.require_retained_fixed_scalar_column_batch()?;
+            let [group] = original.groups() else {
+                return Err(NativeIntentError::InvalidRecord.into());
+            };
+            let actual = image.retained_fixed_scalar_column_kind(
+                original.table(),
+                group.column(),
+                budget,
+                cancelled,
+            )?;
+            if actual != kind {
+                return Err(NativeIntentError::InvalidRecord.into());
+            }
+            let groups = original.borrowed_groups(budget, cancelled)?;
+            image.plan_retained_fixed_scalar_column_batch_updates(
+                original.table(),
+                &groups,
+                kind,
+                budget,
+                cancelled,
+            )?
+        }
+        #[cfg(feature = "ace16-create")]
+        (
             NativeUpdateProfile::Ace16RetainedCurrencyColumnBatch,
             NativeUpdateBody::Fitted(original),
         ) => {

@@ -43,6 +43,10 @@ pub(in crate::transaction::intent) const RETAINED_CURRENCY_COLUMN_BATCH_MAGIC: &
     b"TCNI0027";
 const RETAINED_CURRENCY_COLUMN_BATCH_PROFILE: u16 = 27;
 
+pub(in crate::transaction::intent) const RETAINED_FIXED_SCALAR_COLUMN_BATCH_MAGIC: &[u8; 8] =
+    b"TCNI0028";
+const RETAINED_FIXED_SCALAR_COLUMN_BATCH_PROFILE: u16 = 28;
+
 #[derive(Clone, Copy)]
 pub(in crate::transaction::intent) enum WireProfile {
     Fitted,
@@ -60,12 +64,14 @@ pub(in crate::transaction::intent) enum WireProfile {
     RetainedEmptyRows,
     RetainedLongColumnBatch,
     RetainedCurrencyColumnBatch,
+    RetainedFixedScalarColumnBatch,
     RetainedIndexedLong,
 }
 
 impl WireProfile {
     pub(super) const fn grammar(self) -> Grammar {
         match self {
+            Self::RetainedFixedScalarColumnBatch => Grammar::RetainedFixedScalarColumnBatch,
             Self::RetainedIndexedLong => Grammar::RetainedIndexedLong,
             Self::RetainedLongColumnBatch => Grammar::RetainedLongColumnBatch,
             Self::RetainedCurrencyColumnBatch => Grammar::RetainedCurrencyColumnBatch,
@@ -83,6 +89,7 @@ impl WireProfile {
 
     pub(super) const fn magic(self) -> &'static [u8; 8] {
         match self {
+            Self::RetainedFixedScalarColumnBatch => RETAINED_FIXED_SCALAR_COLUMN_BATCH_MAGIC,
             Self::RetainedIndexedLong => RETAINED_INDEXED_LONG_MAGIC,
             Self::RetainedLongColumnBatch => RETAINED_LONG_COLUMN_BATCH_MAGIC,
             Self::RetainedCurrencyColumnBatch => RETAINED_CURRENCY_COLUMN_BATCH_MAGIC,
@@ -104,6 +111,7 @@ impl WireProfile {
 
     pub(super) const fn number(self) -> u16 {
         match self {
+            Self::RetainedFixedScalarColumnBatch => RETAINED_FIXED_SCALAR_COLUMN_BATCH_PROFILE,
             Self::RetainedIndexedLong => RETAINED_INDEXED_LONG_PROFILE,
             Self::RetainedLongColumnBatch => RETAINED_LONG_COLUMN_BATCH_PROFILE,
             Self::RetainedCurrencyColumnBatch => RETAINED_CURRENCY_COLUMN_BATCH_PROFILE,

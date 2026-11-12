@@ -29,6 +29,7 @@ pub(super) const GROUP_TOTAL_AT: usize = 0;
 pub(super) const GROUP_NAME_AT: usize = GROUP_TOTAL_AT + size_of::<u32>();
 pub(super) const GROUP_COUNT_AT_IN_GROUP: usize = GROUP_NAME_AT + size_of::<u32>();
 pub(super) const GROUP_FAMILY_AT: usize = GROUP_COUNT_AT_IN_GROUP + size_of::<u32>();
+pub(super) const GROUP_SCALAR_KIND_AT: usize = GROUP_PADDING_AT;
 pub(super) const GROUP_PADDING_AT: usize = GROUP_FAMILY_AT + size_of::<u8>();
 pub(super) const GROUP_RESERVED_AT: usize = 16;
 pub(super) const GROUP_HEADER_BYTES: usize = GROUP_RESERVED_AT + size_of::<u32>();
@@ -218,7 +219,12 @@ impl NativeFittedEditIntent {
                 Family::Fixed => 0,
                 Family::Variable => 1,
             });
-            output.extend_from_slice(&[0; GROUP_RESERVED_AT - GROUP_PADDING_AT]);
+            output.push(
+                group
+                    .fixed_scalar_kind()
+                    .map_or(0, crate::NativeFixedScalarKind::native_type),
+            );
+            output.extend_from_slice(&[0; GROUP_RESERVED_AT - GROUP_SCALAR_KIND_AT - 1]);
             output.extend_from_slice(&0_u32.to_le_bytes());
             copy(&mut output, group.column().as_bytes(), budget, cancelled)?;
             for cell in group.updates().cells() {
@@ -246,6 +252,40 @@ impl NativeFittedEditIntent {
         }
         check(budget, cancelled)?;
         Ok(output)
+    }
+
+    /// Encode only descriptor-bound TCNI28 original requests.
+    ///
+    /// # Errors
+    /// Rejects another original policy, invalid data or resource/cancel failures.
+    pub fn encode_retained_fixed_scalar_column_batch(
+        &self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<u8>, NativeIntentError> {
+        self.encode_profile(
+            WireProfile::RetainedFixedScalarColumnBatch,
+            budget,
+            cancelled,
+        )
+    }
+
+    /// Decode only TCNI0028/profile28 after complete descriptor preflight.
+    ///
+    /// # Errors
+    /// Rejects malformed framing, descriptors, carriers or identities, another
+    /// wire family, allocation failure, cancellation or exhausted caller work.
+    pub fn decode_retained_fixed_scalar_column_batch(
+        bytes: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        read::decode(
+            bytes,
+            WireProfile::RetainedFixedScalarColumnBatch,
+            budget,
+            cancelled,
+        )
     }
 
     /// Encode only retained TCNI17 data; older fitted grammars refuse.
