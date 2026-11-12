@@ -2,9 +2,11 @@
 use super::{assert_image, inspect, open, request, save_and_acknowledge, terminal};
 use crate::{Command, Error, QueryExpressionFormats, Response, SaveOutcome, SaveWorker, Worker};
 use std::path::PathBuf;
-use tablecraft_access::editing::sql::{RecoverableError, RecoverableInsertError};
+use tablecraft_access::editing::sql::{
+    RecoverableDeleteError, RecoverableError, RecoverableInsertError,
+};
 use tablecraft_expressions::EvalError;
-use tablecraft_query::{InsertError, QueryError, UpdateError};
+use tablecraft_query::{DeleteError, InsertError, QueryError, UpdateError};
 use tablecraft_testkit::fixtures::access::{
     canonical_retained_add_table::{deletes, field_changes, joined_update},
     database_properties,
@@ -180,7 +182,7 @@ fn late_bad_date_and_top_omitted_numeric_text_leave_all_original_records_unchang
         &worker,
         Command::Query {
             options: Default::default(),
-            sql: "SELECT CLng('1.234') AS Value".into(),
+            sql: "SELECT CLng('1.234') AS [Value]".into(),
         },
     )
     .unwrap() else {
@@ -261,8 +263,28 @@ fn delete_criteria_use_the_same_explicit_numeric_and_date_providers() {
     ] {
         let formats = QueryExpressionFormats::from_profile_names(Some(number), Some(date)).unwrap();
         let (_directory, path, worker, revision, before, definition) = opened(formats);
+        let (target, _) = inspect(
+            &worker,
+            revision,
+            "DELETE FROM Table1 WHERE CStr(Score) LIKE '1*'",
+        );
+        assert!(matches!(
+            request(
+                &worker,
+                Command::ReviewQueryDelete {
+                    target,
+                    parameters: Vec::new(),
+                },
+            ),
+            Err(Error::QueryDelete(RecoverableDeleteError::Plan(
+                DeleteError::Query(QueryError::Evaluation(EvalError::InvalidNullConversion))
+            )))
+        ));
+        assert_image(&std::fs::read(&path).unwrap(), &before);
+        assert!(!crate::journal_path(&path).exists());
+
         let sql = format!(
-            "DELETE FROM Table1 WHERE CStr(Score) LIKE '1*' AND Day(CDate('{date_text}'))=31"
+            "DELETE FROM Table1 WHERE CStr(Nz(Score,0)) LIKE '1*' AND Day(CDate('{date_text}'))=31"
         );
         let (target, _) = inspect(&worker, revision, &sql);
         let Response::QueryDeleteReviewed { review, capability } = request(
