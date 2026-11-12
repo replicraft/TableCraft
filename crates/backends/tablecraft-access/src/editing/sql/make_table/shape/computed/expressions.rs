@@ -1,15 +1,24 @@
-//! Borrowed paid traversal keeps computed projections row-local and source-closed.
+//! Paid traversal admits closed scalar/aggregate syntax without source expansion.
 use super::Error;
-use crate::editing::sql::make_table::shape::{check, resolve};
-use tablecraft_ace::{InspectError, TableSchema};
+use super::scope::Scope;
+use crate::editing::sql::make_table::shape::check;
+use tablecraft_ace::InspectError;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_expressions::{arrays::sql_arguments, functions::Builtin};
-use tablecraft_sql::select::{Expression, FunctionArgument, Table};
+use tablecraft_sql::select::{Expression, FunctionArgument};
+
+#[derive(Clone, Copy)]
+pub(super) enum Clause {
+    Projection,
+    Group,
+    Having,
+    Order,
+}
 
 pub(super) fn qualify(
     expression: &Expression,
-    table: &Table,
-    schema: &TableSchema,
+    scope: &Scope<'_>,
+    clause: Clause,
     work: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), Error> {
@@ -19,7 +28,12 @@ pub(super) fn qualify(
         check(work, cancelled)?;
         match expression {
             Expression::Field(reference) => {
-                resolve(reference, table, schema, work, cancelled)?;
+                scope.field(
+                    reference,
+                    matches!(clause, Clause::Having | Clause::Order),
+                    work,
+                    cancelled,
+                )?;
             }
             Expression::Integer(_)
             | Expression::Text(_)
@@ -73,7 +87,9 @@ pub(super) fn qualify(
                 // with NoBindings; dynamic fields/domains/UDFs cannot reopen this source.
                 if !qualifier.is_empty()
                     || (Builtin::resolve(name.as_str()).is_none()
-                        && !sql_arguments::is_constructor(qualifier, name))
+                        && !sql_arguments::is_constructor(qualifier, name)
+                        && !(matches!(clause, Clause::Projection | Clause::Having | Clause::Order)
+                            && aggregate(name.as_str())))
                 {
                     return Err(Error::Shape);
                 }
@@ -91,6 +107,17 @@ pub(super) fn qualify(
         }
     }
     Ok(())
+}
+
+// This is the native publisher's explicit aggregate admission, independent of
+// future query builtins. The query binder still validates arity, nesting, GROUP
+// membership, optional slots and static result declarations.
+fn aggregate(name: &str) -> bool {
+    [
+        "COUNT", "SUM", "AVG", "MIN", "MAX", "FIRST", "LAST", "VAR", "VARP", "STDEV", "STDEVP",
+    ]
+    .iter()
+    .any(|candidate| name.eq_ignore_ascii_case(candidate))
 }
 
 fn push<'a>(

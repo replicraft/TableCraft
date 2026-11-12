@@ -90,11 +90,12 @@ impl PreparedNativeMakeTable {
 /// result can be substituted. This does not qualify the source for publication.
 ///
 /// The slice admits one local table, direct native fields and explicitly named
-/// row-local fixed scalar expressions, WHERE, selection predicates and direct-field
-/// ORDER BY. Computed aliases are a current native name qualification, not an
-/// Access language restriction. Computed Text/Decimal declarations, source-expanding
-/// expressions, groups, named/linked sources, external selectors and owner access
-/// refuse. Bare and qualified source wildcards expand through actual native field
+/// fixed scalar/aggregate expressions, WHERE, GROUP BY, HAVING and closed
+/// ORDER BY expressions. Grouping, aggregate validity and parameter/alias binding
+/// remain the query owner's work. Computed aliases are a current native name
+/// qualification, not an Access language restriction. Computed Text/Decimal
+/// declarations, source-expanding expressions, named/linked sources, external
+/// selectors and owner access refuse. Bare and qualified source wildcards expand through actual native field
 /// declarations. This entry refuses SQL parameter declarations; use the explicit
 /// parameterized entry for that profile. Direct fields keep actual native sizes.
 /// Fixed expression declarations come from complete typed query staging; no native
@@ -280,17 +281,18 @@ fn prepare_with_policy(
             &mut work,
             cancelled,
         )?;
-        let direct_definition = if shape::preflight(select, &schema, &mut work, cancelled)? {
-            let columns = shape::columns(select, &schema, &mut work, cancelled)?;
-            Some(FirstTableDefinition::capture_manual_native(
-                destination.as_str(),
-                &columns,
-                &mut work,
-                cancelled,
-            )?)
-        } else {
-            None
-        };
+        let direct_definition =
+            if shape::preflight(select, &schema, &query.parameters, &mut work, cancelled)? {
+                let columns = shape::columns(select, &schema, &mut work, cancelled)?;
+                Some(FirstTableDefinition::capture_manual_native(
+                    destination.as_str(),
+                    &columns,
+                    &mut work,
+                    cancelled,
+                )?)
+            } else {
+                None
+            };
         (schema, direct_definition)
     };
     let staged = {

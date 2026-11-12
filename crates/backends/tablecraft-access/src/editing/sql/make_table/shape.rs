@@ -7,7 +7,7 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_schema::{DecimalConstraints, NameComparison, ScalarType};
 use tablecraft_sql::{
     query::{Query, Statement},
-    select::{Expression, FieldReference, Projection, Select, Table, TableSource},
+    select::{FieldReference, Projection, Select, Table, TableSource},
 };
 
 pub(super) fn check(
@@ -43,8 +43,6 @@ pub(super) fn select(
         || select.into_external.is_some()
         || select.external.is_some()
         || select.owner_access
-        || !select.group_by.is_empty()
-        || select.having.is_some()
         || select.projection.is_empty()
     {
         return Err(NativeMakeTableError::Shape);
@@ -70,6 +68,16 @@ fn resolve<'a>(
     work: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<&'a NativeColumn, NativeMakeTableError> {
+    resolve_optional(reference, table, schema, work, cancelled)?.ok_or(NativeMakeTableError::Shape)
+}
+
+fn resolve_optional<'a>(
+    reference: &FieldReference,
+    table: &Table,
+    schema: &'a TableSchema,
+    work: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Option<&'a NativeColumn>, NativeMakeTableError> {
     if let Some(qualifier) = &reference.qualifier {
         let name = table.alias.as_ref().unwrap_or(&table.name);
         charge_name(qualifier.as_str(), name.as_str(), work, cancelled)?;
@@ -80,10 +88,10 @@ fn resolve<'a>(
     for column in schema.columns() {
         charge_name(column.name(), reference.name.as_str(), work, cancelled)?;
         if NameComparison::AsciiInsensitive.equals(column.name(), reference.name.as_str()) {
-            return Ok(column);
+            return Ok(Some(column));
         }
     }
-    Err(NativeMakeTableError::Shape)
+    Ok(None)
 }
 
 pub(super) fn columns<'a>(
@@ -111,12 +119,6 @@ pub(super) fn columns<'a>(
         let name = alias.as_ref().unwrap_or(&field.name).as_str();
         let column = native_column(name, source)?;
         columns.push(column);
-    }
-    for key in &select.order_by {
-        let Expression::Field(reference) = &key.expression else {
-            return Err(NativeMakeTableError::Shape);
-        };
-        resolve(reference, table, schema, work, cancelled)?;
     }
     Ok(columns)
 }
