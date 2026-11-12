@@ -176,6 +176,11 @@ impl NativeJournalEditor {
             positions.push(position);
         }
         #[cfg(feature = "ace16-create")]
+        let retained_long_batch = self.route == JournalRoute::RetainedRows
+            && columns.len() == 1
+            && self.snapshot().columns()[positions[0]].data_type() == ScalarType::Int32
+            && columns[0].updates.len() >= 2;
+        #[cfg(feature = "ace16-create")]
         let boolean_materialization = if self.route == JournalRoute::RetainedRows
             && columns.len() == 1
             && self.snapshot().columns()[positions[0]].data_type() == ScalarType::Boolean
@@ -282,7 +287,14 @@ impl NativeJournalEditor {
             let retained_fixed =
                 self.route == JournalRoute::RetainedRows && retained_fixed_scalar(kind);
             #[cfg(feature = "ace16-create")]
-            let group = if retained_wide {
+            let group = if retained_long_batch {
+                NativeFittedIntentGroup::new_retained_long_column_batch(
+                    target.name(),
+                    requests,
+                    budget,
+                    cancelled,
+                )
+            } else if retained_wide {
                 NativeFittedIntentGroup::new_retained_wide_values(
                     target.name(),
                     requests,
@@ -328,7 +340,10 @@ impl NativeJournalEditor {
                 .plan_recoverable_retained_opaque_rows(groups, budget, cancelled)?,
             #[cfg(feature = "ace16-create")]
             JournalRoute::RetainedRows => {
-                if positions.first().is_some_and(|&position| {
+                if retained_long_batch {
+                    self.editor
+                        .plan_recoverable_retained_long_column_batch(groups, budget, cancelled)?
+                } else if positions.first().is_some_and(|&position| {
                     retained_wide_value(self.snapshot().columns()[position].data_type())
                 }) {
                     self.editor
