@@ -26,6 +26,10 @@ pub(super) fn rebuild_verified_binding(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<NativeEditPlan, NativeRecoveryQualificationError> {
+    // Validate the original's immutable data language before borrowed_groups
+    // can erase descriptor metadata while constructing native request views.
+    intent.require_fitted_original_profile()?;
+
     let plan = match (intent.profile(), intent.body()) {
         #[cfg(feature = "ace16-create")]
         (

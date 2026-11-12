@@ -1,5 +1,5 @@
 //! Owned immutable original fitted requests, without native admission authority.
-use super::{carrier, codec, grammar::Grammar};
+use super::{carrier, codec, grammar::Grammar, profile::WireProfile};
 use crate::NativeFixedScalarKind;
 use crate::{
     EditError, FittedColumnUpdates, FixedScalarUpdate, InspectError, SlotScalarUpdate,
@@ -548,6 +548,16 @@ impl NativeFittedEditIntent {
             before_length,
             before_binding,
         })
+    }
+
+    pub(in crate::transaction::intent) fn require_wire_profile(
+        &self,
+        profile: WireProfile,
+    ) -> Result<(), NativeIntentError> {
+        if self.grammar != profile.grammar() {
+            return Err(NativeIntentError::UnsupportedProfile);
+        }
+        Ok(())
     }
 
     pub(in crate::transaction) fn require_retained_currency_column_batch(

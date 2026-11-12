@@ -1,8 +1,8 @@
 //! TCNI28 binds an original atomic typed fixed-scalar column batch before native admission.
 use super::{RecoverableEditError, RecoverableNativeEditPlan};
 use crate::{
-    EditError, NativeFittedEditIntent, NativeFittedIntentGroup, NativeImage, NativeUpdateIntent,
-    WriteBlocker, header::check,
+    EditError, NativeFittedEditIntent, NativeFittedIntentGroup, NativeImage, NativeIntentError,
+    NativeUpdateIntent, WriteBlocker, header::check,
 };
 use tablecraft_core::limits::ResourceBudget;
 
@@ -29,7 +29,7 @@ impl NativeImage {
         };
         let requested = group
             .fixed_scalar_kind()
-            .ok_or(super::super::NativeIntentError::UnsupportedProfile)?;
+            .ok_or(NativeIntentError::UnsupportedProfile)?;
         let kind =
             self.retained_fixed_scalar_column_kind(table, group.column(), budget, cancelled)?;
         if requested != kind {

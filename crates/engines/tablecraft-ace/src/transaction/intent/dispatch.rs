@@ -1,4 +1,5 @@
 //! Closed native validators selected by exact request-record version/profile.
+use super::fitted::WireProfile;
 use super::{
     NativeFittedEditIntent, NativeFixedEditIntent, NativeInt32EditIntent, NativeIntentError,
 };
@@ -94,6 +95,68 @@ pub enum NativeUpdateBody {
 }
 
 impl NativeUpdateIntent {
+    pub(in crate::transaction) fn require_fitted_original_profile(
+        &self,
+    ) -> Result<(), NativeIntentError> {
+        let (original, wire) = match self.body() {
+            NativeUpdateBody::Fitted(original) => {
+                let wire = match self.profile() {
+                    NativeUpdateProfile::Ace16OrdinaryFitted => WireProfile::Fitted,
+                    NativeUpdateProfile::Ace16HistoricalShortTextUpdates => {
+                        WireProfile::HistoricalShortText
+                    }
+                    NativeUpdateProfile::Ace16CurrentRows => WireProfile::CurrentRows,
+                    NativeUpdateProfile::Ace16RetainedRows => WireProfile::RetainedRows,
+                    NativeUpdateProfile::Ace16RetainedOpaqueRows => WireProfile::RetainedOpaqueRows,
+                    NativeUpdateProfile::Ace16RetainedCurrencyRows => {
+                        WireProfile::RetainedCurrencyRows
+                    }
+                    NativeUpdateProfile::Ace16RetainedBooleanRows => {
+                        WireProfile::RetainedBooleanRows
+                    }
+                    NativeUpdateProfile::Ace16RetainedFixedScalarRows => {
+                        WireProfile::RetainedFixedScalarRows
+                    }
+                    NativeUpdateProfile::Ace16RetainedWideValueRows => {
+                        WireProfile::RetainedWideValueRows
+                    }
+                    NativeUpdateProfile::Ace16RetainedBooleanMaterialization => {
+                        WireProfile::RetainedBooleanMaterialization
+                    }
+                    NativeUpdateProfile::Ace16RetainedEmptyRows => WireProfile::RetainedEmptyRows,
+                    NativeUpdateProfile::Ace16RetainedLongColumnBatch => {
+                        WireProfile::RetainedLongColumnBatch
+                    }
+                    NativeUpdateProfile::Ace16RetainedIndexedLongRows => {
+                        WireProfile::RetainedIndexedLong
+                    }
+                    NativeUpdateProfile::Ace16RetainedCurrencyColumnBatch => {
+                        WireProfile::RetainedCurrencyColumnBatch
+                    }
+                    NativeUpdateProfile::Ace16RetainedFixedScalarColumnBatch => {
+                        WireProfile::RetainedFixedScalarColumnBatch
+                    }
+                    _ => return Err(NativeIntentError::UnsupportedProfile),
+                };
+                (original, wire)
+            }
+            NativeUpdateBody::OwnedGrowth(original) => {
+                if self.profile() != NativeUpdateProfile::Ace16OrdinaryOwnedGrowth {
+                    return Err(NativeIntentError::UnsupportedProfile);
+                }
+                (original, WireProfile::OwnedOnly)
+            }
+            NativeUpdateBody::EofAllocation(original) => {
+                if self.profile() != NativeUpdateProfile::Ace16OrdinaryEofAllocation {
+                    return Err(NativeIntentError::UnsupportedProfile);
+                }
+                (original, WireProfile::AllocateEof)
+            }
+            NativeUpdateBody::Int32(_) | NativeUpdateBody::Fixed(_) => return Ok(()),
+        };
+        original.require_wire_profile(wire)
+    }
+
     pub(super) fn from_retained_fixed_scalar_column_batch(
         original: NativeFittedEditIntent,
     ) -> Result<Self, NativeIntentError> {
