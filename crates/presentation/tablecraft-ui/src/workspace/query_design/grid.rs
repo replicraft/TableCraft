@@ -15,7 +15,7 @@ const GRID_LABEL_WIDTH: f32 = 85.0;
 pub(super) const GRID_ROW_HEIGHT: f32 = 24.0;
 const MAX_CRITERIA_ROWS: usize = tablecraft_builders::query::MAX_DESIGN_CRITERIA_ROWS;
 
-#[derive(Clone, Copy, Hash)]
+#[derive(Clone, Copy, Debug, Hash)]
 enum GridRow {
     Field,
     Table,
