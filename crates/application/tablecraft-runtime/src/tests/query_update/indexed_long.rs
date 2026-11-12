@@ -1,4 +1,6 @@
 //! Create a real ordinary index, then update that same saved native field atomically.
+mod inserting;
+
 use super::{assert_image, inspect, open, opened, request, save_and_acknowledge, terminal};
 use crate::{Command, Error, Response, SaveOutcome, SaveSchemaChange, SaveWorker, Worker};
 use std::path::Path;
@@ -14,14 +16,24 @@ fn create(worker: &Worker, path: &Path, revision: u64, source: &raw::Source) -> 
         source.column,
         if source.descending { "DESC" } else { "ASC" }
     );
-    let (target, _) = inspect(worker, revision, &sql);
+    create_definition(worker, path, revision, &sql, &source.expected)
+}
+
+fn create_definition(
+    worker: &Worker,
+    path: &Path,
+    revision: u64,
+    sql: &str,
+    expected: &[u8],
+) -> u64 {
+    let (target, _) = inspect(worker, revision, sql);
     let Response::IndexCreationReviewed { capability } =
         request(worker, Command::ReviewSchemaSql { target }).unwrap()
     else {
         panic!("actual CREATE INDEX review");
     };
     let witness = capability.reopen_witness();
-    assert_image(witness.expected_bytes(), &source.expected);
+    assert_image(witness.expected_bytes(), expected);
     let saves = SaveWorker::new(|| {});
     let id = saves
         .start_index_creation(capability, crate::journal_path(path))
@@ -31,7 +43,7 @@ fn create(worker: &Worker, path: &Path, revision: u64, source: &raw::Source) -> 
         if receipt.schema_change == Some(SaveSchemaChange::IndexCreated)
         && receipt.matched_rows.is_none() && receipt.changed_rows.is_none()));
     assert!(saves.acknowledge(id));
-    assert_image(&std::fs::read(path).unwrap(), &source.expected);
+    assert_image(&std::fs::read(path).unwrap(), expected);
     let Response::Opened {
         document_revision, ..
     } = request(worker, Command::OpenIndexCreated { witness }).unwrap()
