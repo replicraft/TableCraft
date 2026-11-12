@@ -2,7 +2,7 @@
 /// Synonyms retain their spelling; this is not a stored-field layout or type binder.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DataType {
-    /// Uppercase type token; the parser checks a documented Access type allowlist.
+    /// Uppercase type spelling (including documented compound names); the parser checks a documented Access type allowlist.
     pub name: String,
     /// Optional length or precision/scale arguments, retained without coercion.
     pub arguments: Vec<u32>,

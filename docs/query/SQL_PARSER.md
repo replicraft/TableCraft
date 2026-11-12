@@ -73,7 +73,7 @@ is the first working consumer.
 | Set operations | UNION/UNION ALL, independently retained per arm; SELECT, TABLE and stored-query-reference operands; final ordering |
 | Declarations | PARAMETERS names, including bracketed literal prompts with punctuation; recognized Access type spellings and integer type arguments; ordered declarations retained |
 | IEEE floating types | IEEESINGLE and IEEEDOUBLE preserve their type spelling in parameters/DDL; binding retains distinct Single/Double carriers |
-| Type synonyms | Documented single-word aliases include LOGICAL/LOGICAL1, INTEGER1/2/4, FLOAT4/8, NUMBER, DEC, ALPHANUMERIC, STRING, NCHAR, VARBINARY, GENERAL, OLEOBJECT, NOTE and NTEXT. Owned spelling survives normalization; parameter binding selects the corresponding carrier. |
+| Type synonyms | Documented single-word aliases include LOGICAL/LOGICAL1, INTEGER1/2/4, FLOAT4/8, NUMBER, DEC, ALPHANUMERIC, STRING, NCHAR, VARBINARY, GENERAL, OLEOBJECT, NOTE and NTEXT. Compound character/binary synonyms include CHARACTER VARYING, NATIONAL CHAR/CHARACTER with optional VARYING, BINARY VARYING and BIT VARYING. Owned spelling survives normalization; parameter binding selects the corresponding carrier. |
 | Crosstabs | TRANSFORM expression with optional AS alias, SELECT/grouping, PIVOT expression and optional ordered fixed headings, trailing owner-access option; headings are distinct from membership IN; subqueries allowed in predicates, rejected in output expressions |
 | Append/update/delete | INSERT VALUES (one record) or retrieval source, ordered target fields; UPDATE relations and SET assignments; DELETE target wildcards, relations and filters |
 | Make-table | SELECT INTO is a separate root statement kind; destination IN is distinct from source IN; make-table statements are rejected inside retrieval operands |
@@ -87,8 +87,16 @@ TOP accepts unsigned u32 syntax (including zero); PERCENT is restricted to
 Type names/arguments are syntax annotations, not validated native field layouts.
 The [Microsoft synonym table](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/equivalent-ansi-sql-data-types)
 establishes those spellings; it explicitly retires TIMESTAMP as a DATETIME synonym.
-Multiword synonym coverage remains incomplete. A parsed type does not establish
-native DDL support or inherit UI field defaults.
+The documented compound character/binary forms retain their full uppercase
+spelling and written arguments. Bare BIT remains Boolean; BIT VARYING is Binary.
+Compound Text aliases use the existing query Text parameter constraints and the
+qualified SQL CREATE/ADD native UTF-16 declaration boundary. Compound Binary
+aliases reuse unbounded Binary parameters and sized Binary CREATE; Binary
+parameter length annotations and native Binary ADD remain explicitly unsupported.
+No default width is invented for an omitted native length. Other multiword names
+require their own Access contract; an ANSI-column entry alone is not an Access
+synonym. A parsed type does not establish native DDL support or inherit UI field
+defaults.
 Numeric strings are never converted through floating point. Date literals retain
 trimmed contents without claiming valid calendar values or choosing a locale.
 LIKE preserves the pattern expression without guessing ANSI-89 versus ANSI-92
