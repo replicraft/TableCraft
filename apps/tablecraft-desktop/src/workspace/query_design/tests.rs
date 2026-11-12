@@ -418,3 +418,5 @@ fn design_build_captures_read_limits_and_failed_run_preserves_previous_results()
     );
     assert_eq!(std::fs::read(path).unwrap(), original);
 }
+
+mod totals;

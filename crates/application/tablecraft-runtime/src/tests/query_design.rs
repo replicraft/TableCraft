@@ -21,6 +21,7 @@ fn draft() -> QueryDesignDraft {
         }],
         joins: Vec::new(),
         columns: vec![DesignColumn::field(1, "Id".into()), score],
+        ..QueryDesignDraft::default()
     }
 }
 
@@ -103,7 +104,7 @@ fn unsupported_sql_is_rejected_before_missing_native_sources_and_stale_revision_
             &worker,
             Command::ImportQueryDesign {
                 target: target.clone(),
-                sql: "SELECT Id FROM Missing GROUP BY Id".into()
+                sql: "SELECT Id FROM Missing UNION SELECT Id FROM Missing".into()
             }
         ),
         Err(Error::QueryDesign(QueryDesignError::Unsupported))
@@ -169,6 +170,7 @@ fn typed_self_join_graphs_build_then_execute_with_native_outer_join_membership()
             kind: DesignJoinKind::Inner,
         }],
         columns: vec![left, right],
+        ..QueryDesignDraft::default()
     };
     for (kind, expected) in [
         (DesignJoinKind::Inner, vec![["1", "1"], ["1", "2"]]),
@@ -236,3 +238,5 @@ fn typed_self_join_graphs_build_then_execute_with_native_outer_join_membership()
     }
     assert_eq!(std::fs::read(path).unwrap(), bytes);
 }
+
+mod totals;
