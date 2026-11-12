@@ -103,9 +103,11 @@ fn computed_text_dynamic_null_only_unaliased_and_parameter_shapes_are_not_guesse
         "SELECT CLng((SELECT Max(CopiedScore) FROM Items)) AS CopiedScore INTO Archive FROM Items AS i",
         "PARAMETERS p LONG; SELECT CLng(i.CopiedScore) AS CopiedScore INTO Archive FROM Items AS i WHERE i.CopiedScore=p",
     ] {
+        let result = prepare(&before, sql);
         assert!(
-            matches!(prepare(&before, sql), Err(NativeMakeTableError::Shape)),
-            "{sql}"
+            matches!(&result, Err(NativeMakeTableError::Shape)),
+            "{sql}: {:?}",
+            result.err()
         );
     }
     for sql in [
@@ -138,12 +140,17 @@ fn a_late_computed_error_discards_the_complete_relation_instead_of_staging_a_pre
         "SELECT CLng(1/(i.CopiedScore-69)) AS CopiedScore INTO Archive FROM Items AS i",
         "SELECT TOP 0 CLng(1/(i.CopiedScore-69)) AS CopiedScore INTO Archive FROM Items AS i",
     ] {
-        assert!(matches!(
-            prepare(&before, sql),
-            Err(NativeMakeTableError::Query(MakeTableError::Query(
-                QueryError::Evaluation(EvalError::DivisionByZero)
-            )))
-        ));
+        let result = prepare(&before, sql);
+        assert!(
+            matches!(
+                &result,
+                Err(NativeMakeTableError::Query(MakeTableError::Query(
+                    QueryError::Evaluation(EvalError::DivisionByZero)
+                )))
+            ),
+            "{sql}: {:?}",
+            result.err()
+        );
     }
 }
 

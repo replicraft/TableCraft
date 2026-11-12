@@ -5,7 +5,7 @@ use crate::{
     Command, InsertInput, InsertTarget, Response, SaveOutcome, SaveSchemaChange, SaveWorker,
 };
 use std::{fs, io::Cursor};
-use tablecraft_ace::{inspect_table_properties, inspect_table_schema};
+use tablecraft_ace::{inspect_table_indexes, inspect_table_properties, inspect_table_schema};
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::fixtures::access::canonical_retained_add_table::populated::computed::{
     self as raw, Row,
@@ -62,9 +62,13 @@ fn computed_table_keeps_native_text_decimal_sizes_and_fresh_omission_is_not_the_
         .start_table_creation(capability, crate::journal_path(&path))
         .unwrap();
     let report = terminal(&saves);
-    assert!(matches!(report.outcome,SaveOutcome::Saved {receipt}
-        if receipt.matched_rows.is_none() && receipt.changed_rows==Some(2)
-            && receipt.schema_change==Some(SaveSchemaChange::TableAdded {column_count:3})));
+    assert!(matches!(
+        report.outcome,
+        SaveOutcome::Saved { receipt }
+            if receipt.matched_rows.is_none()
+                && receipt.changed_rows == Some(2)
+                && receipt.schema_change == Some(SaveSchemaChange::TableAdded { column_count: 3 })
+    ));
     assert!(saves.acknowledge(id));
     let Response::Opened {
         document_revision: fresh,
@@ -87,7 +91,15 @@ fn computed_table_keeps_native_text_decimal_sizes_and_fresh_omission_is_not_the_
     assert_eq!(schema.columns()[0].storage_length(), 14);
     assert_eq!(schema.columns()[1].decimal_parameters(), Some((28, 4)));
     assert_eq!(schema.columns()[2].flags(), 3);
-    assert_eq!(schema.physical_layout().physical_indexes, 0);
+    let indexes = inspect_table_indexes(
+        &mut Cursor::new(&actual),
+        CatalogScope::new(19005),
+        "Archive",
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert!(indexes.indexes().is_empty());
     let properties = inspect_table_properties(
         &mut Cursor::new(&actual),
         CatalogScope::new(19005),
