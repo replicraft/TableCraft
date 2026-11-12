@@ -1,4 +1,5 @@
 //! Independent original rows, complete fixed-field effects and atomic refusals.
+mod scale;
 use crate::{EditError, FittedColumnUpdates, FixedScalarUpdate, NativeImage};
 use std::{cell::Cell, io::Cursor};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
