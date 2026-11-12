@@ -147,6 +147,19 @@ pub(in crate::editing) fn review(
         }
     };
 
+    let mutation_like_mode = {
+        let mut native = native_pool
+            .try_borrow_mut()
+            .map_err(|_| Error::Native(InspectError::Unsupported))?;
+        sql::native_mutation_like_mode(
+            &image,
+            parsed.query(),
+            &mut native,
+            &mut query_work,
+            cancelled,
+        )?
+    };
+
     let source =
         NativeSource::new_with_shared_budget(&mut document.source, SCOPE, &native_pool, cancelled)?;
     let comparison_pool = RefCell::new(comparison_budget());
@@ -169,6 +182,7 @@ pub(in crate::editing) fn review(
             &source,
             &mut query_work,
             sql::NativeMutationOptions {
+                like_mode: mutation_like_mode,
                 parameters: &bindings,
                 collation: resolver.default_collation(),
                 resolver: &resolver,
@@ -199,6 +213,7 @@ pub(in crate::editing) fn review(
             &source,
             &mut query_work,
             sql::NativeMutationOptions {
+                like_mode: mutation_like_mode,
                 parameters: &bindings,
                 collation: resolver.default_collation(),
                 resolver: &resolver,
@@ -229,6 +244,7 @@ pub(in crate::editing) fn review(
             &source,
             &mut query_work,
             sql::NativeMutationOptions {
+                like_mode: mutation_like_mode,
                 parameters: &bindings,
                 collation: resolver.default_collation(),
                 resolver: &resolver,
@@ -259,6 +275,7 @@ pub(in crate::editing) fn review(
             &source,
             &mut query_work,
             sql::NativeMutationOptions {
+                like_mode: mutation_like_mode,
                 parameters: &bindings,
                 collation: resolver.default_collation(),
                 resolver: &resolver,
@@ -317,6 +334,7 @@ pub(in crate::editing) fn review(
             .try_borrow_mut()
             .map_err(|_| Error::Native(InspectError::Unsupported))?;
         let options = sql::NativeMutationOptions {
+            like_mode: mutation_like_mode,
             parameters: &bindings,
             collation: resolver.default_collation(),
             resolver: &resolver,
