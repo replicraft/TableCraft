@@ -197,3 +197,13 @@ ANSI-89/92 overrides and unknown-mode refusal, eager errors, stale inspection an
 a supplied clock that is not reread at save/reopen. These overlapping scopes are
 not additive conformance totals. Native Microsoft Access comparisons remain
 separate from these local implementation results.
+
+## Release workflow qualification
+
+The [release checkpoint](../../tests/results/queries/ace-sql-release-workflows-2026-11-12.json)
+records computed/wildcard declaration and complete-image checks, explicit typed
+parameter preparation and the normal prompt → No/Yes → save → acknowledgment →
+guarded-reopen workflow. Empty and wholly NULL results retain exact native Text
+and Decimal companions. It retains the raw ordinal, diagnostic-order and private
+API test repairs rather than presenting failed attempts as passes. The combined
+checks are local implementation evidence, not native Microsoft Access parity.

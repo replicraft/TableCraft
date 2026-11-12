@@ -1,5 +1,16 @@
 # Implementation status
 
+## Release SQL workflow checkpoint — 12 November 2026
+
+The [release checkpoint](../tests/results/queries/ace-sql-release-workflows-2026-11-12.json)
+passes 438 Runtime tests with one explicit fixture-dependent ignore, 41 headless
+Desktop workflows, parser/query/adapter scopes, strict lint and feature-minimal
+checks. It covers ordinary LONG DROP/fresh CREATE, computed/wildcard SELECT INTO,
+declared make-table prompts, DISTINCTROW joined DELETE and compound type aliases.
+All final commands use release mode and root `target/`. Earlier failures and the
+interrupted build-cache transition remain recorded separately. These results do
+not establish full ACE SQL or native Microsoft Access/Windows conformance.
+
 ## ACE SQL conformance statement services — 11 November 2026
 
 Issued schema SQL reviews now support qualified CREATE TABLE, DROP TABLE and
@@ -29,8 +40,10 @@ comparison remain unfinished.
 The query layer now stages complete typed SELECT INTO results and prepares joined
 UPDATE with exact original target identities, original-value assignments and a
 separate consuming backend finish. Native/GUI joined UPDATE and local DELETE
-with correlated EXISTS/IN predicates now use this staged source ownership; joined
-DELETE and broader subquery shapes remain unsupported. Native SELECT INTO
+with correlated EXISTS/IN predicates now use this staged source ownership.
+Explicit single-target DISTINCTROW joined DELETE uses distinct original handles
+and the existing TCND native finish.
+Multiple targets and broader subquery shapes remain unsupported. Native SELECT INTO
 preparation resolves qualified direct source-field sizes, and an independently
 checked populated-table candidate packs complete rows across fresh DATA/maps.
 The adapter now requalifies complete populated plans against the exclusive source

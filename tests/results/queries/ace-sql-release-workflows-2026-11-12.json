@@ -1,0 +1,366 @@
+{
+  "date": "2026-11-12",
+  "platform": "macOS 14.7.2 arm64",
+  "source_commit": "35fa43c1cbe1db7753af2746dd99b11701d4f204",
+  "scope": "Reviewed ordinary LONG index removal/fresh identity creation, computed and wildcard SELECT INTO, declared make-table inputs, explicit DISTINCTROW joined DELETE and documented compound type aliases.",
+  "qualification": "Local release-mode implementation, independent complete-image, recovery and headless workflow checks. No native Microsoft Access/Windows execution.",
+  "observations": [
+    "All recorded final Cargo commands use --release with the workspace-root target/ and no custom target directory.",
+    "Joined DELETE evaluates every ON/WHERE frame before deduplicating original target row handles. Target absence produces no synthetic handle. Existing local/correlated DELETE and joined UPDATE retain their owners; native TCND qualification remains unchanged.",
+    "Make-table fixed computed categories come from static output declarations even for empty/all-NULL results. Wildcards align exact native field names/types and preserve UTF16 capacity and Decimal precision/scale. Source keys, generation/defaults and Required metadata are not inherited.",
+    "Declared make-table inputs use the actual typed prompt then a separate native confirmation. Cancel/No preserve original bytes and prior results; Yes saves all retained rows atomically before ACK and full-image guarded reopen. SQL is not reevaluated.",
+    "Ordinary LONG DROP and fresh CREATE retain original logical identities, schema-only receipts, exact source/AFTER binding and V3 reconstruction. Primary/unique/compound/foreign and wider key families remain outside these saves.",
+    "Compound aliases are taken from Microsoft Access synonym entries, not guessed ANSI spellings. Existing native owners retain exact field widths and unsupported sized-Binary parameter/Binary ADD refusals."
+  ],
+  "checks": [
+    {
+      "job": "sql",
+      "command": "cargo test -p tablecraft-sql --all-features --offline --locked --release",
+      "returncode": 0,
+      "seconds": 77.64,
+      "log": {
+        "path": ".cache/ace-sql-release-sql-20261111.log",
+        "sha256": "932b7a9d27bde647660ea0ed7849b0e9f7e136eac7737514327c93de3bb9b61f"
+      },
+      "test_summaries": [
+        {
+          "passed": 98,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "query",
+      "command": "cargo test -p tablecraft-query --lib --all-features --offline --locked --release",
+      "returncode": 0,
+      "seconds": 39.33,
+      "log": {
+        "path": ".cache/ace-sql-release-query-20261111.log",
+        "sha256": "2047dbe60cd743cbb266fa2d365a843c9413e6ea80a76a39dc27d1059f350565"
+      },
+      "test_summaries": [
+        {
+          "passed": 173,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "mutation-scalars",
+      "command": "cargo test -p tablecraft-query --test mutation_scalar --test multiword_parameter_types --all-features --offline --locked --release",
+      "returncode": 0,
+      "seconds": 1.55,
+      "log": {
+        "path": ".cache/ace-sql-release-mutation-scalars-20261111.log",
+        "sha256": "1a88a9a237f0dee9a3056dd277e85b1f3dd0d7d904031d61736dff4b474dc57f"
+      },
+      "test_summaries": [
+        {
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "passed": 12,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "access",
+      "command": "cargo test -p tablecraft-access --lib --all-features --offline --locked --release -- editing::sql::make_table editing::sql::deleting editing::sql::joined editing::offline::index_creation editing::offline::index_drop editing::offline::plan::fresh_index editing::offline::plan::index_drop editing::offline::field_addition::declared_tests editing::offline::field_addition::unadorned_tests",
+      "returncode": 0,
+      "seconds": 114.49,
+      "log": {
+        "path": ".cache/ace-sql-release-access-20261111.log",
+        "sha256": "2f122e5ca7ada0d1c612a00da36afc0c1ce79518e1edf96471152426cb0e8726"
+      },
+      "test_summaries": [
+        {
+          "passed": 57,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "runtime",
+      "command": "cargo test -p tablecraft-runtime --lib --all-features --offline --locked --release",
+      "returncode": 0,
+      "seconds": 143.07,
+      "log": {
+        "path": ".cache/ace-sql-release-runtime-20261111.log",
+        "sha256": "50f2016482f00e8c95349e334d29594294a6e759b4919aca83983332e408d7b9"
+      },
+      "test_summaries": [
+        {
+          "passed": 438,
+          "failed": 0,
+          "ignored": 1
+        }
+      ]
+    },
+    {
+      "job": "desktop",
+      "command": "cargo test -p tablecraft-desktop --all-features --offline --locked --release -- workspace::editing::query_action::tests workspace::query_parameters::tests",
+      "returncode": 0,
+      "seconds": 146.94,
+      "log": {
+        "path": ".cache/ace-sql-release-desktop-20261111.log",
+        "sha256": "ebd205e94595f7503c2541e9ab651ac9b2af9e817067899e54573231c0cb6aaf"
+      },
+      "test_summaries": [
+        {
+          "passed": 41,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "strict",
+      "command": "cargo clippy -p tablecraft-sql -p tablecraft-query -p tablecraft-builders -p tablecraft-cli -p tablecraft-ace -p tablecraft-access -p tablecraft-runtime -p tablecraft-ui -p tablecraft-desktop -p tablecraft-mcp -p tablecraft-testkit --all-targets --all-features --offline --locked --release -- -D warnings",
+      "returncode": 0,
+      "seconds": 117.03,
+      "log": {
+        "path": ".cache/ace-sql-release-strict-20261111.log",
+        "sha256": "068c7d4fab7280974b37606b4a65b737538d49a0fb1f0246aded722f8d16d573"
+      },
+      "test_summaries": []
+    },
+    {
+      "job": "query-minimal",
+      "command": "cargo check -p tablecraft-query --lib --no-default-features --offline --locked --release",
+      "returncode": 0,
+      "seconds": 12.4,
+      "log": {
+        "path": ".cache/ace-sql-release-query-minimal-20261111.log",
+        "sha256": "07c03ecb4d9a4738e7b198451b594ba525b5a4ae355e3f39c42c63e0cf0874d4"
+      },
+      "test_summaries": []
+    },
+    {
+      "job": "access-minimal",
+      "command": "cargo check -p tablecraft-access --lib --no-default-features --offline --locked --release",
+      "returncode": 0,
+      "seconds": 7.19,
+      "log": {
+        "path": ".cache/ace-sql-release-access-minimal-20261111.log",
+        "sha256": "b17f1f663888100b05a097ba2e25c1116eb0a017eaae65db299e56ca0a1e44c4"
+      },
+      "test_summaries": []
+    },
+    {
+      "job": "access-no-create",
+      "command": "cargo test -p tablecraft-access --lib --no-default-features --features offline-write-session --offline --locked --release -- plan::index_drop_tests plan::fresh_index_tests",
+      "returncode": 0,
+      "seconds": 32.06,
+      "log": {
+        "path": ".cache/ace-sql-release-access-no-create-20261111.log",
+        "sha256": "9b34fbcceb96adb4db2223e2bcb3bc6caab933e0c3b0669f24d8457c03c9df1f"
+      },
+      "test_summaries": [
+        {
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "runtime-offline",
+      "command": "cargo check -p tablecraft-runtime --lib --no-default-features --features offline-edit --offline --locked --release",
+      "returncode": 0,
+      "seconds": 13.02,
+      "log": {
+        "path": ".cache/ace-sql-release-runtime-offline-20261111.log",
+        "sha256": "94c0d579ada519392d92d46e79d83707a383df5e8a2c0230962aead692075537"
+      },
+      "test_summaries": []
+    },
+    {
+      "job": "runtime-minimal",
+      "command": "cargo check -p tablecraft-runtime --lib --no-default-features --offline --locked --release",
+      "returncode": 0,
+      "seconds": 4.43,
+      "log": {
+        "path": ".cache/ace-sql-release-runtime-minimal-20261111.log",
+        "sha256": "34661b6cba7e1208d9494aaf62ccdafc755e833548e437b30c17b94d1fcf11de"
+      },
+      "test_summaries": []
+    },
+    {
+      "job": "rustdoc",
+      "command": "cargo doc -p tablecraft-sql -p tablecraft-query -p tablecraft-access -p tablecraft-runtime --no-deps --all-features --offline --locked --release",
+      "returncode": 0,
+      "seconds": 15.98,
+      "log": {
+        "path": ".cache/ace-sql-release-rustdoc-20261111.log",
+        "sha256": "0d7a08200ac82ce28b1db175d87103be27bde63adff2374821de7de8a7b0eb2a"
+      },
+      "test_summaries": []
+    }
+  ],
+  "retained_failures": [
+    {
+      "reason": "Computed negative tests omitted a required CStr number-format provider and used refused TOP0. Empty/all-NULL complete-image checks also exposed a raw trailing-fixed-field variable-ordinal error.",
+      "log": {
+        "path": ".cache/ace-sql-index-drop-host-batch-access-20261111.log",
+        "sha256": "37898dfe33265cda53fb593e4e88e7fcbd9184bd4325ed761059a9da812410c4"
+      },
+      "test_summaries": [
+        {
+          "passed": 40,
+          "failed": 3,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "reason": "The computed raw oracle used zero instead of the current ordinary variable ordinal for a fixed field following Text and Decimal. Production construction was independently checked against the reference before correcting the raw builder.",
+      "log": {
+        "path": ".cache/ace-sql-index-drop-host-batch-runtime-20261111.log",
+        "sha256": "fd1467000df935a5d4f935efbd3179e0af0f21f63223d769840a559865784b22"
+      },
+      "test_summaries": [
+        {
+          "passed": 428,
+          "failed": 1,
+          "ignored": 1
+        }
+      ]
+    },
+    {
+      "reason": "New DropIndex effect was missing from the explicit catalog-publication match; repaired without wildcard fallback.",
+      "log": {
+        "path": ".cache/ace-sql-index-drop-host-batch-desktop-20261111.log",
+        "sha256": "8cbcca6314dd3e3b3366a7ae611058d35b108b564cc9b7ec03253f645399e8e8"
+      },
+      "test_summaries": []
+    },
+    {
+      "reason": "Historical pinned inputs had moved or changed. A separate read-only replay mirror restored exact Git blobs and existing immutable bytes; source and pins were not changed.",
+      "log": {
+        "path": ".cache/ace-sql-index-drop-host-batch-engineering-20261111.log",
+        "sha256": "9009490acd91f47239f131f08104a065e76714c60d420f831349558c19b44ce9"
+      },
+      "test_summaries": [
+        {
+          "passed": 0,
+          "failed": 1,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "reason": "Removing an unused production Cause import exposed two test-only references; tests now import the real owner.",
+      "log": {
+        "path": ".cache/ace-sql-index-drop-host-repair-access-20261111.log",
+        "sha256": "1d0ab08d8cb3f36e4f3bb6076da0a8aa87fe50af48a0d1ddaa5ca1f27bbe23b5"
+      },
+      "test_summaries": []
+    },
+    {
+      "reason": "New prompt test accessed a sibling private field; replaced with the existing public shared UI observation rather than widening visibility.",
+      "log": {
+        "path": ".cache/ace-sql-make-table-inputs-desktop-20261111.log",
+        "sha256": "e8cba13280f1907e0f60cebe49bba909bd198658c8ca712cb14731aae2082021"
+      },
+      "test_summaries": []
+    },
+    {
+      "reason": "Shared relation evaluator extraction omitted its Resource import, blocking downstream builds. Added the owning import.",
+      "log": {
+        "path": ".cache/ace-sql-joined-wildcard-query-20261111.log",
+        "sha256": "1ddd68da61020553d5851dedcc34f7999562845b10677a595bc056d30bfd8fb7"
+      },
+      "test_summaries": []
+    },
+    {
+      "reason": "Wildcard negative test requested nonexistent Table1 instead of its actual independent Items table. Corrected the selector; unsupported Binary still refuses.",
+      "log": {
+        "path": ".cache/ace-sql-joined-alias-repair-access-20261111.log",
+        "sha256": "2ce705bf9b62855f4d896a57c7920991c4118571d2c25de453c0bb17635f20da"
+      },
+      "test_summaries": [
+        {
+          "passed": 56,
+          "failed": 1,
+          "ignored": 0
+        }
+      ]
+    }
+  ],
+  "interruption": {
+    "record": {
+      "path": ".cache/ace-sql-joined-alias-repair-interruption-20261111.json",
+      "sha256": "7c3a9e862b94aa885894f9db2435764c7566da2f9e69e1ec252e4d038e265180"
+    },
+    "meaning": "The last debug-mode batch was intentionally stopped for the user-requested build-cache removal. Its partial results are not a completed pass."
+  },
+  "independent_engineering_replay": {
+    "checks": {
+      "job": "engineering",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--",
+        "--ignored",
+        "table::mutation::index_create::generated_sources::candidates::genuine_secondary_index_candidates_match_all_prefrozen_images"
+      ],
+      "returncode": 0,
+      "seconds": 29.3,
+      "log": ".cache/ace-sql-index-drop-host-repair-engineering-20261111.log"
+    },
+    "manifest": {
+      "path": ".cache/ace-sql-index-create-pinned-replay-20261111/mirror-manifest.json",
+      "sha256": "388ffeb1c04ce6f8533d500e65f2f5defef8043e3595895018d1d11a37673137"
+    },
+    "meaning": "Separate earlier engineering check against hash-pinned historical inputs; not a release-mode or Access comparison run."
+  },
+  "presentation": {
+    "record": {
+      "path": ".cache/ui-previews/sql-index-drop-current/render-results.json",
+      "sha256": "4d4c193efc2c9d67a02c106e282ac70360abc7aa0dbb46781f5b3d4e6917ff5d"
+    },
+    "inspected": true,
+    "platform": "macOS offscreen WGPU",
+    "logical_size": [
+      1280,
+      820
+    ],
+    "scale": 1,
+    "locales": [
+      "en-US",
+      "de"
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "host": "normal complete Ribbon",
+    "reference": "Retained Windows Access Home/datasheet capture opened directly. No corresponding DROP INDEX confirmation capture exists; compact warning layout is an adaptation.",
+    "native_window": false
+  },
+  "limitations": [
+    "One explicitly ignored Runtime fixture-dependent test did not execute; release Runtime totals are 438 passed and 1 ignored.",
+    "The query unit and selected integration scopes do not represent the entire query test corpus or a full ACE SQL conformance claim.",
+    "Native Windows/Access comparisons, older-profile mutations, wider index writes, required-program execution and other documented SQL gaps remain unqualified.",
+    "New numeric-index candidate and future originals are not activated or qualified by this checkpoint."
+  ],
+  "counting": "98 parser tests plus 1 doctest, 173 query unit tests, 2 compound-parameter and 12 mutation-scalar integration cases, 57 selected Access checks, 438 Runtime tests and 41 Desktop workflows. These cover different overlapping boundaries, not an additive conformance count."
+}
