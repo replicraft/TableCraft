@@ -299,6 +299,14 @@ pub use intent::{
 };
 
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use intent::RecoverableNativeNumericIndexCreatePlan;
+#[cfg(feature = "journal")]
+pub use intent::{
+    NativeNumericIndexCreateIntent, NumericIndexCreateIntentError,
+    QualifiedNativeNumericIndexCreateRecovery,
+};
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub use intent::RecoverableNativeFreshIndexCreatePlan;
 #[cfg(feature = "journal")]
 pub use intent::{

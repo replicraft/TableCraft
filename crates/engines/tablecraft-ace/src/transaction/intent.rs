@@ -225,6 +225,14 @@ pub use retained_field_addition::{
     RecoverableRetainedTypedFieldAdditionPlan,
 };
 
+mod numeric_index_create;
+#[cfg(feature = "ace16-create")]
+pub use numeric_index_create::RecoverableNativeNumericIndexCreatePlan;
+pub use numeric_index_create::{
+    NativeNumericIndexCreateIntent, NumericIndexCreateIntentError,
+    QualifiedNativeNumericIndexCreateRecovery,
+};
+
 mod fresh_index_create;
 #[cfg(feature = "ace16-create")]
 pub use fresh_index_create::RecoverableNativeFreshIndexCreatePlan;

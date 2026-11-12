@@ -1,4 +1,5 @@
-//! Ordinary numeric index population; no original intent or save authority.
+//! Ordinary numeric index population; the candidate itself grants no save authority.
+pub(crate) mod effect;
 use super::{
     index_creation::SecondaryIndexCreate,
     index_population::{self, Built},
