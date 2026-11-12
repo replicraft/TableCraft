@@ -258,6 +258,6 @@ fn late_group_failure_and_unsupported_import_leave_source_and_owned_design_uncha
         panic!("original owned design remains buildable");
     };
     assert_eq!(&built.draft, retained.as_ref());
-    assert_eq!(fs::read(path).unwrap(), bytes);
+    assert_eq!(fs::read(&path).unwrap(), bytes);
     assert!(!crate::journal_path(&path).exists());
 }
