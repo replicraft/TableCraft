@@ -1,12 +1,14 @@
 //! Bounded Access SELECT design, preserving unsupported SQL by explicit refusal.
 mod build;
 mod criteria;
+mod field_cell;
 mod import;
 mod model;
 mod parameters;
 mod totals;
 
 pub use build::{build, build_ast, draft_text_bytes, expression_text, validate_metadata};
+pub use field_cell::{edit_field_operand, field_cell_complete, field_cell_text, parse_field_cell};
 pub use import::{import, import_unbound};
 pub use model::{
     BuiltQueryDesign, DesignColumn, DesignExpression, DesignField, DesignFieldMetadata, DesignJoin,

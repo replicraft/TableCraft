@@ -17,6 +17,7 @@ mod integer_projection;
 mod lex;
 mod limits;
 mod parameters;
+mod qbe;
 mod queries;
 mod reference_names;
 mod relations;
@@ -27,6 +28,7 @@ mod tests;
 
 pub use diagnostic::{ParseError, ParseErrorKind, SourceLocation};
 pub use limits::ParseLimits;
+pub use qbe::{parse_qbe_field_prefix, qbe_identifier_is_bare};
 pub use scalar::{parse_expression, parse_expression_strict, parse_field_rule};
 
 /// Original source and its normalized syntax model, kept separately.
