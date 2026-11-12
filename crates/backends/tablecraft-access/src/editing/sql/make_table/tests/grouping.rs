@@ -5,7 +5,8 @@ use super::{budget, image, syntax};
 use crate::editing::sql::NativeMakeTableError;
 #[cfg(feature = "journal")]
 use crate::editing::sql::{
-    NativeMakeTableOptions, prepare_parameterized_native_make_table_with_native_comparison,
+    NativeMakeTableOptions, prepare_native_make_table_with_native_comparison,
+    prepare_parameterized_native_make_table_with_native_comparison,
 };
 #[cfg(feature = "journal")]
 use std::cell::RefCell;
