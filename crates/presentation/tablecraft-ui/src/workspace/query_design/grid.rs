@@ -1,14 +1,13 @@
 //! Column-oriented QBE cells preserve local drafts and bounded literal input.
-use super::{MAX_DESIGN_COLUMNS, MAX_DESIGN_TEXT_BYTES, Session, context_menu, totals};
+mod field;
+
+use super::{MAX_DESIGN_COLUMNS, MAX_DESIGN_TEXT_BYTES, Session, totals};
 use crate::localization::tr;
 use crate::workspace::focus::{self, Pane};
 use egui::{Align, Layout, ScrollArea, TextBuffer, TextEdit, Ui};
 use egui_extras::{Column, TableBuilder};
 use std::borrow::Cow;
-use tablecraft_builders::query::{
-    DesignColumn, DesignExpression, DesignField, DesignSort, DesignSource, DesignTableMetadata,
-    DesignTotal,
-};
+use tablecraft_builders::query::{DesignColumn, DesignExpression, DesignSort, DesignTotal};
 
 const GRID_COLUMN_WIDTH: f32 = 175.0;
 const GRID_LABEL_WIDTH: f32 = 85.0;
@@ -58,7 +57,9 @@ pub(super) fn design_grid(ui: &mut Ui, session: &mut Session) -> bool {
     let totals_enabled = session.draft.totals;
     let mut budget = InputBudget {
         remaining: MAX_DESIGN_TEXT_BYTES.saturating_sub(
-            tablecraft_builders::query::draft_text_bytes(&session.draft)
+            session
+                .field_inputs
+                .editable_bytes(&session.draft)
                 .unwrap_or(MAX_DESIGN_TEXT_BYTES),
         ),
         rejected: false,
@@ -106,77 +107,21 @@ pub(super) fn design_grid(ui: &mut Ui, session: &mut Session) -> bool {
                                 grid_cell(ui, false, |ui| {
                                     ui.push_id(("qbe_cell", index, row), |ui| match row {
                                         GridRow::Field => {
-                                            let original = field_text(&column.expression);
-                                            let mut text = Cow::Borrowed(original);
-                                            let cost = match &column.expression {
-                                                DesignExpression::Field(field) => {
-                                                    field.column.len()
-                                                }
-                                                DesignExpression::Expression(text) => text.len(),
-                                                DesignExpression::AllFields(_) => 0,
-                                            };
-                                            let previous_budget = budget.remaining;
-                                            let response = bounded_input(
+                                            let (_, edited, removed) = field::show(
                                                 ui,
-                                                &mut text,
-                                                "qbe-field-input",
-                                                cost,
+                                                field::Cell {
+                                                    sources,
+                                                    metadata: &session.metadata,
+                                                    column,
+                                                    index,
+                                                },
+                                                &mut session.field_inputs,
                                                 &mut budget,
                                             );
-                                            focus::register(
-                                                ui,
-                                                Pane::QueryGrid,
-                                                &response,
-                                                index == 0 || response.has_focus(),
-                                            );
-                                            if response.changed() && text.as_ref() != original {
-                                                column.expression = edited_field(
-                                                    sources,
-                                                    &session.metadata,
-                                                    &column.expression,
-                                                    text.into_owned(),
-                                                );
-                                                changed = true;
-                                            } else {
-                                                // A no-op replacement must not discard a bound
-                                                // source or charge display-only wildcard text.
-                                                budget.remaining = previous_budget;
+                                            changed |= edited;
+                                            if removed {
+                                                remove = Some(index);
                                             }
-                                            context_menu::show(
-                                                ui,
-                                                &response,
-                                                |ui, keyboard_open| {
-                                                    let mut alias = Cow::Borrowed(
-                                                        column.alias.as_deref().unwrap_or(""),
-                                                    );
-                                                    ui.label(tr(ui, "qbe-alias"));
-                                                    let alias_input = bounded_input(
-                                                        ui,
-                                                        &mut alias,
-                                                        "qbe-alias-input",
-                                                        column
-                                                            .alias
-                                                            .as_ref()
-                                                            .map_or(0, String::len),
-                                                        &mut budget,
-                                                    );
-                                                    if keyboard_open {
-                                                        alias_input.request_focus();
-                                                    }
-                                                    if alias_input.changed() {
-                                                        column.alias = (!alias.is_empty())
-                                                            .then(|| alias.into_owned());
-                                                        changed = true;
-                                                    }
-                                                    if ui
-                                                        .button(tr(ui, "qbe-remove-column"))
-                                                        .clicked()
-                                                    {
-                                                        remove = Some(index);
-                                                        ui.close();
-                                                    }
-                                                },
-                                            );
                                         }
                                         GridRow::Table => {
                                             let table = match &column.expression {
@@ -349,6 +294,7 @@ pub(super) fn design_grid(ui: &mut Ui, session: &mut Session) -> bool {
         });
     });
     if let Some(index) = remove {
+        session.field_inputs.remove_column(index);
         session.draft.columns.remove(index);
         changed = true;
     }
@@ -356,67 +302,6 @@ pub(super) fn design_grid(ui: &mut Ui, session: &mut Session) -> bool {
         session.error = Some(tr(ui, "qbe-limit"));
     }
     changed
-}
-
-fn field_text(expression: &DesignExpression) -> &str {
-    match expression {
-        DesignExpression::Field(field) => &field.column,
-        DesignExpression::AllFields(_) => "*",
-        DesignExpression::Expression(text) => text,
-    }
-}
-
-fn edited_field(
-    sources: &[DesignSource],
-    metadata: &[DesignTableMetadata],
-    original: &DesignExpression,
-    text: String,
-) -> DesignExpression {
-    let source_id = match original {
-        DesignExpression::Field(field) => Some(field.source_id),
-        DesignExpression::AllFields(source) => *source,
-        DesignExpression::Expression(_) => None,
-    };
-    if let Some(source_id) = source_id {
-        if text == "*" {
-            return DesignExpression::AllFields(Some(source_id));
-        }
-        let source = sources.iter().find(|source| source.id == source_id);
-        let table =
-            source.and_then(|source| metadata.iter().find(|table| table.table == source.table));
-        if let Some(field) = table.and_then(|table| {
-            table
-                .fields
-                .iter()
-                .find(|field| field.name.eq_ignore_ascii_case(&text))
-        }) {
-            return DesignExpression::Field(DesignField {
-                source_id,
-                // NO_CLONE: QBE expression/anchor identity and context-menu join reference are
-                // independent owners; metadata remains available and geometry anchors
-                // outlive this local row rendering.
-                column: field.name.clone(),
-            });
-        }
-        if table.is_some_and(|table| {
-            table.fields.iter().any(|field| {
-                field
-                    .name
-                    .get(..text.len())
-                    .is_some_and(|prefix| prefix.eq_ignore_ascii_case(&text))
-            })
-        }) {
-            // Keep the Table row's source while a known local name is typed
-            // one character at a time. Build still rejects incomplete names.
-            return DesignExpression::Field(DesignField {
-                source_id,
-                column: text,
-            });
-        }
-    }
-    // Other text becomes an ordinary checked expression. The Table row clears;
-    // ambiguous unqualified names must pass the builder's normal resolution.
-    DesignExpression::Expression(text)
 }
 
 struct InputBudget {

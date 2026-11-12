@@ -9,6 +9,7 @@ impl QueryDesign {
         };
         let mut count = Counter::new(size_of_val(session.as_ref()));
         count_draft(&mut count, &session.draft);
+        session.field_inputs.count(&mut count);
         count.finish()
     }
 }

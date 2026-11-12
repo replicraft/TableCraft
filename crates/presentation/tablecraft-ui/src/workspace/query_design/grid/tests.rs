@@ -4,7 +4,9 @@ use egui_kittest::{
     Harness,
     kittest::{NodeT, Queryable},
 };
-use tablecraft_builders::query::{DesignFieldMetadata, DesignSource, build};
+use tablecraft_builders::query::{
+    DesignField, DesignFieldMetadata, DesignSource, DesignTableMetadata, build,
+};
 
 fn session() -> Session {
     let mut session = Session::default();
@@ -181,7 +183,7 @@ fn local_field_text_keeps_the_owning_source_across_focus_alias_and_noop_replacem
             .accesskit_node()
             .value()
             .as_deref(),
-        Some("ID")
+        Some("[Selected contact]: ID")
     );
 }
 
@@ -195,13 +197,8 @@ fn incremental_local_name_editing_keeps_source_without_transient_widget_state() 
     harness.key_press_modifiers(Modifiers::COMMAND, Key::A);
     harness.key_press(Key::Backspace);
     harness.run_steps(1);
-    assert_eq!(
-        harness.state().0.draft.columns[0].expression,
-        DesignExpression::Field(DesignField {
-            source_id: 20,
-            column: String::new(),
-        })
-    );
+    assert_eq!(harness.state().0.field_inputs.text(0), Some(""));
+    assert!(harness.state().0.field_inputs.unresolved());
 
     for character in "display name".chars() {
         harness.event(Event::Text(character.to_string()));
@@ -232,7 +229,7 @@ fn incremental_local_name_editing_keeps_source_without_transient_widget_state() 
             .accesskit_node()
             .value()
             .as_deref(),
-        Some("Display Name")
+        Some("display name")
     );
     let sql = build(&harness.state().0.draft, &harness.state().0.metadata)
         .unwrap()
@@ -257,6 +254,33 @@ fn incremental_local_name_editing_keeps_source_without_transient_widget_state() 
     assert!(
         build(&harness.state().0.draft, &harness.state().0.metadata).is_err(),
         "after entering arbitrary-expression mode a correction must not guess either source"
+    );
+}
+
+#[test]
+fn a_completed_field_keeps_its_logical_self_join_source_after_blur() {
+    let mut harness = harness(session());
+    replace_field(&mut harness, "Selected: ID");
+    harness.key_press(Key::Tab);
+    harness.run_steps(2);
+    assert_eq!(harness.state().0.field_inputs.source_hint(0), None);
+    replace_field(&mut harness, "Selected: display name");
+    assert_eq!(
+        harness.state().0.draft.columns[0].expression,
+        DesignExpression::Field(DesignField {
+            source_id: 20,
+            column: "Display Name".into()
+        })
+    );
+    assert_eq!(
+        harness.state().0.draft.columns[0].alias.as_deref(),
+        Some("Selected")
+    );
+    assert!(
+        build(&harness.state().0.draft, &harness.state().0.metadata)
+            .unwrap()
+            .sql
+            .starts_with("SELECT [Child].[Display Name] AS [Selected]")
     );
 }
 

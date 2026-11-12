@@ -15,6 +15,7 @@ impl QueryDesign {
         if let Some(session) = &self.session {
             count.add(size_of_val(session.as_ref()));
             count_draft(&mut count, &session.draft);
+            session.field_inputs.count(&mut count);
             count.vector(&session.metadata);
             for table in &session.metadata {
                 count.string(&table.table);

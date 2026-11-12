@@ -105,6 +105,11 @@ impl State {
                                         tab(ui, id, &title, icon, selected, true, can_close)
                                     })
                                     .inner;
+                                let response = if self.unresolved_query_design_edits_for(&object) {
+                                    response.on_hover_text(tr(ui, "qbe-finish-field-edit"))
+                                } else {
+                                    response
+                                };
                                 if matches!(object.target.kind, ObjectKind::DraftTable { .. }) {
                                     response.context_menu(|ui| {
                                         if ui

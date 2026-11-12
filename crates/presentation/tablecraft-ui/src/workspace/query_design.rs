@@ -1,6 +1,7 @@
 //! Local QBE drafts require explicit source-bound canonicalization before execution.
 mod context_menu;
 mod dialog;
+mod field_inputs;
 mod grid;
 mod parameters;
 mod preferences;
@@ -49,6 +50,7 @@ struct Session {
     mode: Mode,
     draft: QueryDesignDraft,
     revision: u64,
+    field_inputs: field_inputs::FieldInputs,
     result_revision: Option<u64>,
     totals_off_qualification: Option<(u64, bool)>,
     metadata: Vec<DesignTableMetadata>,
@@ -166,7 +168,8 @@ impl State {
     }
 
     pub fn can_describe_query_design(&self, request: &QueryDesignRequest, table: &str) -> bool {
-        self.query_design_ready()
+        !self.query_design.has_unresolved_field_inputs()
+            && self.query_design_ready()
             && self.query_design_request().as_ref() == Some(request)
             && self.database.as_ref().is_some_and(|database| {
                 database
@@ -259,7 +262,7 @@ impl State {
             .collect();
         descriptors.push(metadata);
         if candidate.sources.len() > MAX_DESIGN_SOURCES
-            || tablecraft_builders::query::draft_text_bytes(&candidate).is_err()
+            || session.field_inputs.editable_bytes(&candidate).is_err()
             || tablecraft_builders::query::validate_metadata(&descriptors).is_err()
         {
             session.pending = None;
@@ -269,6 +272,7 @@ impl State {
         session.pending = None;
         session.error = None;
         session.draft = candidate;
+        session.field_inputs.clear_hints();
         session.metadata = descriptors;
         if added {
             session.revision = session.revision.wrapping_add(1);
@@ -282,7 +286,8 @@ impl State {
         draft: &QueryDesignDraft,
         _completion: QueryDesignCompletion,
     ) -> bool {
-        self.query_design_ready()
+        !self.query_design.has_unresolved_field_inputs()
+            && self.query_design_ready()
             && self.query_design_request().as_ref() == Some(request)
             && self.query_design.session.as_ref().is_some_and(|session| {
                 session.mode != Mode::Sql && !session.add_tables && &session.draft == draft
@@ -308,7 +313,8 @@ impl State {
     }
 
     pub fn can_import_query_design(&self, request: &QueryDesignRequest, sql: &str) -> bool {
-        self.query_design_ready()
+        !self.query_design.has_unresolved_field_inputs()
+            && self.query_design_ready()
             && self.query_design_request().as_ref() == Some(request)
             && self.sql == sql
             && sql.len() <= MAX_DESIGN_TEXT_BYTES
@@ -339,7 +345,8 @@ impl State {
                     .iter()
                     .any(|table| table.table.eq_ignore_ascii_case(&source.table))
             });
-        if !self.design_reply_current(request_id)
+        if self.query_design.has_unresolved_field_inputs()
+            || !self.design_reply_current(request_id)
             || !valid_metadata
             || built.sql.len() > MAX_DESIGN_TEXT_BYTES
             || tablecraft_builders::query::draft_text_bytes(&built.draft).is_err()
@@ -360,6 +367,7 @@ impl State {
         let session = self.query_design.session.as_mut()?;
         session.pending = None;
         session.error = None;
+        session.field_inputs.clear_committed();
         session.draft = built.draft;
         session.metadata = metadata;
         session.revision = session.revision.wrapping_add(1);
@@ -425,7 +433,11 @@ impl State {
     }
 
     pub fn begin_query_design_run(&mut self, request_id: u64) -> bool {
-        if request_id == 0 || !self.query_design_results_visible() || !self.query_design_ready() {
+        if request_id == 0
+            || self.query_design.has_unresolved_field_inputs()
+            || !self.query_design_results_visible()
+            || !self.query_design_ready()
+        {
             return false;
         }
         let Some(request) = self.query_design_request() else {
@@ -553,7 +565,7 @@ impl State {
     }
 
     pub(super) fn show_query_design_sql(&mut self) -> Option<Action> {
-        if !self.query_design_ready() {
+        if self.query_design.has_unresolved_field_inputs() || !self.query_design_ready() {
             return None;
         }
         if self.query_design_results_visible() {

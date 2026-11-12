@@ -80,6 +80,9 @@ impl Session {
     }
 
     pub(super) fn take(state: &mut State, kind: &ObjectKind) -> Self {
+        if *kind == ObjectKind::Sql {
+            state.query_design.clear_field_input_hints();
+        }
         match kind {
             ObjectKind::DraftTable { .. } => Self::DraftTable {
                 editor: state.table_draft.take(),

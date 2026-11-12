@@ -6,6 +6,7 @@ pub(in crate::workspace) struct Preferences {
     draft: QueryDesignDraft,
     mode: Mode,
     revision: u64,
+    field_inputs: super::field_inputs::FieldInputs,
 }
 
 impl QueryDesign {
@@ -18,6 +19,7 @@ impl QueryDesign {
             draft: session.draft.clone(),
             mode: session.mode,
             revision: session.revision,
+            field_inputs: session.field_inputs.snapshot(),
         })
     }
 
@@ -32,6 +34,7 @@ impl QueryDesign {
                 draft: preferences.draft,
                 mode,
                 revision: preferences.revision,
+                field_inputs: preferences.field_inputs,
                 ..Session::default()
             })),
         }

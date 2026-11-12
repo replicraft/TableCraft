@@ -79,7 +79,8 @@ impl State {
             return;
         }
         if pending.close {
-            if self.can_close_object(&pending.target)
+            if self.unresolved_query_design_edits_for(&pending.target)
+                || self.can_close_object(&pending.target)
                 || (self.can_request_field_addition_transition(&pending.target)
                     || self.can_request_field_rename_transition(&pending.target))
             {

@@ -4,7 +4,10 @@ use crate::workspace::State;
 
 impl State {
     pub(in crate::workspace) fn query_design_parameter_origin(&self) -> Option<QueryDesignRequest> {
-        if !self.query_design_results_visible() || !self.query_design_ready() {
+        if self.query_design.has_unresolved_field_inputs()
+            || !self.query_design_results_visible()
+            || !self.query_design_ready()
+        {
             return None;
         }
         self.query_design_request()
@@ -14,7 +17,9 @@ impl State {
         &self,
         origin: &QueryDesignRequest,
     ) -> bool {
-        self.query_design_results_visible() && self.query_design_request().as_ref() == Some(origin)
+        !self.query_design.has_unresolved_field_inputs()
+            && self.query_design_results_visible()
+            && self.query_design_request().as_ref() == Some(origin)
     }
 
     pub(in crate::workspace) fn begin_query_design_parameter_run(

@@ -20,7 +20,8 @@ impl State {
             return false;
         }
 
-        let unsaved_draft = self.has_unsaved_table_drafts()
+        let unsaved_draft = self.has_unresolved_query_design_edits()
+            || self.has_unsaved_table_drafts()
             || self.table_draft.is_some()
             || self.has_modified_saved_query_sql()
             || !self.sql.is_empty()

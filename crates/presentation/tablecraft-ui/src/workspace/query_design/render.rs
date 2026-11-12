@@ -23,10 +23,18 @@ impl State {
         ui.add_enabled_ui(ready, |ui| {
             let source_height = source_height(ui);
             let mut changed = source_area(ui, &mut session, source_height);
+            if changed {
+                session.field_inputs.clear_hints();
+            }
             source_splitter(ui, source_height);
             changed |= design_grid(ui, &mut session);
             if changed {
                 session.revision = session.revision.wrapping_add(1);
+                if !session.field_inputs.unresolved()
+                    && session.error.as_deref() == Some(tr(ui, "qbe-finish-field-edit").as_str())
+                {
+                    session.error = None;
+                }
             }
         });
         self.query_design.session = Some(session);
@@ -43,6 +51,12 @@ impl State {
             .and_then(|session| session.error.as_ref())
         {
             diagnostics::show(ui, ui.make_persistent_id("query_design_error"), error);
+        } else if self.query_design.has_unresolved_field_inputs() {
+            diagnostics::show(
+                ui,
+                ui.make_persistent_id("query_design_error"),
+                &tr(ui, "qbe-finish-field-edit"),
+            );
         }
     }
 }

@@ -8,7 +8,7 @@ use crate::workspace::click;
 use egui::{Frame, Rect, Response, ScrollArea, Stroke, Ui};
 use tablecraft_builders::query::{
     DesignColumn, DesignExpression, DesignField, DesignJoin, DesignJoinKind, DesignSource,
-    DesignTotal, MAX_DESIGN_COLUMNS, MAX_DESIGN_JOINS, draft_text_bytes,
+    DesignTotal, MAX_DESIGN_COLUMNS, MAX_DESIGN_JOINS,
 };
 
 const SOURCE_WIDTH: f32 = 170.0;
@@ -134,7 +134,7 @@ pub(super) fn source_area(ui: &mut Ui, session: &mut Session, height: f32) -> bo
         candidate.joins.push(join);
         if !duplicate
             && candidate.joins.len() <= MAX_DESIGN_JOINS
-            && draft_text_bytes(&candidate).is_ok()
+            && session.field_inputs.editable_bytes(&candidate).is_ok()
         {
             session.draft = candidate;
             changed = true;
@@ -151,7 +151,9 @@ fn append_column(ui: &Ui, session: &mut Session, column: DesignColumn) -> bool {
     // in-flight request.
     let mut candidate = session.draft.clone();
     candidate.columns.push(column);
-    if candidate.columns.len() <= MAX_DESIGN_COLUMNS && draft_text_bytes(&candidate).is_ok() {
+    if candidate.columns.len() <= MAX_DESIGN_COLUMNS
+        && session.field_inputs.editable_bytes(&candidate).is_ok()
+    {
         session.draft = candidate;
         true
     } else {

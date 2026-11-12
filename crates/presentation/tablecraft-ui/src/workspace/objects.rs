@@ -4,6 +4,7 @@ mod layout;
 pub(super) mod memory;
 mod names;
 mod ownership;
+mod query_design_inputs;
 mod saved_sql;
 mod saved_sql_close;
 mod saved_sql_lifecycle;
@@ -371,6 +372,9 @@ impl State {
     }
 
     pub fn can_close_object(&self, tab: &ObjectTab) -> bool {
+        if self.unresolved_query_design_edits_for(tab) {
+            return false;
+        }
         if self.can_request_field_addition_close(tab) {
             return true;
         }
@@ -380,6 +384,10 @@ impl State {
     }
 
     pub fn close_object(&mut self, tab: &ObjectTab) -> bool {
+        if self.unresolved_query_design_edits_for(tab) {
+            self.reveal_unresolved_query_design_edits_for(tab);
+            return false;
+        }
         if !self.can_close_object(tab) {
             return false;
         }
@@ -415,6 +423,10 @@ impl State {
     }
 
     pub(super) fn close_object_confirmed(&mut self, tab: &ObjectTab) -> bool {
+        if self.unresolved_query_design_edits_for(tab) {
+            self.reveal_unresolved_query_design_edits_for(tab);
+            return false;
+        }
         if self
             .field_addition_name()
             .is_some_and(|(owner, _, _)| owner == tab)
