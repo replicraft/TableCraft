@@ -37,7 +37,15 @@ enum Language {
     Numeric,
 }
 
-pub(super) struct Original {
+#[derive(Clone, Copy)]
+pub(super) enum Mode {
+    OriginalLong,
+    FreshLong,
+    Numeric,
+}
+
+pub(super) struct Original<'image> {
+    pub inventory: Inventory<'image>,
     language: Language,
     pub kind: NumericKey,
     pub scalar: ScalarType,
@@ -54,69 +62,49 @@ pub(super) struct Original {
     pub index_start: u32,
 }
 
-pub(super) fn capture(
-    image: &NativeImage,
+pub(super) fn capture<'image>(
+    image: &'image NativeImage,
     table: &str,
     request: &SecondaryIndexCreate<'_>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<Original, EditError> {
-    capture_with(
-        image,
-        table,
-        request,
-        Construction::OriginalCount,
-        Language::Long,
-        budget,
-        cancelled,
-    )
+) -> Result<Original<'image>, EditError> {
+    capture_mode(image, table, request, Mode::OriginalLong, budget, cancelled)
 }
 
-pub(super) fn capture_fresh(
-    image: &NativeImage,
+pub(super) fn capture_fresh<'image>(
+    image: &'image NativeImage,
     table: &str,
     request: &SecondaryIndexCreate<'_>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<Original, EditError> {
-    capture_with(
-        image,
-        table,
-        request,
-        Construction::Fresh,
-        Language::Long,
-        budget,
-        cancelled,
-    )
+) -> Result<Original<'image>, EditError> {
+    capture_mode(image, table, request, Mode::FreshLong, budget, cancelled)
 }
 
-pub(super) fn capture_numeric(
-    image: &NativeImage,
+pub(super) fn capture_numeric<'image>(
+    image: &'image NativeImage,
     table: &str,
     request: &SecondaryIndexCreate<'_>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<Original, EditError> {
-    capture_with(
-        image,
-        table,
-        request,
-        Construction::Fresh,
-        Language::Numeric,
-        budget,
-        cancelled,
-    )
+) -> Result<Original<'image>, EditError> {
+    capture_mode(image, table, request, Mode::Numeric, budget, cancelled)
 }
 
-fn capture_with(
-    image: &NativeImage,
+pub(super) fn capture_mode<'image>(
+    image: &'image NativeImage,
     table: &str,
     request: &SecondaryIndexCreate<'_>,
-    construction: Construction,
-    language: Language,
+    mode: Mode,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<Original, EditError> {
+) -> Result<Original<'image>, EditError> {
+    let (construction, language) = match mode {
+        Mode::OriginalLong => (Construction::OriginalCount, Language::Long),
+        Mode::FreshLong => (Construction::Fresh, Language::Long),
+        Mode::Numeric => (Construction::Fresh, Language::Numeric),
+    };
     check(budget, cancelled)?;
     image.require_retained_capture()?;
     if !image.has_retained_table_source(table, budget, cancelled)? {
@@ -138,9 +126,9 @@ fn capture_with(
         Language::Long => {
             normal_ordinary::capture_retained_schema(image, table, budget, cancelled)?
         }
-        Language::Numeric => {
-            normal_ordinary::capture_retained_numeric_index_schema(image, table, budget, cancelled)?
-        }
+        Language::Numeric => normal_ordinary::capture_retained_numeric_index_schema(
+            image, table, &inventory, budget, cancelled,
+        )?,
     };
     if !content.dependencies.is_empty() {
         return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
@@ -279,6 +267,7 @@ fn capture_with(
     let index_start = u32::try_from(image.as_bytes().len() / PAGE_BYTES)
         .map_err(|_| crate::InspectError::StructureLimit)?;
     Ok(Original {
+        inventory,
         language,
         scalar,
         kind,
@@ -296,7 +285,7 @@ fn capture_with(
     })
 }
 
-impl Original {
+impl Original<'_> {
     pub(super) fn is_numeric(&self) -> bool {
         self.language == Language::Numeric
     }

@@ -257,14 +257,17 @@ pub(in crate::table::mutation) fn capture_retained_schema(
     preserved_source::capture_retained_schema(image, table, &certificate, budget, cancelled)
 }
 
-/// Readonly numeric-index AFTER source; never a row/action writer source.
+/// Readonly numeric-index source observation; never a row/action writer source.
 #[cfg(feature = "ace16-create")]
 pub(in crate::table::mutation) fn capture_retained_numeric_index_schema(
     image: &NativeImage,
     table: &str,
+    inventory: &crate::table::table_append::Inventory<'_>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Source, EditError> {
+    check(budget, cancelled)?;
+    inventory.require_source(image)?;
     let target = crate::inspect_table_schema(
         &mut image.reader(),
         image.catalog().catalog().scope(),
@@ -273,7 +276,7 @@ pub(in crate::table::mutation) fn capture_retained_numeric_index_schema(
         cancelled,
     )?;
     let certificate = NoRequiredTablePrograms::capture_retained_numeric_index_schema(
-        image, &target, budget, cancelled,
+        image, &target, inventory, budget, cancelled,
     )?;
     preserved_source::capture_retained_numeric_index_schema(
         image,

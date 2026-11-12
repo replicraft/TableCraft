@@ -62,23 +62,31 @@ fn prove_original(
     after: &NativeImage,
     table: &str,
     request: &SecondaryIndexCreate<'_>,
-    original: source::Original,
+    original: source::Original<'_>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
     let keys = original.keys(budget, cancelled)?;
-    let inventory = Inventory::capture(before, budget, cancelled)?;
+    original.inventory.require_source(before)?;
     let after_pages =
         u32::try_from(after.as_bytes().len() / PAGE).map_err(|_| InspectError::StructureLimit)?;
-    let allocation = inventory
+    let allocation = original
+        .inventory
         .plan_allocation(after_pages, budget, cancelled)
         .map_err(allocation_error)?;
     allocation
         .verify_after(after.as_bytes(), budget, cancelled)
         .map_err(allocation_error)?;
-    Inventory::capture(after, budget, cancelled)?.require_source(after)?;
+    let after_inventory = Inventory::capture(after, budget, cancelled)?;
+    after_inventory.require_source(after)?;
     let observed = if original.is_numeric() {
-        normal_ordinary::capture_retained_numeric_index_schema(after, table, budget, cancelled)?
+        normal_ordinary::capture_retained_numeric_index_schema(
+            after,
+            table,
+            &after_inventory,
+            budget,
+            cancelled,
+        )?
     } else {
         normal_ordinary::capture_retained_schema(after, table, budget, cancelled)?
     };

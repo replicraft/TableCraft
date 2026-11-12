@@ -1,6 +1,7 @@
 //! A numeric schema certificate is readonly and cannot widen old action sources.
 use super::{SCOPE, allowance, image, same_bytes};
 use crate::table::mutation::{no_required_programs::NoRequiredTablePrograms, normal_ordinary};
+use crate::table::table_append::Inventory;
 use crate::{EditError, SecondaryIndexCreate, WriteBlocker};
 use tablecraft_testkit::fixtures::access::secondary_index::numeric::{
     self as raw, Kind, Population,
@@ -21,9 +22,11 @@ fn numeric_schema_capture_keeps_old_schema_and_action_factories_closed() {
                 false
             })
             .unwrap();
+        let inventory = Inventory::capture(&after, &mut work, &|| false).unwrap();
         let certificate = NoRequiredTablePrograms::capture_retained_numeric_index_schema(
             &after,
             &schema,
+            &inventory,
             &mut work,
             &|| false,
         )
@@ -35,6 +38,7 @@ fn numeric_schema_capture_keeps_old_schema_and_action_factories_closed() {
         let readonly = normal_ordinary::capture_retained_numeric_index_schema(
             &after,
             case.table,
+            &inventory,
             &mut work,
             &|| false,
         )
@@ -71,4 +75,35 @@ fn subsequent_numeric_creation_requalifies_existing_numeric_indexes_without_retr
             );
         }
     }
+}
+
+#[test]
+fn numeric_content_cannot_reuse_a_certificate_from_an_equal_but_distinct_image() {
+    let case = raw::source(Kind::Double, Population::NullableDuplicate, false);
+    let mut work = allowance(case.rows.len());
+    let first = image(&case.expected, &mut work);
+    let second = image(&case.expected, &mut work);
+    let inventory = Inventory::capture(&first, &mut work, &|| false).unwrap();
+    assert!(matches!(
+        normal_ordinary::capture_retained_numeric_index_schema(
+            &second,
+            case.table,
+            &inventory,
+            &mut work,
+            &|| false,
+        ),
+        Err(EditError::Preservation)
+    ));
+    assert!(matches!(
+        normal_ordinary::capture_retained_numeric_index_schema(
+            &first,
+            case.table,
+            &inventory,
+            &mut work,
+            &|| true,
+        ),
+        Err(EditError::Inspect(crate::InspectError::Cancelled))
+    ));
+    same_bytes(first.as_bytes(), &case.expected);
+    same_bytes(second.as_bytes(), &case.expected);
 }

@@ -12,8 +12,7 @@ use crate::{
     format::page::PAGE_BYTES,
     header::check,
     table::{
-        indexes::mutation::bulk_numeric::Population,
-        table_append::{Inventory, allocation::AllocationError},
+        indexes::mutation::bulk_numeric::Population, table_append::allocation::AllocationError,
     },
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -43,10 +42,11 @@ pub(super) fn build<const WIRE_BYTES: usize>(
     image: NativeImage,
     table: &str,
     request: &super::index_creation::SecondaryIndexCreate<'_>,
-    original: source::Original,
+    mode: source::Mode,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Built, EditError> {
+    let original = source::capture_mode(&image, table, request, mode, budget, cancelled)?;
     let population = Population::<WIRE_BYTES>::capture(
         original.keys(budget, cancelled)?,
         original.native,
@@ -62,8 +62,9 @@ pub(super) fn build<const WIRE_BYTES: usize>(
         budget,
         cancelled,
     )?;
-    let inventory = Inventory::capture(&image, budget, cancelled)?;
-    let allocation = inventory
+    original.inventory.require_source(&image)?;
+    let allocation = original
+        .inventory
         .plan_allocation(maps.after_pages, budget, cancelled)
         .map_err(allocation_error)?;
     let descriptor = CreatedDescriptor {
@@ -150,22 +151,38 @@ pub(super) fn build<const WIRE_BYTES: usize>(
         .map_err(|_| InspectError::Malformed)?;
     let column = String::from_utf8(buffer::copy(request.column.as_bytes(), budget, cancelled)?)
         .map_err(|_| InspectError::Malformed)?;
+    let rows = original.content.records.len();
+    let source::Original {
+        inventory,
+        scalar,
+        construction,
+        name: index,
+        native_table,
+        layout,
+        native,
+        column_id,
+        descending,
+        logical,
+        ..
+    } = original;
+    // End the certificate's borrow before moving the caller-owned BEFORE image.
+    drop(inventory);
     Ok(Built {
         before: image,
         after,
-        construction: original.construction,
-        scalar: original.scalar,
+        construction,
+        scalar,
         table,
         column,
-        index: original.name,
-        native_table: original.native_table,
-        definition: original.layout.definition,
-        native: original.native,
-        column_id: original.column_id,
-        descending: original.descending,
-        logical: original.logical,
-        physical: original.layout.physical_count,
-        rows: original.content.records.len(),
+        index,
+        native_table,
+        definition: layout.definition,
+        native,
+        column_id,
+        descending,
+        logical,
+        physical: layout.physical_count,
+        rows,
         root: population.root(),
         pages: population.page_count(),
         height: population.height(),

@@ -29,7 +29,7 @@ const DEFINITION_RESERVED_BYTES: usize = 8;
 
 pub(super) fn definition(
     image: &NativeImage,
-    original: &crate::table::mutation::index_population_source::Original,
+    original: &crate::table::mutation::index_population_source::Original<'_>,
     root: u32,
     container: u32,
     counter: u32,

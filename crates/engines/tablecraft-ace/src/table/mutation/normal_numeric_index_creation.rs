@@ -124,10 +124,13 @@ impl NativeImage {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeNumericIndexCandidate, EditError> {
         let _span = tracing::debug_span!("native.index.create_numeric").entered();
-        let original =
-            index_population_source::capture_numeric(&self, table, request, budget, cancelled)?;
         let built = index_population::build::<NUMERIC_ENTRY_BYTES>(
-            self, table, request, original, budget, cancelled,
+            self,
+            table,
+            request,
+            index_population_source::Mode::Numeric,
+            budget,
+            cancelled,
         )?;
         Ok(NativeNumericIndexCandidate { built })
     }

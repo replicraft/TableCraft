@@ -152,8 +152,13 @@ impl NativeImage {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeLongIndexCandidate, EditError> {
         let _span = tracing::debug_span!("native.index.create_long").entered();
-        let original = source::capture(&self, table, request, budget, cancelled)?;
-        self.build_retained_long_index(table, request, original, budget, cancelled)
+        self.build_retained_long_index(
+            table,
+            request,
+            source::Mode::OriginalLong,
+            budget,
+            cancelled,
+        )
     }
 
     /// Build the normal LONG tree with a fresh nonconflicting logical identity.
@@ -172,23 +177,22 @@ impl NativeImage {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeLongIndexCandidate, EditError> {
         let _span = tracing::debug_span!("native.index.create_fresh_long").entered();
-        let original = source::capture_fresh(&self, table, request, budget, cancelled)?;
-        self.build_retained_long_index(table, request, original, budget, cancelled)
+        self.build_retained_long_index(table, request, source::Mode::FreshLong, budget, cancelled)
     }
 
     fn build_retained_long_index(
         self,
         table: &str,
         request: &SecondaryIndexCreate<'_>,
-        original: source::Original,
+        mode: source::Mode,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeLongIndexCandidate, EditError> {
-        if original.is_numeric() {
+        if matches!(mode, source::Mode::Numeric) {
             return Err(EditError::Preservation);
         }
         let built = super::index_population::build::<LONG_ENTRY_BYTES>(
-            self, table, request, original, budget, cancelled,
+            self, table, request, mode, budget, cancelled,
         )?;
         let super::index_population::Built {
             before,

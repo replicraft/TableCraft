@@ -239,14 +239,21 @@ impl<'image> NoRequiredTablePrograms<'image> {
     pub(in crate::table::mutation) fn capture_retained_numeric_index_schema(
         image: &'image NativeImage,
         schema: &TableSchema,
+        inventory: &crate::table::table_append::Inventory<'image>,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
-        Self::capture_with_purpose(
+        let _span = tracing::debug_span!("native.table.no_required_programs.capture").entered();
+        let purpose = Purpose::RetainedNumericIndexSchema;
+        Self::require_capture_source(image, purpose, budget, cancelled)?;
+        inventory.require_source(image)?;
+        let selected = catalog::validate_retained(image, schema, inventory, budget, cancelled)?;
+        Self::finish_capture(
             image,
             schema,
             Declaration::NumericIndexSchema,
-            Purpose::RetainedNumericIndexSchema,
+            purpose,
+            selected,
             budget,
             cancelled,
         )
@@ -443,25 +450,7 @@ impl<'image> NoRequiredTablePrograms<'image> {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
         let _span = tracing::debug_span!("native.table.no_required_programs.capture").entered();
-        check(budget, cancelled)?;
-        match purpose {
-            #[cfg(feature = "ace16-create")]
-            Purpose::RetainedInsert
-            | Purpose::RetainedRows
-            | Purpose::RetainedOpaqueRows
-            | Purpose::RetainedOpaqueInsert
-            | Purpose::RetainedDelete
-            | Purpose::RetainedSchema
-            | Purpose::RetainedNumericIndexSchema => image.require_retained_capture()?,
-            _ => image.require_standard_capture()?,
-        }
-        let header = image.catalog().header();
-        if !matches!(header.format(), FileFormat::Ace2016 | FileFormat::Ace2019)
-            || header.subversion() != 0
-            || header.encoded_pages()
-        {
-            return Err(refused());
-        }
+        Self::require_capture_source(image, purpose, budget, cancelled)?;
         let selected = match purpose {
             #[cfg(feature = "ace16-create")]
             Purpose::RetainedRows
@@ -488,6 +477,54 @@ impl<'image> NoRequiredTablePrograms<'image> {
             | Purpose::CurrentInsert
             | Purpose::CurrentDelete => catalog::validate_schema(image, schema, budget, cancelled)?,
         };
+        Self::finish_capture(
+            image,
+            schema,
+            declaration,
+            purpose,
+            selected,
+            budget,
+            cancelled,
+        )
+    }
+
+    fn require_capture_source(
+        image: &NativeImage,
+        purpose: Purpose,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        check(budget, cancelled)?;
+        match purpose {
+            #[cfg(feature = "ace16-create")]
+            Purpose::RetainedInsert
+            | Purpose::RetainedRows
+            | Purpose::RetainedOpaqueRows
+            | Purpose::RetainedOpaqueInsert
+            | Purpose::RetainedDelete
+            | Purpose::RetainedSchema
+            | Purpose::RetainedNumericIndexSchema => image.require_retained_capture()?,
+            _ => image.require_standard_capture()?,
+        }
+        let header = image.catalog().header();
+        if !matches!(header.format(), FileFormat::Ace2016 | FileFormat::Ace2019)
+            || header.subversion() != 0
+            || header.encoded_pages()
+        {
+            return Err(refused());
+        }
+        Ok(())
+    }
+
+    fn finish_capture(
+        image: &'image NativeImage,
+        schema: &TableSchema,
+        declaration: Declaration,
+        purpose: Purpose,
+        selected: catalog::Selected,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
         if selected.properties_present {
             #[cfg(feature = "ace16-create")]
             if matches!(
