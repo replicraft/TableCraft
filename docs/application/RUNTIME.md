@@ -906,6 +906,25 @@ preservation. This extension does not admit
 other carriers, multiple columns or indexed targets, bypass required programs,
 expand source profiles or establish native Windows parity.
 
+The indexed LONG route (TCNI26) selects
+one actual ordinary indexed Int32 target for zero, singleton or multiple original
+requests before the unindexed TCNI24 empty path. Full stored records, known local
+single-LONG indexes and existing-page index fit remain mandatory; metadata alone
+does not authorize effects. Coarse capability rescue applies only to all-indexed
+tables with an ordinary indexed LONG target. Mixed tables retain their existing
+coarse capability checks so sparse/unindexed TCNI24/17/25 eligibility is preserved;
+selecting an indexed column still requires full TCNI26 admission.
+
+Its Runtime/Desktop checks use actual CREATE INDEX save/guarded-reopen,
+then the existing issued UPDATE review, No/Yes, consuming SaveWorker and complete
+AFTER witness. The UPDATE receipt remains data-only: matched original rows and
+effective changes are distinct, with no schema change. Empty/no-op outcomes still
+retain checked journal state rather than inferring commitment from equal bytes.
+Fresh retained capture and exact V3 reconstruction must preserve source identity,
+all final keys, protected companions and prior results on refusal. The
+[connected checkpoint](../../tests/results/queries/retained-indexed-long-workflows-2026-11-12.json)
+records local acceptance, separately from native Windows parity.
+
 Review returns `QueryUpdateReview` display facts (table, document revision,
 matched and effectively changed rows, review identifier) plus a separate opaque
 `ReviewedQueryUpdate`. No exclusive native lease or journal is retained while a

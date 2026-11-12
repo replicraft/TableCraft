@@ -1,5 +1,22 @@
 # Implementation status
 
+## Indexed retained LONG workflows — 12 November 2026
+
+The [indexed workflow checkpoint](../tests/results/queries/retained-indexed-long-workflows-2026-11-12.json)
+records actual ordinary CREATE INDEX, save/reopen, then indexed LONG UPDATE
+through native TCNI26, the Access adapter, Runtime and normal headless SQL Run.
+Zero, singleton and multiple original requests retain one atomic DATA/INDEX
+plan, independent complete-image proof and checked V3 recovery. Known unique
+and Required constraints are enforced; creating new unique indexes remains
+separate work. Full stored records and existing INDEX page fit remain required.
+
+Native cases cover large sources, 16,385 selected indexed rows, retained trees,
+20-hop forwarding and protected Currency/Unicode companions. A separate
+unindexed batch updates all 16,385 original rows and checks the complete image.
+These are local functional checks, not performance benchmarks or native Access
+comparisons. Broader typed/multiple-column updates, general index growth and
+manual indexed insertion remain unfinished.
+
 ## Atomic retained LONG batches and read workflows — 12 November 2026
 
 The [connected checkpoint](../tests/results/queries/retained-batch-and-read-workflows-2026-11-12.json)

@@ -81,6 +81,46 @@ This profile does not qualify broader multi-column or
 typed batches, indexed-target changes, required programs, other Jet/ACE writers,
 Windows/Access behavior or general concurrent editing.
 
+## Retained indexed LONG updates
+
+The TCNI0026/profile26 route retains one ordinary indexed LONG column
+and zero, one or multiple original Int32/NULL assignments. Actual indexed-target
+metadata selects it before the unindexed empty TCNI24 route. Unindexed targets
+retain their TCNI24/17/25 cardinality selection. A positive metadata selector is
+not write authority: the complete source and requested target are qualified before
+effects, including empty and wholly unchanged requests.
+
+The bounded source requires complete stored records through the retained native
+column high-water mark, known local single-LONG indexes, owned DATA/INDEX roles,
+and the existing required-program and constraint checks. Sparse records needing
+materialization, foreign or IgnoreNull indexes, other key carriers and unsupported
+index layouts refuse. All resulting keys must fit the qualified existing INDEX
+pages; this route does not allocate or retire index pages. Generated target fields
+remain outside this ordinary-field language.
+
+All final DATA and index keys are staged together from the same immutable BEFORE.
+Independent proof reconstructs the original records and complete final index key
+membership, fences and ROW ties, then compares the entire AFTER. Forwarded roots
+retain complete owned-chain traversal, cycle/alias checks and cumulative caller
+budgets; no fixed forwarding-depth quota grants admission. Unrelated records,
+companion fields/indexes, metadata, allocation maps and generation state remain
+protected. Checked V3 recovery reconstructs this exact original without SQL replay;
+other intent languages stay closed.
+
+The connected acceptance contains two Runtime tests and two headless
+Desktop tests. They first execute ordinary CREATE INDEX, save and guarded-reopen
+its independently checked AFTER, then review indexed UPDATE against that actual
+source. They cover both directions, nullable/no-op and empty requests, No/Yes,
+save/acknowledgment/reopen, fresh ordered reads and late assignment-error source
+preservation. The
+[connected checkpoint](../../../tests/results/queries/retained-indexed-long-workflows-2026-11-12.json)
+records execution and feature-boundary checks.
+
+Existing known unique/Required constraints retain their checked enforcement.
+CREATE UNIQUE INDEX remains separately unsupported; this route grants neither
+new constraints nor broader typed/multiple-column writes, older Jet/ACE write
+profiles or Windows/Access parity.
+
 ## Work and failure handling
 
 Fresh image capture has its normal allocation/read budget. Complete comparisons,

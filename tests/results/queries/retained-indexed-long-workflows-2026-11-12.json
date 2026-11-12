@@ -1,0 +1,706 @@
+{
+  "date": "2026-11-12",
+  "platform": "macOS 14.7.2 arm64",
+  "source_commit": "4bfa0097596c3f974b979a7135ad8eaeea23d7d9",
+  "scope": "Retained ordinary single-column indexed LONG UPDATE, TCNI26 original and V3 recovery, actual CREATE/save/reopen/UPDATE workflows; separate 16,385-row unindexed batch scale check.",
+  "qualification": "Independent complete-image, recovery and headless application evidence. No Microsoft Access/Windows comparison or statistical performance benchmark.",
+  "observations": [
+    "Indexed-target metadata selects TCNI26 for zero, one or multiple original assignments; unindexed TCNI24/17/25 routes retain separate selection. Complete source and constraints remain consuming checks.",
+    "Native checks cover actual index creation, nullable and duplicate key ties, multiple levels and directions, a 200,000-row source, all 16,385 selected rows, 20-hop forwarding and Currency/Unicode preservation.",
+    "All original assignments bind before the merged DATA/INDEX candidate. Independent proof reconstructs source records and complete final index membership and compares the entire image. Existing unique/Required constraints accept valid edits and refuse violations.",
+    "The separate original and V3 recovery retain original requests and BEFORE identity; old original families and no-create builds remain closed. Failed decoding is not retried as another action.",
+    "Full adapter/runtime suites and selected normal Desktop SQL Run tests cover CREATE/save/acknowledgment/reopen followed by indexed UPDATE No/Yes/save/acknowledgment/reopen and fresh ordered reads. Late assignment failures preserve source and existing results.",
+    "ROW-key preparation uses a paid sorted borrowed request directory, retaining all matching original updates and their input order. Independent proof builds its own directory; producer patches and membership are not its oracle.",
+    "A separate unindexed operation updates all 16,385 selected original rows and compares the complete independently authored AFTER. Its explicit caller work allowance is not a resident-memory measurement or Access file limit.",
+    "Commands use release mode and workspace-root target/. Test counts overlap and are not a conformance percentage; 117 selected native and one runtime fixture-dependent tests are ignored, not passing evidence."
+  ],
+  "checks": [
+    {
+      "job": "native",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "indexes::mutation",
+        "mutation::fixed",
+        "mutation::normal_ordinary",
+        "mutation::normal_index",
+        "current_row_updates",
+        "transaction::intent::fitted",
+        "transaction::native_recovery",
+        "transaction::retained_update_recovery"
+      ],
+      "returncode": 0,
+      "seconds": 148.21,
+      "log": {
+        "path": ".cache/ace-sql-indexed-long-retained-repaired-native-20261112.log",
+        "sha256": "ae53022a4180d97158814dc50f6252849ced43c8268c7bde133dc49ee1d3091d"
+      },
+      "test_summaries": [
+        {
+          "passed": 338,
+          "failed": 0,
+          "ignored": 117
+        }
+      ]
+    },
+    {
+      "job": "access",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 67.37,
+      "log": {
+        "path": ".cache/ace-sql-indexed-long-retained-repaired-access-20261112.log",
+        "sha256": "818070a2ea413b7b448ee714647e7277d3b30323e090f6114f2eeecb4267d064"
+      },
+      "test_summaries": [
+        {
+          "passed": 320,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "runtime",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-runtime",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 74.74,
+      "log": {
+        "path": ".cache/ace-sql-indexed-long-retained-repaired-runtime-20261112.log",
+        "sha256": "df497a7f3fd727f0fa848105e2cf2a90b40736f98af99b844c64122c64f4a47d"
+      },
+      "test_summaries": [
+        {
+          "passed": 446,
+          "failed": 0,
+          "ignored": 1
+        }
+      ]
+    },
+    {
+      "job": "desktop",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-desktop",
+        "--bin",
+        "tablecraft-desktop",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "query_action::tests",
+        "query_parameters::tests"
+      ],
+      "returncode": 0,
+      "seconds": 48.41,
+      "log": {
+        "path": ".cache/ace-sql-indexed-long-retained-repaired-desktop-20261112.log",
+        "sha256": "a67cf273535e94cc72b788b56601b6642d061e8fe20833a1046b6db1cf6e743d"
+      },
+      "test_summaries": [
+        {
+          "passed": 52,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "strict",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-testkit",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-runtime",
+        "-p",
+        "tablecraft-desktop",
+        "-p",
+        "tablecraft-cli",
+        "-p",
+        "tablecraft-mcp",
+        "--all-targets",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "seconds": 59.54,
+      "log": {
+        "path": ".cache/ace-sql-indexed-long-retained-repaired-strict-20261112.log",
+        "sha256": "e3cb399dfa6681542faf1a638348260a528e96023c47a178b69f7b6772642b2f"
+      }
+    },
+    {
+      "job": "journal-only",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "journal",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "indexed_long_tests",
+        "long_column_batch_tests",
+        "numeric_index_create::tests"
+      ],
+      "returncode": 0,
+      "seconds": 59.07,
+      "log": {
+        "path": ".cache/ace-sql-indexed-long-retained-repaired-journal-only-20261112.log",
+        "sha256": "db6c546c412084856ce46348c1724f6be5108e94ceb8b621882830ac1eaedd4c"
+      },
+      "test_summaries": [
+        {
+          "passed": 9,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "access-minimal",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--lib",
+        "--no-default-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "numeric_index_tests",
+        "fresh_index_tests"
+      ],
+      "returncode": 0,
+      "seconds": 29.85,
+      "log": {
+        "path": ".cache/ace-sql-indexed-long-retained-repaired-access-minimal-20261112.log",
+        "sha256": "fc6bdd2e939fd616425a9785592050909df9cd594bce9c7d5f6e532d75ecd0a2"
+      },
+      "test_summaries": [
+        {
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "runtime-minimal",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-runtime",
+        "--no-default-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 0.44,
+      "log": {
+        "path": ".cache/ace-sql-indexed-long-retained-repaired-runtime-minimal-20261112.log",
+        "sha256": "c2901d717a8126fbe5e38426d66c75fe57c2dffb464c4eb12a025c8c7f4ab824"
+      }
+    },
+    {
+      "job": "creation-only",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "ace16-create",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 0.22,
+      "log": {
+        "path": ".cache/ace-sql-indexed-long-retained-repaired-creation-only-20261112.log",
+        "sha256": "a50f4a953f17e887d3844be51c0df233623b83d4462c96d5392c2671458d7fef"
+      }
+    },
+    {
+      "job": "minimal",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 0.21,
+      "log": {
+        "path": ".cache/ace-sql-indexed-long-retained-repaired-minimal-20261112.log",
+        "sha256": "a70da5408e7a6da7efe97b23011504833b16a7875bda14543f2504b5b8c7d97a"
+      }
+    },
+    {
+      "job": "preview-create-no-journal",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "ace16-create,ace16-write-preview",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "seconds": 0.29,
+      "log": {
+        "path": ".cache/ace-sql-indexed-long-retained-repaired-preview-create-no-journal-20261112.log",
+        "sha256": "6b1c8cbe0bd9cb3b12baa322a9182419af04da4050d3affc7c9798b1b46e30b5"
+      }
+    },
+    {
+      "job": "rustdoc",
+      "command": [
+        "cargo",
+        "doc",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-runtime",
+        "--all-features",
+        "--no-deps",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 17.16,
+      "log": {
+        "path": ".cache/ace-sql-indexed-long-retained-repaired-rustdoc-20261112.log",
+        "sha256": "6a3bb5b598961f6404e322cc19d871ad6c430cd5472bcaf72ab5dbe63be4d460"
+      }
+    }
+  ],
+  "repaired_attempts": [
+    {
+      "results": ".cache/ace-sql-indexed-long-connected-results-20261112.json",
+      "issue": "New proof referenced private DecimalValue through a sibling; repaired through existing owner MutationKey API without widening visibility."
+    },
+    {
+      "results": ".cache/ace-sql-indexed-long-repaired-results-20261112.json",
+      "issue": "Independent compound test used unsupported format marker; large retained producer still used old row/forwarding quotas. Repaired fixture marker and isolated retained producer/ownership/tree readers."
+    },
+    {
+      "checks": [
+        {
+          "job": "native",
+          "command": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--lib",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--release",
+            "--",
+            "indexes::mutation",
+            "mutation::fixed",
+            "mutation::normal_ordinary",
+            "mutation::normal_index",
+            "current_row_updates",
+            "transaction::intent::fitted",
+            "transaction::native_recovery",
+            "transaction::retained_update_recovery"
+          ],
+          "returncode": 0,
+          "seconds": 142.62,
+          "log": {
+            "path": ".cache/ace-sql-indexed-long-retained-final-native-20261112.log",
+            "sha256": "ab13ad6e017d953af27bc237df106b2efa8386d3d6aa59f6ed2c261522491288"
+          },
+          "test_summaries": [
+            {
+              "passed": 338,
+              "failed": 0,
+              "ignored": 117
+            }
+          ]
+        },
+        {
+          "job": "access",
+          "command": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-access",
+            "--lib",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--release"
+          ],
+          "returncode": 0,
+          "seconds": 68.32,
+          "log": {
+            "path": ".cache/ace-sql-indexed-long-retained-final-access-20261112.log",
+            "sha256": "0ce9a129d810bbe8cc886a78e37d886c3340e617cf95e0de5f47745a663595c6"
+          },
+          "test_summaries": [
+            {
+              "passed": 320,
+              "failed": 0,
+              "ignored": 0
+            }
+          ]
+        },
+        {
+          "job": "runtime",
+          "command": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-runtime",
+            "--lib",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--release"
+          ],
+          "returncode": 0,
+          "seconds": 76.44,
+          "log": {
+            "path": ".cache/ace-sql-indexed-long-retained-final-runtime-20261112.log",
+            "sha256": "699336613fb79ced7bca11584ec608e775789b7d441fbdb6a88ff71d20304165"
+          },
+          "test_summaries": [
+            {
+              "passed": 446,
+              "failed": 0,
+              "ignored": 1
+            }
+          ]
+        },
+        {
+          "job": "desktop",
+          "command": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-desktop",
+            "--bin",
+            "tablecraft-desktop",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--release",
+            "--",
+            "query_action::tests",
+            "query_parameters::tests"
+          ],
+          "returncode": 0,
+          "seconds": 48.46,
+          "log": {
+            "path": ".cache/ace-sql-indexed-long-retained-final-desktop-20261112.log",
+            "sha256": "4045acaa2a08b9305d29b146992cc0b3bdb27c05a5fed970eacd9842170593bf"
+          },
+          "test_summaries": [
+            {
+              "passed": 52,
+              "failed": 0,
+              "ignored": 0
+            }
+          ]
+        },
+        {
+          "job": "strict",
+          "command": [
+            "cargo",
+            "clippy",
+            "-p",
+            "tablecraft-ace",
+            "-p",
+            "tablecraft-testkit",
+            "-p",
+            "tablecraft-access",
+            "-p",
+            "tablecraft-runtime",
+            "-p",
+            "tablecraft-desktop",
+            "-p",
+            "tablecraft-cli",
+            "-p",
+            "tablecraft-mcp",
+            "--all-targets",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--release",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "returncode": 101,
+          "seconds": 16.0,
+          "log": {
+            "path": ".cache/ace-sql-indexed-long-retained-final-strict-20261112.log",
+            "sha256": "69dfeaeae045e13bd13ce54a5fa6ec797c2343eb31abf5de166b8173facbff30"
+          }
+        },
+        {
+          "job": "journal-only",
+          "command": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--lib",
+            "--no-default-features",
+            "--features",
+            "journal",
+            "--offline",
+            "--locked",
+            "--release",
+            "--",
+            "indexed_long_tests",
+            "long_column_batch_tests",
+            "numeric_index_create::tests"
+          ],
+          "returncode": 101,
+          "seconds": 7.12,
+          "log": {
+            "path": ".cache/ace-sql-indexed-long-retained-final-journal-only-20261112.log",
+            "sha256": "6dd328bcc2a762156edf98fcb56e9cabb08455751cbe97587f984b19d25029a9"
+          }
+        },
+        {
+          "job": "access-minimal",
+          "command": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-access",
+            "--lib",
+            "--no-default-features",
+            "--offline",
+            "--locked",
+            "--release",
+            "--",
+            "numeric_index_tests",
+            "fresh_index_tests"
+          ],
+          "returncode": 101,
+          "seconds": 6.62,
+          "log": {
+            "path": ".cache/ace-sql-indexed-long-retained-final-access-minimal-20261112.log",
+            "sha256": "6dd328bcc2a762156edf98fcb56e9cabb08455751cbe97587f984b19d25029a9"
+          }
+        },
+        {
+          "job": "runtime-minimal",
+          "command": [
+            "cargo",
+            "check",
+            "-p",
+            "tablecraft-runtime",
+            "--no-default-features",
+            "--offline",
+            "--locked",
+            "--release"
+          ],
+          "returncode": 0,
+          "seconds": 4.12,
+          "log": {
+            "path": ".cache/ace-sql-indexed-long-retained-final-runtime-minimal-20261112.log",
+            "sha256": "028a5af50af05dbcd03b0ffd58a5be7994af00ff55b6387fab0d2a81ea9704b2"
+          }
+        },
+        {
+          "job": "creation-only",
+          "command": [
+            "cargo",
+            "check",
+            "-p",
+            "tablecraft-ace",
+            "--no-default-features",
+            "--features",
+            "ace16-create",
+            "--offline",
+            "--locked",
+            "--release"
+          ],
+          "returncode": 0,
+          "seconds": 2.69,
+          "log": {
+            "path": ".cache/ace-sql-indexed-long-retained-final-creation-only-20261112.log",
+            "sha256": "a5634a39a48b7b78db68352b5a59fe86a625a0278d6590cf2fe82b61d37d9758"
+          }
+        },
+        {
+          "job": "minimal",
+          "command": [
+            "cargo",
+            "check",
+            "-p",
+            "tablecraft-ace",
+            "--no-default-features",
+            "--offline",
+            "--locked",
+            "--release"
+          ],
+          "returncode": 0,
+          "seconds": 2.34,
+          "log": {
+            "path": ".cache/ace-sql-indexed-long-retained-final-minimal-20261112.log",
+            "sha256": "2f3353595a7cfe6888ab43600af873902faa02d4b2f10baa03edfd6f7ecd907e"
+          }
+        },
+        {
+          "job": "preview-create-no-journal",
+          "command": [
+            "cargo",
+            "clippy",
+            "-p",
+            "tablecraft-ace",
+            "--lib",
+            "--no-default-features",
+            "--features",
+            "ace16-create,ace16-write-preview",
+            "--offline",
+            "--locked",
+            "--release",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "returncode": 0,
+          "seconds": 6.64,
+          "log": {
+            "path": ".cache/ace-sql-indexed-long-retained-final-preview-create-no-journal-20261112.log",
+            "sha256": "1ec760aeb469a21ce7254701949ff386148ba1b72995a9912b63e4569f965f54"
+          }
+        },
+        {
+          "job": "rustdoc",
+          "command": [
+            "cargo",
+            "doc",
+            "-p",
+            "tablecraft-ace",
+            "-p",
+            "tablecraft-access",
+            "-p",
+            "tablecraft-runtime",
+            "--all-features",
+            "--no-deps",
+            "--offline",
+            "--locked",
+            "--release"
+          ],
+          "returncode": 0,
+          "seconds": 17.2,
+          "log": {
+            "path": ".cache/ace-sql-indexed-long-retained-final-rustdoc-20261112.log",
+            "sha256": "f344f20c2084f4e821871129d89790a8338222c8de791368c38d88bace90387c"
+          }
+        }
+      ],
+      "issue": "Functional suites passed; strict lint rejected an eight-argument helper and journal-only/minimal builds referenced a gated variant. Grouped private rewrite context and gated selection consistently."
+    }
+  ],
+  "limits": [
+    "One ordinary indexed LONG target; complete stored records, known local single-LONG indexes and existing-page fit. Foreign/IgnoreNull indexes, generated targets, sparse materialization, broader carriers and multiple target columns remain unsupported by this profile.",
+    "No index allocation, retirement or general split authority is added. Existing unique constraints are enforced; CREATE UNIQUE INDEX is not supplied.",
+    "Manual indexed INSERT, wider write/source profiles and native Windows/Access qualification remain separate work.",
+    "Headless tests do not qualify graphical platform appearance or native Microsoft Access behavior."
+  ],
+  "separate_scale_check": {
+    "command": [
+      "cargo",
+      "test",
+      "--offline",
+      "--locked",
+      "--release",
+      "-p",
+      "tablecraft-ace",
+      "--lib",
+      "--all-features",
+      "current_row_updates::batch::tests::scale"
+    ],
+    "returncode": 0,
+    "log": {
+      "path": ".cache/ace-sql-retained-long-batch-scale-20261112.log",
+      "sha256": "2491ed8702e275f53a6ba63c2f04bcf07694554e52d68ef50863ec99fa3fec9c"
+    },
+    "test_summaries": [
+      {
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0
+      }
+    ]
+  }
+}
