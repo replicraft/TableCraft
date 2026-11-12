@@ -68,6 +68,35 @@ pub fn name_auto_correct_values(entries: &[(u8, u8, &[u8])]) -> Vec<u8> {
     )
 }
 
+/// Preserve both explicit Name AutoCorrect OFF prerequisites and add one exact
+/// native LONG/DDL query-mode value. Unknown values remain available to tests.
+pub fn name_auto_correct_disabled_with_query_mode(mode: i32) -> Vec<u8> {
+    name_auto_correct_disabled_with_query_mode_values(&[(1, 4, &mode.to_le_bytes())])
+}
+
+/// Adversarial query-mode entries retain the original two LONG/DDL zero settings.
+/// Wrong flags/types/widths and duplicate mode names are independent fixture data.
+pub fn name_auto_correct_disabled_with_query_mode_values(entries: &[(u8, u8, &[u8])]) -> Vec<u8> {
+    let zero = 0_i32.to_le_bytes();
+    default_map(
+        &[
+            "Track Name AutoCorrect Info",
+            "Perform Name AutoCorrect",
+            "ANSI Query Mode",
+        ],
+        [
+            (0_u16, 1_u8, 4_u8, zero.as_slice()),
+            (1, 1, 4, zero.as_slice()),
+        ]
+        .into_iter()
+        .chain(
+            entries
+                .iter()
+                .map(|&(flags, kind, value)| (2, flags, kind, value)),
+        ),
+    )
+}
+
 fn default_map<'a>(
     names: &[&str],
     entries: impl IntoIterator<Item = (u16, u8, u8, &'a [u8])>,

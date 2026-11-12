@@ -1,8 +1,10 @@
 //! Actual live application ancestry, explicit name tracking and payload ownership.
+#[cfg(test)]
+mod tests;
 use super::refused;
 use crate::{
-    EditError, FileFormat, InspectError, NativeImage, NativeSortOrder, NativeTableStorage,
-    PayloadPresence, PropertyGroupKind, TableSchema,
+    DatabaseQueryMode, EditError, FileFormat, InspectError, NativeImage, NativeSortOrder,
+    NativeTableStorage, PayloadPresence, PropertyGroupKind, TableSchema,
     format::data_type,
     header::check,
     inspect_database_properties, inspect_table_schema,
@@ -175,7 +177,7 @@ fn capture_with(
         let group = &properties.groups()[0];
         if group.kind() != PropertyGroupKind::Table
             || !group.name().is_empty()
-            || group.properties().len() != NAME_OPTIONS.len()
+            || ![NAME_OPTIONS.len(), NAME_OPTIONS.len() + 1].contains(&group.properties().len())
         {
             return Err(refused());
         }
@@ -200,6 +202,17 @@ fn capture_with(
             {
                 return Err(refused());
             }
+        }
+        // With both required names uniquely accounted for, the sole optional
+        // entry must be the existing owner's exact qualified query-mode property.
+        // Unknown settings and other properties grant no inert-source authority.
+        if group.properties().len() > NAME_OPTIONS.len()
+            && !matches!(
+                properties.query_mode(budget, cancelled)?,
+                DatabaseQueryMode::Ansi89 | DatabaseQueryMode::Ansi92
+            )
+        {
+            return Err(refused());
         }
     } else if inspect_database_properties(&mut image.reader(), scope, budget, cancelled)?.is_some()
     {
