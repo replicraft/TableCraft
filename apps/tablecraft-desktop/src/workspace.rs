@@ -275,6 +275,18 @@ enum FileDialogPurpose {
 
 impl Desktop {
     pub(super) fn new(ctx: egui::Context, path: Option<PathBuf>) -> Self {
+        Self::with_query_formats(
+            ctx,
+            path,
+            tablecraft_runtime::QueryExpressionFormats::default(),
+        )
+    }
+
+    pub(super) fn with_query_formats(
+        ctx: egui::Context,
+        path: Option<PathBuf>,
+        formats: tablecraft_runtime::QueryExpressionFormats,
+    ) -> Self {
         // NO_CLONE: Editing's long-lived SaveWorker repaint closure owns its event-loop handle
         // independently of Creating and the read worker. Context shares egui state rather
         // than copying the UI.
@@ -287,7 +299,7 @@ impl Desktop {
         // egui Context shares event-loop state rather than duplicating the UI.
         let update_context = ctx.clone();
         let updates = UpdateWorker::new(move || update_context.request_repaint());
-        let worker = Worker::new(move || ctx.request_repaint());
+        let worker = Worker::with_query_formats(move || ctx.request_repaint(), formats);
         let mut app = Self {
             state: State::default(),
             worker,

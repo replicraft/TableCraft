@@ -3,6 +3,7 @@ mod diagnostics;
 mod file_dialog;
 mod font_inventory;
 mod mock;
+mod query_formats;
 mod regional;
 mod updating;
 mod view_models;
@@ -10,6 +11,7 @@ mod workspace;
 
 use clap::Parser;
 use std::{error::Error, path::PathBuf};
+use tablecraft_runtime::QueryExpressionFormats;
 use tablecraft_ui::{Locale, Localizer, Theme, preview::Scene};
 
 /// Open a native Access database in the desktop workspace.
@@ -23,6 +25,14 @@ struct Args {
     /// Optional MDB/ACCDB path to open after startup.
     #[arg(conflicts_with = "mock")]
     database: Option<PathBuf>,
+
+    /// Numeric Text conversion/output profile: invariant, en-us or de-de; unset stays unavailable.
+    #[arg(long, conflicts_with = "mock", value_name = "PROFILE", value_parser = query_formats::number)]
+    query_number_format: Option<QueryExpressionFormats>,
+
+    /// Gregorian date Text conversion/output profile: iso, en-us or de-de; unset stays unavailable.
+    #[arg(long, conflicts_with = "mock", value_name = "PROFILE", value_parser = query_formats::date)]
+    query_date_format: Option<QueryExpressionFormats>,
 
     /// Review the interface with synthetic data and no database services.
     #[arg(long)]
@@ -71,10 +81,18 @@ fn main() -> eframe::Result {
                 // NO_CLONE: eframe owns CreationContext; the desktop read worker moves an owned
                 // repaint Context into its long-lived callback. Context shares egui state
                 // rather than copying the UI.
-                Ok(Box::new(workspace::Desktop::new(
-                    cc.egui_ctx.clone(),
-                    args.database,
-                )))
+                let desktop = match (args.query_number_format, args.query_date_format) {
+                    (None, None) => workspace::Desktop::new(cc.egui_ctx.clone(), args.database),
+                    (number, date) => workspace::Desktop::with_query_formats(
+                        cc.egui_ctx.clone(),
+                        args.database,
+                        QueryExpressionFormats {
+                            number: number.and_then(|formats| formats.number),
+                            date: date.and_then(|formats| formats.date),
+                        },
+                    ),
+                };
+                Ok(Box::new(desktop))
             }
         }),
     )
@@ -91,6 +109,45 @@ fn desktop_viewport() -> Result<egui::ViewportBuilder, tablecraft_ui::Applicatio
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn explicit_query_formats_use_owner_profiles_and_remain_independent() {
+        let empty = Args::try_parse_from(["tablecraft-desktop"]).unwrap();
+        assert!(empty.query_number_format.is_none());
+        assert!(empty.query_date_format.is_none());
+        let parsed = Args::try_parse_from([
+            "tablecraft-desktop",
+            "--query-number-format",
+            "DE-DE",
+            "--query-date-format",
+            "iso",
+        ])
+        .unwrap();
+        assert_eq!(
+            parsed.query_number_format,
+            Some(QueryExpressionFormats::from_profile_names(Some("de-de"), None).unwrap())
+        );
+        assert_eq!(
+            parsed.query_date_format,
+            Some(QueryExpressionFormats::from_profile_names(None, Some("iso")).unwrap())
+        );
+    }
+
+    #[test]
+    fn invalid_or_synthetic_query_format_configuration_never_silently_falls_back() {
+        for arguments in [
+            vec!["tablecraft-desktop", "--query-number-format", "system"],
+            vec!["tablecraft-desktop", "--query-date-format", "fr-fr"],
+            vec![
+                "tablecraft-desktop",
+                "--query-number-format",
+                "de-de",
+                "--mock",
+            ],
+        ] {
+            assert!(Args::try_parse_from(arguments).is_err());
+        }
+    }
 
     #[test]
     fn desktop_decorations_follow_platform_ownership() {
