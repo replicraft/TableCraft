@@ -122,14 +122,28 @@ pub fn resolve_parameter_type(data_type: &DataType) -> Result<ParameterType, Que
         "DOUBLE" | "FLOAT" | "IEEEDOUBLE" | "FLOAT8" | "NUMBER" => ScalarType::Double,
         "CURRENCY" | "MONEY" => ScalarType::Currency,
         "DECIMAL" | "NUMERIC" | "DEC" => ScalarType::Decimal,
-        "TEXT" | "CHAR" | "CHARACTER" | "VARCHAR" | "LONGTEXT" | "MEMO" | "LONGCHAR"
-        | "ALPHANUMERIC" | "STRING" | "NCHAR" | "NOTE" | "NTEXT" => ScalarType::Text,
+        "TEXT"
+        | "CHAR"
+        | "CHARACTER"
+        | "VARCHAR"
+        | "LONGTEXT"
+        | "MEMO"
+        | "LONGCHAR"
+        | "ALPHANUMERIC"
+        | "STRING"
+        | "NCHAR"
+        | "NOTE"
+        | "NTEXT"
+        | "CHARACTER VARYING"
+        | "NATIONAL CHARACTER"
+        | "NATIONAL CHAR"
+        | "NATIONAL CHARACTER VARYING"
+        | "NATIONAL CHAR VARYING" => ScalarType::Text,
         "GUID" | "UNIQUEIDENTIFIER" => ScalarType::Guid,
         "DATETIME" | "DATE" | "TIME" | "TIMESTAMP" => ScalarType::DateTime,
         "DATETIMEEXTENDED" => ScalarType::DateTimeExtended,
-        "BINARY" | "IMAGE" | "LONGBINARY" | "VARBINARY" | "GENERAL" | "OLEOBJECT" => {
-            ScalarType::Binary
-        }
+        "BINARY" | "IMAGE" | "LONGBINARY" | "VARBINARY" | "GENERAL" | "OLEOBJECT"
+        | "BINARY VARYING" | "BIT VARYING" => ScalarType::Binary,
         _ => return Err(QueryError::Unsupported),
     };
     let data_type = match data_type.arguments.as_slice() {
