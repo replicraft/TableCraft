@@ -31,8 +31,7 @@ fn retained_two_row_updates_null_noop_and_zero_save_complete_original_bound_imag
         } else {
             let expected =
                 field_changes::update_score(&source.before, source.definition, 0, values[0]);
-            let expected = field_changes::update_score(&expected, source.definition, 1, values[1]);
-            expected
+            field_changes::update_score(&expected, source.definition, 1, values[1])
         };
         let (_directory, path, worker, revision) = opened(&source.before);
         let (target, _) = inspect(&worker, revision, sql);

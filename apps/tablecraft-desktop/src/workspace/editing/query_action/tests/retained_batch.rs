@@ -27,8 +27,7 @@ fn retained_batch_normal_run_no_then_yes_publishes_both_rows_and_honest_nullable
         } else {
             let expected =
                 field_changes::update_score(&source.before, source.definition, 0, values[0]);
-            let expected = field_changes::update_score(&expected, source.definition, 1, values[1]);
-            expected
+            field_changes::update_score(&expected, source.definition, 1, values[1])
         };
         let (_directory, path, before, mut harness) = opened(source.before);
         let original = harness.state().state.active_object().unwrap();
