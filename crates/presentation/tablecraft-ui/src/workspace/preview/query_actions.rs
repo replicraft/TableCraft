@@ -12,6 +12,8 @@ const UPDATE_SQL: &str =
 const MAKE_TABLE_SQL: &str = "SELECT [CustomerName],[City],[Balance] INTO [CustomerArchive] FROM [Customers] ORDER BY [CustomerName]";
 
 const INDEX_SQL: &str = "CREATE INDEX [ScoreIndex] ON [Archive] ([CopiedScore] DESC)";
+const UNIQUE_INDEX_SQL: &str =
+    "CREATE UNIQUE INDEX [ScoreUnique] ON [Archive] ([CopiedScore] DESC)";
 const DROP_INDEX_SQL: &str = "DROP INDEX [ScoreIndex] ON [Archive]";
 
 const ADD_COLUMN_SQL: &str = "ALTER TABLE [Items] ADD COLUMN [Amount] CURRENCY";
@@ -60,6 +62,7 @@ impl Preview {
             }
             Scene::QueryMakeTableReview => MAKE_TABLE_SQL,
             Scene::QuerySchemaIndexReview => INDEX_SQL,
+            Scene::QuerySchemaUniqueIndexReview => UNIQUE_INDEX_SQL,
             Scene::QuerySchemaIndexDropReview => DROP_INDEX_SQL,
             Scene::QuerySchemaAddColumnReview => ADD_COLUMN_SQL,
             Scene::QuerySchemaAddTextReview => ADD_TEXT_SQL,
@@ -79,6 +82,7 @@ impl Preview {
                 | Scene::QueryDeleteReview
                 | Scene::QueryInsertReview
                 | Scene::QuerySchemaIndexReview
+                | Scene::QuerySchemaUniqueIndexReview
                 | Scene::QuerySchemaIndexDropReview
                 | Scene::QuerySchemaAddColumnReview
                 | Scene::QuerySchemaAddTextReview
@@ -125,8 +129,8 @@ impl Preview {
             UPDATE_SQL => QueryActionKind::Update,
             DELETE_SQL => QueryActionKind::Delete,
             INSERT_SQL => QueryActionKind::Insert,
-            INDEX_SQL | DROP_INDEX_SQL | ADD_COLUMN_SQL | ADD_TEXT_SQL | ADD_DECIMAL_SQL
-            | MAKE_TABLE_SQL | CREATE_SQL | DROP_TABLE_SQL | DROP_COLUMN_SQL => {
+            INDEX_SQL | UNIQUE_INDEX_SQL | DROP_INDEX_SQL | ADD_COLUMN_SQL | ADD_TEXT_SQL
+            | ADD_DECIMAL_SQL | MAKE_TABLE_SQL | CREATE_SQL | DROP_TABLE_SQL | DROP_COLUMN_SQL => {
                 QueryActionKind::Schema
             }
             _ => return None,
@@ -162,7 +166,7 @@ impl Preview {
                 ADD_COLUMN_SQL | ADD_TEXT_SQL | ADD_DECIMAL_SQL
             ) {
                 "Items"
-            } else if sql == INDEX_SQL || sql == DROP_INDEX_SQL {
+            } else if matches!(sql.as_str(), INDEX_SQL | UNIQUE_INDEX_SQL | DROP_INDEX_SQL) {
                 "Archive"
             } else if sql == MAKE_TABLE_SQL {
                 "CustomerArchive"
@@ -210,12 +214,17 @@ impl Preview {
                     DROP_INDEX_SQL => QuerySchemaEffect::DropIndex {
                         index: "ScoreIndex".into(),
                     },
-                    INDEX_SQL => QuerySchemaEffect::CreateIndex {
-                        index: "ScoreIndex".into(),
+                    INDEX_SQL | UNIQUE_INDEX_SQL => QuerySchemaEffect::CreateIndex {
+                        index: if sql == UNIQUE_INDEX_SQL {
+                            "ScoreUnique"
+                        } else {
+                            "ScoreIndex"
+                        }
+                        .into(),
                         column: "CopiedScore".into(),
                         native_number: 0,
                         descending: true,
-                        unique: false,
+                        unique: sql == UNIQUE_INDEX_SQL,
                         indexed_rows: fixtures::TOTAL_ROWS as usize,
                     },
                     MAKE_TABLE_SQL => QuerySchemaEffect::MakeTable {
