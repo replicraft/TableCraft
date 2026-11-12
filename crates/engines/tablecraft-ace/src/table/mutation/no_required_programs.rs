@@ -27,6 +27,8 @@ enum Declaration {
     SparseGenerated,
     #[cfg(feature = "ace16-create")]
     CurrentSchema,
+    #[cfg(feature = "ace16-create")]
+    NumericIndexSchema,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -38,6 +40,8 @@ enum Purpose {
     CurrentSchema,
     #[cfg(feature = "ace16-create")]
     RetainedSchema,
+    #[cfg(feature = "ace16-create")]
+    RetainedNumericIndexSchema,
     #[cfg(feature = "ace16-create")]
     CurrentRows,
     #[cfg(feature = "ace16-create")]
@@ -175,7 +179,9 @@ impl<'image> NoRequiredTablePrograms<'image> {
             Declaration::DenseRetained => Ok(true),
             Declaration::Actions | Declaration::SparseGenerated => Err(EditError::Preservation),
             #[cfg(feature = "ace16-create")]
-            Declaration::CurrentSchema => Err(EditError::Preservation),
+            Declaration::CurrentSchema | Declaration::NumericIndexSchema => {
+                Err(EditError::Preservation)
+            }
         }
     }
 
@@ -222,6 +228,25 @@ impl<'image> NoRequiredTablePrograms<'image> {
             schema,
             Declaration::CurrentSchema,
             Purpose::RetainedSchema,
+            budget,
+            cancelled,
+        )
+    }
+
+    /// Readonly numeric-index observations retain a distinct image/target purpose;
+    /// row-operation certificates cannot grant metadata mutation authority.
+    #[cfg(feature = "ace16-create")]
+    pub(in crate::table::mutation) fn capture_retained_numeric_index_schema(
+        image: &'image NativeImage,
+        schema: &TableSchema,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::capture_with_purpose(
+            image,
+            schema,
+            Declaration::NumericIndexSchema,
+            Purpose::RetainedNumericIndexSchema,
             budget,
             cancelled,
         )
@@ -426,7 +451,8 @@ impl<'image> NoRequiredTablePrograms<'image> {
             | Purpose::RetainedOpaqueRows
             | Purpose::RetainedOpaqueInsert
             | Purpose::RetainedDelete
-            | Purpose::RetainedSchema => image.require_retained_capture()?,
+            | Purpose::RetainedSchema
+            | Purpose::RetainedNumericIndexSchema => image.require_retained_capture()?,
             _ => image.require_standard_capture()?,
         }
         let header = image.catalog().header();
@@ -449,7 +475,7 @@ impl<'image> NoRequiredTablePrograms<'image> {
                 catalog::validate_retained(image, schema, &inventory, budget, cancelled)?
             }
             #[cfg(feature = "ace16-create")]
-            Purpose::RetainedSchema => {
+            Purpose::RetainedSchema | Purpose::RetainedNumericIndexSchema => {
                 let inventory =
                     crate::table::table_append::Inventory::capture(image, budget, cancelled)?;
                 catalog::validate_retained(image, schema, &inventory, budget, cancelled)?
@@ -468,6 +494,7 @@ impl<'image> NoRequiredTablePrograms<'image> {
                 purpose,
                 Purpose::CurrentSchema
                     | Purpose::RetainedSchema
+                    | Purpose::RetainedNumericIndexSchema
                     | Purpose::CurrentRows
                     | Purpose::CurrentInsert
                     | Purpose::RetainedInsert
@@ -493,6 +520,8 @@ impl<'image> NoRequiredTablePrograms<'image> {
             Declaration::SparseGenerated => RowDeclaration::SparseGenerated,
             #[cfg(feature = "ace16-create")]
             Declaration::CurrentSchema => RowDeclaration::CurrentSchema,
+            #[cfg(feature = "ace16-create")]
+            Declaration::NumericIndexSchema => RowDeclaration::NumericIndexSchema,
         };
         let definition_tail =
             definition::validate_rows(image, schema, row_declaration, budget, cancelled)?;
@@ -568,6 +597,22 @@ impl<'image> NoRequiredTablePrograms<'image> {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
         if self.purpose != Purpose::RetainedSchema || self.declaration != Declaration::CurrentSchema
+        {
+            return Err(EditError::Preservation);
+        }
+        self.require_binding(image, schema, budget, cancelled)
+    }
+
+    #[cfg(feature = "ace16-create")]
+    pub(in crate::table::mutation) fn require_retained_numeric_index_schema_source(
+        &self,
+        image: &NativeImage,
+        schema: &TableSchema,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        if self.purpose != Purpose::RetainedNumericIndexSchema
+            || self.declaration != Declaration::NumericIndexSchema
         {
             return Err(EditError::Preservation);
         }

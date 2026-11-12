@@ -134,7 +134,14 @@ fn capture_with(
     let name =
         SchemaName::new(String::from_utf8(bytes).map_err(|_| crate::InspectError::Malformed)?)
             .map_err(crate::InspectError::from)?;
-    let content = normal_ordinary::capture_retained_schema(image, table, budget, cancelled)?;
+    let content = match language {
+        Language::Long => {
+            normal_ordinary::capture_retained_schema(image, table, budget, cancelled)?
+        }
+        Language::Numeric => {
+            normal_ordinary::capture_retained_numeric_index_schema(image, table, budget, cancelled)?
+        }
+    };
     if !content.dependencies.is_empty() {
         return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
     }

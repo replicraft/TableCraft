@@ -47,6 +47,8 @@ pub(super) enum Role {
     // Current metadata retains retired native ordinals and variable-slot counters.
     #[cfg(feature = "ace16-create")]
     SelectedSchema,
+    #[cfg(feature = "ace16-create")]
+    SelectedNumericIndexSchema,
 }
 
 impl Role {
@@ -57,7 +59,7 @@ impl Role {
     pub(super) fn current_schema(self) -> bool {
         match self {
             #[cfg(feature = "ace16-create")]
-            Self::SelectedSchema => true,
+            Self::SelectedSchema | Self::SelectedNumericIndexSchema => true,
             _ => false,
         }
     }
@@ -236,6 +238,8 @@ pub(in crate::table::mutation) enum RowDeclaration {
     SparseGenerated,
     #[cfg(feature = "ace16-create")]
     CurrentSchema,
+    #[cfg(feature = "ace16-create")]
+    NumericIndexSchema,
 }
 
 pub(in crate::table::mutation) fn validate_rows(
@@ -275,6 +279,17 @@ pub(in crate::table::mutation) fn validate_rows(
                 cancelled,
             )
             .map(drop)?,
+            #[cfg(feature = "ace16-create")]
+            RowDeclaration::NumericIndexSchema => validate_selected(
+                image,
+                schema,
+                Role::SelectedNumericIndexSchema,
+                false,
+                TailMode::Strict,
+                budget,
+                cancelled,
+            )
+            .map(drop)?,
             RowDeclaration::SparseGenerated => {
                 validate_generated(image, schema, budget, cancelled)?
             }
@@ -289,6 +304,8 @@ pub(in crate::table::mutation) fn validate_rows(
         RowDeclaration::SparseGenerated => (Role::SelectedGenerated, false),
         #[cfg(feature = "ace16-create")]
         RowDeclaration::CurrentSchema => (Role::SelectedSchema, false),
+        #[cfg(feature = "ace16-create")]
+        RowDeclaration::NumericIndexSchema => (Role::SelectedNumericIndexSchema, false),
     };
     validate_selected(
         image,
@@ -330,7 +347,19 @@ fn validate_selected(
     {
         return Err(refused());
     }
-    let position = if role == Role::SelectedActions || role.current_schema() {
+    #[cfg(feature = "ace16-create")]
+    let numeric_index_schema = role == Role::SelectedNumericIndexSchema;
+    #[cfg(not(feature = "ace16-create"))]
+    let numeric_index_schema = false;
+    let position = if numeric_index_schema {
+        indexes::declaration::validate_numeric_index_schema(
+            image,
+            inspection.schema(),
+            inspection.indexes().iter(),
+            budget,
+            cancelled,
+        )?
+    } else if role == Role::SelectedActions || role.current_schema() {
         indexes::declaration::validate_actions(
             image,
             inspection.schema(),

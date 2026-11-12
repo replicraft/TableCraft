@@ -1,13 +1,13 @@
 //! Complete readonly scalar indexes; GUID remains dense UPDATE Source only.
-use super::{ColumnFraming, ReadProfile, RetainedKeys};
+use super::{ColumnFraming, ReadProfile};
 use crate::{
     EditError, IndexCheckStatus, IndexInspection, InspectError, NativeColumn, NativeImage,
     NativeIndex, TableSnapshot, WriteBlocker,
     format::{
         allocation,
         data_type::{
-            BYTE, CURRENCY, GUID, INT16, INT32, INT64, MAX_SHORT_BINARY_BYTES,
-            MAX_SHORT_TEXT_UNITS, SHORT_BINARY, SHORT_TEXT,
+            BOOLEAN, BYTE, CURRENCY, DATE_TIME, DOUBLE, GUID, INT16, INT32, INT64,
+            MAX_SHORT_BINARY_BYTES, MAX_SHORT_TEXT_UNITS, SHORT_BINARY, SHORT_TEXT, SINGLE,
         },
         layout::{FIXED_FLAG, UPDATABLE_FLAG},
         reader::Reader,
@@ -27,7 +27,7 @@ use tablecraft_schema::ScalarType;
 fn supported(field: &NativeColumn, profile: ReadProfile) -> bool {
     let keys = profile.keys;
     if matches!(profile.columns, ColumnFraming::Dense)
-        && matches!(keys, RetainedKeys::Scalar)
+        && keys.scalar()
         && field.native_type() == GUID
         && field.scalar_type() == Some(ScalarType::Guid)
     {
@@ -37,7 +37,7 @@ fn supported(field: &NativeColumn, profile: ReadProfile) -> bool {
             && field.extended_flags() == 0
             && field.complex_type_id().is_none();
     }
-    if matches!(keys, RetainedKeys::Scalar)
+    if keys.scalar()
         && field.native_type() == SHORT_TEXT
         && field.scalar_type() == Some(ScalarType::Text)
     {
@@ -52,7 +52,7 @@ fn supported(field: &NativeColumn, profile: ReadProfile) -> bool {
                 .and_then(|order| order.general_family())
                 .is_some();
     }
-    if matches!(keys, RetainedKeys::Scalar)
+    if keys.scalar()
         && field.native_type() == SHORT_BINARY
         && field.scalar_type() == Some(ScalarType::Binary)
     {
@@ -62,6 +62,13 @@ fn supported(field: &NativeColumn, profile: ReadProfile) -> bool {
     }
 
     let width = match (field.native_type(), field.scalar_type()) {
+        (BOOLEAN, Some(ScalarType::Boolean)) if keys.numeric_index_schema() => 0,
+        (SINGLE, Some(ScalarType::Single)) if keys.numeric_index_schema() => size_of::<f32>(),
+        (DOUBLE, Some(ScalarType::Double)) | (DATE_TIME, Some(ScalarType::DateTime))
+            if keys.numeric_index_schema() =>
+        {
+            size_of::<f64>()
+        }
         (BYTE, Some(ScalarType::Byte)) => size_of::<u8>(),
         (INT16, Some(ScalarType::Int16)) => size_of::<i16>(),
         (INT32, Some(ScalarType::Int32)) => size_of::<i32>(),
@@ -108,11 +115,16 @@ pub(super) fn qualify(
                 }
             }
             .ok_or(InspectError::Malformed)?;
-            wide |= matches!(field.native_type(), BYTE | INT16 | INT64 | CURRENCY)
-                || matches!(keys, RetainedKeys::Scalar)
-                    && matches!(field.native_type(), SHORT_BINARY | SHORT_TEXT)
+            #[cfg(feature = "ace16-create")]
+            let numeric_index = keys.numeric_index_schema()
+                && matches!(field.native_type(), BOOLEAN | SINGLE | DOUBLE | DATE_TIME);
+            #[cfg(not(feature = "ace16-create"))]
+            let numeric_index = false;
+            wide |= numeric_index
+                || matches!(field.native_type(), BYTE | INT16 | INT64 | CURRENCY)
+                || keys.scalar() && matches!(field.native_type(), SHORT_BINARY | SHORT_TEXT)
                 || matches!(framing, ColumnFraming::Dense)
-                    && matches!(keys, RetainedKeys::Scalar)
+                    && keys.scalar()
                     && field.native_type() == GUID;
         }
     }
@@ -121,10 +133,7 @@ pub(super) fn qualify(
     }
     for index in indexes.indexes() {
         check(budget, cancelled)?;
-        if matches!(framing, ColumnFraming::Dense)
-            && matches!(keys, RetainedKeys::Scalar)
-            && index.columns().len() > 1
-        {
+        if matches!(framing, ColumnFraming::Dense) && keys.scalar() && index.columns().len() > 1 {
             validate_manual_guid_tuple(schema, index, budget, cancelled).map_err(|error| {
                 match error {
                     InspectError::Unsupported => {

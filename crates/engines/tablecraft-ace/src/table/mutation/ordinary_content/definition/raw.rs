@@ -459,7 +459,7 @@ fn system_schema(layout: &Layout, role: Role) -> Result<(), EditError> {
             ("SID", SHORT_BINARY, None, 255),
         ],
         #[cfg(feature = "ace16-create")]
-        Role::SelectedSchema => return Ok(()),
+        Role::SelectedSchema | Role::SelectedNumericIndexSchema => return Ok(()),
         Role::User | Role::SelectedUser | Role::SelectedActions | Role::SelectedGenerated => {
             return Ok(());
         }

@@ -1,5 +1,6 @@
 //! Candidate-only admission and preservation, independent of original languages.
 mod matrix;
+mod readonly_schema;
 use crate::{EditError, NativeImage, SecondaryIndexCreate, WriteBlocker};
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;

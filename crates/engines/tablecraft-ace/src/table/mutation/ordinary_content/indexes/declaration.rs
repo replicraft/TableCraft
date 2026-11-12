@@ -6,8 +6,8 @@ use crate::{
     format::{
         bytes::u16_at,
         data_type::{
-            BYTE, CURRENCY, GUID, INT16, INT32, INT64, MAX_SHORT_BINARY_BYTES,
-            MAX_SHORT_TEXT_UNITS, SHORT_BINARY, SHORT_TEXT,
+            BOOLEAN, BYTE, CURRENCY, DATE_TIME, DOUBLE, GUID, INT16, INT32, INT64,
+            MAX_SHORT_BINARY_BYTES, MAX_SHORT_TEXT_UNITS, SHORT_BINARY, SHORT_TEXT, SINGLE,
         },
         layout::{self, UPDATABLE_FLAG},
         page::PAGE_BYTES,
@@ -185,6 +185,25 @@ pub(in crate::table::mutation::ordinary_content) fn validate_actions<'index>(
     )
 }
 
+/// Readonly schema certification for the distinct numeric-index constructor.
+/// This declaration mode issues no row/action mutation capability.
+pub(in crate::table::mutation::ordinary_content) fn validate_numeric_index_schema<'index>(
+    image: &NativeImage,
+    schema: &TableSchema,
+    indexes: impl Iterator<Item = &'index NativeIndex> + Clone,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<usize, EditError> {
+    validate_for(
+        image,
+        schema,
+        indexes,
+        KeyFamily::NumericIndexSchema,
+        budget,
+        cancelled,
+    )
+}
+
 /// INSERT owns its declaration proof while sharing actual native-number key lookup.
 pub(in crate::table::mutation::ordinary_content) fn validate_generated<'index>(
     image: &NativeImage,
@@ -313,6 +332,7 @@ enum KeyFamily {
     SelectedIntegral,
     SelectedScalar,
     SparseIntegral,
+    NumericIndexSchema,
 }
 
 fn qualify_for(
@@ -335,7 +355,10 @@ fn qualify_for(
         return Err(refused());
     };
     let constraints = index.constraints().ok_or_else(refused)?;
-    let field = if matches!(family, KeyFamily::SparseIntegral) {
+    let field = if matches!(
+        family,
+        KeyFamily::SparseIntegral | KeyFamily::NumericIndexSchema
+    ) {
         let mut selected = None;
         for field in schema.columns() {
             check(budget, cancelled)?;
@@ -357,12 +380,12 @@ fn qualify_for(
     }
     let binary = matches!(
         family,
-        KeyFamily::SparseIntegral | KeyFamily::SelectedScalar
+        KeyFamily::SparseIntegral | KeyFamily::SelectedScalar | KeyFamily::NumericIndexSchema
     ) && field.native_type() == SHORT_BINARY
         && field.scalar_type() == Some(ScalarType::Binary);
     let text = matches!(
         family,
-        KeyFamily::SparseIntegral | KeyFamily::SelectedScalar
+        KeyFamily::SparseIntegral | KeyFamily::SelectedScalar | KeyFamily::NumericIndexSchema
     ) && field.native_type() == SHORT_TEXT
         && field.scalar_type() == Some(ScalarType::Text);
     let guid = matches!(family, KeyFamily::SelectedScalar)
@@ -370,6 +393,17 @@ fn qualify_for(
         && field.scalar_type() == Some(ScalarType::Guid);
     let variable = binary || text;
     let width = match (field.native_type(), field.scalar_type()) {
+        (BOOLEAN, Some(ScalarType::Boolean)) if matches!(family, KeyFamily::NumericIndexSchema) => {
+            0
+        }
+        (SINGLE, Some(ScalarType::Single)) if matches!(family, KeyFamily::NumericIndexSchema) => {
+            size_of::<f32>()
+        }
+        (DOUBLE, Some(ScalarType::Double)) | (DATE_TIME, Some(ScalarType::DateTime))
+            if matches!(family, KeyFamily::NumericIndexSchema) =>
+        {
+            size_of::<f64>()
+        }
         (BYTE, Some(ScalarType::Byte)) => size_of::<u8>(),
         (INT16, Some(ScalarType::Int16)) => size_of::<i16>(),
         (INT32, Some(ScalarType::Int32)) => size_of::<i32>(),
@@ -409,6 +443,9 @@ fn qualify_for(
                     .text_sort_order()
                     .and_then(|order| order.general_family())
                     .is_none())
+        || matches!(family, KeyFamily::NumericIndexSchema)
+            && matches!(field.native_type(), BOOLEAN | SINGLE | DOUBLE | DATE_TIME)
+            && field.flags() != (layout::FIXED_FLAG | UPDATABLE_FLAG)
         || field.extended_flags() != 0
     {
         return Err(refused());

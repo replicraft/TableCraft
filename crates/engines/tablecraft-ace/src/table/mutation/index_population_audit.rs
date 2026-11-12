@@ -77,7 +77,11 @@ fn prove_original(
         .verify_after(after.as_bytes(), budget, cancelled)
         .map_err(allocation_error)?;
     Inventory::capture(after, budget, cancelled)?.require_source(after)?;
-    let observed = normal_ordinary::capture_retained_schema(after, table, budget, cancelled)?;
+    let observed = if original.is_numeric() {
+        normal_ordinary::capture_retained_numeric_index_schema(after, table, budget, cancelled)?
+    } else {
+        normal_ordinary::capture_retained_schema(after, table, budget, cancelled)?
+    };
     let indexes = observed.indexes.indexes();
     if indexes.len()
         != original

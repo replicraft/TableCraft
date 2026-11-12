@@ -141,6 +141,8 @@ enum PayloadAdmission<'admission, 'image> {
     #[cfg(all(feature = "journal", feature = "ace16-create"))]
     RetainedSchemaNoRequired(&'admission NoRequiredTablePrograms<'image>),
     #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    RetainedNumericIndexSchemaNoRequired(&'admission NoRequiredTablePrograms<'image>),
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
     CurrentRowsNoRequired(&'admission NoRequiredTablePrograms<'image>),
     #[cfg(all(feature = "journal", feature = "ace16-create"))]
     CurrentInsertNoRequired(&'admission NoRequiredTablePrograms<'image>),
@@ -174,6 +176,28 @@ enum ColumnFraming {
 enum RetainedKeys {
     Integral,
     Scalar,
+    #[cfg(feature = "ace16-create")]
+    NumericIndexSchema,
+}
+
+#[cfg(feature = "journal")]
+impl RetainedKeys {
+    fn scalar(self) -> bool {
+        match self {
+            Self::Scalar => true,
+            #[cfg(feature = "ace16-create")]
+            Self::NumericIndexSchema => true,
+            Self::Integral => false,
+        }
+    }
+
+    fn numeric_index_schema(self) -> bool {
+        match self {
+            #[cfg(feature = "ace16-create")]
+            Self::NumericIndexSchema => true,
+            _ => false,
+        }
+    }
 }
 
 #[derive(Clone, Copy)]
@@ -415,6 +439,11 @@ fn capture_framed_with_records(
             certificate.require_retained_schema_source(image, schema, budget, cancelled)?;
         }
         #[cfg(all(feature = "journal", feature = "ace16-create"))]
+        PayloadAdmission::RetainedNumericIndexSchemaNoRequired(certificate) => {
+            certificate
+                .require_retained_numeric_index_schema_source(image, schema, budget, cancelled)?;
+        }
+        #[cfg(all(feature = "journal", feature = "ace16-create"))]
         PayloadAdmission::HistoricalFixedRows(certificate) => {
             certificate.require_historical_fixed_rows_source(image, schema, budget, cancelled)?
         }
@@ -428,6 +457,7 @@ fn capture_framed_with_records(
         PayloadAdmission::NoRequired(certificate) => certificate.share_definition_tail(),
         #[cfg(feature = "ace16-create")]
         PayloadAdmission::CurrentSchemaNoRequired(certificate)
+        | PayloadAdmission::RetainedNumericIndexSchemaNoRequired(certificate)
         | PayloadAdmission::RetainedSchemaNoRequired(certificate)
         | PayloadAdmission::CurrentRowsNoRequired(certificate)
         | PayloadAdmission::CurrentInsertNoRequired(certificate)
@@ -487,6 +517,7 @@ fn capture_framed_with_records(
         PayloadAdmission::RetainedRowsNoRequired(_)
         | PayloadAdmission::RetainedOpaqueRowsNoRequired(_)
         | PayloadAdmission::RetainedOpaqueInsertNoRequired(_)
+        | PayloadAdmission::RetainedNumericIndexSchemaNoRequired(_)
         | PayloadAdmission::RetainedSchemaNoRequired(_)
         | PayloadAdmission::RetainedDeleteNoRequired(_)
         | PayloadAdmission::RetainedInsertNoRequired(_) => {
@@ -525,6 +556,7 @@ fn capture_framed_with_records(
         PayloadAdmission::RetainedRowsNoRequired(_)
         | PayloadAdmission::RetainedOpaqueRowsNoRequired(_)
         | PayloadAdmission::RetainedOpaqueInsertNoRequired(_)
+        | PayloadAdmission::RetainedNumericIndexSchemaNoRequired(_)
         | PayloadAdmission::RetainedSchemaNoRequired(_)
         | PayloadAdmission::RetainedDeleteNoRequired(_)
         | PayloadAdmission::RetainedInsertNoRequired(_) => {
@@ -559,7 +591,8 @@ fn capture_framed_with_records(
         #[cfg(all(feature = "journal", feature = "ace16-create"))]
         let layout = match (&payload, records_admission) {
             (
-                PayloadAdmission::RetainedSchemaNoRequired(_),
+                PayloadAdmission::RetainedSchemaNoRequired(_)
+                | PayloadAdmission::RetainedNumericIndexSchemaNoRequired(_),
                 RecordAdmission::HistoricalSchemaReadonly,
             ) => record_layout::parse_values(&root.final_record.data, schema, budget)?,
             (
@@ -629,6 +662,7 @@ fn capture_framed_with_records(
         PayloadAdmission::Closed(_) | PayloadAdmission::NoRequired(_) => true,
         #[cfg(feature = "ace16-create")]
         PayloadAdmission::CurrentSchemaNoRequired(_)
+        | PayloadAdmission::RetainedNumericIndexSchemaNoRequired(_)
         | PayloadAdmission::RetainedSchemaNoRequired(_)
         | PayloadAdmission::CurrentRowsNoRequired(_)
         | PayloadAdmission::CurrentInsertNoRequired(_)
@@ -883,6 +917,7 @@ impl PayloadAdmission<'_, '_> {
             | Self::NoRequired(_) => true,
             #[cfg(all(feature = "journal", feature = "ace16-create"))]
             Self::CurrentSchemaNoRequired(_)
+            | Self::RetainedNumericIndexSchemaNoRequired(_)
             | Self::RetainedSchemaNoRequired(_)
             | Self::CurrentRowsNoRequired(_)
             | Self::CurrentInsertNoRequired(_)
@@ -1035,6 +1070,29 @@ pub(in crate::table::mutation) fn capture_retained_schema(
         table,
         PayloadAdmission::RetainedSchemaNoRequired(certificate),
         ReadProfile::retained(ColumnFraming::Actions),
+        RecordAdmission::HistoricalSchemaReadonly,
+        budget,
+        cancelled,
+    )
+}
+
+/// Readonly AFTER admission tied to its numeric-index program certificate.
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(in crate::table::mutation) fn capture_retained_numeric_index_schema(
+    image: &NativeImage,
+    table: &str,
+    certificate: &NoRequiredTablePrograms<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Source, EditError> {
+    capture_framed_with_records(
+        image,
+        table,
+        PayloadAdmission::RetainedNumericIndexSchemaNoRequired(certificate),
+        ReadProfile {
+            columns: ColumnFraming::Actions,
+            keys: RetainedKeys::NumericIndexSchema,
+        },
         RecordAdmission::HistoricalSchemaReadonly,
         budget,
         cancelled,

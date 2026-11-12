@@ -257,6 +257,33 @@ pub(in crate::table::mutation) fn capture_retained_schema(
     preserved_source::capture_retained_schema(image, table, &certificate, budget, cancelled)
 }
 
+/// Readonly numeric-index AFTER source; never a row/action writer source.
+#[cfg(feature = "ace16-create")]
+pub(in crate::table::mutation) fn capture_retained_numeric_index_schema(
+    image: &NativeImage,
+    table: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Source, EditError> {
+    let target = crate::inspect_table_schema(
+        &mut image.reader(),
+        image.catalog().catalog().scope(),
+        table,
+        budget,
+        cancelled,
+    )?;
+    let certificate = NoRequiredTablePrograms::capture_retained_numeric_index_schema(
+        image, &target, budget, cancelled,
+    )?;
+    preserved_source::capture_retained_numeric_index_schema(
+        image,
+        table,
+        &certificate,
+        budget,
+        cancelled,
+    )
+}
+
 /// Current INSERT observes sparse metadata through its own absence certificate.
 /// Existing generated INSERT and UPDATE source languages remain unchanged.
 #[cfg(feature = "ace16-create")]
