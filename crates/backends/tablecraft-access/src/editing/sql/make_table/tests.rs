@@ -3,6 +3,7 @@ mod computed;
 mod computed_declarations;
 mod parameters;
 mod selection;
+mod wildcards;
 
 use super::*;
 use std::io::Cursor;
@@ -262,7 +263,6 @@ fn closed_shapes_and_actual_qualifiers_cannot_route_to_external_or_computed_sour
     let (bytes, _) = text_source();
     for sql in [
         "SELECT Name & 'x' AS Label INTO Archive FROM Items",
-        "SELECT * INTO Archive FROM Items",
         "SELECT x.Name INTO Archive FROM Items AS i",
         "SELECT Name INTO Archive IN 'unopened.accdb' FROM Items",
         "SELECT Name INTO Archive FROM Items IN 'unopened.accdb'",

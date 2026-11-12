@@ -1,13 +1,13 @@
 //! Fixed computed outputs use established query carriers; native fields keep native sizes.
 mod expressions;
-use super::{NativeMakeTableError as Error, check, native_column, resolve, table};
+use super::{NativeMakeTableError as Error, charge_name, check, native_column, resolve, table};
 use tablecraft_ace::{CreateColumn, InspectError, TableSchema};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_query::MakeTablePlan;
-use tablecraft_schema::ScalarType;
+use tablecraft_schema::{NameComparison, ScalarType};
 use tablecraft_sql::{
     query::{ReadBody, Statement},
-    select::{Expression, Projection, Select},
+    select::{Expression, Name, Projection, Select, Table},
 };
 
 /// Validate relation/field syntax before any user-record scan. Computed output
@@ -27,6 +27,15 @@ pub(in crate::editing::sql::make_table) fn preflight(
                 let source = resolve(field, table, schema, work, cancelled)?;
                 let name = alias.as_ref().unwrap_or(&field.name).as_str();
                 let _native_declaration = native_column(name, source)?;
+            }
+            Projection::Wildcard(qualifier) => {
+                qualify_wildcard(qualifier.as_ref(), table, work, cancelled)?;
+                for source in schema.columns() {
+                    check(work, cancelled)?;
+                    let _native_declaration = native_column(source.name(), source)?;
+                }
+                // The query owner expands declarations without changing the AST.
+                direct_only = false;
             }
             Projection::Expression {
                 expression,
@@ -61,20 +70,42 @@ pub(in crate::editing::sql::make_table) fn staged_columns<'a>(
         return Err(Error::Shape);
     };
     let table = table(select)?;
-    if select.projection.len() != staged.columns().len() {
-        return Err(Error::Shape);
-    }
+
     work.charge_allocation(
-        select.projection.len() as u64,
+        staged.columns().len() as u64,
         size_of::<CreateColumn<'_>>() as u64,
     )
     .map_err(InspectError::from)?;
     let mut columns = Vec::new();
     columns
-        .try_reserve_exact(select.projection.len())
+        .try_reserve_exact(staged.columns().len())
         .map_err(|_| InspectError::Allocation)?;
-    for (projection, declaration) in select.projection.iter().zip(staged.columns()) {
+
+    let mut declarations = staged.columns().iter();
+    for projection in &select.projection {
         check(work, cancelled)?;
+        if let Projection::Wildcard(qualifier) = projection {
+            qualify_wildcard(qualifier.as_ref(), table, work, cancelled)?;
+            for source in schema.columns() {
+                check(work, cancelled)?;
+                let declaration = declarations.next().ok_or(Error::Shape)?;
+                charge_name(declaration.name(), source.name(), work, cancelled)?;
+                // The same native source supplied the query's metadata. Preserve
+                // its declaration order; a different expansion cannot borrow a
+                // neighboring field's physical Text or Decimal declaration.
+                if declaration.name() != source.name() {
+                    return Err(Error::Shape);
+                }
+                let column = native_column(declaration.name(), source)?;
+                if column.scalar_type() != declaration.data_type().scalar_type() {
+                    return Err(Error::Shape);
+                }
+                columns.push(column);
+            }
+            continue;
+        }
+
+        let declaration = declarations.next().ok_or(Error::Shape)?;
         let column = match projection {
             Projection::Field { field, alias } => {
                 let source = resolve(field, table, schema, work, cancelled)?;
@@ -114,5 +145,29 @@ pub(in crate::editing::sql::make_table) fn staged_columns<'a>(
         // default, AZL or description is transferred to this manual column.
         columns.push(column);
     }
+
+    check(work, cancelled)?;
+    if declarations.next().is_some() {
+        return Err(Error::Shape);
+    }
+
     Ok(columns)
+}
+
+fn qualify_wildcard(
+    qualifier: Option<&Name>,
+    table: &Table,
+    work: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), Error> {
+    check(work, cancelled)?;
+    if let Some(qualifier) = qualifier {
+        let actual = table.alias.as_ref().unwrap_or(&table.name);
+        charge_name(qualifier.as_str(), actual.as_str(), work, cancelled)?;
+        if !NameComparison::AsciiInsensitive.equals(qualifier.as_str(), actual.as_str()) {
+            return Err(Error::Shape);
+        }
+    }
+
+    Ok(())
 }
