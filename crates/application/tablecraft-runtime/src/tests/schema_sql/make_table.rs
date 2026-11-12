@@ -113,3 +113,5 @@ fn make_table_rejects_existing_destinations_closed_shapes_and_stale_inspections_
     ));
     assert_image(&fs::read(path).unwrap(), &before);
 }
+
+mod like_default;

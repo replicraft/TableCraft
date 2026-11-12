@@ -587,4 +587,11 @@ mod retained_batch;
 #[cfg(feature = "ace16-create")]
 mod indexed_long;
 
+#[cfg(feature = "ace16-create")]
+mod formats;
 mod like;
+#[cfg(feature = "ace16-create")]
+mod math;
+
+#[cfg(feature = "ace16-create")]
+mod date_intervals;

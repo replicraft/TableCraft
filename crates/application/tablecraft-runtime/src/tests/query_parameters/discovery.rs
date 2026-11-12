@@ -229,3 +229,5 @@ fn runtime_strict_mode_preserves_existing_domain_and_crosstab_execution() {
     }
     assert_image(&std::fs::read(&path).unwrap(), &original);
 }
+
+mod like_default;

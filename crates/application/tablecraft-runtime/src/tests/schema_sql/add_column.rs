@@ -298,11 +298,25 @@ fn declared_add_checks_cancel_and_issued_source_before_parsing_or_native_plannin
     );
     assert_eq!(clock.calls(), 0);
     assert!(matches!(
-        document.review_schema_sql(&local, &clock, &|| true),
+        document.review_schema_sql(
+            &local,
+            crate::query::context::Environment {
+                clock: &clock,
+                formats: crate::QueryExpressionFormats::default()
+            },
+            &|| true
+        ),
         Err(Error::Cancelled)
     ));
     assert!(matches!(
-        document.review_schema_sql(&target, &clock, &|| false),
+        document.review_schema_sql(
+            &target,
+            crate::query::context::Environment {
+                clock: &clock,
+                formats: crate::QueryExpressionFormats::default()
+            },
+            &|| false
+        ),
         Err(Error::StaleQuery)
     ));
     assert_eq!(

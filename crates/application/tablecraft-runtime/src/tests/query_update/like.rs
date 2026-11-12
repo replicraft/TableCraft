@@ -49,8 +49,15 @@ fn require_native_update_source(before: &[u8], table: &str) {
 
 #[test]
 fn update_nullable_text_like_binds_native_ansi_modes_and_original_matching_handles() {
-    for (mode, pattern, matched) in [(0, "1*", 1), (0, "1%", 0), (1, "1%", 1), (1, "1*", 0)] {
-        let (before, definition) = source(Some(mode));
+    for (mode, pattern, matched) in [
+        (None, "1*", 1),
+        (None, "1%", 0),
+        (Some(0), "1*", 1),
+        (Some(0), "1%", 0),
+        (Some(1), "1%", 1),
+        (Some(1), "1*", 0),
+    ] {
+        let (before, definition) = source(mode);
         #[cfg(feature = "ace16-create")]
         require_native_update_source(&before, "Table1");
         let expected = if matched == 0 {
@@ -70,7 +77,7 @@ fn update_nullable_text_like_binds_native_ansi_modes_and_original_matching_handl
                 parameters: Vec::new(),
             },
         )
-        .unwrap_or_else(|error| panic!("mode {mode}: {sql}: {error:?}")) else {
+        .unwrap_or_else(|error| panic!("mode {mode:?}: {sql}: {error:?}")) else {
             panic!("native UPDATE review");
         };
         assert_eq!(
@@ -156,15 +163,11 @@ fn delete_not_like_preserves_null_unknown_and_exact_native_after_in_both_modes()
 }
 
 #[test]
-fn missing_unknown_modes_and_eager_late_errors_never_issue_a_save_capability() {
-    for mode in [None, Some(2), Some(0), Some(1)] {
+fn unknown_native_mode_and_eager_late_errors_never_issue_a_save_capability() {
+    for mode in [Some(2), Some(0), Some(1)] {
         let (before, _) = source(mode);
         let (_directory, path, worker, revision) = opened(&before);
         let (sql, expected) = match mode {
-            None => (
-                "UPDATE Table1 SET Score=25 WHERE '17' LIKE '1*'".to_string(),
-                QueryError::Evaluation(EvalError::LikeModeRequired),
-            ),
             Some(2) => (
                 "UPDATE Table1 SET Score=25 WHERE '17' LIKE '1*'".to_string(),
                 QueryError::Unsupported,
@@ -196,8 +199,8 @@ fn missing_unknown_modes_and_eager_late_errors_never_issue_a_save_capability() {
         #[cfg(feature = "ace16-create")]
         if mode == Some(2) {
             let image = native_image(&before);
-            assert!(
-                tablecraft_access::editing::sql::native_mutation_like_mode(
+            assert_eq!(
+                tablecraft_access::editing::sql::native_mutation_query_mode(
                     &image,
                     tablecraft_sql::parse_query(&sql, tablecraft_sql::ParseLimits::default())
                         .unwrap()
@@ -206,9 +209,9 @@ fn missing_unknown_modes_and_eager_late_errors_never_issue_a_save_capability() {
                     &mut crate::controls::budget(),
                     &|| false,
                 )
-                .unwrap()
-                .is_none(),
-                "unknown setting is observed without a fabricated mode"
+                .unwrap(),
+                Some(tablecraft_ace::DatabaseQueryMode::Unknown),
+                "unknown setting remains distinct from absent metadata"
             );
             assert!(
                 image
@@ -223,21 +226,6 @@ fn missing_unknown_modes_and_eager_late_errors_never_issue_a_save_capability() {
         }
         assert_image(&std::fs::read(&path).unwrap(), &before);
         assert!(!crate::journal_path(&path).exists());
-        // The absent native setting does not prevent unrelated criteria.
-        if mode.is_none() {
-            let (target, _) = inspect(&worker, revision, "UPDATE Table1 SET Score=25 WHERE ID=1");
-            assert!(matches!(
-                request(
-                    &worker,
-                    Command::ReviewQueryUpdate {
-                        target,
-                        parameters: Vec::new()
-                    }
-                ),
-                Ok(Response::QueryUpdateReviewed { .. })
-            ));
-            assert_image(&std::fs::read(&path).unwrap(), &before);
-        }
     }
 }
 

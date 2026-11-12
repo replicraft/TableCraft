@@ -69,7 +69,7 @@ fn native_text_policies_reach_predicates_groups_and_explicit_string_modes() {
 }
 
 #[test]
-fn native_wildcard_mode_uses_only_qualified_database_settings() {
+fn sql_view_wildcard_policy_distinguishes_native_modes_absence_and_unknown() {
     use tablecraft_testkit::fixtures::access::database_properties;
 
     for mode in [Some(0_i32), Some(1), Some(2), None] {
@@ -89,7 +89,7 @@ fn native_wildcard_mode_uses_only_qualified_database_settings() {
         assert_eq!(row_texts(&rows(&worker, "SELECT 40+2 AS N")), [["42"]]);
         let sql = "SELECT 'Apple' LIKE 'a*' AS [Star], 'Apple' LIKE 'a%' AS [Percent]";
         match mode {
-            Some(0) => assert_eq!(row_texts(&rows(&worker, sql)), [["true", "false"]]),
+            Some(0) | None => assert_eq!(row_texts(&rows(&worker, sql)), [["true", "false"]]),
             Some(1) => assert_eq!(row_texts(&rows(&worker, sql)), [["false", "true"]]),
             _ => assert!(matches!(
                 request(&worker, query(sql)),

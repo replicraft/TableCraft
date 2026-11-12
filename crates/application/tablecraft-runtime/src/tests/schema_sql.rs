@@ -184,7 +184,14 @@ fn cancellation_is_checked_before_review_parsing_or_native_source_capture() {
         panic!("expected issued inspection");
     };
     assert!(matches!(
-        document.review_schema_sql(&target, &crate::query::context::LocalClock, &|| true),
+        document.review_schema_sql(
+            &target,
+            crate::query::context::Environment {
+                clock: &crate::query::context::LocalClock,
+                formats: crate::QueryExpressionFormats::default()
+            },
+            &|| true
+        ),
         Err(Error::Cancelled)
     ));
     assert_eq!(fs::read(&path).unwrap(), pair.before);
