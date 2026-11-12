@@ -720,7 +720,10 @@ impl Desktop {
         if refresh_after_ack {
             let selection = self.editing.take_saved_cell_selection(id);
             self.select_file(save.path);
-            self.open();
+            // The acknowledged native operation and captured restore own this
+            // same-document refresh. It is not a user Open/discard request.
+            let command = self.selected_open_command();
+            self.begin_document_open(command);
             if let Some(target) = selection {
                 self.editing.cell_selection = Some(cell_selection::Restore::Open {
                     request_id: self.generation,

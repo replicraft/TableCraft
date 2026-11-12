@@ -482,6 +482,10 @@ impl Desktop {
         {
             return;
         }
+        if selection.is_some() && self.state.has_unresolved_query_design_edits() {
+            self.state.reveal_unresolved_query_design_edits();
+            return;
+        }
         if let Some(path) = selection {
             self.select_file(path);
             self.open();
@@ -497,6 +501,17 @@ impl Desktop {
         {
             return;
         }
+        if self.state.has_unresolved_query_design_edits() {
+            self.state.reveal_unresolved_query_design_edits();
+            return;
+        }
+        let command = self.selected_open_command();
+        self.open_request(command);
+    }
+
+    fn selected_open_command(&mut self) -> Command {
+        // NO_CLONE: The GUI retains its selected-file identity while the read
+        // actor independently owns the exact path across its background open.
         let path = match self
             .selected_file
             .as_ref()
@@ -509,7 +524,7 @@ impl Desktop {
             }
         };
         let password = std::mem::take(&mut self.state.password);
-        self.open_request(Command::Open { path, password });
+        Command::Open { path, password }
     }
 
     fn open_request(&mut self, command: Command) {
@@ -527,6 +542,12 @@ impl Desktop {
         else {
             return;
         };
+        self.begin_document_open(*command);
+    }
+
+    // User transitions enter only after their guard; acknowledged native-save
+    // synchronization enters from its actual retained operation owner.
+    fn begin_document_open(&mut self, command: Command) {
         self.editing.clear_review();
         self.editing.clear_refresh();
         self.state.show_open();
@@ -538,7 +559,7 @@ impl Desktop {
         self.state.clear_schema();
         self.state.close_contents();
         self.recovery_reopen = None;
-        self.submit(*command);
+        self.submit(command);
     }
 
     fn poll(&mut self) {
@@ -1473,7 +1494,8 @@ impl eframe::App for Desktop {
             && (self.editing.has_save()
                 || self.creating.is_busy()
                 || self.state.insertion_dialog_open()
-                || self.state.insert_continuation_pending())
+                || self.state.insert_continuation_pending()
+                || self.state.has_unresolved_query_design_edits())
         {
             ui.ctx()
                 .send_viewport_cmd(egui::ViewportCommand::CancelClose);

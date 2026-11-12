@@ -24,6 +24,16 @@ impl Desktop {
             drop(action);
             return None;
         }
+        if matches!(
+            &action,
+            DeferredDraftAction::Open(_)
+                | DeferredDraftAction::Create(_)
+                | DeferredDraftAction::CloseWindow
+        ) && self.state.has_unresolved_query_design_edits()
+        {
+            self.state.reveal_unresolved_query_design_edits();
+            return None;
+        }
         if self.state.table_draft_save_open()
             || self.state.table_draft_field_delete_open()
             || self.state.saved_query_sql_close_open()
@@ -101,6 +111,11 @@ impl Desktop {
             return;
         }
         if !context.input(|input| input.viewport().close_requested()) {
+            return;
+        }
+        if self.state.has_unresolved_query_design_edits() {
+            context.send_viewport_cmd(ViewportCommand::CancelClose);
+            self.state.reveal_unresolved_query_design_edits();
             return;
         }
         if self.deferred_draft_action.is_some()
