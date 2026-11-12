@@ -1,4 +1,5 @@
 use super::{Command, Error, Response, document::Document};
+use crate::{QueryExpressionFormats, query::context::Environment};
 use crate::{
     task_signal,
     thread_start::{Spawner, ThreadSpawner},
@@ -104,18 +105,43 @@ pub struct Worker {
 }
 
 impl Worker {
-    /// Start a dedicated native read actor. Startup failure is delivered by
-    /// `poll` for an accepted request rather than executing work on the caller.
+    /// Start a dedicated native read actor with no inferred number/date profiles.
+    /// Startup failure is delivered by `poll` for an accepted request rather than
+    /// executing work on the caller.
     pub fn new(repaint: impl Fn() + Send + Sync + 'static) -> Self {
         Self::with_query_clock(repaint, Arc::new(crate::query::context::LocalClock))
     }
 
-    /// Use a caller-owned retrieval clock. The provider is read only by executed
-    /// clock expressions, never by open, inspection, or parameter discovery.
+    /// Use a caller-owned statement clock without inferred conversion profiles.
+    /// The provider is read only by executed clock expressions, never by open,
+    /// inspection, or parameter discovery.
     /// It must select its own timezone and report failures without a fallback.
     pub fn with_query_clock(
         repaint: impl Fn() + Send + Sync + 'static,
         clock: Arc<dyn Clock>,
+    ) -> Self {
+        Self::with_query_environment(repaint, clock, QueryExpressionFormats::default())
+    }
+
+    /// Capture explicit numeric/date expression policies with the system clock.
+    /// Missing policies keep typed missing-format errors; display settings do not apply.
+    pub fn with_query_formats(
+        repaint: impl Fn() + Send + Sync + 'static,
+        formats: QueryExpressionFormats,
+    ) -> Self {
+        Self::with_query_environment(
+            repaint,
+            Arc::new(crate::query::context::LocalClock),
+            formats,
+        )
+    }
+
+    /// Capture one immutable expression environment for retrieval and actions.
+    /// The supplied clock stays lazy; no locale, display or collation defaults are inferred.
+    pub fn with_query_environment(
+        repaint: impl Fn() + Send + Sync + 'static,
+        clock: Arc<dyn Clock>,
+        formats: QueryExpressionFormats,
     ) -> Self {
         let mut document: Option<Document> = None;
         let mut document_revision = 0_u64;
@@ -621,7 +647,16 @@ impl Worker {
             } => document
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
-                .run_discovered_query(target, parameters, *options, clock.as_ref(), cancelled),
+                .run_discovered_query(
+                    target,
+                    parameters,
+                    *options,
+                    Environment {
+                        clock: clock.as_ref(),
+                        formats,
+                    },
+                    cancelled,
+                ),
             Command::RunQuery {
                 target,
                 parameters,
@@ -630,34 +665,60 @@ impl Worker {
                 target,
                 parameters,
                 *options,
-                clock.as_ref(),
+                Environment {
+                    clock: clock.as_ref(),
+                    formats,
+                },
                 cancelled,
             ),
             #[cfg(feature = "offline-edit")]
             Command::ReviewParameterizedSchemaSql { target, parameters } => document
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
-                .review_parameterized_schema_sql(target, parameters, clock.as_ref(), cancelled),
+                .review_parameterized_schema_sql(
+                    target,
+                    parameters,
+                    Environment {
+                        clock: clock.as_ref(),
+                        formats,
+                    },
+                    cancelled,
+                ),
             #[cfg(feature = "offline-edit")]
             Command::ReviewSchemaSql { target } => document
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
-                .review_schema_sql(target, clock.as_ref(), cancelled),
+                .review_schema_sql(
+                    target,
+                    Environment {
+                        clock: clock.as_ref(),
+                        formats,
+                    },
+                    cancelled,
+                ),
             #[cfg(feature = "offline-edit")]
             Command::ReviewQueryInsert { target, parameters } => document
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
-                .review_query_insert(target, parameters, clock.as_ref(), cancelled),
+                .review_query_insert(
+                    target,
+                    parameters,
+                    Environment {
+                        clock: clock.as_ref(),
+                        formats,
+                    },
+                    cancelled,
+                ),
             #[cfg(feature = "offline-edit")]
             Command::ReviewQueryDelete { target, parameters } => document
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
-                .review_query_delete(target, parameters, cancelled),
+                .review_query_delete(target, parameters, formats, cancelled),
             #[cfg(feature = "offline-edit")]
             Command::ReviewQueryUpdate { target, parameters } => document
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
-                .review_query_update(target, parameters, cancelled),
+                .review_query_update(target, parameters, formats, cancelled),
             Command::InspectSavedQuery { target } => document
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
@@ -670,13 +731,19 @@ impl Worker {
                 target,
                 parameters,
                 *options,
-                clock.as_ref(),
+                Environment {
+                    clock: clock.as_ref(),
+                    formats,
+                },
                 cancelled,
             ),
             Command::Query { sql, options } => document.as_mut().ok_or(Error::NoDatabase)?.query(
                 sql,
                 *options,
-                clock.as_ref(),
+                Environment {
+                    clock: clock.as_ref(),
+                    formats,
+                },
                 cancelled,
             ),
         })

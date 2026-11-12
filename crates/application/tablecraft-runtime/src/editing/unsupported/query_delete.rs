@@ -1,4 +1,5 @@
 //! Unsupported hosts retain the public review boundary without native save authority.
+use crate::QueryExpressionFormats;
 use crate::editing::query_action::QueryActionTarget;
 use crate::{
     Error, InspectedQuery, ParameterInput, Response, display::Presentation, document::Document,
@@ -13,6 +14,7 @@ pub(in crate::editing) fn review(
     _document: &mut Document,
     _target: &InspectedQuery,
     _inputs: &[ParameterInput],
+    _formats: QueryExpressionFormats,
     _output: &mut Presentation<'_>,
     _cancelled: &dyn Fn() -> bool,
 ) -> Result<Response, Error> {

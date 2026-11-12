@@ -88,6 +88,7 @@ pub use find::{
     FindDirection, FindError, FindMatch, FindPosition, FindRequest, FindScope, FindSpan, FindTarget,
 };
 pub use query::contents::{QueryCollectionBinding, QueryResultHandle};
+pub use query::context::formats::{QueryExpressionFormats, QueryExpressionFormatsError};
 pub use query::inspection::{InspectedQuery, QueryOperation};
 pub use query::options::{QueryPoolLimits, QueryRunOptions, QueryRunOptionsError, QueryRunPool};
 pub use query::parameter_discovery::DiscoveredQuery;

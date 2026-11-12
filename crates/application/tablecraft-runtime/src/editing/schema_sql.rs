@@ -1,5 +1,6 @@
 //! Issued SQL syntax selects existing consuming schema reviews, never direct writes.
 use super::{EditError, platform};
+use crate::query::context::Environment;
 use crate::{
     Error, InspectedQuery, QueryOperation, Response,
     controls::{action_query_budget, check},
@@ -7,7 +8,6 @@ use crate::{
     query::parameters::ParameterInput,
 };
 use tablecraft_core::limits::Resource;
-use tablecraft_expressions::functions::dates::clock::Clock;
 use tablecraft_sql::{
     ParseLimits, parse_query,
     query::{
@@ -20,27 +20,27 @@ impl Document {
     pub(crate) fn review_schema_sql(
         &mut self,
         target: &InspectedQuery,
-        _clock: &dyn Clock,
+        _environment: Environment<'_>,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Response, Error> {
-        self.review_schema_sql_with_inputs(target, None, _clock, cancelled)
+        self.review_schema_sql_with_inputs(target, None, _environment, cancelled)
     }
 
     pub(crate) fn review_parameterized_schema_sql(
         &mut self,
         target: &InspectedQuery,
         parameters: &[ParameterInput],
-        clock: &dyn Clock,
+        environment: Environment<'_>,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Response, Error> {
-        self.review_schema_sql_with_inputs(target, Some(parameters), clock, cancelled)
+        self.review_schema_sql_with_inputs(target, Some(parameters), environment, cancelled)
     }
 
     fn review_schema_sql_with_inputs(
         &mut self,
         target: &InspectedQuery,
         parameters: Option<&[ParameterInput]>,
-        _clock: &dyn Clock,
+        _environment: Environment<'_>,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Response, Error> {
         self.require_query_inspection(target, cancelled)?;
@@ -63,7 +63,7 @@ impl Document {
                 self,
                 parsed.into_query(),
                 parameters.unwrap_or(&[]),
-                _clock,
+                _environment,
                 cancelled,
             );
             #[cfg(not(feature = "ace16-create"))]

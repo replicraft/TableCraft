@@ -2,6 +2,7 @@
 pub(crate) mod contents;
 pub(crate) mod context;
 pub(crate) mod inspection;
+pub(crate) mod like_mode;
 pub(crate) mod options;
 pub(crate) mod parameter_discovery;
 pub(crate) mod parameters;
@@ -12,12 +13,12 @@ use super::{
     display::Presentation,
     document::Document,
 };
+use crate::query::context::Environment;
 use contents::{QueryContentsBuilder, QueryResultIssuer};
 use std::{cell::RefCell, sync::Arc};
 use tablecraft_access::{NativeCollationResolver, NativeSource};
-use tablecraft_ace::{DatabaseQueryMode, NativeReadSource};
+use tablecraft_ace::NativeReadSource;
 use tablecraft_core::values::{ExpressionValue, Value};
-use tablecraft_expressions::{functions::dates::clock::Clock, predicates::LikeMode};
 use tablecraft_query::{
     CollectionQueryResult, ExecutionOptions, QueryValue, execute_collections_with_schema_discovery,
 };
@@ -28,7 +29,7 @@ const SQL_BYTES: usize = 64 * 1024;
 pub(super) struct RunSettings<'a> {
     pub options: QueryRunOptions,
     pub title: &'a str,
-    pub clock: &'a dyn Clock,
+    pub environment: Environment<'a>,
     pub cancelled: &'a dyn Fn() -> bool,
     pub issuer: QueryResultIssuer,
 }
@@ -38,7 +39,7 @@ impl Document {
         &mut self,
         sql: &str,
         options: QueryRunOptions,
-        clock: &dyn Clock,
+        environment: Environment<'_>,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Response, Error> {
         check(cancelled)?;
@@ -67,7 +68,7 @@ impl Document {
             RunSettings {
                 options,
                 title: "Query results",
-                clock,
+                environment,
                 cancelled,
                 issuer,
             },
@@ -87,19 +88,16 @@ pub(super) fn execute<R: NativeReadSource>(
     let RunSettings {
         options,
         title,
-        clock,
+        environment,
         cancelled,
         issuer,
     } = settings;
-    let context = context::Context::new(clock);
-    let like_mode = match source
-        .database_query_mode()
-        .map_err(options::native_error)?
-    {
-        DatabaseQueryMode::Ansi89 => Some(LikeMode::Ansi89),
-        DatabaseQueryMode::Ansi92 => Some(LikeMode::Ansi92),
-        DatabaseQueryMode::Absent | DatabaseQueryMode::Unknown => None,
-    };
+    let context = context::Context::new(environment);
+    let like_mode = like_mode::sql_view(
+        source
+            .database_query_mode()
+            .map_err(options::native_error)?,
+    );
     let result = execute_collections_with_schema_discovery(
         query,
         source,

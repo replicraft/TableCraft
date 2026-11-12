@@ -1,5 +1,6 @@
 //! Revision-bound inert saved-query inspection and explicitly requested execution.
 
+use crate::query::context::Environment;
 use crate::{
     Error, QueryRunOptions, Response,
     controls::{SCOPE, budget, check},
@@ -12,7 +13,6 @@ use crate::{
 };
 use std::cell::RefCell;
 use tablecraft_access::{NativeSource, SavedRead};
-use tablecraft_expressions::functions::dates::clock::Clock;
 use tablecraft_sql::ParseLimits;
 
 /// Native query identity belongs to one worker's retained document revision.
@@ -51,7 +51,7 @@ impl Document {
         target: &SavedQueryTarget,
         inputs: &[ParameterInput],
         options: QueryRunOptions,
-        clock: &dyn Clock,
+        environment: Environment<'_>,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Response, Error> {
         require_revision(self, target, cancelled)?;
@@ -84,7 +84,7 @@ impl Document {
             RunSettings {
                 options,
                 title: &target.name,
-                clock,
+                environment,
                 cancelled,
                 issuer,
             },

@@ -1,5 +1,6 @@
 //! Native INSERT review retains its distinct sealed candidate.
 use crate::editing::{QueryInsertReview, ReviewedQueryInsert};
+use crate::query::context::Environment;
 use crate::{
     Error, InspectedQuery, ParameterInput, Response,
     controls::check,
@@ -14,7 +15,6 @@ use crate::{
 };
 use std::sync::{Arc, atomic::AtomicBool};
 use tablecraft_access::editing::journal::NativeJournalInsertPlan;
-use tablecraft_expressions::functions::dates::clock::Clock;
 
 pub(in crate::editing) struct State {
     pub(in crate::editing) target: QueryActionTarget,
@@ -26,7 +26,7 @@ pub(in crate::editing) fn review(
     document: &mut Document,
     target: &InspectedQuery,
     inputs: &[ParameterInput],
-    clock: &dyn Clock,
+    environment: Environment<'_>,
     output: &mut Presentation<'_>,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Response, Error> {
@@ -36,7 +36,7 @@ pub(in crate::editing) fn review(
         inputs,
         output,
         cancelled,
-        Kind::Insert(clock),
+        Kind::Insert(environment),
     )?;
     let Plan::Insert(plan) = reviewed.plan else {
         return Err(EditError::Unavailable.into());

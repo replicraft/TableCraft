@@ -1,5 +1,6 @@
 //! Lease-free SQL UPDATE review owns the actual native plan, never UI authority.
 use super::platform;
+use crate::QueryExpressionFormats;
 use crate::{
     Error, InspectedQuery, ParameterInput, Response, display::Presentation, document::Document,
     query::parameters,
@@ -40,11 +41,12 @@ impl Document {
         &mut self,
         target: &InspectedQuery,
         inputs: &[ParameterInput],
+        formats: QueryExpressionFormats,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Response, Error> {
         self.require_query_inspection(target, cancelled)?;
         let mut output = Presentation::new(cancelled);
         parameters::validate_input_limits(inputs, &mut output)?;
-        platform::query_update::review(self, target, inputs, &mut output, cancelled)
+        platform::query_update::review(self, target, inputs, formats, &mut output, cancelled)
     }
 }

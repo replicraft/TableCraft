@@ -1,11 +1,11 @@
 //! Lease-free SQL INSERT review owns the actual native plan, never UI authority.
 use super::platform;
+use crate::query::context::Environment;
 use crate::{
     Error, InspectedQuery, ParameterInput, Response, display::Presentation, document::Document,
     query::parameters,
 };
 use std::path::Path;
-use tablecraft_expressions::functions::dates::clock::Clock;
 
 /// Complete reviewed counts and display facts, not permission to write.
 pub struct QueryInsertReview {
@@ -40,12 +40,12 @@ impl Document {
         &mut self,
         target: &InspectedQuery,
         inputs: &[ParameterInput],
-        clock: &dyn Clock,
+        environment: Environment<'_>,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Response, Error> {
         self.require_query_inspection(target, cancelled)?;
         let mut output = Presentation::new(cancelled);
         parameters::validate_input_limits(inputs, &mut output)?;
-        platform::query_insert::review(self, target, inputs, clock, &mut output, cancelled)
+        platform::query_insert::review(self, target, inputs, environment, &mut output, cancelled)
     }
 }

@@ -1,5 +1,6 @@
 //! Complete SELECT INTO preparation over the document's exact immutable image.
 use super::super::table_creation::Request;
+use crate::query::context::Environment;
 use crate::{
     Error, Response,
     controls::{SCOPE, action_query_budget, action_review_budget, check, comparison_budget},
@@ -14,7 +15,6 @@ use tablecraft_access::editing::sql::{
     NativeMakeTableOptions, prepare_parameterized_native_make_table_with_native_comparison,
 };
 use tablecraft_ace::{NativeImage, TableSnapshotLimits};
-use tablecraft_expressions::functions::dates::clock::Clock;
 use tablecraft_query::ExecutionOptions;
 use tablecraft_sql::query::Query;
 
@@ -22,7 +22,7 @@ pub(in crate::editing) fn review(
     document: &mut Document,
     query: Query,
     inputs: &[ParameterInput],
-    clock: &dyn Clock,
+    environment: Environment<'_>,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Response, Error> {
     check(cancelled)?;
@@ -48,7 +48,7 @@ pub(in crate::editing) fn review(
     };
     // The adapter constructs both its reader and native comparison resolver from
     // this image. No external Source or independently scoped field policy enters.
-    let context = Context::new(clock);
+    let context = Context::new(environment);
     let prepared = prepare_parameterized_native_make_table_with_native_comparison(
         image,
         query,
@@ -56,6 +56,7 @@ pub(in crate::editing) fn review(
         &comparison,
         &mut query_work,
         NativeMakeTableOptions {
+            absent_like_mode: Some(crate::query::like_mode::SQL_VIEW_DEFAULT),
             parameters: &bindings,
             execution: ExecutionOptions {
                 cancelled: Some(cancelled),

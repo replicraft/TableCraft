@@ -1,4 +1,6 @@
 //! Providers for one explicit retrieval run, independent of display preferences.
+pub(crate) mod formats;
+use formats::QueryExpressionFormats;
 use jiff::{Timestamp, tz::TimeZone};
 use std::time::SystemTime;
 use tablecraft_core::values::ExtendedDateTime;
@@ -40,20 +42,29 @@ impl Clock for LocalClock {
     }
 }
 
+/// Immutable per-worker providers borrowed for one command's execution.
+#[derive(Clone, Copy)]
+pub(crate) struct Environment<'a> {
+    pub clock: &'a dyn Clock,
+    pub formats: QueryExpressionFormats,
+}
+
 /// One statement's sequential Basic random state and immutable expression
 /// providers. Nested/named reads share them. A subsequent explicit run starts
 /// from the reviewed default seed, matching the existing CLI policy; this does
 /// not claim Access application-session Randomize/Rnd lifecycle compatibility.
 pub(crate) struct Context<'a> {
     clock: &'a dyn Clock,
+    formats: QueryExpressionFormats,
     random: RndState,
     messages: EnglishErrorMessages,
 }
 
 impl<'a> Context<'a> {
-    pub(crate) fn new(clock: &'a dyn Clock) -> Self {
+    pub(crate) fn new(environment: Environment<'a>) -> Self {
         Self {
-            clock,
+            clock: environment.clock,
+            formats: environment.formats,
             random: RndState::default(),
             messages: EnglishErrorMessages::default(),
         }
@@ -62,6 +73,8 @@ impl<'a> Context<'a> {
     pub(crate) fn options(&self) -> ExecutionOptions<'_> {
         ExecutionOptions {
             clock: Some(self.clock),
+            number_format: self.formats.number,
+            date_format: self.formats.date,
             random: Some(&self.random),
             error_messages: Some(&self.messages),
             // Admin is declared unsecured expression metadata, not OS identity,

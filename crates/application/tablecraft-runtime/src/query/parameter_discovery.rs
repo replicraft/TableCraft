@@ -1,13 +1,12 @@
 //! Explicit metadata acquisition owns a prepared plan, never a live native source.
 use super::{context::Context, inspection::InspectedQuery, parameters, present};
+use crate::query::context::Environment;
 use crate::{
     Error, ParameterInput, QueryRunOptions, Response, controls::SCOPE, display::Presentation,
     document::Document,
 };
 use std::{cell::RefCell, sync::Arc};
 use tablecraft_access::NativeSource;
-use tablecraft_ace::DatabaseQueryMode;
-use tablecraft_expressions::{functions::dates::clock::Clock, predicates::LikeMode};
 use tablecraft_query::{
     ExecutionOptions, ParameterDiscoveryMode, PreparationOptions, PreparedParameterQuery,
     parameter_discovery_mode, prepare_with_parameter_discovery,
@@ -108,14 +107,14 @@ impl Document {
         target: &DiscoveredQuery,
         inputs: &[ParameterInput],
         options: QueryRunOptions,
-        clock: &dyn Clock,
+        environment: Environment<'_>,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Response, Error> {
         self.require_query_inspection(&target.original, cancelled)?;
         let Mode::Implicit(prepared) = &target.mode else {
             // Metadata positively chose Strict before discovery; this is not a
             // retry after any opt-in bind or execution error.
-            return self.run_query(&target.original, inputs, options, clock, cancelled);
+            return self.run_query(&target.original, inputs, options, environment, cancelled);
         };
         let mut output = Presentation::with_budget(options.presentation().budget(), cancelled);
         parameters::validate_input_limits(inputs, &mut output)
@@ -135,15 +134,12 @@ impl Document {
         let comparison_pool = RefCell::new(options.comparison().budget());
         let (mut source, resolver) =
             source.with_deferred_database_collation_resolver(&comparison_pool)?;
-        let context = Context::new(clock);
-        let like_mode = match source
-            .database_query_mode()
-            .map_err(super::options::native_error)?
-        {
-            DatabaseQueryMode::Ansi89 => Some(LikeMode::Ansi89),
-            DatabaseQueryMode::Ansi92 => Some(LikeMode::Ansi92),
-            DatabaseQueryMode::Absent | DatabaseQueryMode::Unknown => None,
-        };
+        let context = Context::new(environment);
+        let like_mode = super::like_mode::sql_view(
+            source
+                .database_query_mode()
+                .map_err(super::options::native_error)?,
+        );
         let result = prepared
             .execute_collections(
                 &source,

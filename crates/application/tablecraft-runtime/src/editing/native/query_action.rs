@@ -1,7 +1,7 @@
 //! One bounded lease-free preparation path, with distinct native action plans.
 use crate::editing::query_action::QueryActionTarget;
 use crate::{
-    Error, InspectedQuery, ParameterInput,
+    Error, InspectedQuery, ParameterInput, QueryExpressionFormats,
     controls::{
         SCOPE, action_query_budget, action_query_limits, action_review_budget, check,
         comparison_budget,
@@ -9,7 +9,10 @@ use crate::{
     display::Presentation,
     document::Document,
     editing::EditError,
-    query::{context::Context, parameters},
+    query::{
+        context::{Context, Environment},
+        parameters,
+    },
 };
 use std::{
     cell::RefCell,
@@ -22,11 +25,8 @@ use tablecraft_access::{
         sql,
     },
 };
-use tablecraft_ace::{
-    DatabaseQueryMode, InspectError, RecoverableNativeDeletePlan, RecoverableNativeEditPlan,
-};
+use tablecraft_ace::{InspectError, RecoverableNativeDeletePlan, RecoverableNativeEditPlan};
 use tablecraft_core::limits::Resource;
-use tablecraft_expressions::{functions::dates::clock::Clock, predicates::LikeMode};
 use tablecraft_query::{DeletePlan, ExecutionOptions, UpdatePlan};
 use tablecraft_sql::{
     ParseLimits, parse_query,
@@ -35,9 +35,9 @@ use tablecraft_sql::{
 
 #[derive(Clone, Copy)]
 pub(in crate::editing) enum Kind<'a> {
-    Update,
-    Delete,
-    Insert(&'a dyn Clock),
+    Update(QueryExpressionFormats),
+    Delete(QueryExpressionFormats),
+    Insert(Environment<'a>),
 }
 
 pub(in crate::editing) enum Plan {
@@ -60,6 +60,10 @@ pub(in crate::editing) fn review(
     cancelled: &dyn Fn() -> bool,
     kind: Kind<'_>,
 ) -> Result<ReviewedAction, Error> {
+    let formats = match kind {
+        Kind::Update(formats) | Kind::Delete(formats) => formats,
+        Kind::Insert(environment) => environment.formats,
+    };
     let mut query_work = action_query_budget();
     query_work.charge(Resource::Bytes, target.sql().len() as u64)?;
     query_work.charge(Resource::Steps, target.sql().len() as u64)?;
@@ -68,7 +72,7 @@ pub(in crate::editing) fn review(
         &parsed.query().statement,
         Statement::Insert(insert) if matches!(insert.source, InsertSource::Query(_))
     );
-    let joined_update = if matches!(kind, Kind::Update)
+    let joined_update = if matches!(kind, Kind::Update(_))
         && matches!(&parsed.query().statement, Statement::Update(update)
             if !matches!(update.sources.as_slice(), [tablecraft_sql::select::TableSource::Table(_)]))
     {
@@ -79,11 +83,11 @@ pub(in crate::editing) fn review(
     } else {
         None
     };
-    let read_source_update = matches!(kind, Kind::Update)
+    let read_source_update = matches!(kind, Kind::Update(_))
         && joined_update.is_none()
         && sql::update_uses_read_source(parsed.query(), &mut query_work, cancelled)
             .map_err(sql::RecoverableError::Shape)?;
-    let joined_delete = if matches!(kind, Kind::Delete)
+    let joined_delete = if matches!(kind, Kind::Delete(_))
         && matches!(&parsed.query().statement, Statement::Delete(delete)
             if !matches!(delete.sources.as_slice(), [tablecraft_sql::select::TableSource::Table(_)]))
     {
@@ -94,17 +98,17 @@ pub(in crate::editing) fn review(
     } else {
         None
     };
-    let read_source_delete = matches!(kind, Kind::Delete)
+    let read_source_delete = matches!(kind, Kind::Delete(_))
         && joined_delete.is_none()
         && sql::delete_uses_read_source(parsed.query(), &mut query_work, cancelled)
             .map_err(sql::RecoverableDeleteError::Shape)?;
     let table = match kind {
-        Kind::Update => match joined_update {
+        Kind::Update(_) => match joined_update {
             Some(target) => target.table,
             None => sql::local_batch_update_table(parsed.query(), true)
                 .map_err(sql::RecoverableError::Shape)?,
         },
-        Kind::Delete => match joined_delete {
+        Kind::Delete(_) => match joined_delete {
             Some(target) => target.table,
             None => sql::local_delete_table(parsed.query(), true)
                 .map_err(sql::RecoverableDeleteError::Shape)?,
@@ -137,7 +141,7 @@ pub(in crate::editing) fn review(
                 &mut native,
                 cancelled,
             )?,
-            Kind::Update | Kind::Delete => NativeJournalEditor::capture_shared_image(
+            Kind::Update(_) | Kind::Delete(_) => NativeJournalEditor::capture_shared_image(
                 source,
                 SCOPE,
                 table,
@@ -151,13 +155,14 @@ pub(in crate::editing) fn review(
         let mut native = native_pool
             .try_borrow_mut()
             .map_err(|_| Error::Native(InspectError::Unsupported))?;
-        sql::native_mutation_like_mode(
+        sql::native_mutation_query_mode(
             &image,
             parsed.query(),
             &mut native,
             &mut query_work,
             cancelled,
         )?
+        .and_then(crate::query::like_mode::sql_view)
     };
 
     let source =
@@ -182,6 +187,8 @@ pub(in crate::editing) fn review(
             &source,
             &mut query_work,
             sql::NativeMutationOptions {
+                number_format: formats.number,
+                date_format: formats.date,
                 like_mode: mutation_like_mode,
                 parameters: &bindings,
                 collation: resolver.default_collation(),
@@ -213,6 +220,8 @@ pub(in crate::editing) fn review(
             &source,
             &mut query_work,
             sql::NativeMutationOptions {
+                number_format: formats.number,
+                date_format: formats.date,
                 like_mode: mutation_like_mode,
                 parameters: &bindings,
                 collation: resolver.default_collation(),
@@ -244,6 +253,8 @@ pub(in crate::editing) fn review(
             &source,
             &mut query_work,
             sql::NativeMutationOptions {
+                number_format: formats.number,
+                date_format: formats.date,
                 like_mode: mutation_like_mode,
                 parameters: &bindings,
                 collation: resolver.default_collation(),
@@ -275,6 +286,8 @@ pub(in crate::editing) fn review(
             &source,
             &mut query_work,
             sql::NativeMutationOptions {
+                number_format: formats.number,
+                date_format: formats.date,
                 like_mode: mutation_like_mode,
                 parameters: &bindings,
                 collation: resolver.default_collation(),
@@ -290,7 +303,7 @@ pub(in crate::editing) fn review(
                 .finish(&mut native, cancelled)
                 .map_err(sql::RecoverableDeleteError::Plan)?,
         )
-    } else if let Kind::Insert(clock) = kind
+    } else if let Kind::Insert(environment) = kind
         && select_insert
     {
         let inserter = {
@@ -300,12 +313,8 @@ pub(in crate::editing) fn review(
             NativeJournalInserter::new(image, table, &mut native, cancelled)
                 .map_err(sql::RecoverableInsertError::Editor)?
         };
-        let context = Context::new(clock);
-        let like_mode = match source.database_query_mode()? {
-            DatabaseQueryMode::Ansi89 => Some(LikeMode::Ansi89),
-            DatabaseQueryMode::Ansi92 => Some(LikeMode::Ansi92),
-            DatabaseQueryMode::Absent | DatabaseQueryMode::Unknown => None,
-        };
+        let context = Context::new(environment);
+        let like_mode = crate::query::like_mode::sql_view(source.database_query_mode()?);
 
         // Source callbacks borrow the native pool during retrieval. Retain no
         // mutable budget borrow until the complete SELECT has been staged.
@@ -323,7 +332,7 @@ pub(in crate::editing) fn review(
                 like_mode,
                 ..context.options()
             },
-            Some(clock),
+            Some(environment.clock),
         )?;
         let mut native = native_pool
             .try_borrow_mut()
@@ -334,13 +343,15 @@ pub(in crate::editing) fn review(
             .try_borrow_mut()
             .map_err(|_| Error::Native(InspectError::Unsupported))?;
         let options = sql::NativeMutationOptions {
+            number_format: formats.number,
+            date_format: formats.date,
             like_mode: mutation_like_mode,
             parameters: &bindings,
             collation: resolver.default_collation(),
             resolver: &resolver,
         };
         match kind {
-            Kind::Update => Plan::Update(sql::plan_recoverable_batch_update_with_options(
+            Kind::Update(_) => Plan::Update(sql::plan_recoverable_batch_update_with_options(
                 image,
                 parsed.query(),
                 &mut native,
@@ -348,7 +359,7 @@ pub(in crate::editing) fn review(
                 options,
                 cancelled,
             )?),
-            Kind::Delete => Plan::Delete(sql::plan_recoverable_delete_with_options(
+            Kind::Delete(_) => Plan::Delete(sql::plan_recoverable_delete_with_options(
                 image,
                 parsed.query(),
                 &mut native,
@@ -356,13 +367,13 @@ pub(in crate::editing) fn review(
                 options,
                 cancelled,
             )?),
-            Kind::Insert(clock) => Plan::Insert(sql::plan_recoverable_insert_with_options(
+            Kind::Insert(environment) => Plan::Insert(sql::plan_recoverable_insert_with_options(
                 image,
                 parsed.query(),
                 &mut native,
                 &mut query_work,
                 options,
-                Some(clock),
+                Some(environment.clock),
                 cancelled,
             )?),
         }

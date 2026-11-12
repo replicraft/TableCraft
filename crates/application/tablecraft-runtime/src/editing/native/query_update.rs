@@ -1,4 +1,5 @@
 //! Native UPDATE review retains its distinct sealed candidate.
+use crate::QueryExpressionFormats;
 use crate::editing::{QueryUpdateReview, ReviewedQueryUpdate};
 use crate::{
     Error, InspectedQuery, ParameterInput, Response,
@@ -26,10 +27,18 @@ pub(in crate::editing) fn review(
     document: &mut Document,
     target: &InspectedQuery,
     inputs: &[ParameterInput],
+    formats: QueryExpressionFormats,
     output: &mut Presentation<'_>,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Response, Error> {
-    let reviewed = query_action::review(document, target, inputs, output, cancelled, Kind::Update)?;
+    let reviewed = query_action::review(
+        document,
+        target,
+        inputs,
+        output,
+        cancelled,
+        Kind::Update(formats),
+    )?;
     let Plan::Update(plan) = reviewed.plan else {
         return Err(EditError::Unavailable.into());
     };

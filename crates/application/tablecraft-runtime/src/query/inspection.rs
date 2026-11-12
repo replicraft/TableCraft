@@ -3,6 +3,7 @@ use super::{
     RunSettings, SQL_BYTES, execute,
     parameters::{self, ParameterInput},
 };
+use crate::query::context::Environment;
 use crate::{
     Error, QueryRunOptions, Response,
     controls::{SCOPE, check},
@@ -11,7 +12,6 @@ use crate::{
 };
 use std::{cell::RefCell, sync::Arc};
 use tablecraft_access::NativeSource;
-use tablecraft_expressions::functions::dates::clock::Clock;
 use tablecraft_sql::{ParseLimits, parse_query, query::Statement};
 
 // Charge strong/weak reference counters in addition to the retained target.
@@ -86,7 +86,7 @@ impl Document {
     }
 
     /// Parse only syntax and declared parameter types. No native source callback,
-    /// binding scan, execution provider, clock, or random sequence is consulted.
+    /// binding scan, execution provider, environment, or random sequence is consulted.
     pub(crate) fn inspect_query(
         &self,
         document_revision: u64,
@@ -124,7 +124,7 @@ impl Document {
         target: &InspectedQuery,
         inputs: &[ParameterInput],
         options: QueryRunOptions,
-        clock: &dyn Clock,
+        environment: Environment<'_>,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Response, Error> {
         self.require_query_inspection(target, cancelled)?;
@@ -156,7 +156,7 @@ impl Document {
             RunSettings {
                 options,
                 title: "Query results",
-                clock,
+                environment,
                 cancelled,
                 issuer,
             },
