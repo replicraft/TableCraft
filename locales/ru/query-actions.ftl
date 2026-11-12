@@ -47,3 +47,5 @@ query-action-schema-add-confirmation = Добавить это поле в ис�
 
 query-action-schema-drop-index-name = Удаляемый индекс: { $name }
 query-action-schema-drop-index-confirmation = Безвозвратно удалить этот индекс из исходной базы данных? Значения записей останутся без изменений.
+query-action-schema-index-unique = Значения, отличные от NULL, должны быть уникальными; значения NULL разрешены.
+query-action-schema-index-unique-confirmation = Создать этот уникальный индекс в исходной базе данных?

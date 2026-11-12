@@ -47,3 +47,5 @@ query-action-schema-add-confirmation = Add this field to the original table?
 
 query-action-schema-drop-index-name = Index to remove: { $name }
 query-action-schema-drop-index-confirmation = Permanently remove this index from the original database? Record values will remain unchanged.
+query-action-schema-index-unique = Enforces unique non-NULL values; NULL entries remain allowed.
+query-action-schema-index-unique-confirmation = Create this unique index in the original database?

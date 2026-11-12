@@ -215,6 +215,7 @@ impl Preview {
                         column: "CopiedScore".into(),
                         native_number: 0,
                         descending: true,
+                        unique: false,
                         indexed_rows: fixtures::TOTAL_ROWS as usize,
                     },
                     MAKE_TABLE_SQL => QuerySchemaEffect::MakeTable {

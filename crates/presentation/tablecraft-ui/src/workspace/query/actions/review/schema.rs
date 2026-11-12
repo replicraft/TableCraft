@@ -19,12 +19,13 @@ pub enum QuerySchemaEffect {
         column: String,
         declaration: TypedFieldAdditionDeclaration,
     },
-    /// Create an ordinary nonunique index; source population is not a data delta.
+    /// Create an index with its reviewed uniqueness; source population is not a data delta.
     CreateIndex {
         index: String,
         column: String,
         native_number: usize,
         descending: bool,
+        unique: bool,
         indexed_rows: usize,
     },
     /// Remove a qualified ordinary index; record values are unchanged.

@@ -512,6 +512,7 @@ impl ReviewedSchema {
                     column,
                     native_number,
                     descending,
+                    unique,
                     indexed_rows,
                 }),
             ) => {
@@ -519,6 +520,7 @@ impl ReviewedSchema {
                     && witness.column_name() == column
                     && usize::from(witness.native_number()) == *native_number
                     && witness.descending() == *descending
+                    && witness.unique() == *unique
                     && witness.indexed_rows() == *indexed_rows
             }
             (
@@ -673,6 +675,7 @@ impl Desktop {
                 column,
                 native_number: usize::from(witness.native_number()),
                 descending: witness.descending(),
+                unique: witness.unique(),
                 indexed_rows: witness.indexed_rows(),
             }),
         };

@@ -47,3 +47,5 @@ query-action-schema-add-confirmation = Dieses Feld der ursprünglichen Tabelle h
 
 query-action-schema-drop-index-name = Zu entfernender Index: { $name }
 query-action-schema-drop-index-confirmation = Diesen Index dauerhaft aus der ursprünglichen Datenbank entfernen? Die Datensatzwerte bleiben unverändert.
+query-action-schema-index-unique = Erzwingt eindeutige Werte außer NULL; NULL-Einträge bleiben zulässig.
+query-action-schema-index-unique-confirmation = Diesen eindeutigen Index in der ursprünglichen Datenbank erstellen?

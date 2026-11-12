@@ -47,3 +47,5 @@ query-action-schema-add-confirmation = 원래 테이블에 이 필드를 추가�
 
 query-action-schema-drop-index-name = 제거할 인덱스: { $name }
 query-action-schema-drop-index-confirmation = 원본 데이터베이스에서 이 인덱스를 영구적으로 제거하시겠습니까? 레코드 값은 변경되지 않습니다.
+query-action-schema-index-unique = NULL이 아닌 값은 고유해야 하며 NULL 값은 계속 허용됩니다.
+query-action-schema-index-unique-confirmation = 원본 데이터베이스에 이 고유 인덱스를 만드시겠습니까?

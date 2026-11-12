@@ -47,3 +47,5 @@ query-action-schema-add-confirmation = ¿Agregar este campo a la tabla original?
 
 query-action-schema-drop-index-name = Índice que se quitará: { $name }
 query-action-schema-drop-index-confirmation = ¿Quitar permanentemente este índice de la base de datos original? Los valores de los registros permanecerán sin cambios.
+query-action-schema-index-unique = Exige valores no NULL únicos; las entradas NULL siguen permitidas.
+query-action-schema-index-unique-confirmation = ¿Crear este índice único en la base de datos original?

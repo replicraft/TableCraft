@@ -47,3 +47,5 @@ query-action-schema-add-confirmation = 元のテーブルにこのフィール�
 
 query-action-schema-drop-index-name = 削除するインデックス: { $name }
 query-action-schema-drop-index-confirmation = 元のデータベースからこのインデックスを完全に削除しますか？ レコードの値は変更されません。
+query-action-schema-index-unique = NULL 以外の値は一意である必要があります。NULL は引き続き使用できます。
+query-action-schema-index-unique-confirmation = 元のデータベースにこの一意のインデックスを作成しますか？

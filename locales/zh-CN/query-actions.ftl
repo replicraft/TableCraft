@@ -47,3 +47,5 @@ query-action-schema-add-confirmation = 将此字段添加到原始表中？
 
 query-action-schema-drop-index-name = 要删除的索引：{ $name }
 query-action-schema-drop-index-confirmation = 要从原始数据库中永久删除此索引吗？记录值将保持不变。
+query-action-schema-index-unique = 非 NULL 值必须唯一；仍允许 NULL 值。
+query-action-schema-index-unique-confirmation = 要在原数据库中创建此唯一索引吗？

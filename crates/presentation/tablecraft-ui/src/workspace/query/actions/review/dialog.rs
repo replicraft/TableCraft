@@ -104,6 +104,10 @@ impl State {
                                 "query-action-schema-add-confirmation"
                             }
                             QueryActionEffect::Schema(QuerySchemaEffect::CreateIndex {
+                                unique: true,
+                                ..
+                            }) => "query-action-schema-index-unique-confirmation",
+                            QueryActionEffect::Schema(QuerySchemaEffect::CreateIndex {
                                 ..
                             }) => "query-action-schema-index-confirmation",
                             QueryActionEffect::Schema(QuerySchemaEffect::DropIndex { .. }) => {
@@ -299,6 +303,7 @@ fn schema_summary(ui: &mut Ui, effect: &QuerySchemaEffect) {
             index,
             column,
             descending,
+            unique,
             indexed_rows,
             ..
         } => {
@@ -320,6 +325,9 @@ fn schema_summary(ui: &mut Ui, effect: &QuerySchemaEffect) {
                     "query-action-schema-index-ascending"
                 },
             ));
+            if *unique {
+                ui.label(tr(ui, "query-action-schema-index-unique"));
+            }
             ui.label(message(
                 ui,
                 "query-action-schema-index-source-rows",
