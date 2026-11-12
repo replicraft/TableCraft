@@ -1,6 +1,7 @@
 //! Independent populated keyless table images with fresh multi-page DATA roles.
 pub mod computed;
 pub mod mixed_fixed;
+pub mod numeric;
 pub mod wildcards;
 use super::extend_global_map;
 use crate::fixtures::access::{

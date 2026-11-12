@@ -9,7 +9,7 @@ fn long(bytes: &[u8], at: usize) -> usize {
     u32::from_le_bytes(bytes[at..at + 4].try_into().unwrap()) as usize
 }
 
-pub(super) struct NewIndex<'a> {
+pub(in crate::fixtures::access::secondary_index) struct NewIndex<'a> {
     pub name: &'a str,
     pub column: u16,
     pub descending: bool,
@@ -18,11 +18,14 @@ pub(super) struct NewIndex<'a> {
     pub distinct: u32,
 }
 
-pub(super) fn append(original: &[u8], request: NewIndex<'_>) -> Vec<u8> {
+pub(in crate::fixtures::access::secondary_index) fn append(
+    original: &[u8],
+    request: NewIndex<'_>,
+) -> Vec<u8> {
     append_with_logical(original, request, long(original, 47) as u32)
 }
 
-pub(super) fn append_with_logical(
+pub(in crate::fixtures::access::secondary_index) fn append_with_logical(
     original: &[u8],
     request: NewIndex<'_>,
     logical_number: u32,

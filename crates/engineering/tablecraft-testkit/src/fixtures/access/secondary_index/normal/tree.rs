@@ -7,14 +7,14 @@ const CAPACITY: usize = 3616;
 
 #[derive(Clone, Copy)]
 struct Wire {
-    bytes: [u8; 13],
+    bytes: [u8; 17],
     length: usize,
     key_row: usize,
 }
 
 impl Wire {
     fn row(row: Row, descending: bool) -> Self {
-        let mut bytes = [0; 13];
+        let mut bytes = [0; 17];
         let key = if let Some(value) = row.score {
             bytes[0] = 127;
             bytes[1..5].copy_from_slice(&((value as u32) ^ 0x8000_0000).to_be_bytes());
@@ -48,7 +48,7 @@ struct LevelNode {
     maximum: Wire,
 }
 
-pub(super) struct Tree {
+pub(in crate::fixtures::access::secondary_index) struct Tree {
     pub pages: Vec<Vec<u8>>,
     pub root: u32,
     pub leaf_pages: usize,
@@ -151,10 +151,37 @@ fn siblings(first: u32, position: usize, count: usize) -> (u32, u32) {
 }
 
 pub(super) fn build(rows: &[Row], first: u32, owner: u32, descending: bool) -> Tree {
-    let mut wires = rows
+    let wires = rows
         .iter()
         .map(|row| Wire::row(*row, descending))
         .collect::<Vec<_>>();
+    build_wires(wires, first, owner)
+}
+
+/// Independent numeric key components precede the literal big-endian ROW suffix.
+pub(in crate::fixtures::access::secondary_index) fn build_encoded(
+    entries: &[(Vec<u8>, u32)],
+    first: u32,
+    owner: u32,
+) -> Tree {
+    let wires = entries
+        .iter()
+        .map(|(key, reference)| {
+            assert!(!key.is_empty() && key.len() <= 9);
+            let mut bytes = [0; 17];
+            bytes[..key.len()].copy_from_slice(key);
+            bytes[key.len()..key.len() + 4].copy_from_slice(&reference.to_be_bytes());
+            Wire {
+                bytes,
+                length: key.len() + 4,
+                key_row: key.len() + 4,
+            }
+        })
+        .collect();
+    build_wires(wires, first, owner)
+}
+
+fn build_wires(mut wires: Vec<Wire>, first: u32, owner: u32) -> Tree {
     wires.sort_unstable_by(|a, b| a.bytes[..a.length].cmp(&b.bytes[..b.length]));
     let mut leaves = Vec::new();
     let mut start = 0;
@@ -186,7 +213,7 @@ pub(super) fn build(rows: &[Row], first: u32, owner: u32, descending: bool) -> T
             number,
             maximum: range.end.checked_sub(1).map_or(
                 Wire {
-                    bytes: [0; 13],
+                    bytes: [0; 17],
                     length: 0,
                     key_row: 0,
                 },

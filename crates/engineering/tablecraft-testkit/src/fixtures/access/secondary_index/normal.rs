@@ -1,8 +1,8 @@
 //! Normal secondary-index images over genuine retained sources; no engine codecs.
-mod definition;
+pub(super) mod definition;
 pub mod dropping;
 pub mod history;
-mod tree;
+pub(super) mod tree;
 
 use crate::fixtures::access::{
     canonical_retained_add_table::{currency::mixed, extend_global_map, fields, populated},
@@ -162,7 +162,7 @@ pub fn protected_companion(descending: bool) -> Source {
     )
 }
 
-fn finish(
+pub(super) fn finish(
     before: Vec<u8>,
     owner: u32,
     table: &'static str,

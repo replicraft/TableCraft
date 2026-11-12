@@ -2,6 +2,8 @@
 mod index;
 /// Normal retained secondary-index populations with independent multilevel frames.
 pub mod normal;
+/// Independent nine-category numeric key and complete-index images.
+pub mod numeric;
 
 use super::{multiple_indexes as frames, mutation_fixture as base};
 use crate::fixtures::access as raw;
