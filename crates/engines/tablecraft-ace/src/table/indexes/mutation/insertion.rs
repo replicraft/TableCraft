@@ -438,3 +438,46 @@ pub(in crate::table) fn prepare_existing(
     )?;
     prepared.finish_existing::<ENTRY_BUFFER>(image, checked, budget, cancelled)
 }
+
+/// Retained manual LONG insertion owns caller-bounded complete populations.
+/// The operation separately proves all source/program/schema/physical evidence.
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(in crate::table) fn prepare_retained_manual_existing(
+    image: &NativeImage,
+    checked: &TableCheck,
+    physical: u32,
+    requests: &[InsertRow<'_>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<IndexInsertion, EditError> {
+    let index = qualify_actions(checked, physical, budget, cancelled)?;
+    let [key] = index.columns() else {
+        return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+    };
+    let mut position = None;
+    for (ordinal, field) in checked.schema().columns().iter().enumerate() {
+        check(budget, cancelled)?;
+        if field.number() == key.number() {
+            if field.native_type() != crate::format::data_type::INT32
+                || field.scalar_type() != Some(ScalarType::Int32)
+                || !field.fixed()
+                || field.storage_length() != size_of::<i32>()
+                || field.flags()
+                    != (crate::format::layout::FIXED_FLAG | crate::format::layout::UPDATABLE_FLAG)
+                || field.extended_flags() != 0
+            {
+                return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+            }
+            position = Some(ordinal);
+        }
+    }
+    let profile = SingleProfile {
+        column: position.ok_or(EditError::Preservation)?,
+        kind: NumericKey::new(ScalarType::Int32)?,
+        descending: key.descending(),
+    };
+    let prepared = preparation::prepare_retained_manual::<_, ENTRY_BUFFER>(
+        image, checked, index, profile, requests, budget, cancelled,
+    )?;
+    prepared.finish_existing::<ENTRY_BUFFER>(image, checked, budget, cancelled)
+}

@@ -26,11 +26,18 @@ use crate::{
 use std::io::Cursor;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
+struct RequestScope<'request, 'value> {
+    rows: &'request [InsertRow<'value>],
+    retained_manual: bool,
+}
+
 pub(super) struct Prepared<P: RetainedProfile> {
     pub(super) result: IndexInsertion,
     pub(super) profile: P,
     pub(super) keys: Vec<KeyRef<P::Key>>,
     pub(super) requires_continuation: bool,
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    retained_manual: bool,
 }
 
 pub(super) fn prepare<P: InsertProfile, const N: usize>(
@@ -42,6 +49,57 @@ pub(super) fn prepare<P: InsertProfile, const N: usize>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Prepared<P>, EditError> {
+    prepare_with_population_limit::<_, N>(
+        image,
+        checked,
+        index,
+        profile,
+        RequestScope {
+            rows: requests,
+            retained_manual: false,
+        },
+        budget,
+        cancelled,
+    )
+}
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(super) fn prepare_retained_manual<P: InsertProfile, const N: usize>(
+    image: &NativeImage,
+    checked: &TableCheck,
+    index: &NativeIndex,
+    profile: P,
+    requests: &[InsertRow<'_>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Prepared<P>, EditError> {
+    prepare_with_population_limit::<_, N>(
+        image,
+        checked,
+        index,
+        profile,
+        RequestScope {
+            rows: requests,
+            retained_manual: true,
+        },
+        budget,
+        cancelled,
+    )
+}
+
+fn prepare_with_population_limit<P: InsertProfile, const N: usize>(
+    image: &NativeImage,
+    checked: &TableCheck,
+    index: &NativeIndex,
+    profile: P,
+    scope: RequestScope<'_, '_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Prepared<P>, EditError> {
+    let RequestScope {
+        rows: requests,
+        retained_manual,
+    } = scope;
     let start = index.root_page() as usize * PAGE_BYTES;
     let original = image
         .as_bytes()
@@ -63,6 +121,29 @@ pub(super) fn prepare<P: InsertProfile, const N: usize>(
         reads: 0,
     };
     let mut keys = Vec::new();
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    let tree = if retained_manual {
+        Tree::read_retained_long::<_, N>(
+            image,
+            &mut reader,
+            checked.schema().definition_page(),
+            index.root_page(),
+            &profile,
+            0,
+            &mut keys,
+        )?
+    } else {
+        Tree::read::<_, N>(
+            image,
+            &mut reader,
+            checked.schema().definition_page(),
+            index.root_page(),
+            &profile,
+            0,
+            &mut keys,
+        )?
+    };
+    #[cfg(not(all(feature = "journal", feature = "ace16-create")))]
     let tree = Tree::read::<_, N>(
         image,
         &mut reader,
@@ -83,7 +164,7 @@ pub(super) fn prepare<P: InsertProfile, const N: usize>(
     collect_pages(&tree, &mut source_pages, &mut reader)?;
     let capacity = original_count
         .checked_add(requests.len())
-        .filter(|count| *count <= MAX_LIVE_ROWS)
+        .filter(|count| retained_manual || *count <= MAX_LIVE_ROWS)
         .ok_or(InspectError::StructureLimit)?;
     reader
         .budget
@@ -91,6 +172,10 @@ pub(super) fn prepare<P: InsertProfile, const N: usize>(
         .map_err(InspectError::from)?;
     keys.try_reserve_exact(requests.len())
         .map_err(|_| InspectError::Allocation)?;
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    if retained_manual {
+        require_distinct_references(&keys, requests, reader.budget, cancelled)?;
+    }
     let constraints = index.constraints().ok_or(InspectError::Unsupported)?;
     for (position, request) in requests.iter().enumerate() {
         reader.tick()?;
@@ -108,13 +193,15 @@ pub(super) fn prepare<P: InsertProfile, const N: usize>(
         {
             return Err(EditError::Conflict);
         }
-        reader.work(keys.len() + position)?;
-        if keys.iter().any(|entry| entry.row == request.reference)
-            || requests[..position]
-                .iter()
-                .any(|prior| prior.reference == request.reference)
-        {
-            return Err(EditError::Conflict);
+        if !retained_manual {
+            reader.work(keys.len() + position)?;
+            if keys.iter().any(|entry| entry.row == request.reference)
+                || requests[..position]
+                    .iter()
+                    .any(|prior| prior.reference == request.reference)
+            {
+                return Err(EditError::Conflict);
+            }
         }
         if constraints.ignore_nulls() && profile.constraint_nulls(&key)?.0 {
             continue;
@@ -185,6 +272,8 @@ pub(super) fn prepare<P: InsertProfile, const N: usize>(
         profile,
         keys,
         requires_continuation,
+        #[cfg(all(feature = "journal", feature = "ace16-create"))]
+        retained_manual,
     })
 }
 
@@ -277,6 +366,29 @@ impl<P: InsertProfile> Prepared<P> {
                 reads: 0,
             };
             let mut original_keys = Vec::new();
+            #[cfg(all(feature = "journal", feature = "ace16-create"))]
+            let tree = if self.retained_manual {
+                Tree::read_retained_long::<_, N>(
+                    image,
+                    &mut reader,
+                    checked.schema().definition_page(),
+                    self.result.root,
+                    &self.profile,
+                    0,
+                    &mut original_keys,
+                )?
+            } else {
+                Tree::read::<_, N>(
+                    image,
+                    &mut reader,
+                    checked.schema().definition_page(),
+                    self.result.root,
+                    &self.profile,
+                    0,
+                    &mut original_keys,
+                )?
+            };
+            #[cfg(not(all(feature = "journal", feature = "ace16-create")))]
             let tree = Tree::read::<_, N>(
                 image,
                 &mut reader,
@@ -363,6 +475,53 @@ fn collect_pages(
     pages.push(tree.number());
     for child in tree.children() {
         collect_pages(child, pages, reader)?;
+    }
+    Ok(())
+}
+
+/// Only the distinct retained family uses this paid complete numeric ROW set.
+/// It copies no key payloads and establishes exactly the collision condition
+/// checked by the older per-request scans, before any candidate bytes exist.
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+fn require_distinct_references<K>(
+    original: &[KeyRef<K>],
+    requests: &[InsertRow<'_>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    check(budget, cancelled)?;
+    let count = original
+        .len()
+        .checked_add(requests.len())
+        .ok_or(InspectError::StructureLimit)?;
+    budget
+        .charge_allocation(count as u64, size_of::<u32>() as u64)
+        .map_err(InspectError::from)?;
+    let mut references = Vec::new();
+    references
+        .try_reserve_exact(count)
+        .map_err(|_| InspectError::Allocation)?;
+    for reference in original
+        .iter()
+        .map(|entry| entry.row)
+        .chain(requests.iter().map(|row| row.reference))
+    {
+        check(budget, cancelled)?;
+        references.push(reference);
+    }
+    let work = count
+        .checked_mul(count.checked_ilog2().unwrap_or(0) as usize + 1)
+        .ok_or(InspectError::StructureLimit)?;
+    budget
+        .charge(Resource::Steps, work as u64)
+        .map_err(InspectError::from)?;
+    references.sort_unstable();
+    check(budget, cancelled)?;
+    for pair in references.windows(2) {
+        check(budget, cancelled)?;
+        if pair[0] == pair[1] {
+            return Err(EditError::Conflict);
+        }
     }
     Ok(())
 }

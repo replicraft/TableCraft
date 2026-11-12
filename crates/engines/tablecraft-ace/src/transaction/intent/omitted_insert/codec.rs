@@ -24,6 +24,8 @@ const RETAINED_OPAQUE_MAGIC: &[u8; 8] = b"TCNA0009";
 const RETAINED_OPAQUE_PROFILE: u16 = 9;
 const RETAINED_KEYLESS_MAGIC: &[u8; 8] = b"TCNA0010";
 const RETAINED_KEYLESS_PROFILE: u16 = 10;
+const RETAINED_MANUAL_INDEXED_MAGIC: &[u8; 8] = b"TCNA0011";
+const RETAINED_MANUAL_INDEXED_PROFILE: u16 = 11;
 
 impl Profile {
     const fn omitted_tag(self) -> u8 {
@@ -51,9 +53,11 @@ impl SourceFamily {
     fn view(self, value: &Value, profile: Profile) -> Result<Encoded<'_>, NativeIntentError> {
         match self {
             Self::Ordinary => carrier::row_view(value, profile),
-            Self::Current | Self::Retained | Self::RetainedOpaque | Self::RetainedKeyless => {
-                carrier::length_prefixed_row_view(value, profile)
-            }
+            Self::Current
+            | Self::Retained
+            | Self::RetainedOpaque
+            | Self::RetainedKeyless
+            | Self::RetainedManualIndexed => carrier::length_prefixed_row_view(value, profile),
         }
     }
 
@@ -67,7 +71,11 @@ impl SourceFamily {
     ) -> Result<Borrowed<'a>, NativeIntentError> {
         match self {
             Self::Ordinary => carrier::row_parse(tag, bytes, profile, budget, cancelled),
-            Self::Current | Self::Retained | Self::RetainedOpaque | Self::RetainedKeyless => {
+            Self::Current
+            | Self::Retained
+            | Self::RetainedOpaque
+            | Self::RetainedKeyless
+            | Self::RetainedManualIndexed => {
                 carrier::length_prefixed_row_parse(tag, bytes, profile, budget, cancelled)
             }
         }
@@ -77,27 +85,32 @@ impl SourceFamily {
         match self {
             Self::Ordinary => MAX_RECORD_BYTES,
             Self::Current => NativeOmittedInsertIntent::MAX_CURRENT_ENCODED_BYTES,
-            Self::Retained | Self::RetainedOpaque | Self::RetainedKeyless => {
-                NativeOmittedInsertIntent::MAX_RETAINED_ENCODED_BYTES
-            }
+            Self::Retained
+            | Self::RetainedOpaque
+            | Self::RetainedKeyless
+            | Self::RetainedManualIndexed => NativeOmittedInsertIntent::MAX_RETAINED_ENCODED_BYTES,
         }
     }
 
     const fn maximum_rows(self) -> usize {
         match self {
             Self::Ordinary => MAX_LIVE_ROWS,
-            Self::Current | Self::Retained | Self::RetainedOpaque | Self::RetainedKeyless => {
-                u32::MAX as usize
-            }
+            Self::Current
+            | Self::Retained
+            | Self::RetainedOpaque
+            | Self::RetainedKeyless
+            | Self::RetainedManualIndexed => u32::MAX as usize,
         }
     }
 
     const fn maximum_columns(self) -> usize {
         match self {
             Self::Ordinary => MAX_COLUMNS,
-            Self::Current | Self::Retained | Self::RetainedOpaque | Self::RetainedKeyless => {
-                u32::MAX as usize
-            }
+            Self::Current
+            | Self::Retained
+            | Self::RetainedOpaque
+            | Self::RetainedKeyless
+            | Self::RetainedManualIndexed => u32::MAX as usize,
         }
     }
 }
@@ -270,6 +283,12 @@ fn preflight<'a>(
         version if family == SourceFamily::RetainedKeyless && version == RETAINED_KEYLESS_MAGIC => {
             (Profile::Wider, RETAINED_KEYLESS_PROFILE)
         }
+        version
+            if family == SourceFamily::RetainedManualIndexed
+                && version == RETAINED_MANUAL_INDEXED_MAGIC =>
+        {
+            (Profile::Wider, RETAINED_MANUAL_INDEXED_PROFILE)
+        }
         _ => {
             return Err(if raw.starts_with(PREFIX) {
                 NativeIntentError::UnsupportedVersion
@@ -293,9 +312,10 @@ fn preflight<'a>(
     }
     let before_length = u64::from_le_bytes(raw[BEFORE_LENGTH_AT..BINDING_AT].try_into().unwrap());
     match family {
-        SourceFamily::Retained | SourceFamily::RetainedOpaque | SourceFamily::RetainedKeyless => {
-            binding::retained_length(before_length)?
-        }
+        SourceFamily::Retained
+        | SourceFamily::RetainedOpaque
+        | SourceFamily::RetainedKeyless
+        | SourceFamily::RetainedManualIndexed => binding::retained_length(before_length)?,
         _ => binding::length(before_length)?,
     }
     let count = word(COUNT_AT);
@@ -386,7 +406,12 @@ impl NativeOmittedInsertIntent {
         output
             .try_reserve_exact(length)
             .map_err(|_| InspectError::Allocation)?;
-        let (magic, number) = if self.family == SourceFamily::RetainedKeyless {
+        let (magic, number) = if self.family == SourceFamily::RetainedManualIndexed {
+            (
+                RETAINED_MANUAL_INDEXED_MAGIC,
+                RETAINED_MANUAL_INDEXED_PROFILE,
+            )
+        } else if self.family == SourceFamily::RetainedKeyless {
             (RETAINED_KEYLESS_MAGIC, RETAINED_KEYLESS_PROFILE)
         } else if self.family == SourceFamily::RetainedOpaque {
             (RETAINED_OPAQUE_MAGIC, RETAINED_OPAQUE_PROFILE)
@@ -488,6 +513,19 @@ impl NativeOmittedInsertIntent {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
         Self::decode_family(raw, SourceFamily::RetainedKeyless, budget, cancelled)
+    }
+
+    /// Decode only TCNA0011 original presence, without native source authority.
+    ///
+    /// # Errors
+    /// Refuses other families, invalid profiles, flags, names, presence/carrier
+    /// framing or image lengths, cancellation, allocation and resource exhaustion.
+    pub fn decode_retained_manual_indexed(
+        raw: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        Self::decode_family(raw, SourceFamily::RetainedManualIndexed, budget, cancelled)
     }
 
     fn decode_family(

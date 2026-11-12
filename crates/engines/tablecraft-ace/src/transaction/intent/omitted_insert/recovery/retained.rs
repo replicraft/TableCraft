@@ -1,4 +1,4 @@
-//! TCNA8/9/10 replays only after requalifying the same checked V3 journal.
+//! TCNA8/9/10/11 replays only after requalifying the same checked V3 journal.
 use super::super::NativeOmittedInsertIntent;
 #[cfg(feature = "ace16-create")]
 use crate::{NativeImage, transaction::qualified_recovery::equal_image};
@@ -12,14 +12,14 @@ use tablecraft_io::journal::{
 };
 use tablecraft_model::CatalogScope;
 
-/// The same immutable V3 session, qualified by the original TCNA8/9/10 source proof.
+/// The same immutable V3 session, qualified by the original TCNA8/9/10/11 source proof.
 #[must_use = "recover explicitly or retain the qualified V3 journal"]
 pub struct QualifiedRetainedNativeOmittedInsertRecovery<'a, J: DurableStorage> {
     checked: CheckedV3<'a, J>,
 }
 
 impl NativeOmittedInsertIntent {
-    /// Qualify only retained TCNA8/9/10 against original BEFORE and complete AFTER.
+    /// Qualify only retained TCNA8/9/10/11 against original BEFORE and complete AFTER.
     pub fn qualify_retained_recovery<'a, J: DurableStorage>(
         self,
         checked: CheckedV3<'a, J>,
@@ -31,7 +31,11 @@ impl NativeOmittedInsertIntent {
         let _span =
             tracing::debug_span!("native.retained_omitted_insert_recovery.qualify").entered();
         check(budget, cancelled)?;
-        if !(self.is_retained() || self.is_retained_opaque() || self.is_retained_keyless()) {
+        if !(self.is_retained()
+            || self.is_retained_opaque()
+            || self.is_retained_keyless()
+            || self.is_retained_manual_indexed())
+        {
             return Err(NativeIntentError::UnsupportedVersion.into());
         }
         #[cfg(feature = "ace16-create")]

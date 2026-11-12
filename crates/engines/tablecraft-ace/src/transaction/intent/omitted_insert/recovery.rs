@@ -27,7 +27,11 @@ pub fn qualify_native_omitted_insert_recovery<'a, J: DurableStorage>(
 ) -> Result<QualifiedNativeOmittedInsertRecovery<'a, J>, NativeRecoveryQualificationError> {
     let _span = tracing::debug_span!("native.omitted_insert_recovery.qualify").entered();
     check(budget, cancelled)?;
-    if intent.is_retained() || intent.is_retained_opaque() || intent.is_retained_keyless() {
+    if intent.is_retained()
+        || intent.is_retained_opaque()
+        || intent.is_retained_keyless()
+        || intent.is_retained_manual_indexed()
+    {
         return Err(crate::NativeIntentError::UnsupportedVersion.into());
     }
     intent.verify_before(checked.before_bytes(), budget, cancelled)?;

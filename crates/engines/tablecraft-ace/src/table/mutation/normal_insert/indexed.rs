@@ -56,6 +56,23 @@ pub(super) struct StageIndexes<'a, 'image> {
     pub(super) scope: LvalScope,
 }
 
+#[derive(Clone, Copy)]
+enum RootFraming {
+    Uncompressed,
+    #[cfg(feature = "ace16-create")]
+    RetainedManual,
+}
+
+struct Admission {
+    scope: LvalScope,
+    framing: RootFraming,
+}
+
+struct StageRows<'request, 'record> {
+    requests: &'request [RowInsert],
+    records: &'record [Vec<u8>],
+}
+
 struct History {
     offset: usize,
     before: u32,
@@ -130,6 +147,48 @@ pub(super) fn stage(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, EditError> {
+    stage_with_mode(
+        image,
+        source,
+        StageRows { requests, records },
+        indexes,
+        false,
+        budget,
+        cancelled,
+    )
+}
+
+#[cfg(feature = "ace16-create")]
+pub(super) fn stage_retained_manual(
+    image: &NativeImage,
+    source: &Source,
+    requests: &[RowInsert],
+    records: &[Vec<u8>],
+    indexes: StageIndexes<'_, '_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, EditError> {
+    stage_with_mode(
+        image,
+        source,
+        StageRows { requests, records },
+        indexes,
+        true,
+        budget,
+        cancelled,
+    )
+}
+
+fn stage_with_mode(
+    image: &NativeImage,
+    source: &Source,
+    rows: StageRows<'_, '_>,
+    indexes: StageIndexes<'_, '_>,
+    retained_manual: bool,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, EditError> {
+    let StageRows { requests, records } = rows;
     let table = source.table.schema().name();
     let facts = indexes.facts;
     let placement =
@@ -144,23 +203,38 @@ pub(super) fn stage(
         });
     }
 
+    let expected_count = source
+        .records
+        .len()
+        .checked_add(requests.len())
+        .ok_or(InspectError::StructureLimit)?;
     let count = facts.checked().schema().layout.physical_indexes;
     let mut indexes = vector(count, budget, cancelled)?;
     let mut history = vector(count, budget, cancelled)?;
     for physical in 0..count {
         check(budget, cancelled)?;
         let physical = u32::try_from(physical).map_err(|_| InspectError::StructureLimit)?;
-        let index = insertion::prepare_existing(
-            image,
-            facts.checked(),
-            physical,
-            &rows,
-            budget,
-            cancelled,
-        )?;
+        #[cfg(feature = "ace16-create")]
+        let index = if retained_manual {
+            insertion::prepare_retained_manual_existing(
+                image,
+                facts.checked(),
+                physical,
+                &rows,
+                budget,
+                cancelled,
+            )?
+        } else {
+            insertion::prepare_existing(image, facts.checked(), physical, &rows, budget, cancelled)?
+        };
+        #[cfg(not(feature = "ace16-create"))]
+        let index = {
+            let _ = retained_manual;
+            insertion::prepare_existing(image, facts.checked(), physical, &rows, budget, cancelled)?
+        };
         if index.physical() != physical
             || index.original_count() != source.records.len()
-            || index.expected().len() != source.records.len() + requests.len()
+            || index.expected().len() != expected_count
         {
             return Err(EditError::Preservation);
         }
@@ -240,7 +314,18 @@ pub(super) fn qualify<'image>(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(CheckedIndexes<'image>, bool), EditError> {
     let facts = CheckedIndexes::capture_actions(image, table, budget, cancelled)?;
-    qualify_facts(image, source, requests, scope, facts, budget, cancelled)
+    qualify_facts(
+        image,
+        source,
+        requests,
+        Admission {
+            scope,
+            framing: RootFraming::Uncompressed,
+        },
+        facts,
+        budget,
+        cancelled,
+    )
 }
 
 /// The keyless source must positively own zero indexes; all common source,
@@ -259,7 +344,36 @@ pub(super) fn qualify_keyless<'image>(
         image,
         source,
         requests,
-        LvalScope::Retained,
+        Admission {
+            scope: LvalScope::Retained,
+            framing: RootFraming::Uncompressed,
+        },
+        facts,
+        budget,
+        cancelled,
+    )
+}
+
+/// The distinct retained manual family accepts checked compressed roots without
+/// widening the old INSERT source languages or granting allocation authority.
+#[cfg(feature = "ace16-create")]
+pub(super) fn qualify_retained_manual<'image>(
+    image: &'image NativeImage,
+    source: &Source,
+    table: &str,
+    requests: &[RowInsert],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(CheckedIndexes<'image>, bool), EditError> {
+    let facts = CheckedIndexes::capture_retained_manual_actions(image, table, budget, cancelled)?;
+    qualify_facts(
+        image,
+        source,
+        requests,
+        Admission {
+            scope: LvalScope::Retained,
+            framing: RootFraming::RetainedManual,
+        },
         facts,
         budget,
         cancelled,
@@ -270,11 +384,12 @@ fn qualify_facts<'image>(
     image: &'image NativeImage,
     source: &Source,
     requests: &[RowInsert],
-    scope: LvalScope,
+    admission: Admission,
     facts: CheckedIndexes<'image>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(CheckedIndexes<'image>, bool), EditError> {
+    let Admission { scope, framing } = admission;
     let schema = source.table.schema();
     facts.require_source(image, schema, budget, cancelled)?;
     if facts.checked().schema().declared_rows() != schema.declared_rows()
@@ -282,7 +397,15 @@ fn qualify_facts<'image>(
     {
         return Err(EditError::Preservation);
     }
-    let ownership = Ownership::capture_actions(image, facts.checked(), budget, cancelled)?;
+    let ownership = match framing {
+        RootFraming::Uncompressed => {
+            Ownership::capture_actions(image, facts.checked(), budget, cancelled)?
+        }
+        #[cfg(feature = "ace16-create")]
+        RootFraming::RetainedManual => {
+            Ownership::capture_retained_long(image, facts.checked(), budget, cancelled)?
+        }
+    };
     let live = match scope {
         LvalScope::Original => Inventory::capture(image, budget, cancelled)?,
         #[cfg(feature = "ace16-create")]
@@ -325,7 +448,8 @@ fn qualify_facts<'image>(
             || u32_at(raw, NEXT_AT)? != 0
             || (leaf
                 && (tree.pages() != [index.root_page()]
-                    || u16_at(raw, PREFIX_AT)? != 0
+                    || (matches!(framing, RootFraming::Uncompressed)
+                        && u16_at(raw, PREFIX_AT)? != 0)
                     || u32_at(raw, TAIL_AT)? != 0))
         {
             return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));

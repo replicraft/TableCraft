@@ -26,6 +26,7 @@ enum SourceFamily {
     Retained,
     RetainedOpaque,
     RetainedKeyless,
+    RetainedManualIndexed,
 }
 
 /// Original ordered supplied/omitted rows and an exact complete BEFORE binding.
@@ -148,6 +149,34 @@ impl NativeOmittedInsertIntent {
         )
     }
 
+    /// Bind original manual indexed presence to the distinct TCNA0011 language.
+    /// This stores data only, not source, generation or mutation authority.
+    ///
+    /// # Errors
+    /// Refuses invalid names, presence/carrier framing or native image lengths,
+    /// cancellation, allocation failure and explicit resource exhaustion.
+    pub fn new_retained_manual_indexed(
+        table: &str,
+        rows: Vec<OmittedRowInsert>,
+        before: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        Self::capture(
+            table,
+            rows,
+            before,
+            SourceFamily::RetainedManualIndexed,
+            budget,
+            cancelled,
+        )
+    }
+
+    /// Exact TCNA0011 protocol identity, never a source certificate.
+    pub fn is_retained_manual_indexed(&self) -> bool {
+        self.family == SourceFamily::RetainedManualIndexed
+    }
+
     /// Exact TCNA0010 protocol identity, never a source certificate.
     pub fn is_retained_keyless(&self) -> bool {
         self.family == SourceFamily::RetainedKeyless
@@ -193,7 +222,10 @@ impl NativeOmittedInsertIntent {
         let before_binding = match family {
             SourceFamily::Retained
             | SourceFamily::RetainedOpaque
-            | SourceFamily::RetainedKeyless => binding::digest_retained(before, budget, cancelled)?,
+            | SourceFamily::RetainedKeyless
+            | SourceFamily::RetainedManualIndexed => {
+                binding::digest_retained(before, budget, cancelled)?
+            }
             _ => binding::digest(before, budget, cancelled)?,
         };
         let table = names::copy_name(table, budget)?;
@@ -267,11 +299,20 @@ impl NativeOmittedInsertIntent {
                 budget,
                 cancelled,
             ),
+            #[cfg(feature = "ace16-create")]
+            SourceFamily::RetainedManualIndexed => image
+                .plan_retained_manual_indexed_omitted_row_inserts(
+                    self.table(),
+                    self.rows(),
+                    budget,
+                    cancelled,
+                ),
             #[cfg(not(feature = "ace16-create"))]
             SourceFamily::Current
             | SourceFamily::Retained
             | SourceFamily::RetainedOpaque
-            | SourceFamily::RetainedKeyless => {
+            | SourceFamily::RetainedKeyless
+            | SourceFamily::RetainedManualIndexed => {
                 Err(EditError::Unsupported(crate::WriteBlocker::RowLayout))
             }
         }
@@ -301,7 +342,10 @@ impl NativeOmittedInsertIntent {
         let actual = match self.family {
             SourceFamily::Retained
             | SourceFamily::RetainedOpaque
-            | SourceFamily::RetainedKeyless => binding::digest_retained(before, budget, cancelled)?,
+            | SourceFamily::RetainedKeyless
+            | SourceFamily::RetainedManualIndexed => {
+                binding::digest_retained(before, budget, cancelled)?
+            }
             _ => binding::digest(before, budget, cancelled)?,
         };
         budget
@@ -326,3 +370,6 @@ mod opaque_tests;
 
 #[cfg(test)]
 mod keyless_tests;
+
+#[cfg(test)]
+mod manual_indexed_tests;

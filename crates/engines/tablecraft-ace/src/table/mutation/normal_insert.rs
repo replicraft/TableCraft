@@ -12,6 +12,8 @@ mod retained;
 #[cfg(feature = "ace16-create")]
 mod retained_keyless;
 #[cfg(feature = "ace16-create")]
+mod retained_manual_indexed;
+#[cfg(feature = "ace16-create")]
 mod retained_opaque;
 pub(crate) use eof::OrdinaryInsertPlanKind;
 mod omitted;

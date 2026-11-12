@@ -8,6 +8,11 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const CHILD_BYTES: usize = size_of::<u32>();
 
+struct Populations<'a> {
+    original: &'a [Vec<u8>],
+    final_keys: &'a [Vec<u8>],
+}
+
 struct Replay<'source, 'output, 'budget> {
     image: &'source NativeImage,
     final_keys: &'source [Vec<u8>],
@@ -133,8 +138,59 @@ impl Tree {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
+        self.reconstruct_growing(
+            image,
+            Populations {
+                original,
+                final_keys,
+            },
+            expected,
+            false,
+            budget,
+            cancelled,
+        )
+    }
+
+    /// The retained manual INSERT language independently owns compressed leaf
+    /// roots as well as existing NODE topology. No producer keys enter here.
+    #[cfg(feature = "ace16-create")]
+    pub(in crate::table) fn reconstruct_retained_manual_insertions(
+        &self,
+        image: &NativeImage,
+        original: &[Vec<u8>],
+        final_keys: &[Vec<u8>],
+        expected: &mut [u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        self.reconstruct_growing(
+            image,
+            Populations {
+                original,
+                final_keys,
+            },
+            expected,
+            true,
+            budget,
+            cancelled,
+        )
+    }
+
+    fn reconstruct_growing(
+        &self,
+        image: &NativeImage,
+        populations: Populations<'_>,
+        expected: &mut [u8],
+        retained_leaf: bool,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        let Populations {
+            original,
+            final_keys,
+        } = populations;
         if expected.len() != image.as_bytes().len()
-            || self.root.children.is_empty()
+            || (!retained_leaf && self.root.children.is_empty())
             || final_keys.len() < original.len()
         {
             return Err(EditError::Preservation);

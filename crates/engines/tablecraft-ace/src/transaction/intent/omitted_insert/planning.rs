@@ -147,6 +147,39 @@ impl NativeImage {
         Ok(RecoverableNativeOmittedInsertPlan { plan, intent })
     }
 
+    /// Bind retained manual indexed INSERT to TCNA0011 and complete native proof.
+    /// Empty batches repeat source, program, key and preservation checks.
+    ///
+    /// # Errors
+    /// Refuses invalid originals, unsupported source, programs, constraints or
+    /// capacity, failed preservation, cancellation, allocation and resource limits.
+    #[cfg(feature = "ace16-create")]
+    pub fn plan_recoverable_retained_manual_indexed_insert(
+        self,
+        table: &str,
+        rows: Vec<OmittedRowInsert>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<RecoverableNativeOmittedInsertPlan, RecoverableEditError> {
+        let _span = tracing::debug_span!("native.retained_manual_indexed_insert.plan_recoverable")
+            .entered();
+        let intent = NativeOmittedInsertIntent::new_retained_manual_indexed(
+            table,
+            rows,
+            self.as_bytes(),
+            budget,
+            cancelled,
+        )?;
+        let plan = intent.plan(self, budget, cancelled)?;
+        if plan.before_bytes().len() != plan.after_bytes().len()
+            || plan.changed_rows() != intent.rows().len()
+        {
+            return Err(EditError::Preservation.into());
+        }
+        check(budget, cancelled).map_err(EditError::from)?;
+        Ok(RecoverableNativeOmittedInsertPlan { plan, intent })
+    }
+
     /// Qualify native target-local absence and reconstruct original presence/default insertion.
     /// The retained intent contains requests, not final patches or permissions.
     pub fn plan_recoverable_ordinary_omitted_row_inserts(
@@ -205,13 +238,14 @@ impl RecoverableNativeOmittedInsertPlan {
         if self.intent.is_retained()
             || self.intent.is_retained_opaque()
             || self.intent.is_retained_keyless()
+            || self.intent.is_retained_manual_indexed()
         {
             return Err(JournalError::ImageSize);
         }
         self.plan.prepare(target, journal, budget, cancelled)
     }
 
-    /// Prepare only TCNA8/9/10 through the V3 journal; original V1 families refuse.
+    /// Prepare only TCNA8/9/10/11 through the V3 journal; original V1 families refuse.
     pub fn prepare_retained<'a, D: ResizableDurableStorage, J: DurableStorage>(
         self,
         target: &'a mut D,
@@ -221,7 +255,8 @@ impl RecoverableNativeOmittedInsertPlan {
     ) -> Result<PreparedResizableNativeEdit<'a, D, J>, JournalError> {
         if !(self.intent.is_retained()
             || self.intent.is_retained_opaque()
-            || self.intent.is_retained_keyless())
+            || self.intent.is_retained_keyless()
+            || self.intent.is_retained_manual_indexed())
         {
             return Err(JournalError::ImageSize);
         }

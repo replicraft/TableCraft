@@ -3,7 +3,7 @@ mod binary;
 mod integral;
 mod optional;
 mod text;
-mod tree;
+pub(in crate::table::mutation::normal_insert) mod tree;
 use crate::{
     EditError, InspectError, NativeEditPlan, NativeImage, NativeIndex, RowInsert,
     format::{

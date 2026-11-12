@@ -12,7 +12,7 @@ use tablecraft_core::{
 
 type Key = (Option<i32>, u32);
 
-pub(super) struct Operation<'a> {
+pub(in crate::table::mutation::normal_insert) struct Operation<'a> {
     pub image: &'a NativeImage,
     pub source: &'a Source,
     pub checked: &'a TableCheck,
@@ -23,6 +23,26 @@ pub(super) struct Operation<'a> {
 pub(super) fn reconstruct(
     operation: Operation<'_>,
     expected: &mut [u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    reconstruct_with_mode(operation, expected, false, budget, cancelled)
+}
+
+#[cfg(feature = "ace16-create")]
+pub(in crate::table::mutation::normal_insert) fn reconstruct_retained_manual(
+    operation: Operation<'_>,
+    expected: &mut [u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    reconstruct_with_mode(operation, expected, true, budget, cancelled)
+}
+
+fn reconstruct_with_mode(
+    operation: Operation<'_>,
+    expected: &mut [u8],
+    retained_manual: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
@@ -105,16 +125,47 @@ pub(super) fn reconstruct(
     let after_distinct = optional::distinct(&final_keys, budget, cancelled)?;
     let original_wire = wires(&original, key.descending(), budget, cancelled)?;
     let final_wire = wires(&final_keys, key.descending(), budget, cancelled)?;
+    #[cfg(feature = "ace16-create")]
+    let ownership = if retained_manual {
+        Ownership::capture_retained_long(image, checked, budget, cancelled)?
+    } else {
+        Ownership::capture(image, checked, budget, cancelled)?
+    };
+    #[cfg(not(feature = "ace16-create"))]
     let ownership = Ownership::capture(image, checked, budget, cancelled)?;
     let tree = ownership.require(image, schema, index, budget, cancelled)?;
-    tree.reconstruct_insertions(
-        image,
-        &original_wire,
-        &final_wire,
-        expected,
-        budget,
-        cancelled,
-    )?;
+    #[cfg(feature = "ace16-create")]
+    if retained_manual {
+        tree.reconstruct_retained_manual_insertions(
+            image,
+            &original_wire,
+            &final_wire,
+            expected,
+            budget,
+            cancelled,
+        )?;
+    } else {
+        tree.reconstruct_insertions(
+            image,
+            &original_wire,
+            &final_wire,
+            expected,
+            budget,
+            cancelled,
+        )?;
+    }
+    #[cfg(not(feature = "ace16-create"))]
+    {
+        let _ = retained_manual;
+        tree.reconstruct_insertions(
+            image,
+            &original_wire,
+            &final_wire,
+            expected,
+            budget,
+            cancelled,
+        )?;
+    }
     super::reconstruct_history(
         image,
         source,

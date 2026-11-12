@@ -22,6 +22,8 @@ enum IndexSet {
     Required,
     #[cfg(feature = "ace16-create")]
     Absent,
+    #[cfg(feature = "ace16-create")]
+    RetainedManual,
 }
 
 impl<'image> CheckedIndexes<'image> {
@@ -50,6 +52,18 @@ impl<'image> CheckedIndexes<'image> {
         Self::capture_action_indexes(image, table, IndexSet::Absent, budget, cancelled)
     }
 
+    /// The separate manual retained action validates complete retained ROW
+    /// membership without changing the older action factories.
+    #[cfg(feature = "ace16-create")]
+    pub(in crate::table::mutation) fn capture_retained_manual_actions(
+        image: &'image NativeImage,
+        table: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::capture_action_indexes(image, table, IndexSet::RetainedManual, budget, cancelled)
+    }
+
     fn capture_action_indexes(
         image: &'image NativeImage,
         table: &str,
@@ -57,6 +71,25 @@ impl<'image> CheckedIndexes<'image> {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
+        #[cfg(feature = "ace16-create")]
+        let checked = if matches!(indexes, IndexSet::RetainedManual) {
+            crate::table::indexes::check_table_retained(
+                &mut image.reader(),
+                image.catalog().catalog().scope(),
+                table,
+                budget,
+                cancelled,
+            )?
+        } else {
+            check_table(
+                &mut image.reader(),
+                image.catalog().catalog().scope(),
+                table,
+                budget,
+                cancelled,
+            )?
+        };
+        #[cfg(not(feature = "ace16-create"))]
         let checked = check_table(
             &mut image.reader(),
             image.catalog().catalog().scope(),
@@ -73,6 +106,8 @@ impl<'image> CheckedIndexes<'image> {
         }
         let allowed = match indexes {
             IndexSet::Required => !checked.indexes().is_empty(),
+            #[cfg(feature = "ace16-create")]
+            IndexSet::RetainedManual => !checked.indexes().is_empty(),
             #[cfg(feature = "ace16-create")]
             IndexSet::Absent => {
                 checked.indexes().is_empty()
