@@ -580,3 +580,6 @@ fn assert_image(actual: &[u8], expected: &[u8]) {
 }
 
 mod read_source;
+
+#[cfg(feature = "ace16-create")]
+mod retained_batch;
