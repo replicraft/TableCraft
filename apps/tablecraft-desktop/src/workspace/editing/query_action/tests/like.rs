@@ -22,7 +22,7 @@ fn source(mode: i32) -> (Vec<u8>, u32) {
 
 #[test]
 fn normal_run_like_update_observes_database_mode_no_yes_save_ack_and_reopen() {
-    for (mode, pattern) in [(0_i32, "a*"), (1_i32, "a%")] {
+    for (mode, pattern) in [(None, "a*"), (Some(0_i32), "a*"), (Some(1_i32), "a%")] {
         let seed = fields::source(fields::Case::FirstNumber).bytes;
         let definition = (seed.len() / 4096) as u32;
         let mut before = mixed::append_table(&seed, "Measurements");
@@ -33,8 +33,13 @@ fn normal_run_like_update_observes_database_mode_no_yes_save_ack_and_reopen() {
         before = mixed::update_currency(&before, definition, 0, Some(12345));
         before = mixed::update_text(&before, definition, 0, Some("Apple"));
         before = mixed::update_number(&before, definition, 1, None);
-        let properties = database_properties::name_auto_correct_disabled_with_query_mode(mode);
-        let before = database_properties::with_native17_properties(&before, &properties);
+        let before = match mode {
+            Some(mode) => database_properties::with_native17_properties(
+                &before,
+                &database_properties::name_auto_correct_disabled_with_query_mode(mode),
+            ),
+            None => before,
+        };
         let expected = mixed::update_number(&before, definition, 0, Some(25));
         let (_directory, path, before, mut harness) = opened(before);
         harness.state_mut().state.formatting.system_locale = Some("en-US".into());
