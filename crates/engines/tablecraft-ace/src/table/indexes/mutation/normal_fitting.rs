@@ -242,9 +242,11 @@ fn patches_with(
                 index,
                 schema,
                 updates,
-                &profile,
+                Preparation {
+                    profile: &profile,
+                    retained_long: retained_long(selected),
+                },
                 &mut patches,
-                retained_long(selected),
             )?;
         } else {
             let profile = TupleProfile::<i64>::new(index, schema, reader.budget, cancelled)?;
@@ -254,9 +256,11 @@ fn patches_with(
                 index,
                 schema,
                 updates,
-                &profile,
+                Preparation {
+                    profile: &profile,
+                    retained_long: retained_long(selected),
+                },
                 &mut patches,
-                retained_long(selected),
             )?;
         }
     }
@@ -274,7 +278,16 @@ pub(super) fn rewrite<P: WriteProfile, const N: usize>(
     patches: &mut Vec<IndexDataPatch>,
 ) -> Result<(), EditError> {
     rewrite_with_population_limit::<_, N>(
-        image, reader, index, schema, updates, profile, patches, false,
+        image,
+        reader,
+        index,
+        schema,
+        updates,
+        Preparation {
+            profile,
+            retained_long: false,
+        },
+        patches,
     )
 }
 
@@ -290,16 +303,25 @@ fn retained_long(selected: Selection) -> bool {
     }
 }
 
+struct Preparation<'a, P> {
+    profile: &'a P,
+    retained_long: bool,
+}
+
 fn rewrite_with_population_limit<P: WriteProfile, const N: usize>(
     image: &NativeImage,
     reader: &mut Reader<'_, Cursor<&[u8]>>,
     index: &NativeIndex,
     schema: &TableSchema,
     updates: &[IndexKeyUpdate],
-    profile: &P,
+    preparation: Preparation<'_, P>,
     patches: &mut Vec<IndexDataPatch>,
-    retained_long: bool,
 ) -> Result<(), EditError> {
+    let Preparation {
+        profile,
+        retained_long,
+    } = preparation;
+
     // Select the fitting layout before preparation/serialization. No Fixed
     // encoder is attempted, and no encoding failure selects another profile.
     let selected = Mode::Repack;

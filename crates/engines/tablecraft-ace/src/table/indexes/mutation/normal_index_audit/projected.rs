@@ -162,12 +162,17 @@ where
         return Err(EditError::Preservation);
     }
     let schema = checked.schema();
-    let ownership = if selected == Selection::RetainedLong {
-        #[cfg(feature = "ace16-create")]
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    let retained_long = selected == Selection::RetainedLong;
+    #[cfg(not(all(feature = "journal", feature = "ace16-create")))]
+    let retained_long = false;
+
+    let ownership = if retained_long {
+        #[cfg(all(feature = "journal", feature = "ace16-create"))]
         {
             Ownership::capture_retained_long(image, checked, budget, cancelled)?
         }
-        #[cfg(not(feature = "ace16-create"))]
+        #[cfg(not(all(feature = "journal", feature = "ace16-create")))]
         {
             return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
         }
@@ -231,10 +236,7 @@ where
         reads: 0,
     };
     let owned = allocation::pages(&mut reader, schema.layout.usage)?;
-    #[cfg(all(feature = "journal", feature = "ace16-create"))]
-    let retained_long = selected == Selection::RetainedLong;
-    #[cfg(not(all(feature = "journal", feature = "ace16-create")))]
-    let retained_long = false;
+
     if retained_long {
         for pair in owned.windows(2) {
             reader.tick()?;
