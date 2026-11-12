@@ -113,6 +113,14 @@ impl InsertableTable for NativeJournalInserter {
         #[cfg(feature = "ace16-create")]
         if self
             .image
+            .select_native_retained_manual_indexed_insert_table(&self.name, budget, cancelled)
+            .map_err(RecoverableEditError::from)?
+        {
+            return self.plan_supplied_presence(values, budget, cancelled);
+        }
+        #[cfg(feature = "ace16-create")]
+        if self
+            .image
             .select_native_retained_keyless_insert_table(&self.name, budget, cancelled)
             .map_err(RecoverableEditError::from)?
         {

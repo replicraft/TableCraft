@@ -21,7 +21,7 @@ pub enum NativeJournalInsertPlan {
     AllocateEof(RecoverableNativeEofInsertPlan),
     /// Original supplied/omitted fields, retaining their selected TCNA2/6/7 family.
     Omitted(RecoverableNativeOmittedInsertPlan),
-    /// Retained-storage original presence, TCNA8/9/10/V3, with distinct source proof.
+    /// Retained-storage original presence, TCNA8/9/10/11/V3, with distinct source proof.
     #[cfg(feature = "ace16-create")]
     Retained(RecoverableNativeOmittedInsertPlan),
     /// Original presence and one retained civil clock input, TCNA5/V1.

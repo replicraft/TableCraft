@@ -56,6 +56,9 @@ mod non_tail_tests;
 #[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
 mod keyless_tests;
 
+#[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
+mod manual_indexed_tests;
+
 #[cfg(all(test, not(feature = "ace16-create")))]
 mod index_creation_tests;
 
@@ -535,6 +538,13 @@ impl MutationIntent {
             return NativeUpdateIntent::decode(raw, budget, cancelled)
                 .map(Self::RetainedUpdate)
                 .map_err(Cause::Intent);
+        }
+        if raw.starts_with(b"TCNA0011") {
+            return NativeOmittedInsertIntent::decode_retained_manual_indexed(
+                raw, budget, cancelled,
+            )
+            .map(Self::RetainedInsert)
+            .map_err(Cause::Intent);
         }
         if raw.starts_with(b"TCNA0010") {
             return NativeOmittedInsertIntent::decode_retained_keyless(raw, budget, cancelled)
