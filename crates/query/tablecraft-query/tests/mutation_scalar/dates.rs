@@ -89,7 +89,7 @@ fn malformed_or_runtime_date_calls_refuse_even_without_rows() {
         "TimeSerial(0,0,0,0)",
         "Other.Year(NULL)",
         "Now()",
-        "DateValue('2024-01-01')",
+        "DateValue('2024-01-01',1)",
     ] {
         let (editor, finishes) = source(true);
         let parsed = parse_query(

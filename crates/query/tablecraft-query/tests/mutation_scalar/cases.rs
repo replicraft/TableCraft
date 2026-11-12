@@ -12,6 +12,15 @@ use tablecraft_sql::{ParseLimits, parse_query};
 #[path = "dates.rs"]
 mod dates;
 
+#[path = "date_intervals.rs"]
+mod date_intervals;
+
+#[path = "date_conversions.rs"]
+mod date_conversions;
+
+#[path = "pure_math.rs"]
+mod pure_math;
+
 struct Editor {
     snapshot: Snapshot,
     finishes: Rc<Cell<usize>>,
@@ -214,7 +223,7 @@ fn domains_dynamic_runtime_policy_functions_and_udfs_refuse_before_any_finish() 
         "UserFunction(Score)",
         "Other.Abs(Score)",
         "UCase(Label)",
-        "DateAdd('d',1,#2020-01-01#)",
+        "Weekday(#2020-01-01#)",
     ] {
         for empty in [false, true] {
             let (editor, finishes) = source(empty);
