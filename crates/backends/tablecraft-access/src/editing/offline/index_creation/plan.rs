@@ -1,7 +1,8 @@
-//! Actual old/fresh index originals share V3 staging, never a decoder fallback.
+//! Distinct index originals share V3 staging, never a decoder fallback.
 use super::super::Cause;
 use tablecraft_ace::{
     NativeImage, RecoverableNativeFreshIndexCreatePlan, RecoverableNativeIndexCreatePlan,
+    RecoverableNativeNumericIndexCreatePlan,
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::DurableStorage;
@@ -10,6 +11,7 @@ use tablecraft_io::journal::ResizableDurableStorage;
 pub(in crate::editing::offline) enum Plan {
     Original(RecoverableNativeIndexCreatePlan),
     Fresh(RecoverableNativeFreshIndexCreatePlan),
+    Numeric(RecoverableNativeNumericIndexCreatePlan),
 }
 
 impl Plan {
@@ -17,6 +19,7 @@ impl Plan {
         match self {
             Self::Original(plan) => plan.table(),
             Self::Fresh(plan) => plan.table(),
+            Self::Numeric(plan) => plan.table(),
         }
     }
 
@@ -24,6 +27,7 @@ impl Plan {
         match self {
             Self::Original(plan) => plan.column(),
             Self::Fresh(plan) => plan.column(),
+            Self::Numeric(plan) => plan.column(),
         }
     }
 
@@ -31,6 +35,7 @@ impl Plan {
         match self {
             Self::Original(plan) => plan.index_name(),
             Self::Fresh(plan) => plan.index_name(),
+            Self::Numeric(plan) => plan.index_name(),
         }
     }
 
@@ -38,6 +43,7 @@ impl Plan {
         match self {
             Self::Original(plan) => plan.indexed_rows(),
             Self::Fresh(plan) => plan.indexed_rows(),
+            Self::Numeric(plan) => plan.indexed_rows(),
         }
     }
 
@@ -57,6 +63,10 @@ impl Plan {
                 .requalify_with_budgets(image, native, proof, cancelled)
                 .map(Self::Fresh)
                 .map_err(Cause::FreshIndexCreationIntent),
+            Self::Numeric(plan) => plan
+                .requalify_with_budgets(image, native, proof, cancelled)
+                .map(Self::Numeric)
+                .map_err(Cause::NumericIndexCreationIntent),
         }
     }
 
@@ -74,6 +84,10 @@ impl Plan {
                 .intent()
                 .encode(budget, cancelled)
                 .map_err(Cause::FreshIndexCreationIntent),
+            Self::Numeric(plan) => plan
+                .intent()
+                .encode(budget, cancelled)
+                .map_err(Cause::NumericIndexCreationIntent),
         }
     }
 
@@ -87,6 +101,7 @@ impl Plan {
         let prepared = match self {
             Self::Original(plan) => plan.prepare_retained(target, journal, budget, cancelled),
             Self::Fresh(plan) => plan.prepare_retained(target, journal, budget, cancelled),
+            Self::Numeric(plan) => plan.prepare_retained(target, journal, budget, cancelled),
         }
         .map_err(Cause::Prepare)?;
         prepared.commit(budget, cancelled).map_err(Cause::Commit)

@@ -15,15 +15,16 @@ use tablecraft_ace::{
     NativeDeclaredFieldAdditionIntent, NativeDefaultZeroAddColumnIntent,
     NativeFieldAdditionAfterOffHistoryIntent, NativeFieldAdditionAfterOffIntent,
     NativeFieldAdditionIntent, NativeFirstTableIntent, NativeFreshIndexCreateIntent,
-    NativeIndexCreateIntent, NativeIndexDropIntent, NativePopulatedAddTableIntent,
-    NativeRepeatedDefaultZeroAddColumnIntent, NativeRetainedTypedFieldAdditionIntent,
-    NativeUnadornedFieldAdditionIntent, PopulatedAddTablePlan, RecoverableAddColumnPlan,
-    RecoverableFieldDropPlan, RecoverableFieldRenamePlan, RecoverableNativeIndexDropPlan,
+    NativeIndexCreateIntent, NativeIndexDropIntent, NativeNumericIndexCreateIntent,
+    NativePopulatedAddTableIntent, NativeRepeatedDefaultZeroAddColumnIntent,
+    NativeRetainedTypedFieldAdditionIntent, NativeUnadornedFieldAdditionIntent,
+    PopulatedAddTablePlan, RecoverableAddColumnPlan, RecoverableFieldDropPlan,
+    RecoverableFieldRenamePlan, RecoverableNativeIndexDropPlan,
 };
 #[cfg(not(feature = "ace16-create"))]
 use tablecraft_ace::{
     DeclaredFieldAdditionIntentError, FreshIndexCreateIntentError, IndexDropIntentError,
-    UnadornedFieldAdditionIntentError,
+    NumericIndexCreateIntentError, UnadornedFieldAdditionIntentError,
 };
 use tablecraft_ace::{
     NativeClockInsertIntent, NativeCompleteInsertIntent, NativeCurrentFieldAdditionIntent,
@@ -328,6 +329,8 @@ pub(super) enum MutationIntent {
     #[cfg(feature = "ace16-create")]
     FreshIndexCreation(NativeFreshIndexCreateIntent),
     #[cfg(feature = "ace16-create")]
+    NumericIndexCreation(NativeNumericIndexCreateIntent),
+    #[cfg(feature = "ace16-create")]
     IndexDrop(NativeIndexDropIntent),
     #[cfg(feature = "ace16-create")]
     DatabaseOptions(DatabaseOptionsIntent),
@@ -393,9 +396,9 @@ impl MutationIntent {
     pub(super) fn schema_change(&self) -> Option<SchemaChange> {
         match self {
             #[cfg(feature = "ace16-create")]
-            Self::IndexCreation(_) | Self::FreshIndexCreation(_) => {
-                Some(SchemaChange::IndexCreated)
-            }
+            Self::IndexCreation(_)
+            | Self::FreshIndexCreation(_)
+            | Self::NumericIndexCreation(_) => Some(SchemaChange::IndexCreated),
             #[cfg(feature = "ace16-create")]
             Self::IndexDrop(_) => Some(SchemaChange::IndexDropped),
             #[cfg(feature = "ace16-create")]
@@ -473,6 +476,16 @@ impl MutationIntent {
             #[cfg(not(feature = "ace16-create"))]
             return Err(Cause::IndexDropIntent(
                 IndexDropIntentError::UnsupportedSource,
+            ));
+        }
+        if raw.starts_with(b"TCIC0003") {
+            #[cfg(feature = "ace16-create")]
+            return NativeNumericIndexCreateIntent::decode(raw, budget, cancelled)
+                .map(Self::NumericIndexCreation)
+                .map_err(Cause::NumericIndexCreationIntent);
+            #[cfg(not(feature = "ace16-create"))]
+            return Err(Cause::NumericIndexCreationIntent(
+                NumericIndexCreateIntentError::UnsupportedSource,
             ));
         }
         if raw.starts_with(b"TCIC0002") {
@@ -768,3 +781,6 @@ mod index_drop_tests;
 
 #[cfg(all(test, not(feature = "ace16-create")))]
 mod fresh_index_tests;
+
+#[cfg(all(test, not(feature = "ace16-create")))]
+mod numeric_index_tests;

@@ -12,9 +12,9 @@ use tablecraft_ace::{
 use tablecraft_ace::{
     CurrentFieldAdditionIntentError, DeclaredFieldAdditionIntentError, FieldDropIntentError,
     FieldRenameIntentError, FreshIndexCreateIntentError, IndexDropIntentError, InspectError,
-    NativeIntentError, NativeRecoveryQualificationError, QueryExpressionEditsIntentError,
-    QueryExpressionIntentError, QueryExpressionRecoveryError, TableDropIntentError,
-    TableRenameIntentError, UnadornedFieldAdditionIntentError,
+    NativeIntentError, NativeRecoveryQualificationError, NumericIndexCreateIntentError,
+    QueryExpressionEditsIntentError, QueryExpressionIntentError, QueryExpressionRecoveryError,
+    TableDropIntentError, TableRenameIntentError, UnadornedFieldAdditionIntentError,
 };
 use tablecraft_io::{
     IoError,
@@ -64,6 +64,9 @@ pub enum Phase {
 /// Sanitized typed cause. Resources remain in Failure rather than being discarded.
 #[derive(Debug, Error)]
 pub enum Cause {
+    /// Numeric original CREATE, native source or complete image proof refused.
+    #[error(transparent)]
+    NumericIndexCreationIntent(NumericIndexCreateIntentError),
     /// Fresh-identity original CREATE, source or exact-image proof refused.
     #[error(transparent)]
     FreshIndexCreationIntent(FreshIndexCreateIntentError),

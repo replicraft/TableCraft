@@ -227,11 +227,7 @@ fn index_creation_dispatch_keeps_its_family_and_unknown_versions_terminal() {
         MutationIntent::decode(&encoded, &mut budget(), &|| false),
         Ok(MutationIntent::IndexCreation(_))
     ));
-    for raw in [
-        b"TCIC0001".as_slice(),
-        b"TCIC0003".as_slice(),
-        b"TCIC".as_slice(),
-    ] {
+    for raw in [b"TCIC0001".as_slice(), b"TCIC".as_slice()] {
         assert!(matches!(
             MutationIntent::decode(raw, &mut budget(), &|| false),
             Err(Cause::IndexCreationIntent(_))
@@ -245,5 +241,14 @@ fn exact_fresh_prefix_is_owned_before_the_frozen_original_family_decoder() {
     assert!(matches!(
         MutationIntent::decode(b"TCIC0002", &mut budget(), &|| false),
         Err(Cause::FreshIndexCreationIntent(_))
+    ));
+}
+
+#[test]
+fn exact_numeric_prefix_is_owned_before_the_frozen_original_decoder() {
+    use crate::editing::offline::plan::MutationIntent;
+    assert!(matches!(
+        MutationIntent::decode(b"TCIC0003", &mut budget(), &|| false),
+        Err(Cause::NumericIndexCreationIntent(_))
     ));
 }

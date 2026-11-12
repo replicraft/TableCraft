@@ -2,7 +2,10 @@
 use super::{Failure, OfflineWriteSession, Phase, Receipt, SchemaChange, plan::MutationPlan};
 use plan::Plan;
 use std::path::Path;
-use tablecraft_ace::{RecoverableNativeFreshIndexCreatePlan, RecoverableNativeIndexCreatePlan};
+use tablecraft_ace::{
+    RecoverableNativeFreshIndexCreatePlan, RecoverableNativeIndexCreatePlan,
+    RecoverableNativeNumericIndexCreatePlan,
+};
 pub(super) mod plan;
 use tablecraft_core::limits::ResourceBudget;
 
@@ -39,6 +42,22 @@ impl OfflineWriteSession {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<StagedIndexCreation, Failure> {
         self.stage_index_plan(Plan::Fresh(reviewed), native, proof, cancelled)
+    }
+
+    /// Reconstruct the reviewed TCIC0003 numeric original against this source.
+    /// Complete BEFORE/AFTER comparison retains separate cumulative work pools.
+    ///
+    /// # Errors
+    /// Refuses stale images, source or identity mismatches, proof failure,
+    /// cancellation and resource exhaustion while retaining the source owner.
+    pub fn stage_reviewed_numeric_index_creation_with_budgets(
+        self,
+        reviewed: RecoverableNativeNumericIndexCreatePlan,
+        native: &mut ResourceBudget,
+        proof: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<StagedIndexCreation, Failure> {
+        self.stage_index_plan(Plan::Numeric(reviewed), native, proof, cancelled)
     }
 
     fn stage_index_plan(
@@ -112,3 +131,6 @@ mod tests;
 
 #[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
 mod fresh_tests;
+
+#[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
+mod numeric_tests;
