@@ -1,9 +1,10 @@
 //! Total roles preserve grouping, clause phase and exact importable SQL.
 use super::{draft, metadata};
 use crate::query::{
-    DesignColumn, DesignExpression, DesignSort, DesignTotal, QueryDesignError, build, build_ast,
-    import, import_unbound, validate_totals_off,
+    DesignColumn, DesignExpression, DesignField, DesignFieldMetadata, DesignSort, DesignTotal,
+    QueryDesignError, build, build_ast, import, import_unbound, validate_totals_off,
 };
+use tablecraft_schema::ScalarType;
 use tablecraft_sql::{
     ParseLimits, parse_query,
     query::{ReadBody, Statement},
@@ -163,4 +164,75 @@ fn declared_grouped_imports_preserve_hidden_keys_clauses_order_and_case_boundari
             .unwrap()
             .totals
     );
+}
+
+#[test]
+fn evidenced_plain_field_defaults_preserve_explicit_alias_and_expression_choices() {
+    for (role, heading) in [
+        (DesignTotal::Sum, "SumOfAmount"),
+        (DesignTotal::Min, "MinOfAmount"),
+        (DesignTotal::Max, "MaxOfAmount"),
+    ] {
+        let mut draft = draft();
+        draft.totals = true;
+        draft.columns[1].total = role;
+        let built = build(&draft, &metadata()).unwrap();
+        assert!(built.sql.contains(&format!(" AS [{heading}]")));
+        assert!(draft.columns[1].alias.is_none());
+        assert_eq!(import(&built.sql, &metadata()).unwrap().sql, built.sql);
+        draft.columns[1].alias = Some("Chosen heading".into());
+        let explicit = build(&draft, &metadata()).unwrap();
+        assert!(explicit.sql.contains(" AS [Chosen heading]"));
+        assert!(!explicit.sql.contains(&format!(" AS [{heading}]")));
+    }
+    let mut expression = draft();
+    expression.totals = true;
+    expression.columns[1].total = DesignTotal::Expression;
+    expression.columns[1].expression =
+        DesignExpression::Expression("Sum([Customers].[Amount])".into());
+    assert!(
+        !build(&expression, &metadata())
+            .unwrap()
+            .sql
+            .contains("SumOfAmount")
+    );
+    expression.columns[1].total = DesignTotal::Count;
+    expression.columns[1].expression = DesignExpression::Field(DesignField {
+        source_id: 1,
+        column: "Amount".into(),
+    });
+    assert!(
+        !build(&expression, &metadata())
+            .unwrap()
+            .sql
+            .contains("CountOfAmount")
+    );
+}
+
+#[test]
+fn generated_heading_collisions_refuse_without_invented_suffixes_or_implicit_renaming() {
+    let mut draft = draft();
+    draft.totals = true;
+    draft.columns[1].total = DesignTotal::Sum;
+    draft
+        .columns
+        .push(DesignColumn::field(1, "SumOfAmount".into()));
+    let mut metadata = metadata();
+    metadata[0].fields.push(DesignFieldMetadata {
+        name: "SumOfAmount".into(),
+        scalar_type: Some(ScalarType::Currency),
+    });
+    assert!(matches!(
+        build(&draft, &metadata),
+        Err(QueryDesignError::Unsupported)
+    ));
+    assert!(draft.columns[1].alias.is_none());
+    draft.columns[1].alias = Some("SelectedSum".into());
+    assert!(build(&draft, &metadata).is_ok());
+    let original = "SELECT Sum(Customers.Amount) FROM Customers";
+    assert!(matches!(
+        import(original, &metadata),
+        Err(QueryDesignError::Unsupported)
+    ));
+    assert!(import_unbound(original).is_ok());
 }

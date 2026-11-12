@@ -1,4 +1,6 @@
 //! Query-grid grouping roles lower into ordinary SELECT/GROUP BY/HAVING syntax.
+mod headings;
+
 use super::{
     DesignColumn, DesignExpression, DesignSort, DesignTableMetadata, DesignTotal, QueryDesignDraft,
     QueryDesignError,
@@ -87,6 +89,7 @@ pub(super) fn build_ast(
     let mut before: Vec<Vec<Expression>> = (0..count).map(|_| Vec::new()).collect();
     let mut after: Vec<Vec<Expression>> = (0..count).map(|_| Vec::new()).collect();
     let mut projection = Vec::new();
+    let mut generated_headings = Vec::new();
     let mut group_by = Vec::new();
     let mut order_by = Vec::new();
     for column in &draft.columns {
@@ -122,7 +125,10 @@ pub(super) fn build_ast(
             // owned AST nodes; the public query AST has no borrowed child links.
             group_by.push(value.clone());
         }
-        let alias = column.alias.as_deref().map(name).transpose()?;
+        let (alias, generated) = headings::alias(draft, metadata, column, &value)?;
+        if generated {
+            generated_headings.push(projection.len());
+        }
         match column.sort {
             Some(sort) => {
                 if column.show {
@@ -148,6 +154,7 @@ pub(super) fn build_ast(
     if projection.is_empty() {
         return Err(QueryDesignError::NoProjection);
     }
+    headings::validate_collisions(&projection, &generated_headings)?;
     let mixed = before.iter().any(|row| !row.is_empty()) && after.iter().any(|row| !row.is_empty());
     if mixed
         && before
