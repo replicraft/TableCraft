@@ -68,6 +68,28 @@ pub fn dates(before: &[u8], table: &str, values: &[Option<f64>]) -> Vec<u8> {
     append(before, table, &columns, &records, 11)
 }
 
+/// A manual nullable large integer named CopiedScore, from literal signed bytes.
+/// Used for the query owner's established aggregate carrier, independently of
+/// source rows and production declaration/serialization code.
+pub fn int64_values(before: &[u8], table: &str, values: &[Option<i64>]) -> Vec<u8> {
+    let columns = [Column {
+        name: "CopiedScore",
+        native: 19,
+        width: 8,
+        variable: None,
+    }];
+    let records = values
+        .iter()
+        .map(|value| {
+            let mut row = vec![1, 0];
+            row.extend(value.unwrap_or(0).to_le_bytes());
+            row.push(u8::from(value.is_some()));
+            row
+        })
+        .collect::<Vec<_>>();
+    append(before, table, &columns, &records, 11)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
