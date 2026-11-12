@@ -1,5 +1,5 @@
 //! Independent original record reconstruction and cumulative placement proof.
-use super::{Family, bind};
+use super::{Policy, bind};
 use crate::format::row::{OFFSET_MASK, RELOCATED_MASK};
 use crate::preservation::COPY_CHUNK_BYTES;
 use crate::table::mutation::{preserved_source::validation, record_placement::proof as placement};
@@ -13,15 +13,16 @@ pub(super) fn prove(
     table: &str,
     groups: &[FittedColumnUpdates<'_>],
     after: &[u8],
+    policy: Policy,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
-    let family = Family::Retained;
+    let family = policy.family();
     let source = family.capture(image, table, budget, cancelled)?;
     source
         .facts()
         .require_preserved_definition_tail(image, after, budget, cancelled)?;
-    let requests = bind(image, &source, groups, budget, cancelled)?;
+    let requests = bind(image, &source, groups, policy, budget, cancelled)?;
     let schema = source.facts().table.schema();
     let captured = family.roots(image, schema, &requests, budget, cancelled)?;
     let space = family.space(image, schema, &captured.owned, budget, cancelled)?;
