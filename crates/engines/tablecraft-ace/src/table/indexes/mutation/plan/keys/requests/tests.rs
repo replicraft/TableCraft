@@ -189,7 +189,7 @@ fn paid_lookup_cancellation_and_allocation_work_limits_are_typed_refusals() {
 #[test]
 fn real_tuple_profile_keeps_interleaved_components_in_written_row_order() {
     let bytes = numeric_fixture::database(
-        1,
+        5,
         &[4, 4, 4],
         &[(1, false), (2, false)],
         &[vec![Some(0), Some(1), Some(8)]],

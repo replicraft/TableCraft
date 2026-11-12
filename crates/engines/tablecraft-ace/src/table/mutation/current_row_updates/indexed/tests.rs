@@ -69,7 +69,14 @@ fn actual_create_then_indexed_update_preserves_full_images_and_retained_topology
             }];
             let plan = image(created.candidate_bytes())
                 .plan_retained_indexed_long_updates(source.table, &groups, &mut budget(), &|| false)
-                .unwrap();
+                .unwrap_or_else(|error| {
+                    panic!(
+                        "rows={}, requests={}, levels={}, descending={descending}: {error:?}",
+                        source.rows.len(),
+                        case.cells.len(),
+                        source.levels,
+                    )
+                });
             same(plan.before_bytes(), &source.expected);
             same(plan.after_bytes(), &case.expected);
             assert_eq!(
