@@ -1,5 +1,5 @@
 //! Column-oriented QBE cells preserve local drafts and bounded literal input.
-use super::{MAX_DESIGN_COLUMNS, MAX_DESIGN_TEXT_BYTES, Session, context_menu};
+use super::{MAX_DESIGN_COLUMNS, MAX_DESIGN_TEXT_BYTES, Session, context_menu, totals};
 use crate::localization::tr;
 use crate::workspace::focus::{self, Pane};
 use egui::{Align, Layout, ScrollArea, TextBuffer, TextEdit, Ui};
@@ -7,6 +7,7 @@ use egui_extras::{Column, TableBuilder};
 use std::borrow::Cow;
 use tablecraft_builders::query::{
     DesignColumn, DesignExpression, DesignField, DesignSort, DesignSource, DesignTableMetadata,
+    DesignTotal,
 };
 
 const GRID_COLUMN_WIDTH: f32 = 175.0;
@@ -14,9 +15,47 @@ const GRID_LABEL_WIDTH: f32 = 85.0;
 pub(super) const GRID_ROW_HEIGHT: f32 = 24.0;
 const MAX_CRITERIA_ROWS: usize = tablecraft_builders::query::MAX_DESIGN_CRITERIA_ROWS;
 
+#[derive(Clone, Copy, Hash)]
+enum GridRow {
+    Field,
+    Table,
+    Total,
+    Sort,
+    Show,
+    Criterion(usize),
+}
+
+impl GridRow {
+    fn at(index: usize, totals: bool) -> Self {
+        match index {
+            0 => Self::Field,
+            1 => Self::Table,
+            2 if totals => Self::Total,
+            index => match index - usize::from(totals) {
+                2 => Self::Sort,
+                3 => Self::Show,
+                index => Self::Criterion(index - 4),
+            },
+        }
+    }
+
+    fn label(self) -> &'static str {
+        match self {
+            Self::Field => "qbe-field",
+            Self::Table => "qbe-table",
+            Self::Total => "qbe-total",
+            Self::Sort => "qbe-sort",
+            Self::Show => "qbe-show",
+            Self::Criterion(0) => "qbe-criteria",
+            Self::Criterion(_) => "qbe-or",
+        }
+    }
+}
+
 pub(super) fn design_grid(ui: &mut Ui, session: &mut Session) -> bool {
     let mut changed = false;
     let mut remove = None;
+    let totals_enabled = session.draft.totals;
     let mut budget = InputBudget {
         remaining: MAX_DESIGN_TEXT_BYTES.saturating_sub(
             tablecraft_builders::query::draft_text_bytes(&session.draft)
@@ -50,204 +89,228 @@ pub(super) fn design_grid(ui: &mut Ui, session: &mut Session) -> bool {
                 table = table.column(Column::exact(GRID_COLUMN_WIDTH));
             }
             table.body(|body| {
-                body.rows(GRID_ROW_HEIGHT, 4 + criteria_rows, |mut grid_row| {
-                    let row = grid_row.index();
-                    grid_row.col(|ui| {
-                        grid_cell(ui, true, |ui| {
-                            ui.label(tr(
-                                ui,
-                                match row {
-                                    0 => "qbe-field",
-                                    1 => "qbe-table",
-                                    2 => "qbe-sort",
-                                    3 => "qbe-show",
-                                    4 => "qbe-criteria",
-                                    _ => "qbe-or",
-                                },
-                            ));
-                        });
-                    });
-                    let sources = &session.draft.sources;
-                    for (index, column) in session.draft.columns.iter_mut().enumerate() {
+                body.rows(
+                    GRID_ROW_HEIGHT,
+                    4 + usize::from(totals_enabled) + criteria_rows,
+                    |mut grid_row| {
+                        let row = GridRow::at(grid_row.index(), totals_enabled);
                         grid_row.col(|ui| {
-                            grid_cell(ui, false, |ui| {
-                                ui.push_id(("qbe_cell", index, row), |ui| match row {
-                                    0 => {
-                                        let original = field_text(&column.expression);
-                                        let mut text = Cow::Borrowed(original);
-                                        let cost = match &column.expression {
-                                            DesignExpression::Field(field) => field.column.len(),
-                                            DesignExpression::Expression(text) => text.len(),
-                                            DesignExpression::AllFields(_) => 0,
-                                        };
-                                        let previous_budget = budget.remaining;
-                                        let response = bounded_input(
-                                            ui,
-                                            &mut text,
-                                            "qbe-field-input",
-                                            cost,
-                                            &mut budget,
-                                        );
-                                        focus::register(
-                                            ui,
-                                            Pane::QueryGrid,
-                                            &response,
-                                            index == 0 || response.has_focus(),
-                                        );
-                                        if response.changed() && text.as_ref() != original {
-                                            column.expression = edited_field(
-                                                sources,
-                                                &session.metadata,
-                                                &column.expression,
-                                                text.into_owned(),
-                                            );
-                                            changed = true;
-                                        } else {
-                                            // A no-op replacement must not discard a bound
-                                            // source or charge display-only wildcard text.
-                                            budget.remaining = previous_budget;
-                                        }
-                                        context_menu::show(ui, &response, |ui, keyboard_open| {
-                                            let mut alias = Cow::Borrowed(
-                                                column.alias.as_deref().unwrap_or(""),
-                                            );
-                                            ui.label(tr(ui, "qbe-alias"));
-                                            let alias_input = bounded_input(
-                                                ui,
-                                                &mut alias,
-                                                "qbe-alias-input",
-                                                column.alias.as_ref().map_or(0, String::len),
-                                                &mut budget,
-                                            );
-                                            if keyboard_open {
-                                                alias_input.request_focus();
-                                            }
-                                            if alias_input.changed() {
-                                                column.alias =
-                                                    (!alias.is_empty()).then(|| alias.into_owned());
-                                                changed = true;
-                                            }
-                                            if ui.button(tr(ui, "qbe-remove-column")).clicked() {
-                                                remove = Some(index);
-                                                ui.close();
-                                            }
-                                        });
-                                    }
-                                    1 => {
-                                        let table = match &column.expression {
-                                            DesignExpression::Field(field) => sources
-                                                .iter()
-                                                .find(|source| source.id == field.source_id),
-                                            DesignExpression::AllFields(Some(id)) => {
-                                                sources.iter().find(|source| source.id == *id)
-                                            }
-                                            _ => None,
-                                        };
-                                        ui.label(table.map_or("", |source| {
-                                            source.alias.as_deref().unwrap_or(&source.table)
-                                        }));
-                                    }
-                                    2 => {
-                                        let response = egui::ComboBox::from_id_salt("qbe_sort")
-                                            .selected_text(tr(
-                                                ui,
-                                                match column.sort {
-                                                    None => "qbe-unsorted",
-                                                    Some(DesignSort::Ascending) => "qbe-ascending",
-                                                    Some(DesignSort::Descending) => {
-                                                        "qbe-descending"
-                                                    }
-                                                },
-                                            ))
-                                            .show_ui(ui, |ui| {
-                                                for (sort, key) in [
-                                                    (None, "qbe-unsorted"),
-                                                    (Some(DesignSort::Ascending), "qbe-ascending"),
-                                                    (
-                                                        Some(DesignSort::Descending),
-                                                        "qbe-descending",
-                                                    ),
-                                                ] {
-                                                    changed |= ui
-                                                        .selectable_value(
-                                                            &mut column.sort,
-                                                            sort,
-                                                            tr(ui, key),
-                                                        )
-                                                        .changed();
-                                                }
-                                            })
-                                            .response;
-                                        focus::register(
-                                            ui,
-                                            Pane::QueryGrid,
-                                            &response,
-                                            response.has_focus(),
-                                        );
-                                    }
-                                    3 => {
-                                        let response = ui
-                                            .with_layout(
-                                                Layout::centered_and_justified(
-                                                    egui::Direction::LeftToRight,
-                                                ),
-                                                |ui| {
-                                                    ui.add(egui::Checkbox::without_text(
-                                                        &mut column.show,
-                                                    ))
-                                                },
-                                            )
-                                            .inner;
-                                        let label = format!("{} {}", tr(ui, "qbe-show"), index + 1);
-                                        ui.ctx().accesskit_node_builder(response.id, |node| {
-                                            node.set_label(label)
-                                        });
-                                        changed |= response.changed();
-                                        focus::register(
-                                            ui,
-                                            Pane::QueryGrid,
-                                            &response,
-                                            response.has_focus(),
-                                        );
-                                    }
-                                    _ => {
-                                        let criterion = row - 4;
-                                        let mut text = column
-                                            .criteria
-                                            .get(criterion)
-                                            .cloned()
-                                            .unwrap_or_default();
-                                        let response = bounded_input(
-                                            ui,
-                                            &mut text,
-                                            "qbe-criterion-input",
-                                            column.criteria.get(criterion).map_or(0, String::len),
-                                            &mut budget,
-                                        );
-                                        focus::register(
-                                            ui,
-                                            Pane::QueryGrid,
-                                            &response,
-                                            response.has_focus(),
-                                        );
-                                        if response.changed() {
-                                            if column.criteria.len() <= criterion {
-                                                column
-                                                    .criteria
-                                                    .resize(criterion + 1, String::new());
-                                            }
-                                            column.criteria[criterion] = text;
-                                            changed = true;
-                                        }
-                                    }
-                                });
+                            grid_cell(ui, true, |ui| {
+                                ui.label(tr(ui, row.label()));
                             });
                         });
-                    }
-                    for _ in session.draft.columns.len()..column_count {
-                        grid_row.col(|ui| grid_cell(ui, false, |_| {}));
-                    }
-                });
+                        let sources = &session.draft.sources;
+                        for (index, column) in session.draft.columns.iter_mut().enumerate() {
+                            let where_only = totals_enabled && column.total == DesignTotal::Where;
+                            grid_row.col(|ui| {
+                                grid_cell(ui, false, |ui| {
+                                    ui.push_id(("qbe_cell", index, row), |ui| match row {
+                                        GridRow::Field => {
+                                            let original = field_text(&column.expression);
+                                            let mut text = Cow::Borrowed(original);
+                                            let cost = match &column.expression {
+                                                DesignExpression::Field(field) => {
+                                                    field.column.len()
+                                                }
+                                                DesignExpression::Expression(text) => text.len(),
+                                                DesignExpression::AllFields(_) => 0,
+                                            };
+                                            let previous_budget = budget.remaining;
+                                            let response = bounded_input(
+                                                ui,
+                                                &mut text,
+                                                "qbe-field-input",
+                                                cost,
+                                                &mut budget,
+                                            );
+                                            focus::register(
+                                                ui,
+                                                Pane::QueryGrid,
+                                                &response,
+                                                index == 0 || response.has_focus(),
+                                            );
+                                            if response.changed() && text.as_ref() != original {
+                                                column.expression = edited_field(
+                                                    sources,
+                                                    &session.metadata,
+                                                    &column.expression,
+                                                    text.into_owned(),
+                                                );
+                                                changed = true;
+                                            } else {
+                                                // A no-op replacement must not discard a bound
+                                                // source or charge display-only wildcard text.
+                                                budget.remaining = previous_budget;
+                                            }
+                                            context_menu::show(
+                                                ui,
+                                                &response,
+                                                |ui, keyboard_open| {
+                                                    let mut alias = Cow::Borrowed(
+                                                        column.alias.as_deref().unwrap_or(""),
+                                                    );
+                                                    ui.label(tr(ui, "qbe-alias"));
+                                                    let alias_input = bounded_input(
+                                                        ui,
+                                                        &mut alias,
+                                                        "qbe-alias-input",
+                                                        column
+                                                            .alias
+                                                            .as_ref()
+                                                            .map_or(0, String::len),
+                                                        &mut budget,
+                                                    );
+                                                    if keyboard_open {
+                                                        alias_input.request_focus();
+                                                    }
+                                                    if alias_input.changed() {
+                                                        column.alias = (!alias.is_empty())
+                                                            .then(|| alias.into_owned());
+                                                        changed = true;
+                                                    }
+                                                    if ui
+                                                        .button(tr(ui, "qbe-remove-column"))
+                                                        .clicked()
+                                                    {
+                                                        remove = Some(index);
+                                                        ui.close();
+                                                    }
+                                                },
+                                            );
+                                        }
+                                        GridRow::Table => {
+                                            let table = match &column.expression {
+                                                DesignExpression::Field(field) => sources
+                                                    .iter()
+                                                    .find(|source| source.id == field.source_id),
+                                                DesignExpression::AllFields(Some(id)) => {
+                                                    sources.iter().find(|source| source.id == *id)
+                                                }
+                                                _ => None,
+                                            };
+                                            ui.label(table.map_or("", |source| {
+                                                source.alias.as_deref().unwrap_or(&source.table)
+                                            }));
+                                        }
+                                        GridRow::Total => {
+                                            changed |= totals::column(ui, column, index);
+                                        }
+                                        GridRow::Sort => {
+                                            ui.add_enabled_ui(!where_only, |ui| {
+                                                let response =
+                                                    egui::ComboBox::from_id_salt("qbe_sort")
+                                                        .selected_text(tr(
+                                                            ui,
+                                                            match column.sort {
+                                                                None => "qbe-unsorted",
+                                                                Some(DesignSort::Ascending) => {
+                                                                    "qbe-ascending"
+                                                                }
+                                                                Some(DesignSort::Descending) => {
+                                                                    "qbe-descending"
+                                                                }
+                                                            },
+                                                        ))
+                                                        .show_ui(ui, |ui| {
+                                                            for (sort, key) in [
+                                                                (None, "qbe-unsorted"),
+                                                                (
+                                                                    Some(DesignSort::Ascending),
+                                                                    "qbe-ascending",
+                                                                ),
+                                                                (
+                                                                    Some(DesignSort::Descending),
+                                                                    "qbe-descending",
+                                                                ),
+                                                            ] {
+                                                                changed |= ui
+                                                                    .selectable_value(
+                                                                        &mut column.sort,
+                                                                        sort,
+                                                                        tr(ui, key),
+                                                                    )
+                                                                    .changed();
+                                                            }
+                                                        })
+                                                        .response;
+                                                focus::register(
+                                                    ui,
+                                                    Pane::QueryGrid,
+                                                    &response,
+                                                    response.has_focus(),
+                                                );
+                                            });
+                                        }
+                                        GridRow::Show => {
+                                            let response = ui
+                                                .with_layout(
+                                                    Layout::centered_and_justified(
+                                                        egui::Direction::LeftToRight,
+                                                    ),
+                                                    |ui| {
+                                                        ui.add_enabled(
+                                                            !where_only,
+                                                            egui::Checkbox::without_text(
+                                                                &mut column.show,
+                                                            ),
+                                                        )
+                                                    },
+                                                )
+                                                .inner;
+                                            let label =
+                                                format!("{} {}", tr(ui, "qbe-show"), index + 1);
+                                            ui.ctx().accesskit_node_builder(response.id, |node| {
+                                                node.set_label(label)
+                                            });
+                                            changed |= response.changed();
+                                            focus::register(
+                                                ui,
+                                                Pane::QueryGrid,
+                                                &response,
+                                                response.has_focus(),
+                                            );
+                                        }
+                                        GridRow::Criterion(criterion) => {
+                                            let mut text = column
+                                                .criteria
+                                                .get(criterion)
+                                                .cloned()
+                                                .unwrap_or_default();
+                                            let response = bounded_input(
+                                                ui,
+                                                &mut text,
+                                                "qbe-criterion-input",
+                                                column
+                                                    .criteria
+                                                    .get(criterion)
+                                                    .map_or(0, String::len),
+                                                &mut budget,
+                                            );
+                                            focus::register(
+                                                ui,
+                                                Pane::QueryGrid,
+                                                &response,
+                                                response.has_focus(),
+                                            );
+                                            if response.changed() {
+                                                if column.criteria.len() <= criterion {
+                                                    column
+                                                        .criteria
+                                                        .resize(criterion + 1, String::new());
+                                                }
+                                                column.criteria[criterion] = text;
+                                                changed = true;
+                                            }
+                                        }
+                                    });
+                                });
+                            });
+                        }
+                        for _ in session.draft.columns.len()..column_count {
+                            grid_row.col(|ui| grid_cell(ui, false, |_| {}));
+                        }
+                    },
+                );
             });
         });
         ui.horizontal(|ui| {
@@ -264,6 +327,7 @@ pub(super) fn design_grid(ui: &mut Ui, session: &mut Session) -> bool {
             if add_expression.clicked() {
                 session.draft.columns.push(DesignColumn {
                     expression: DesignExpression::Expression(String::new()),
+                    total: DesignTotal::GroupBy,
                     alias: None,
                     show: true,
                     sort: None,

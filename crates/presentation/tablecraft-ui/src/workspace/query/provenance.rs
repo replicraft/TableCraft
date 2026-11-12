@@ -127,9 +127,13 @@ impl State {
     /// Superseding/cancelling work releases only its unpublished SQL witness.
     pub fn clear_query_run(&mut self) {
         self.query_pending = None;
+        self.clear_query_design_parameter_run();
     }
 
     pub fn set_query_run_data(&mut self, request_id: u64, data: Data) -> bool {
+        if let Some(expected) = self.query_design_run_request_id() {
+            return expected == request_id && self.set_query_design_results(request_id, data);
+        }
         let current = self.query_pending.as_ref().is_some_and(|pending| {
             pending.request_id == request_id
                 && self.active_object().as_ref() == Some(&pending.object)

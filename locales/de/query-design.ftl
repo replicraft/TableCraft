@@ -49,3 +49,17 @@ qbe-property-sheet = Eigenschaftenblatt
 qbe-join-endpoints = { $left } ↔ { $right }
 qbe-join-kind = Verknüpfungstyp: { $left } ↔ { $right }
 qbe-remove-join-accessible = Verknüpfung entfernen: { $left } ↔ { $right }
+
+qbe-total = Funktion:
+qbe-total-group-by = Gruppierung
+qbe-total-sum = Summe
+qbe-total-avg = Mittelwert
+qbe-total-min = Minimum
+qbe-total-max = Maximum
+qbe-total-count = Anzahl
+qbe-total-first = Erster Wert
+qbe-total-last = Letzter Wert
+qbe-total-expression = Ausdruck
+qbe-total-where = Bedingung
+qbe-totals-off-unavailable = Ändern Sie vor dem Ausschalten der Summen die Aggregat- und Bedingungsfunktionen in Gruppierung und korrigieren Sie Aggregatausdrücke oder ungültige Ausdrücke. Die bisherigen Einstellungen bleiben erhalten.
+qbe-total-where-requires-hidden = Bedingung erfordert ein deaktiviertes Anzeigen-Feld und keine Sortierung. Ändern Sie zuerst diese Zellen.

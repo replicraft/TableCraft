@@ -44,6 +44,12 @@ impl QueryDesign {
 }
 
 pub(super) fn count_draft(count: &mut Counter, draft: &QueryDesignDraft) {
+    count.vector(&draft.parameters);
+    for parameter in &draft.parameters {
+        count.add(parameter.name.retained_text_bytes());
+        count.string(&parameter.data_type.name);
+        count.vector(&parameter.data_type.arguments);
+    }
     count.vector(&draft.sources);
     for source in &draft.sources {
         count.string(&source.table);

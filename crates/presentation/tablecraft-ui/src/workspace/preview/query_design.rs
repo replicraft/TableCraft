@@ -4,10 +4,54 @@ use crate::{ObjectKind, ObjectTarget, QueryDesignCompletion, QueryDesignRequest}
 use std::sync::Arc;
 use tablecraft_builders::query::{
     BuiltQueryDesign, DesignColumn, DesignField, DesignFieldMetadata, DesignJoin, DesignJoinKind,
-    DesignSort, DesignSource, DesignTableMetadata, QueryDesignDraft, build,
+    DesignSort, DesignSource, DesignTableMetadata, DesignTotal, QueryDesignDraft, build,
 };
 
 impl Preview {
+    pub(super) fn prepare_query_design_totals(&mut self) {
+        self.prepare_query_design(false, false);
+        let mut key = DesignColumn::field(1, "CustomerName".into());
+        key.sort = Some(DesignSort::Ascending);
+        let mut counted = DesignColumn::field(1, "CustomerID".into());
+        counted.total = DesignTotal::Count;
+        counted.alias = Some("CustomerCount".into());
+        let mut filtered = DesignColumn::field(1, "CustomerID".into());
+        filtered.total = DesignTotal::Where;
+        filtered.show = false;
+        filtered.criteria.push(">0".into());
+        let draft = QueryDesignDraft {
+            totals: true,
+            parameters: Vec::new(),
+            sources: vec![DesignSource {
+                id: 1,
+                table: "Customers".into(),
+                alias: None,
+            }],
+            joins: Vec::new(),
+            columns: vec![key, counted, filtered],
+        };
+        let metadata = vec![table_metadata("Customers")];
+        let built = build(&draft, &metadata).expect("authored grouped QBE inventory");
+        // NO_CLONE: The editable SQL and the separately owned import reply retain
+        // independent spellings until the normal exact pending comparison completes.
+        self.state.sql = built.sql.clone();
+        let request = self
+            .state
+            .query_design_request()
+            .expect("synthetic scratch tab");
+        let id = self.request();
+        let sql = self
+            .state
+            .capture_query_draft()
+            .expect("bounded authored SQL");
+        assert!(self.state.begin_query_design_import(request, sql, id));
+        assert!(
+            self.state
+                .set_query_design_built(id, built, metadata)
+                .is_some()
+        );
+    }
+
     pub(super) fn prepare_wide_query_design(&mut self) {
         self.mock_open_object(ObjectTarget {
             document_revision: fixtures::REVISION,
@@ -34,6 +78,8 @@ impl Preview {
             columns.push(column);
         }
         let draft = QueryDesignDraft {
+            totals: false,
+            parameters: Vec::new(),
             sources: vec![
                 DesignSource {
                     id: 1,
@@ -144,6 +190,8 @@ impl Preview {
         let mut name = DesignColumn::field(1, "CustomerName".into());
         name.criteria = vec!["Like \"A*\"".into()];
         let draft = QueryDesignDraft {
+            totals: false,
+            parameters: Vec::new(),
             sources: vec![DesignSource {
                 id: 1,
                 table: "Customers".into(),

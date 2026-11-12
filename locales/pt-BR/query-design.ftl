@@ -49,3 +49,17 @@ qbe-property-sheet = Folha de Propriedades
 qbe-join-endpoints = { $left } ↔ { $right }
 qbe-join-kind = Tipo de junção: { $left } ↔ { $right }
 qbe-remove-join-accessible = Remover junção: { $left } ↔ { $right }
+
+qbe-total = Total:
+qbe-total-group-by = Agrupar por
+qbe-total-sum = Soma
+qbe-total-avg = Média
+qbe-total-min = Mín
+qbe-total-max = Máx
+qbe-total-count = Contagem
+qbe-total-first = Primeiro
+qbe-total-last = Último
+qbe-total-expression = Expressão
+qbe-total-where = Onde
+qbe-totals-off-unavailable = Antes de desativar Totais, altere as funções de agregação e Onde para Agrupar por e corrija as expressões de agregação ou inválidas. As opções existentes são mantidas.
+qbe-total-where-requires-hidden = Onde exige Mostrar desmarcado e nenhuma classificação. Altere essas células primeiro.

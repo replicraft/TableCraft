@@ -49,3 +49,17 @@ qbe-property-sheet = Property Sheet
 qbe-join-endpoints = { $left } ↔ { $right }
 qbe-join-kind = Join type: { $left } ↔ { $right }
 qbe-remove-join-accessible = Remove join: { $left } ↔ { $right }
+
+qbe-total = Total:
+qbe-total-group-by = Group By
+qbe-total-sum = Sum
+qbe-total-avg = Avg
+qbe-total-min = Min
+qbe-total-max = Max
+qbe-total-count = Count
+qbe-total-first = First
+qbe-total-last = Last
+qbe-total-expression = Expression
+qbe-total-where = Where
+qbe-totals-off-unavailable = Before turning Totals off, change aggregate and Where roles to Group By and correct aggregate or invalid expressions. Existing choices are retained.
+qbe-total-where-requires-hidden = Where requires Show to be cleared and no sort. Change those cells first.

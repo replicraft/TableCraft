@@ -49,3 +49,17 @@ qbe-property-sheet = プロパティシート
 qbe-join-endpoints = { $left } ↔ { $right }
 qbe-join-kind = 結合の種類: { $left } ↔ { $right }
 qbe-remove-join-accessible = 結合を削除: { $left } ↔ { $right }
+
+qbe-total = 集計:
+qbe-total-group-by = グループ化
+qbe-total-sum = 合計
+qbe-total-avg = 平均
+qbe-total-min = 最小
+qbe-total-max = 最大
+qbe-total-count = カウント
+qbe-total-first = 先頭
+qbe-total-last = 最後
+qbe-total-expression = 演算
+qbe-total-where = 抽出条件
+qbe-totals-off-unavailable = 集計をオフにする前に、集計関数と抽出条件をグループ化に変更し、集計式や無効な式を修正してください。現在の設定は保持されます。
+qbe-total-where-requires-hidden = 抽出条件を選ぶ前に、表示をオフにして並べ替えを解除してください。

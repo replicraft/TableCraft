@@ -2,12 +2,14 @@
 mod context_menu;
 mod dialog;
 mod grid;
+mod parameters;
 mod preferences;
 mod rebind_memory;
 mod render;
 mod retention;
 mod ribbon;
 mod sources;
+mod totals;
 
 pub(in crate::workspace) use preferences::Preferences;
 
@@ -48,6 +50,7 @@ struct Session {
     draft: QueryDesignDraft,
     revision: u64,
     result_revision: Option<u64>,
+    totals_off_qualification: Option<(u64, bool)>,
     metadata: Vec<DesignTableMetadata>,
     pending: Option<Pending>,
     error: Option<String>,

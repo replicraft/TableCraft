@@ -8,7 +8,7 @@ use crate::workspace::click;
 use egui::{Frame, Rect, Response, ScrollArea, Stroke, Ui};
 use tablecraft_builders::query::{
     DesignColumn, DesignExpression, DesignField, DesignJoin, DesignJoinKind, DesignSource,
-    MAX_DESIGN_COLUMNS, MAX_DESIGN_JOINS, draft_text_bytes,
+    DesignTotal, MAX_DESIGN_COLUMNS, MAX_DESIGN_JOINS, draft_text_bytes,
 };
 
 const SOURCE_WIDTH: f32 = 170.0;
@@ -100,6 +100,11 @@ pub(super) fn source_area(ui: &mut Ui, session: &mut Session, height: f32) -> bo
                 keyboard::Output::Hide => false,
                 keyboard::Output::Toggle => !column.show,
             };
+            let show = if session.draft.totals && column.total == DesignTotal::Where {
+                column.show
+            } else {
+                show
+            };
             changed |= column.show != show;
             column.show = show;
         } else if output != keyboard::Output::Hide {
@@ -108,6 +113,7 @@ pub(super) fn source_area(ui: &mut Ui, session: &mut Session, height: f32) -> bo
                 session,
                 DesignColumn {
                     expression,
+                    total: Default::default(),
                     alias: None,
                     show: true,
                     sort: None,
@@ -211,6 +217,7 @@ fn source_fields(ui: &mut Ui, session: &Session, source: &DesignSource, events: 
     {
         events.column = Some(DesignColumn {
             expression: DesignExpression::AllFields(Some(source.id)),
+            total: Default::default(),
             alias: None,
             show: true,
             sort: None,

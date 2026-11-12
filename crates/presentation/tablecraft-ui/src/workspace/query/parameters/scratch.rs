@@ -4,6 +4,7 @@ use super::{
     MAX_PARAMETERS, ParameterInput, ParameterSpec, copy_inputs, copy_text, input_copy_bytes,
     inputs_admitted, retained_inputs,
 };
+use crate::QueryDesignRequest;
 use crate::workspace::objects::MAX_RETAINED_BYTES;
 use crate::workspace::objects::memory::Counter;
 use crate::workspace::{Action, DocumentView, ObjectKind, ObjectTab, State};
@@ -14,6 +15,7 @@ pub(in crate::workspace) struct Session {
     sql_revision: u64,
     object: ObjectTab,
     publication: u64,
+    design_origin: Option<QueryDesignRequest>,
     phase: Phase,
 }
 
@@ -30,8 +32,10 @@ impl Session {
             && state.view == DocumentView::Query
             && !state.saved_query.active
             && !state.backstage_visible()
-            && !state.query_design_visible()
-            && !state.query_design_results_visible()
+            && match &self.design_origin {
+                Some(origin) => state.query_design_parameter_origin_current(origin),
+                None => !state.query_design_visible() && !state.query_design_results_visible(),
+            }
             && state.query_sql_witness_current(self.sql_revision, &self.sql)
     }
 
@@ -67,7 +71,9 @@ impl State {
         sql: &str,
         inputs: &Vec<ParameterInput>,
     ) -> Option<crate::workspace::query::actions::review::Origin> {
-        if !self.can_run_parameterized_query(inspection_id, sql, inputs) {
+        if !self.can_run_parameterized_query(inspection_id, sql, inputs)
+            || self.query_parameters.as_ref()?.design_origin.is_some()
+        {
             return None;
         }
         let session = self.query_parameters.take()?;
@@ -95,7 +101,7 @@ impl State {
 
     /// Admit a fresh Run intent before a host captures or clears any state.
     pub fn can_inspect_query_parameters(&self) -> bool {
-        self.query_ready()
+        (self.query_ready() || self.query_design_parameter_origin().is_some())
             && !self.query_action_dialog_open()
             && self.query_sql_revision().is_some()
             && self.active_object().is_some_and(|tab| {
@@ -147,6 +153,7 @@ impl State {
             sql_revision,
             object,
             publication: self.focus_publication,
+            design_origin: self.query_design_parameter_origin(),
             phase: Phase::Inspecting,
         });
         true
@@ -317,7 +324,15 @@ impl State {
             return false;
         }
         let session = self.query_parameters.take();
-        if self.begin_query_run(new_request_id, captured_sql) {
+        let design = session
+            .as_ref()
+            .is_some_and(|session| session.design_origin.is_some());
+        let begun = if design {
+            self.begin_query_design_parameter_run(new_request_id, captured_sql)
+        } else {
+            self.begin_query_run(new_request_id, captured_sql)
+        };
+        if begun {
             return true;
         }
         self.query_parameters = session;

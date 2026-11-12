@@ -49,3 +49,17 @@ qbe-property-sheet = 属性表
 qbe-join-endpoints = { $left } ↔ { $right }
 qbe-join-kind = 联接类型：{ $left } ↔ { $right }
 qbe-remove-join-accessible = 删除联接：{ $left } ↔ { $right }
+
+qbe-total = 总计:
+qbe-total-group-by = 分组
+qbe-total-sum = 总和
+qbe-total-avg = 平均值
+qbe-total-min = 最小值
+qbe-total-max = 最大值
+qbe-total-count = 计数
+qbe-total-first = 第一条
+qbe-total-last = 最后一条
+qbe-total-expression = 表达式
+qbe-total-where = 条件
+qbe-totals-off-unavailable = 关闭总计前，请将聚合和条件角色更改为分组，并更正聚合表达式或无效表达式。现有选择将保留。
+qbe-total-where-requires-hidden = 选择条件前，请取消显示并清除排序。请先更改这些单元格。

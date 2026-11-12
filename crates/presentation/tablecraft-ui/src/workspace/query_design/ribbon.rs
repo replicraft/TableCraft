@@ -227,8 +227,28 @@ impl State {
             group(ui, &tr(ui, "qbe-show-hide-group"), |ui| {
                 ui.horizontal_top(|ui| {
                     ui.vertical(|ui| {
+                        let design_ready = ready && self.query_design_visible();
+                        let available =
+                            !design_ready || self.query_design_totals_toggle_available();
+                        let totals = ribbon::command_toggle(
+                            ui,
+                            Icon::Sum,
+                            &tr(ui, "qbe-totals"),
+                            design_ready && available,
+                            self.query_design_draft().is_some_and(|draft| draft.totals),
+                            CommandSize::Small,
+                        );
+                        if !available {
+                            let reason = tr(ui, "qbe-totals-off-unavailable");
+                            let description = format!("{}\n{reason}", tr(ui, "ribbon-unavailable"));
+                            ui.ctx().accesskit_node_builder(totals.id, |node| {
+                                node.set_description(description);
+                            });
+                            totals.on_disabled_hover_text(reason);
+                        } else if totals.clicked() {
+                            self.toggle_query_design_totals();
+                        }
                         for (icon, key) in [
-                            (Icon::Sum, "qbe-totals"),
                             (Icon::Parameters, "qbe-parameters"),
                             (Icon::Properties, "qbe-property-sheet"),
                         ] {

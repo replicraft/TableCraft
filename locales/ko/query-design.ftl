@@ -49,3 +49,17 @@ qbe-property-sheet = 속성 시트
 qbe-join-endpoints = { $left } ↔ { $right }
 qbe-join-kind = 조인 종류: { $left } ↔ { $right }
 qbe-remove-join-accessible = 조인 제거: { $left } ↔ { $right }
+
+qbe-total = 요약:
+qbe-total-group-by = 묶는 방법
+qbe-total-sum = 합계
+qbe-total-avg = 평균
+qbe-total-min = 최솟값
+qbe-total-max = 최댓값
+qbe-total-count = 개수
+qbe-total-first = 처음 값
+qbe-total-last = 마지막 값
+qbe-total-expression = 식
+qbe-total-where = 조건
+qbe-totals-off-unavailable = 요약을 끄기 전에 집계 및 조건 역할을 묶는 방법으로 변경하고 집계 식이나 잘못된 식을 수정하세요. 기존 선택은 유지됩니다.
+qbe-total-where-requires-hidden = 조건을 선택하려면 표시를 해제하고 정렬을 없애야 합니다. 먼저 해당 셀을 변경하세요.

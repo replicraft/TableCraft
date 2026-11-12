@@ -49,3 +49,17 @@ qbe-property-sheet = Лист свойств
 qbe-join-endpoints = { $left } ↔ { $right }
 qbe-join-kind = Тип соединения: { $left } ↔ { $right }
 qbe-remove-join-accessible = Удалить соединение: { $left } ↔ { $right }
+
+qbe-total = Групповая операция:
+qbe-total-group-by = Группировка
+qbe-total-sum = Сумма
+qbe-total-avg = Среднее
+qbe-total-min = Минимум
+qbe-total-max = Максимум
+qbe-total-count = Количество
+qbe-total-first = Первое
+qbe-total-last = Последнее
+qbe-total-expression = Выражение
+qbe-total-where = Условие
+qbe-totals-off-unavailable = Перед отключением итогов замените агрегатные операции и Условие на Группировка и исправьте агрегатные или недопустимые выражения. Текущие настройки сохраняются.
+qbe-total-where-requires-hidden = Для Условия отключите Вывод на экран и сортировку. Сначала измените эти ячейки.

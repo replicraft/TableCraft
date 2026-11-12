@@ -57,6 +57,13 @@ impl Name {
         Self::from_contents(value, limits)
     }
 
+    /// Owned text heap capacity in bytes, excluding inline `Name` storage.
+    ///
+    /// Retained UI drafts use this allocation fact without copying identifier text.
+    pub fn retained_text_bytes(&self) -> usize {
+        self.0.capacity()
+    }
+
     /// Identifier contents without delimiters; no collation or case folding.
     pub fn as_str(&self) -> &str {
         &self.0
