@@ -3,6 +3,8 @@ use crate::{
     EditError, InspectError, WriteBlocker, header::check, table::mutation::index_creation::buffer,
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_schema::ScalarType;
+
 const PAGE: usize = 4096;
 const START: usize = 480;
 const CAPACITY: usize = PAGE - START;
@@ -25,6 +27,7 @@ pub(super) struct Appended {
     pub root: u32,
     pub owner: u32,
     pub descending: bool,
+    pub scalar: ScalarType,
 }
 
 pub(super) fn appended(
@@ -39,6 +42,7 @@ pub(super) fn appended(
         root,
         owner,
         descending,
+        scalar,
     } = layout;
     if root.checked_add(1) != Some(host) || host <= first || !bytes.len().is_multiple_of(PAGE) {
         return Err(EditError::Preservation);
@@ -80,7 +84,7 @@ pub(super) fn appended(
         {
             return Err(EditError::Preservation);
         }
-        let wires = entries(raw, height, descending, budget, cancelled)?;
+        let wires = entries(raw, height, descending, scalar, budget, cancelled)?;
         let expected = index_page(
             owner,
             (previous, next),
@@ -108,6 +112,7 @@ fn entries(
     raw: &[u8],
     height: u8,
     descending: bool,
+    scalar: ScalarType,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<Vec<u8>>, EditError> {
@@ -140,9 +145,21 @@ fn entries(
         wire.extend_from_slice(suffix);
         let marker = *wire.first().ok_or(EditError::Preservation)?;
         let marker = if descending { !marker } else { marker };
+        // Literal key widths are independent of the producer's profile,
+        // partitioning and key buffer. Boolean has no native NULL entry.
+        let key_bytes = match scalar {
+            ScalarType::Boolean | ScalarType::Byte => 1,
+            ScalarType::Int16 => 2,
+            ScalarType::Int32 | ScalarType::Single => 4,
+            ScalarType::Int64
+            | ScalarType::Currency
+            | ScalarType::Double
+            | ScalarType::DateTime => 8,
+            _ => return Err(EditError::Preservation),
+        };
         let key_row = match marker {
-            0 => 5,
-            0x7f => 9,
+            0 if scalar != ScalarType::Boolean => 5,
+            0x7f => 1 + key_bytes + 4,
             _ => return Err(EditError::Preservation),
         };
         if wire.len() != key_row + if height == 0 { 0 } else { 4 }

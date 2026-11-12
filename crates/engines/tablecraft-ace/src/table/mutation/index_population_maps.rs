@@ -3,7 +3,7 @@ use crate::{
     EditError, InspectError,
     format::page::{DATA_SIGNATURE, PAGE_BYTES},
     header::check,
-    table::{indexes::mutation::bulk_long::CreatedPage, mutation::index_creation::buffer},
+    table::{indexes::mutation::bulk_numeric::CreatedPage, mutation::index_creation::buffer},
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 

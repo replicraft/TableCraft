@@ -57,8 +57,7 @@ impl KeyProfile for SingleProfile {
         _work: &mut KeyWork<'_>,
     ) -> Result<Self::Key, InspectError> {
         self.kind
-            .key_type()
-            .key(row.get(self.column).ok_or(InspectError::Malformed)?)
+            .value(row.get(self.column).ok_or(InspectError::Malformed)?)
     }
     fn constraint_nulls(&self, key: &Self::Key) -> Result<(bool, bool), InspectError> {
         Ok((key.is_none(), key.is_none()))

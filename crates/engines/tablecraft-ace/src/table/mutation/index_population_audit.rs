@@ -2,7 +2,7 @@
 mod definition;
 mod framing;
 
-use super::{allocation_error, source};
+use super::{index_population::allocation_error, index_population_source as source};
 use crate::{
     EditError, IndexCheckStatus, IndexProjectionSelection, IndexReadRequest, InspectError,
     NativeImage,
@@ -17,10 +17,7 @@ use crate::{
         table_append::Inventory,
     },
 };
-use tablecraft_core::{
-    limits::{Resource, ResourceBudget},
-    values::Value,
-};
+use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const PAGE: usize = 4096;
 
@@ -45,6 +42,18 @@ pub(super) fn prove_fresh(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
     let original = source::capture_fresh(before, table, request, budget, cancelled)?;
+    prove_original(before, after, table, request, original, budget, cancelled)
+}
+
+pub(super) fn prove_numeric(
+    before: &NativeImage,
+    after: &NativeImage,
+    table: &str,
+    request: &SecondaryIndexCreate<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    let original = source::capture_numeric(before, table, request, budget, cancelled)?;
     prove_original(before, after, table, request, original, budget, cancelled)
 }
 
@@ -171,11 +180,10 @@ fn prove_original(
             .get(low)
             .filter(|key| key.reference == reference)
             .ok_or(EditError::Preservation)?;
-        let value = match row.as_slice() {
-            [Value::Null] => None,
-            [Value::Int32(value)] => Some(i64::from(*value)),
-            _ => return Err(EditError::Preservation),
+        let [value] = row.as_slice() else {
+            return Err(EditError::Preservation);
         };
+        let value = original.value(value)?;
         if seen[low] || expected.value != value {
             return Err(EditError::Preservation);
         }
@@ -222,6 +230,7 @@ fn prove_original(
             root: index.root_page(),
             owner: original.layout.definition,
             descending: request.descending,
+            scalar: original.scalar,
         },
         budget,
         cancelled,

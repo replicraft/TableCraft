@@ -2,6 +2,7 @@
 use crate::table::mutation::index_creation::buffer;
 use crate::{EditError, InspectError, NativeImage, header::check};
 use tablecraft_core::limits::{Resource, ResourceBudget};
+
 const PAGE: usize = 4096;
 const FREE_OFFSET: usize = 2;
 const COUNT_BLOCK_BYTES: usize = 12;
@@ -28,7 +29,7 @@ const DEFINITION_RESERVED_BYTES: usize = 8;
 
 pub(super) fn definition(
     image: &NativeImage,
-    original: &super::super::source::Original,
+    original: &crate::table::mutation::index_population_source::Original,
     root: u32,
     container: u32,
     counter: u32,

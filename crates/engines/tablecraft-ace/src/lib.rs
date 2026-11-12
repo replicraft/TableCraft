@@ -184,7 +184,7 @@ pub use table::{
     read_multivalue_table_page_with_request,
 };
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
-pub use table::{NativeIndexDropCandidate, NativeLongIndexCandidate};
+pub use table::{NativeIndexDropCandidate, NativeLongIndexCandidate, NativeNumericIndexCandidate};
 pub use table::{
     ParentVersionHistory, StoredVersion, VersionHistoryColumn, VersionHistoryMemberDeclaration,
     VersionHistoryReader, inspect_version_history_declarations, read_version_history_column,

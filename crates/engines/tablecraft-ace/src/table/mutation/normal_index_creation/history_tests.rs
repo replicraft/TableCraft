@@ -211,16 +211,35 @@ fn fresh_identity_policy_checks_native_u32_exhaustion_and_work_without_a_smaller
     )
     .unwrap();
     assert!(matches!(
-        super::source::fresh_logical(2, metadata.indexes(), &mut work, &|| false),
+        crate::table::mutation::index_population_source::fresh_logical(
+            2,
+            metadata.indexes(),
+            &mut work,
+            &|| false
+        ),
         Err(crate::InspectError::StructureLimit)
     ));
     assert_eq!(
-        super::source::fresh_logical(1, metadata.indexes(), &mut work, &|| false).unwrap(),
+        crate::table::mutation::index_population_source::fresh_logical(
+            1,
+            metadata.indexes(),
+            &mut work,
+            &|| false
+        )
+        .unwrap(),
         1
     );
-    assert!(super::source::fresh_logical(2, metadata.indexes(), &mut work, &|| true).is_err());
     assert!(
-        super::source::fresh_logical(
+        crate::table::mutation::index_population_source::fresh_logical(
+            2,
+            metadata.indexes(),
+            &mut work,
+            &|| true
+        )
+        .is_err()
+    );
+    assert!(
+        crate::table::mutation::index_population_source::fresh_logical(
             2,
             metadata.indexes(),
             &mut ResourceBudget::new(0, 0, 0),

@@ -10,8 +10,9 @@ use crate::{
     header::check,
     identifier,
     table::{
-        indexes::mutation::bulk_long::LongKey,
+        indexes::mutation::{NumericKey, bulk_numeric::NumericKeyRow},
         mutation::{
+            field,
             index_creation::{SecondaryIndexCreate, buffer, definition::DefinitionLayout},
             normal_ordinary, preserved_source,
         },
@@ -22,7 +23,7 @@ use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
 };
-use tablecraft_schema::SchemaName;
+use tablecraft_schema::{ScalarType, SchemaName};
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub(super) enum Construction {
@@ -30,7 +31,16 @@ pub(super) enum Construction {
     Fresh,
 }
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Language {
+    Long,
+    Numeric,
+}
+
 pub(super) struct Original {
+    language: Language,
+    pub kind: NumericKey,
+    pub scalar: ScalarType,
     pub construction: Construction,
     pub logical: u32,
     pub content: preserved_source::Source,
@@ -56,6 +66,7 @@ pub(super) fn capture(
         table,
         request,
         Construction::OriginalCount,
+        Language::Long,
         budget,
         cancelled,
     )
@@ -73,6 +84,25 @@ pub(super) fn capture_fresh(
         table,
         request,
         Construction::Fresh,
+        Language::Long,
+        budget,
+        cancelled,
+    )
+}
+
+pub(super) fn capture_numeric(
+    image: &NativeImage,
+    table: &str,
+    request: &SecondaryIndexCreate<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Original, EditError> {
+    capture_with(
+        image,
+        table,
+        request,
+        Construction::Fresh,
+        Language::Numeric,
         budget,
         cancelled,
     )
@@ -83,6 +113,7 @@ fn capture_with(
     table: &str,
     request: &SecondaryIndexCreate<'_>,
     construction: Construction,
+    language: Language,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Original, EditError> {
@@ -116,7 +147,7 @@ fn capture_with(
     let mut next_logical = u32::try_from(schema.layout.logical_indexes)
         .map_err(|_| crate::InspectError::StructureLimit)?;
     let mut selected = None;
-    for column in schema.columns() {
+    for (position, column) in schema.columns().iter().enumerate() {
         check(budget, cancelled)?;
         budget
             .charge(
@@ -124,20 +155,44 @@ fn capture_with(
                 column.name().len().max(request.column.len()) as u64,
             )
             .map_err(crate::InspectError::from)?;
-        if column.name().eq_ignore_ascii_case(request.column) && selected.replace(column).is_some()
+        if column.name().eq_ignore_ascii_case(request.column)
+            && selected.replace((position, column)).is_some()
         {
             return Err(crate::InspectError::Malformed.into());
         }
     }
-    let selected = selected.ok_or(crate::InspectError::UnknownColumn)?;
-    if selected.native_type() != INT32
-        || selected.scalar_type() != Some(tablecraft_schema::ScalarType::Int32)
-        || selected.flags() != (FIXED_FLAG | UPDATABLE_FLAG)
-        || selected.extended_flags() != 0
-        || selected.storage_length() != size_of::<i32>()
-    {
-        return Err(EditError::Unsupported(WriteBlocker::Column));
-    }
+    let (position, selected) = selected.ok_or(crate::InspectError::UnknownColumn)?;
+    let (scalar, kind) = match language {
+        Language::Long => {
+            if selected.native_type() != INT32
+                || selected.scalar_type() != Some(ScalarType::Int32)
+                || selected.flags() != (FIXED_FLAG | UPDATABLE_FLAG)
+                || selected.extended_flags() != 0
+                || selected.storage_length() != size_of::<i32>()
+            {
+                return Err(EditError::Unsupported(WriteBlocker::Column));
+            }
+            (ScalarType::Int32, NumericKey::new(ScalarType::Int32)?)
+        }
+        Language::Numeric => {
+            let scalar = selected
+                .scalar_type()
+                .ok_or(EditError::Unsupported(WriteBlocker::Column))?;
+            let kind = NumericKey::new(scalar)?;
+            let width = if scalar == ScalarType::Boolean {
+                0
+            } else {
+                kind.bytes()
+            };
+            // The shared fixed-column check examines the native format-bounded
+            // field list for physical overlap; account that actual traversal.
+            budget
+                .charge(Resource::Steps, schema.columns().len() as u64 + 1)
+                .map_err(crate::InspectError::from)?;
+            field::fixed_column_at(schema, position, scalar, width)?;
+            (scalar, kind)
+        }
+    };
     let native = selected.number();
     let mut dense = None;
     for (position, column) in content.table.columns().iter().enumerate() {
@@ -217,6 +272,9 @@ fn capture_with(
     let index_start = u32::try_from(image.as_bytes().len() / PAGE_BYTES)
         .map_err(|_| crate::InspectError::StructureLimit)?;
     Ok(Original {
+        language,
+        scalar,
+        kind,
         construction,
         logical: next_logical,
         content,
@@ -232,13 +290,35 @@ fn capture_with(
 }
 
 impl Original {
+    pub(super) fn is_numeric(&self) -> bool {
+        self.language == Language::Numeric
+    }
+
+    pub(super) fn value(&self, value: &Value) -> Result<Option<i64>, EditError> {
+        match self.language {
+            Language::Long => match value {
+                Value::Null => Ok(None),
+                Value::Int32(value) => Ok(Some(i64::from(*value))),
+                _ => Err(EditError::Preservation),
+            },
+            Language::Numeric => {
+                if matches!(value, Value::Single(value) if !value.to_float().is_finite())
+                    || matches!(value, Value::Double(value) if !value.to_float().is_finite())
+                {
+                    return Err(EditError::Unsupported(WriteBlocker::Column));
+                }
+                self.kind.value(value).map_err(EditError::from)
+            }
+        }
+    }
+
     /// Reconstruct source keys independently on each invocation; the audit does
     /// not consume the population or topology prepared by the producer.
     pub(super) fn keys(
         &self,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
-    ) -> Result<Vec<LongKey>, EditError> {
+    ) -> Result<Vec<NumericKeyRow>, EditError> {
         if self.content.records.len() != self.content.table.rows().len() {
             return Err(EditError::Preservation);
         }
@@ -250,12 +330,8 @@ impl Original {
                 return Err(EditError::Unsupported(WriteBlocker::RowLayout));
             }
             previous = Some(record.reference);
-            let value = match row.get(self.dense) {
-                Some(Value::Null) => None,
-                Some(Value::Int32(value)) => Some(i64::from(*value)),
-                _ => return Err(EditError::Preservation),
-            };
-            output.push(LongKey {
+            let value = self.value(row.get(self.dense).ok_or(EditError::Preservation)?)?;
+            output.push(NumericKeyRow {
                 value,
                 reference: record.reference,
             });

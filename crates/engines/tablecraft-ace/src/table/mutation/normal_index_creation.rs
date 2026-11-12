@@ -1,26 +1,18 @@
 //! A source-bound, independently checked normal LONG index candidate.
-mod audit;
 mod effect;
 pub(crate) use effect::{NativeIndexCreateEffect, NativeIndexCreateParts};
-mod maps;
 mod selection;
-mod source;
 #[cfg(test)]
 mod tests;
 
-use super::index_creation::{
-    SecondaryIndexCreate, buffer,
-    definition::{self, CreatedDescriptor},
-};
-use crate::table::{
-    indexes::mutation::bulk_long::Population,
-    table_append::{Inventory, allocation::AllocationError},
-};
-use crate::{
-    EditError, InspectError, NativeImage, NativeImageSource, format::page::PAGE_BYTES,
-    header::check,
-};
-use tablecraft_core::limits::{Resource, ResourceBudget};
+use super::index_creation::SecondaryIndexCreate;
+#[cfg(test)]
+use super::index_population_audit as audit;
+use super::index_population_source as source;
+use crate::{EditError, NativeImage};
+use tablecraft_core::limits::ResourceBudget;
+
+const LONG_ENTRY_BYTES: usize = 1 + size_of::<i32>() + 2 * size_of::<u32>();
 
 /// Complete candidate bytes for an ordinary nullable LONG secondary index.
 ///
@@ -56,10 +48,12 @@ impl NativeLongIndexCandidate {
     pub fn before_bytes(&self) -> &[u8] {
         self.before.as_bytes()
     }
+
     /// Complete independently checked image; no mutable storage is exposed.
     pub fn candidate_bytes(&self) -> &[u8] {
         self.after.as_bytes()
     }
+
     pub(crate) fn after_shared_bytes(&self) -> bytes::Bytes {
         // NO_CLONE: The independent readonly host witness can outlive this candidate.
         // NativeImageSource already materialized the shared control allocation;
@@ -71,54 +65,67 @@ impl NativeLongIndexCandidate {
     pub fn table(&self) -> &str {
         &self.table
     }
+
     /// Original selected field name retained by the request.
     pub fn column(&self) -> &str {
         &self.column
     }
+
     /// Original signed native catalog table identity.
     pub const fn native_table_id(&self) -> i32 {
         self.native_table
     }
+
     /// Original table-definition root, separate from the new index root.
     pub const fn definition_page(&self) -> u32 {
         self.definition
     }
+
     /// Stored creation-time field identity, separate from native/display position.
     pub const fn column_id(&self) -> u16 {
         self.column_id
     }
+
     /// Requested native key direction; ROW ties remain ascending.
     pub const fn descending(&self) -> bool {
         self.descending
     }
+
     /// Requested native index name.
     pub fn index_name(&self) -> &str {
         self.index.as_str()
     }
+
     /// Actual native field identity, independent of display ordinal.
     pub fn native_number(&self) -> usize {
         self.native
     }
+
     /// New logical index identity.
     pub fn logical_index_number(&self) -> u32 {
         self.logical
     }
+
     /// New physical index identity, separate from logical aliases.
     pub fn physical_index_number(&self) -> u32 {
         self.physical
     }
+
     /// Complete original live-row population, including NULL keys.
     pub fn indexed_rows(&self) -> usize {
         self.rows
     }
+
     /// New root INDEX page.
     pub fn root_page(&self) -> u32 {
         self.root
     }
+
     /// Number of new INDEX pages, excluding usage-map storage.
     pub fn index_pages(&self) -> usize {
         self.pages
     }
+
     /// Root height; zero denotes a single leaf.
     pub fn height(&self) -> u8 {
         self.height
@@ -177,132 +184,51 @@ impl NativeImage {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeLongIndexCandidate, EditError> {
-        let rows = original.content.records.len();
-        let population = Population::capture(
-            original.keys(budget, cancelled)?,
-            original.native,
-            original.descending,
-            original.index_start,
-            budget,
-            cancelled,
-        )?;
-        let maps = maps::build(
-            original.index_start,
-            population.page_count(),
-            budget,
-            cancelled,
-        )?;
-        let inventory = Inventory::capture(&self, budget, cancelled)?;
-        let allocation = inventory
-            .plan_allocation(maps.after_pages, budget, cancelled)
-            .map_err(allocation_error)?;
-        let descriptor = CreatedDescriptor {
-            column: original.native,
-            descending: original.descending,
-            counter: population.distinct(),
-            physical: original.layout.physical_count,
-            logical: original.logical,
-            usage: maps.usage,
-            root: population.root(),
-        };
-        let definition = match original.construction {
-            source::Construction::OriginalCount => definition::compose(
-                &self,
-                &original.layout,
-                &original.name,
-                descriptor,
-                budget,
-                cancelled,
-            )?,
-            source::Construction::Fresh => definition::compose_fresh(
-                &self,
-                &original.layout,
-                &original.name,
-                descriptor,
-                budget,
-                cancelled,
-            )?,
-        };
-        let length = usize::try_from(maps.after_pages)
-            .map_err(|_| InspectError::StructureLimit)?
-            .checked_mul(PAGE_BYTES)
-            .ok_or(InspectError::StructureLimit)?;
-        let mut bytes = buffer::vector(length, budget, cancelled)?;
-        for chunk in self
-            .as_bytes()
-            .chunks(crate::preservation::COPY_CHUNK_BYTES)
-        {
-            check(budget, cancelled)?;
-            budget
-                .charge(Resource::Steps, chunk.len() as u64)
-                .map_err(InspectError::from)?;
-            bytes.extend_from_slice(chunk);
-        }
-        let pages = population.build(original.layout.definition, budget, cancelled)?;
-        for page in pages.into_iter().chain(maps.pages) {
-            check(budget, cancelled)?;
-            if page.number as usize * PAGE_BYTES != bytes.len() || page.bytes.len() != PAGE_BYTES {
-                return Err(EditError::Preservation);
-            }
-            budget
-                .charge(Resource::Steps, PAGE_BYTES as u64)
-                .map_err(InspectError::from)?;
-            bytes.extend_from_slice(&page.bytes);
-        }
-        if bytes.len() != length {
+        if original.is_numeric() {
             return Err(EditError::Preservation);
         }
-        allocation
-            .apply(&mut bytes, budget, cancelled)
-            .map_err(allocation_error)?;
-        let start = original.layout.definition as usize * PAGE_BYTES;
-        bytes[start..start + PAGE_BYTES].copy_from_slice(&definition);
-        let scope = self.catalog().catalog().scope();
-        let after = NativeImage::capture_shared_retained(
-            NativeImageSource::from_vec(bytes, budget, cancelled)?,
-            scope,
-            budget,
-            cancelled,
+        let built = super::index_population::build::<LONG_ENTRY_BYTES>(
+            self, table, request, original, budget, cancelled,
         )?;
-        match original.construction {
-            source::Construction::OriginalCount => {
-                audit::prove(&self, &after, table, request, budget, cancelled)?
-            }
-            source::Construction::Fresh => {
-                audit::prove_fresh(&self, &after, table, request, budget, cancelled)?
-            }
-        }
-        let table = String::from_utf8(buffer::copy(table.as_bytes(), budget, cancelled)?)
-            .map_err(|_| InspectError::Malformed)?;
-        let column = String::from_utf8(buffer::copy(request.column.as_bytes(), budget, cancelled)?)
-            .map_err(|_| InspectError::Malformed)?;
+        let super::index_population::Built {
+            before,
+            after,
+            construction,
+            table,
+            column,
+            index,
+            native_table,
+            definition,
+            native,
+            column_id,
+            descending,
+            logical,
+            physical,
+            rows,
+            root,
+            pages,
+            height,
+            ..
+        } = built;
         Ok(NativeLongIndexCandidate {
-            construction: original.construction,
-            before: self,
+            construction,
+            before,
             after,
             table,
             column,
-            native_table: original.native_table,
-            definition: original.layout.definition,
-            column_id: original.column_id,
-            descending: original.descending,
-            index: original.name,
-            native: original.native,
-            logical: original.logical,
-            physical: original.layout.physical_count,
+            native_table,
+            definition,
+            column_id,
+            descending,
+            index,
+            native,
+            logical,
+            physical,
             rows,
-            root: population.root(),
-            pages: population.page_count(),
-            height: population.height(),
+            root,
+            pages,
+            height,
         })
-    }
-}
-
-fn allocation_error(error: AllocationError) -> EditError {
-    match error {
-        AllocationError::Inspect(error) => error.into(),
-        AllocationError::Capacity => EditError::Unsupported(crate::WriteBlocker::RowLayout),
-        AllocationError::Source => EditError::Preservation,
     }
 }
 

@@ -1,5 +1,5 @@
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
-pub(in crate::table) mod bulk_long;
+pub(in crate::table) mod bulk_numeric;
 #[cfg(feature = "ace16-write-preview")]
 mod combined;
 #[cfg(feature = "journal")]

@@ -34,6 +34,7 @@ impl NumericKey {
     pub(in crate::table::indexes) fn nullable(self) -> bool {
         self.0 != KeyType::Boolean
     }
+
     pub(in crate::table::indexes) fn requires_repack(self) -> bool {
         matches!(
             self.0,
@@ -41,13 +42,20 @@ impl NumericKey {
         )
     }
 
-    pub(in crate::table::indexes) fn bytes(self) -> usize {
+    pub(in crate::table) fn bytes(self) -> usize {
         self.0.bytes()
     }
 
     #[cfg(any(test, feature = "ace16-write-preview"))]
     pub fn mask_key(self, bit: bool) -> Option<i64> {
         (self.0 == KeyType::Boolean).then(|| boolean::value_key(bit))
+    }
+
+    pub(in crate::table) fn value(
+        self,
+        value: &tablecraft_core::values::Value,
+    ) -> Result<Option<i64>, InspectError> {
+        self.0.key(value)
     }
 
     pub fn stored(self, bytes: &[u8]) -> Result<i64, InspectError> {

@@ -1,4 +1,4 @@
-//! Paid bottom-up construction of fresh ordinary nullable LONG index pages.
+//! Paid bottom-up construction of fresh ordinary numeric index pages.
 use super::{NumericKey, pages, profile::SingleProfile, repack};
 use crate::{
     EditError, InspectError, WriteBlocker,
@@ -10,13 +10,10 @@ use crate::{
 };
 use std::{cmp::Ordering, ops::Range};
 use tablecraft_core::limits::{Resource, ResourceBudget};
-use tablecraft_schema::ScalarType;
-
-const WIRE_BYTES: usize = 1 + size_of::<i32>() + 2 * size_of::<u32>();
 
 /// Source-bound scalar facts; these are not index or mutation authority.
 #[derive(Clone, Copy, PartialEq, Eq)]
-pub(in crate::table) struct LongKey {
+pub(in crate::table) struct NumericKeyRow {
     pub value: Option<i64>,
     pub reference: u32,
 }
@@ -41,8 +38,8 @@ enum Group {
 }
 
 /// All original keys and complete topology; no source or budget borrow escapes.
-pub(in crate::table) struct Population {
-    keys: Vec<LongKey>,
+pub(in crate::table) struct Population<const WIRE_BYTES: usize> {
+    keys: Vec<NumericKeyRow>,
     nodes: Vec<Node>,
     profile: SingleProfile,
     base: u32,
@@ -51,10 +48,11 @@ pub(in crate::table) struct Population {
     height: u8,
 }
 
-impl Population {
+impl<const WIRE_BYTES: usize> Population<WIRE_BYTES> {
     pub(in crate::table) fn capture(
-        mut keys: Vec<LongKey>,
+        mut keys: Vec<NumericKeyRow>,
         column: usize,
+        kind: NumericKey,
         descending: bool,
         base: u32,
         budget: &mut ResourceBudget,
@@ -63,7 +61,9 @@ impl Population {
         check(budget, cancelled)?;
         for key in &keys {
             check(budget, cancelled)?;
-            if key.value.is_some_and(|value| i32::try_from(value).is_err()) {
+            if let Some(value) = key.value {
+                kind.ordered(value)?;
+            } else if !kind.nullable() {
                 return Err(InspectError::Malformed.into());
             }
         }
@@ -84,7 +84,7 @@ impl Population {
             nodes: Vec::new(),
             profile: SingleProfile {
                 column,
-                kind: NumericKey::new(ScalarType::Int32)?,
+                kind,
                 descending,
             },
             base,
@@ -394,14 +394,14 @@ impl Population {
     }
 }
 
-fn compare(left: &LongKey, right: &LongKey, descending: bool) -> Ordering {
+fn compare(left: &NumericKeyRow, right: &NumericKeyRow, descending: bool) -> Ordering {
     let order = left.value.cmp(&right.value);
     (if descending { order.reverse() } else { order }).then(left.reference.cmp(&right.reference))
 }
 
 /// In-place heap ordering checks work/cancellation at every comparison and swap.
 fn sort(
-    keys: &mut [LongKey],
+    keys: &mut [NumericKeyRow],
     descending: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
@@ -411,7 +411,7 @@ fn sort(
     }
     for end in (1..keys.len()).rev() {
         check(budget, cancelled)?;
-        budget.charge(Resource::Steps, size_of::<LongKey>() as u64)?;
+        budget.charge(Resource::Steps, size_of::<NumericKeyRow>() as u64)?;
         keys.swap(0, end);
         sift(keys, 0, end, descending, budget, cancelled)?;
     }
@@ -419,7 +419,7 @@ fn sort(
 }
 
 fn sift(
-    keys: &mut [LongKey],
+    keys: &mut [NumericKeyRow],
     mut root: usize,
     end: usize,
     descending: bool,
@@ -428,7 +428,7 @@ fn sift(
 ) -> Result<(), InspectError> {
     while root < end / 2 {
         check(budget, cancelled)?;
-        budget.charge(Resource::Steps, (2 * size_of::<LongKey>()) as u64)?;
+        budget.charge(Resource::Steps, (2 * size_of::<NumericKeyRow>()) as u64)?;
         let mut child = root
             .checked_mul(2)
             .and_then(|value| value.checked_add(1))
@@ -444,3 +444,6 @@ fn sift(
     }
     Ok(())
 }
+
+#[cfg(test)]
+mod tests;
