@@ -69,6 +69,17 @@ Expression, comparison, parameter, saved-definition and security gaps in the
 matrix remain in scope after these statement-level boundaries. These priorities
 do not expand SQLite, project scripting or deferred VBA execution.
 
+## Visual grouping workflow
+
+The shared [query designer](../ui/QUERY_DESIGN.md) now retains qualified Totals
+roles, WHERE/HAVING ownership and declared parameters through Build, lossless
+Import, inspected prompts and explicit Design Run. The
+[QBE checkpoint](../../tests/results/queries/qbe-totals-workflows-2026-11-12.json)
+records local Runtime/Desktop/MCP execution and headless presentation separately
+from native Access behavior. Unsafe cross-phase alternatives, some Totals-off
+transitions, general visual SQL authoring and native saved definitions remain
+incomplete. Field-row alias presentation also needs its recorded correction.
+
 ## Evidence required for a completed row
 
 1. Establish the Microsoft contract or recorded native behavior, including engine

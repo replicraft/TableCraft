@@ -1707,20 +1707,44 @@ left-to-right sort choices remain distinct. Hidden columns can still filter or
 sort. Grid cells on the same criteria row combine with AND; nonempty rows combine
 with OR, while blank rows add no unconditional branch. Contextual field criteria
 support comparison shorthand, compound comparisons, Between, In, Like, Is Null
-and quoted or simple bare Text values. Computed operands require explicit
-predicate syntax or scalar operands; bare wildcard patterns require explicit
-Like. Join orientation and Inner/Left/Right kinds are explicit, never guessed
+and quoted or simple bare Text values. Computed and aggregate criteria use
+explicit expressions or qualified leading-operator/keyword shorthand over the
+captured operand AST; bare wildcard patterns require explicit Like. Join
+orientation and Inner/Left/Right kinds are explicit, never guessed
 from names. Cyclic and compound-edge join graphs remain outside this initial
 profile.
 
-SQL import accepts only a SELECT representable by this model. It rejects
-parameters, UNION, TOP/DISTINCT, GROUP/HAVING/aggregates, external/derived sources,
-subqueries, unsupported join conditions and other omitted clauses. A canonical
-round-trip proof preserves the represented projection, aliases, join tree,
-criteria grouping/order and sorting; only transparent relation parentheses are
-normalized. Unsupported criteria decompositions and changes to evaluation order
-refuse, leaving the caller's existing SQL and draft intact. SQL execution remains
-available independently and is always an explicit host action.
+The draft retains an explicit Totals mode, a role for each column and complete
+owned SQL parameter declarations. The ten roles are Group By, Sum, Avg, Min,
+Max, Count, First, Last, Expression and Where. Group By retains grouping keys,
+including hidden keys; aggregate roles use captured operands. Where columns must
+already be hidden and unsorted and contribute record filters before grouping.
+Other criteria contribute HAVING conditions. Criteria alternatives stay within
+their clause; unrepresentable cross-phase OR combinations refuse without changing
+the draft. The current editor refuses turning Totals off while nondefault roles
+or aggregate expressions remain; it does not reset those choices implicitly.
+This is an editor qualification boundary, not native toggle-off parity.
+
+SQL import accepts only a SELECT representable by this model, including qualified
+grouping, aggregates, HAVING and declared parameters. It rejects UNION,
+TOP/DISTINCT, external/derived sources, subqueries, unsupported join conditions
+and other omitted clauses. A canonical round-trip proof preserves projection,
+aliases, join tree, clause ownership, criteria grouping/order, sorting and typed
+declarations. Transparent relation parentheses and recognized aggregate call-name
+case are normalized; field and alias spelling remain owned. Unsupported
+criteria decompositions and changes to evaluation order refuse, leaving the
+caller's existing SQL and draft intact. Actual source fields take precedence over
+unqualified declared parameters; a qualified missing field cannot become a
+parameter.
+
+Design Run uses the same issued inspection, discovery, typed parameter prompt
+and explicit execution services as SQL View, retaining the options captured by
+the originating Build. Cancel preserves the owned design, declarations and prior
+results. Shared publication binds the actual tab, document, draft revision and
+SQL; matching complete results retain Design provenance. Matching Design Run
+cancellation revokes its actual worker request; stale or ordinary SQL identities
+do not become Design cancellation authority. Build/import never execute a query,
+and a successful design still does not establish native or expression eligibility.
 
 Combined editable text is limited to 64 KiB. The public parser additionally
 retains its byte/token/depth ceilings; generated SQL must pass those same bounds.

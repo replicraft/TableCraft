@@ -1,0 +1,1399 @@
+{
+  "date": "2026-11-12",
+  "platform": "macOS 14.7.2 arm64",
+  "rustc": "1.99.0 (b940084d7 2026-09-28)",
+  "qualification_status": "passed_with_explicit_fixture_ignore_and_observed_visual_gaps",
+  "scope": "Working visual SELECT Totals, owned parameter declarations and actual inspected Design Run through shared builders/UI/Runtime and Desktop/MCP consumers.",
+  "source_commit": "395148b44f506a34aa269d58a3d04e0e54174433",
+  "renderer_build_source_commit": "d8986eed2e4a624686b9be7df0466514ef6976a4",
+  "qualification": "Local metadata-only/source-preservation, execution, headless interaction and directly viewed offscreen frames. No native Access interaction, Windows API execution or full QBE/ACE SQL parity claim.",
+  "observations": [
+    "Ten exact Totals roles lower to owned SELECT/GROUP BY/WHERE/HAVING syntax. Hidden keys retain grouping; Count(field) and explicit Count(*) remain distinct. Criteria shorthand captures actual operand ASTs, with no output alias substitution or lossy cross-phase OR factoring.",
+    "Owned PARAMETERS declarations retain name/type spelling/order and source-field precedence. Strict owner-backed header parsing refuses extra statements and duplicate declarations; hosts maintain no second type grammar. Actual MCP returned drafts can be rebuilt without dropping declarations or Totals roles.",
+    "Bound import retains canonical projection, joins, aliases, clause ownership, grouping, sorting and declarations. Unsupported conversions preserve literal SQL, draft and prior results. Hidden nongrouped sort keys retain their default nongrouped role; parser limits propagate rather than becoming Text fallback.",
+    "Design Run uses the same issued inspection/discovery/typed prompt services as SQL View with captured QueryRunOptions. No view switch or host query semantics are introduced. Matching complete results retain actual Design provenance; stale, cancelled and duplicate requests cannot replace prior rows.",
+    "Actual matching Design cancellation revokes a real actor-buffered reply; stale/mismatched IDs and ordinary SQL cannot acquire Design cancellation authority. Source bytes, prior rows and absence of a journal are observed independently.",
+    "Unavailable Totals-off transitions are disabled with localized reason and no Click action. A rendering-only revision cache avoids repeated parsing; the consuming guard validates again. Roles/text are not silently reset.",
+    "UI retained accounting includes actual owned parameter-name capacity through the SQL Name owner. An actual parsed declaration exceeds the existing retained UI pool without losing draft/mode/results. All eight catalogs pass key/variable/format checks.",
+    "Evidenced English SumOf/MinOf/MaxOf defaults apply only to shown plain native-field aggregate roles without explicit aliases. Generated collisions refuse without invented suffixes; explicit aliases/Expression syntax and other runnable role naming are preserved."
+  ],
+  "checks": [
+    {
+      "job": "strict",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-sql",
+        "-p",
+        "tablecraft-builders",
+        "-p",
+        "tablecraft-query",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-testkit",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-runtime",
+        "-p",
+        "tablecraft-ui",
+        "-p",
+        "tablecraft-desktop",
+        "-p",
+        "tablecraft-cli",
+        "-p",
+        "tablecraft-mcp",
+        "--all-targets",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "seconds": 9.45,
+      "log": ".cache/ace-sql-qbe-totals-final-strict-20261112.log",
+      "artifact": {
+        "path": ".cache/ace-sql-qbe-totals-final-strict-20261112.log",
+        "sha256": "d7e2bbef12e28ba4273a29f76a4a1ea4d5a1a498e9acfc9e7e03af36a08e2932",
+        "bytes": 171
+      },
+      "ignored_entries": []
+    },
+    {
+      "job": "builders",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-builders",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 2.03,
+      "log": ".cache/ace-sql-qbe-totals-qualified-builders-20261112.log",
+      "artifact": {
+        "path": ".cache/ace-sql-qbe-totals-qualified-builders-20261112.log",
+        "sha256": "fd83be746dc7116299189e1719ce0f3f6e45002d9a8416eb0df4025d22227b2c",
+        "bytes": 6204
+      },
+      "tests": [
+        {
+          "passed": 54,
+          "failed": 0,
+          "ignored": 0
+        }
+      ],
+      "ignored_entries": []
+    },
+    {
+      "job": "ui",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ui",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "workspace::query_design",
+        "workspace::query::parameters",
+        "workspace::query::provenance",
+        "workspace::objects"
+      ],
+      "returncode": 0,
+      "seconds": 22.06,
+      "log": ".cache/ace-sql-qbe-totals-qualified-ui-20261112.log",
+      "artifact": {
+        "path": ".cache/ace-sql-qbe-totals-qualified-ui-20261112.log",
+        "sha256": "e361aaa70b8e50a7f304eec1b5a7839dae15971ec6ecdcdc5e99b5f7b4461405",
+        "bytes": 10304
+      },
+      "tests": [
+        {
+          "passed": 75,
+          "failed": 0,
+          "ignored": 0
+        }
+      ],
+      "ignored_entries": []
+    },
+    {
+      "job": "runtime",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-runtime",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 49.66,
+      "log": ".cache/ace-sql-qbe-totals-qualified-runtime-20261112.log",
+      "artifact": {
+        "path": ".cache/ace-sql-qbe-totals-qualified-runtime-20261112.log",
+        "sha256": "4e4097d8e06b5f73d61f61d403762db416cfd1984fffd97bc7b278a1daaf8d1c",
+        "bytes": 56276
+      },
+      "tests": [
+        {
+          "passed": 486,
+          "failed": 0,
+          "ignored": 1
+        }
+      ],
+      "ignored_entries": [
+        [
+          "tests::editing::genuine_jet4::genuine_jet4_reviewed_cell_save_matches_independent_whole_image",
+          "requires explicit hash-pinned TABLECRAFT_JET4_SCALAR_SOURCE"
+        ]
+      ]
+    },
+    {
+      "job": "desktop",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-desktop",
+        "--bin",
+        "tablecraft-desktop",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "query_design::tests",
+        "query_parameters::tests",
+        "query_action::tests",
+        "query_formats",
+        "workspace::objects::tests"
+      ],
+      "returncode": 0,
+      "seconds": 17.43,
+      "log": ".cache/ace-sql-qbe-totals-final-desktop-20261112.log",
+      "artifact": {
+        "path": ".cache/ace-sql-qbe-totals-final-desktop-20261112.log",
+        "sha256": "e62add8d270701492bf832529eb1853cf9bbc5002e79a667a900b94a8220535c",
+        "bytes": 13571
+      },
+      "tests": [
+        {
+          "passed": 96,
+          "failed": 0,
+          "ignored": 0
+        }
+      ],
+      "ignored_entries": []
+    },
+    {
+      "job": "mcp",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-mcp",
+        "--bin",
+        "tablecraft-mcp",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 50.56,
+      "log": ".cache/ace-sql-qbe-totals-qualified-mcp-20261112.log",
+      "artifact": {
+        "path": ".cache/ace-sql-qbe-totals-qualified-mcp-20261112.log",
+        "sha256": "4532b85ab0ff8580d3ce1fff11629f4ddff54ac1266304a24d3a6d64b84a6918",
+        "bytes": 11940
+      },
+      "tests": [
+        {
+          "passed": 77,
+          "failed": 0,
+          "ignored": 0
+        }
+      ],
+      "ignored_entries": []
+    },
+    {
+      "job": "sql",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-sql",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 5.7,
+      "log": ".cache/ace-sql-qbe-totals-qualified-sql-20261112.log",
+      "artifact": {
+        "path": ".cache/ace-sql-qbe-totals-qualified-sql-20261112.log",
+        "sha256": "e4fda02c987bde6afa0811e3f274bd69abeb50646951d38c2b9cf1cbef1608e7",
+        "bytes": 10685
+      },
+      "tests": [
+        {
+          "passed": 98,
+          "failed": 0,
+          "ignored": 0
+        }
+      ],
+      "ignored_entries": []
+    },
+    {
+      "job": "runtime-minimal",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-runtime",
+        "--no-default-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 5.35,
+      "log": ".cache/ace-sql-qbe-totals-qualified-runtime-minimal-20261112.log",
+      "artifact": {
+        "path": ".cache/ace-sql-qbe-totals-qualified-runtime-minimal-20261112.log",
+        "sha256": "662f8aef3af211f319f9e21b3a385a9a221a1ae3f2f99cd75ae342ff40846767",
+        "bytes": 887
+      },
+      "ignored_entries": []
+    },
+    {
+      "job": "rustdoc",
+      "command": [
+        "cargo",
+        "doc",
+        "-p",
+        "tablecraft-sql",
+        "-p",
+        "tablecraft-builders",
+        "-p",
+        "tablecraft-ui",
+        "-p",
+        "tablecraft-runtime",
+        "--all-features",
+        "--no-deps",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 18.11,
+      "log": ".cache/ace-sql-qbe-totals-qualified-rustdoc-20261112.log",
+      "artifact": {
+        "path": ".cache/ace-sql-qbe-totals-qualified-rustdoc-20261112.log",
+        "sha256": "3823600b76707be5601d460acebc041c53448a5875dcaeb48d6a35765ea123e4",
+        "bytes": 3255
+      },
+      "ignored_entries": []
+    },
+    {
+      "job": "renderer",
+      "command": [
+        "cargo",
+        "build",
+        "-p",
+        "tablecraft-ui",
+        "--example",
+        "render_preview",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 14.06,
+      "log": ".cache/ace-sql-qbe-totals-qualified-renderer-20261112.log",
+      "artifact": {
+        "path": ".cache/ace-sql-qbe-totals-qualified-renderer-20261112.log",
+        "sha256": "a5824b50698b2db56ad8acc9d1541116203edbbc135046bdbcc4b7b1bcca7e87",
+        "bytes": 177
+      },
+      "ignored_entries": []
+    },
+    {
+      "job": "localization",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ui",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "localization::tests"
+      ],
+      "returncode": 0,
+      "seconds": 0.52,
+      "log": ".cache/ace-sql-qbe-totals-final-localization-20261112.log",
+      "artifact": {
+        "path": ".cache/ace-sql-qbe-totals-final-localization-20261112.log",
+        "sha256": "266ccfa8f3fd852becc558894e6a383d85f7a8dcfd4eae835abd314b02068115",
+        "bytes": 1062
+      },
+      "tests": [
+        {
+          "passed": 7,
+          "failed": 0,
+          "ignored": 0
+        }
+      ],
+      "ignored_entries": []
+    }
+  ],
+  "prior_attempts": [
+    {
+      "status": "terminal_with_preserved_outcomes",
+      "source_commit": "ab2a9eb35adf9cdb9dc4eda242748e565907eceb",
+      "reason": "Wildcard/hidden-sort import assigned a Totals-only role in a nongrouped draft; UI compilation also lacked Debug for egui row identity. Later jobs did not execute.",
+      "checks": [
+        {
+          "job": "builders",
+          "command": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-builders",
+            "--lib",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--release"
+          ],
+          "returncode": 101,
+          "seconds": 5.41,
+          "log": ".cache/ace-sql-qbe-totals-connected-builders-20261112.log",
+          "artifact": {
+            "path": ".cache/ace-sql-qbe-totals-connected-builders-20261112.log",
+            "sha256": "172abbb01181696678685e0e2bc38cabe82a497487c5ec9d0aec468ad592da69",
+            "bytes": 7282
+          },
+          "tests": [
+            {
+              "passed": 53,
+              "failed": 1,
+              "ignored": 0
+            }
+          ],
+          "ignored_entries": []
+        },
+        {
+          "job": "ui",
+          "command": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ui",
+            "--lib",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--release",
+            "--",
+            "workspace::query_design",
+            "workspace::query::parameters",
+            "workspace::query::provenance",
+            "workspace::objects"
+          ],
+          "returncode": 101,
+          "seconds": 38.21,
+          "log": ".cache/ace-sql-qbe-totals-connected-ui-20261112.log",
+          "artifact": {
+            "path": ".cache/ace-sql-qbe-totals-connected-ui-20261112.log",
+            "sha256": "81427e25c663fe11a16b347483112d3cdd108ed683efc618abda4e773550cdd8",
+            "bytes": 4494
+          },
+          "ignored_entries": []
+        }
+      ]
+    },
+    {
+      "status": "terminal_with_preserved_outcomes",
+      "source_commit": "2fba63e889f89873343e03e6198abbb9e589b049",
+      "reason": "Builders passed; UI retained an obsolete disabled-Totals expectation. Runtime tests could not compile a moved path reused by the unchanged no-journal assertion. Later jobs did not execute.",
+      "checks": [
+        {
+          "job": "builders",
+          "command": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-builders",
+            "--lib",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--release"
+          ],
+          "returncode": 0,
+          "seconds": 2.83,
+          "log": ".cache/ace-sql-qbe-totals-repaired-builders-20261112.log",
+          "artifact": {
+            "path": ".cache/ace-sql-qbe-totals-repaired-builders-20261112.log",
+            "sha256": "6b00ed14b429e8b6d31f02af7ac4005bedc334b5141a6cdfe131ca47b5736c4e",
+            "bytes": 6204
+          },
+          "tests": [
+            {
+              "passed": 54,
+              "failed": 0,
+              "ignored": 0
+            }
+          ],
+          "ignored_entries": []
+        },
+        {
+          "job": "ui",
+          "command": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ui",
+            "--lib",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--release",
+            "--",
+            "workspace::query_design",
+            "workspace::query::parameters",
+            "workspace::query::provenance",
+            "workspace::objects"
+          ],
+          "returncode": 101,
+          "seconds": 22.9,
+          "log": ".cache/ace-sql-qbe-totals-repaired-ui-20261112.log",
+          "artifact": {
+            "path": ".cache/ace-sql-qbe-totals-repaired-ui-20261112.log",
+            "sha256": "c50d0d7d37580e25ed40f0e943ff31f0d00446699eb5790affa319ab3e203909",
+            "bytes": 11008
+          },
+          "tests": [
+            {
+              "passed": 74,
+              "failed": 1,
+              "ignored": 0
+            }
+          ],
+          "ignored_entries": []
+        },
+        {
+          "job": "runtime",
+          "command": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-runtime",
+            "--lib",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--release"
+          ],
+          "returncode": 101,
+          "seconds": 35.95,
+          "log": ".cache/ace-sql-qbe-totals-repaired-runtime-20261112.log",
+          "artifact": {
+            "path": ".cache/ace-sql-qbe-totals-repaired-runtime-20261112.log",
+            "sha256": "8077766e721a83fa9af1c74b827430c35a88aa742de43b06c6490d90c10825c7",
+            "bytes": 2086
+          },
+          "ignored_entries": []
+        }
+      ]
+    },
+    {
+      "status": "terminal_with_preserved_outcomes",
+      "source_commit": "f8c76f990278d99c9c86ba94cb8c93c78c2b1eff",
+      "reason": "Strict compilation stopped on three collapsible-if lints; behavior tests did not run in this attempt.",
+      "checks": [
+        {
+          "job": "strict",
+          "command": [
+            "cargo",
+            "clippy",
+            "-p",
+            "tablecraft-sql",
+            "-p",
+            "tablecraft-builders",
+            "-p",
+            "tablecraft-query",
+            "-p",
+            "tablecraft-ace",
+            "-p",
+            "tablecraft-testkit",
+            "-p",
+            "tablecraft-access",
+            "-p",
+            "tablecraft-runtime",
+            "-p",
+            "tablecraft-ui",
+            "-p",
+            "tablecraft-desktop",
+            "-p",
+            "tablecraft-cli",
+            "-p",
+            "tablecraft-mcp",
+            "--all-targets",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--release",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "returncode": 101,
+          "seconds": 4.02,
+          "log": ".cache/ace-sql-qbe-totals-checked-strict-20261112.log",
+          "artifact": {
+            "path": ".cache/ace-sql-qbe-totals-checked-strict-20261112.log",
+            "sha256": "359cb0d3174a147d2f2e3400b4371ea0c665b2afba8aeb5cf93938c44f98d843",
+            "bytes": 2983
+          },
+          "ignored_entries": []
+        }
+      ]
+    },
+    {
+      "status": "terminal_with_preserved_outcomes",
+      "source_commit": "6ea5a3485b6d2744d5a685c1965e6a5de3e5f40d",
+      "reason": "Strict compilation stopped on one unused Desktop test import; behavior tests did not run in this attempt.",
+      "checks": [
+        {
+          "job": "strict",
+          "command": [
+            "cargo",
+            "clippy",
+            "-p",
+            "tablecraft-sql",
+            "-p",
+            "tablecraft-builders",
+            "-p",
+            "tablecraft-query",
+            "-p",
+            "tablecraft-ace",
+            "-p",
+            "tablecraft-testkit",
+            "-p",
+            "tablecraft-access",
+            "-p",
+            "tablecraft-runtime",
+            "-p",
+            "tablecraft-ui",
+            "-p",
+            "tablecraft-desktop",
+            "-p",
+            "tablecraft-cli",
+            "-p",
+            "tablecraft-mcp",
+            "--all-targets",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--release",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "returncode": 101,
+          "seconds": 54.46,
+          "log": ".cache/ace-sql-qbe-totals-verified-strict-20261112.log",
+          "artifact": {
+            "path": ".cache/ace-sql-qbe-totals-verified-strict-20261112.log",
+            "sha256": "61d962b8fa286dbbb998127fd6dbb4cf17c978cd92e706a9bcd01e882114bcfc",
+            "bytes": 1745
+          },
+          "ignored_entries": []
+        }
+      ]
+    },
+    {
+      "status": "terminal_with_preserved_outcomes",
+      "source_commit": "d8986eed2e4a624686b9be7df0466514ef6976a4",
+      "reason": "All other jobs passed; Desktop had 94 passes and two test-observation failures. The tests now recover through a real healthy Run before an independent import check and assert the actual owner refusal rather than an obsolete parser prefix. Production code was unchanged by those final repairs.",
+      "checks": [
+        {
+          "job": "strict",
+          "command": [
+            "cargo",
+            "clippy",
+            "-p",
+            "tablecraft-sql",
+            "-p",
+            "tablecraft-builders",
+            "-p",
+            "tablecraft-query",
+            "-p",
+            "tablecraft-ace",
+            "-p",
+            "tablecraft-testkit",
+            "-p",
+            "tablecraft-access",
+            "-p",
+            "tablecraft-runtime",
+            "-p",
+            "tablecraft-ui",
+            "-p",
+            "tablecraft-desktop",
+            "-p",
+            "tablecraft-cli",
+            "-p",
+            "tablecraft-mcp",
+            "--all-targets",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--release",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "returncode": 0,
+          "seconds": 7.84,
+          "log": ".cache/ace-sql-qbe-totals-qualified-strict-20261112.log",
+          "artifact": {
+            "path": ".cache/ace-sql-qbe-totals-qualified-strict-20261112.log",
+            "sha256": "e27ade5e6bcf3a22c6bdac25eab34544f0ee053e5ee9f38d3fdb8c9728299ce8",
+            "bytes": 614
+          },
+          "ignored_entries": []
+        },
+        {
+          "job": "builders",
+          "command": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-builders",
+            "--lib",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--release"
+          ],
+          "returncode": 0,
+          "seconds": 2.03,
+          "log": ".cache/ace-sql-qbe-totals-qualified-builders-20261112.log",
+          "artifact": {
+            "path": ".cache/ace-sql-qbe-totals-qualified-builders-20261112.log",
+            "sha256": "fd83be746dc7116299189e1719ce0f3f6e45002d9a8416eb0df4025d22227b2c",
+            "bytes": 6204
+          },
+          "tests": [
+            {
+              "passed": 54,
+              "failed": 0,
+              "ignored": 0
+            }
+          ],
+          "ignored_entries": []
+        },
+        {
+          "job": "ui",
+          "command": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ui",
+            "--lib",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--release",
+            "--",
+            "workspace::query_design",
+            "workspace::query::parameters",
+            "workspace::query::provenance",
+            "workspace::objects"
+          ],
+          "returncode": 0,
+          "seconds": 22.06,
+          "log": ".cache/ace-sql-qbe-totals-qualified-ui-20261112.log",
+          "artifact": {
+            "path": ".cache/ace-sql-qbe-totals-qualified-ui-20261112.log",
+            "sha256": "e361aaa70b8e50a7f304eec1b5a7839dae15971ec6ecdcdc5e99b5f7b4461405",
+            "bytes": 10304
+          },
+          "tests": [
+            {
+              "passed": 75,
+              "failed": 0,
+              "ignored": 0
+            }
+          ],
+          "ignored_entries": []
+        },
+        {
+          "job": "runtime",
+          "command": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-runtime",
+            "--lib",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--release"
+          ],
+          "returncode": 0,
+          "seconds": 49.66,
+          "log": ".cache/ace-sql-qbe-totals-qualified-runtime-20261112.log",
+          "artifact": {
+            "path": ".cache/ace-sql-qbe-totals-qualified-runtime-20261112.log",
+            "sha256": "4e4097d8e06b5f73d61f61d403762db416cfd1984fffd97bc7b278a1daaf8d1c",
+            "bytes": 56276
+          },
+          "tests": [
+            {
+              "passed": 486,
+              "failed": 0,
+              "ignored": 1
+            }
+          ],
+          "ignored_entries": [
+            [
+              "tests::editing::genuine_jet4::genuine_jet4_reviewed_cell_save_matches_independent_whole_image",
+              "requires explicit hash-pinned TABLECRAFT_JET4_SCALAR_SOURCE"
+            ]
+          ]
+        },
+        {
+          "job": "desktop",
+          "command": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-desktop",
+            "--bin",
+            "tablecraft-desktop",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--release",
+            "--",
+            "query_design::tests",
+            "query_parameters::tests",
+            "query_action::tests",
+            "query_formats",
+            "workspace::objects::tests"
+          ],
+          "returncode": 101,
+          "seconds": 54.03,
+          "log": ".cache/ace-sql-qbe-totals-qualified-desktop-20261112.log",
+          "artifact": {
+            "path": ".cache/ace-sql-qbe-totals-qualified-desktop-20261112.log",
+            "sha256": "f31cbc81fcdcc6a118b9dfa2ce45314354452dc984b31d8f6eeb1ac90bd0f830",
+            "bytes": 16420
+          },
+          "tests": [
+            {
+              "passed": 94,
+              "failed": 2,
+              "ignored": 0
+            }
+          ],
+          "ignored_entries": []
+        },
+        {
+          "job": "mcp",
+          "command": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-mcp",
+            "--bin",
+            "tablecraft-mcp",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--release"
+          ],
+          "returncode": 0,
+          "seconds": 50.56,
+          "log": ".cache/ace-sql-qbe-totals-qualified-mcp-20261112.log",
+          "artifact": {
+            "path": ".cache/ace-sql-qbe-totals-qualified-mcp-20261112.log",
+            "sha256": "4532b85ab0ff8580d3ce1fff11629f4ddff54ac1266304a24d3a6d64b84a6918",
+            "bytes": 11940
+          },
+          "tests": [
+            {
+              "passed": 77,
+              "failed": 0,
+              "ignored": 0
+            }
+          ],
+          "ignored_entries": []
+        },
+        {
+          "job": "sql",
+          "command": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-sql",
+            "--lib",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--release"
+          ],
+          "returncode": 0,
+          "seconds": 5.7,
+          "log": ".cache/ace-sql-qbe-totals-qualified-sql-20261112.log",
+          "artifact": {
+            "path": ".cache/ace-sql-qbe-totals-qualified-sql-20261112.log",
+            "sha256": "e4fda02c987bde6afa0811e3f274bd69abeb50646951d38c2b9cf1cbef1608e7",
+            "bytes": 10685
+          },
+          "tests": [
+            {
+              "passed": 98,
+              "failed": 0,
+              "ignored": 0
+            }
+          ],
+          "ignored_entries": []
+        },
+        {
+          "job": "runtime-minimal",
+          "command": [
+            "cargo",
+            "check",
+            "-p",
+            "tablecraft-runtime",
+            "--no-default-features",
+            "--offline",
+            "--locked",
+            "--release"
+          ],
+          "returncode": 0,
+          "seconds": 5.35,
+          "log": ".cache/ace-sql-qbe-totals-qualified-runtime-minimal-20261112.log",
+          "artifact": {
+            "path": ".cache/ace-sql-qbe-totals-qualified-runtime-minimal-20261112.log",
+            "sha256": "662f8aef3af211f319f9e21b3a385a9a221a1ae3f2f99cd75ae342ff40846767",
+            "bytes": 887
+          },
+          "ignored_entries": []
+        },
+        {
+          "job": "rustdoc",
+          "command": [
+            "cargo",
+            "doc",
+            "-p",
+            "tablecraft-sql",
+            "-p",
+            "tablecraft-builders",
+            "-p",
+            "tablecraft-ui",
+            "-p",
+            "tablecraft-runtime",
+            "--all-features",
+            "--no-deps",
+            "--offline",
+            "--locked",
+            "--release"
+          ],
+          "returncode": 0,
+          "seconds": 18.11,
+          "log": ".cache/ace-sql-qbe-totals-qualified-rustdoc-20261112.log",
+          "artifact": {
+            "path": ".cache/ace-sql-qbe-totals-qualified-rustdoc-20261112.log",
+            "sha256": "3823600b76707be5601d460acebc041c53448a5875dcaeb48d6a35765ea123e4",
+            "bytes": 3255
+          },
+          "ignored_entries": []
+        },
+        {
+          "job": "renderer",
+          "command": [
+            "cargo",
+            "build",
+            "-p",
+            "tablecraft-ui",
+            "--example",
+            "render_preview",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--release"
+          ],
+          "returncode": 0,
+          "seconds": 14.06,
+          "log": ".cache/ace-sql-qbe-totals-qualified-renderer-20261112.log",
+          "artifact": {
+            "path": ".cache/ace-sql-qbe-totals-qualified-renderer-20261112.log",
+            "sha256": "a5824b50698b2db56ad8acc9d1541116203edbbc135046bdbcc4b7b1bcca7e87",
+            "bytes": 177
+          },
+          "ignored_entries": []
+        }
+      ]
+    }
+  ],
+  "runner_artifacts": [
+    {
+      "path": ".cache/ace-sql-qbe-totals-connected-batch-20261112.py",
+      "sha256": "0a157ecb8b30e7ed4804bb1c3168b92a03940b1cb0bf8cb5cb952efc190dee29",
+      "bytes": 2658
+    },
+    {
+      "path": ".cache/ace-sql-qbe-totals-repaired-batch-20261112.py",
+      "sha256": "e9c8952d9fd6b7230564eb0e9bf4ee6792e463a693d25d86f580f0d2ee11f98d",
+      "bytes": 2656
+    },
+    {
+      "path": ".cache/ace-sql-qbe-totals-checked-batch-20261112.py",
+      "sha256": "6c69bf5463aa45c1b07b60bafa6f307fc3de0455bff212fbfb6df07c06683599",
+      "bytes": 2654
+    },
+    {
+      "path": ".cache/ace-sql-qbe-totals-verified-batch-20261112.py",
+      "sha256": "aeef1d23e764f91f413418fa614cd7af20f89ae42e43e814420334dd47541ce4",
+      "bytes": 2656
+    },
+    {
+      "path": ".cache/ace-sql-qbe-totals-qualified-batch-20261112.py",
+      "sha256": "0841880de969699c974d3cf52e7adeaea32bedc4f728ed64381004fd18430d56",
+      "bytes": 2658
+    },
+    {
+      "path": ".cache/ace-sql-qbe-totals-final-batch-20261112.py",
+      "sha256": "2874b2118fbf7490607c62affa195e8c968812692f72bba3627e7e0fe822839e",
+      "bytes": 1915
+    }
+  ],
+  "code_artifacts": [
+    {
+      "path": "apps/tablecraft-desktop/src/workspace.rs",
+      "sha256": "4cdfe485a77d972e3f3c9d95eef0f5397979ddffceef4d4f449a7b18a7dae7ad",
+      "bytes": 82803
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/query_design.rs",
+      "sha256": "34d60f2fc9cd766d7641f34f4132fdac4746161ee3642e221a96acbd8fe4cd84",
+      "bytes": 8058
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/query_design/tests.rs",
+      "sha256": "9712ee935acd7536e28fe0b9a43c0acccf51080c2b53709a2131b92d9e4e2299",
+      "bytes": 13599
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/query_design/tests/cancellation.rs",
+      "sha256": "5c87e952d185077ac30473248a5ced18d77dc0ba56757cd83cd58a0867eb4ca4",
+      "bytes": 5505
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/query_design/tests/totals.rs",
+      "sha256": "7d336b848abd5d95bfc42612367ba0af9c3c193f64c301496885321be37235af",
+      "bytes": 7056
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/query_parameters.rs",
+      "sha256": "f207888e5d2e9989d06100ea180a32c9de8066932a4d61911068c4b8f873606c",
+      "bytes": 13334
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/read_failures.rs",
+      "sha256": "bc487bfe32ccef6caad47d13d861d027a32a3ac96317c1d521c6b77310016989",
+      "bytes": 8621
+    },
+    {
+      "path": "apps/tablecraft-mcp/src/requests/query_design.rs",
+      "sha256": "ec30c6a49535a2f057be47406e3a28f758b9b4db86e198ccdce3b9d0540dc65b",
+      "bytes": 3402
+    },
+    {
+      "path": "apps/tablecraft-mcp/src/session/query_design.rs",
+      "sha256": "953a3c6d11c5387f561910f77f74b507b746f4d8ad46ed5c42e0b99a5546c25e",
+      "bytes": 15397
+    },
+    {
+      "path": "apps/tablecraft-mcp/src/session/query_design/totals_tests.rs",
+      "sha256": "63a0183cb58b57a09c1fc3124b0450a77bd65a5d737d95df156ff3fa448168b1",
+      "bytes": 1750
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/tests/query_design.rs",
+      "sha256": "3e672e2d134c6c3f9bb469d6e493a3174361a93324714ac7c16e492e41297fc1",
+      "bytes": 7319
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/tests/query_design/totals.rs",
+      "sha256": "3268b9860ef943e7152183d3a406b37f8981d0dddd346d4e43c62207cb5ba56e",
+      "bytes": 8213
+    },
+    {
+      "path": "crates/presentation/tablecraft-builders/src/query.rs",
+      "sha256": "f2bcb0244572c876b48e532dc401d130a9507b156209ef6c81d80fb4308e1ed9",
+      "bytes": 1575
+    },
+    {
+      "path": "crates/presentation/tablecraft-builders/src/query/build.rs",
+      "sha256": "55deeb07d928a47059a2a4febb6693308b20bcb49f0161a956916900eab16482",
+      "bytes": 19847
+    },
+    {
+      "path": "crates/presentation/tablecraft-builders/src/query/criteria.rs",
+      "sha256": "fa178f036cd2cfa17bc6987e147ccd8d6dad38d2b8490f8e20ecdb9c2bdb4194",
+      "bytes": 6471
+    },
+    {
+      "path": "crates/presentation/tablecraft-builders/src/query/criteria/context.rs",
+      "sha256": "0080950d471b3a73542e35513d89c7d59de1b7c7400875e45f0ccf04bd4f7cca",
+      "bytes": 2732
+    },
+    {
+      "path": "crates/presentation/tablecraft-builders/src/query/import.rs",
+      "sha256": "622d66d962fca048bece06853815b83a45c5dd3d5c9b98e1acb2286057088bea",
+      "bytes": 12811
+    },
+    {
+      "path": "crates/presentation/tablecraft-builders/src/query/import/roles.rs",
+      "sha256": "d69d49035c3f00a4207be8ecf84235b4a661d213f74dd5ed00a94847a92d111f",
+      "bytes": 6267
+    },
+    {
+      "path": "crates/presentation/tablecraft-builders/src/query/model.rs",
+      "sha256": "5132681ec9b85919e829bcda44a6fcdbb083d2edb3952edd19e57833ecc50c1c",
+      "bytes": 2386
+    },
+    {
+      "path": "crates/presentation/tablecraft-builders/src/query/parameters.rs",
+      "sha256": "dba0ce2a5b7e9bb7f99f598499f43c934f6a024249fad6bc83a9728a22d8092e",
+      "bytes": 2765
+    },
+    {
+      "path": "crates/presentation/tablecraft-builders/src/query/tests.rs",
+      "sha256": "0250315ee6048cbd6d1c3e1fd3de3f0fdcdc1fe54474485f249e246bf8b15591",
+      "bytes": 7091
+    },
+    {
+      "path": "crates/presentation/tablecraft-builders/src/query/tests/parameters.rs",
+      "sha256": "715029296b7d64a433d9dbb0ad41bf1f01820228eb21756d7ad1ce30ce953e19",
+      "bytes": 3522
+    },
+    {
+      "path": "crates/presentation/tablecraft-builders/src/query/tests/totals.rs",
+      "sha256": "54c1019928ad7e92e5394c9696e6b6fe693e2f22224c0e4740ef067f53cb54f1",
+      "bytes": 8899
+    },
+    {
+      "path": "crates/presentation/tablecraft-builders/src/query/totals.rs",
+      "sha256": "e710991f1164d7170455a35998f2f7959c3de24c99395eed6bdca42c86924fea",
+      "bytes": 6448
+    },
+    {
+      "path": "crates/presentation/tablecraft-builders/src/query/totals/headings.rs",
+      "sha256": "12a85b51bc9c0ff1773efd084a7bfc21fda038bb4080fae04804db43d42f9f77",
+      "bytes": 2386
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/preview.rs",
+      "sha256": "5be8cf2ccbb8f77338b518cf139d749a8ac7caa0c58f412bf4188cd7500fe95e",
+      "bytes": 30571
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/preview/query_design.rs",
+      "sha256": "2d0829e3cd28079503a65d33adaadc41002016167bde42ab8c2d8b5caba3ea41",
+      "bytes": 10308
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query/parameters/scratch.rs",
+      "sha256": "033994b1e561958cea0f05ec9413dcf08a087f2568cca29d0ad016a6830545d3",
+      "bytes": 15998
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query/provenance.rs",
+      "sha256": "d6e35fb6b8689b4e174c836893010a701479fef34788cf331dde3692fdd08252",
+      "bytes": 6294
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_design.rs",
+      "sha256": "b804368806df31dc7f99b3ddd767fec74954219923902693595f1d2311a50cc9",
+      "bytes": 19851
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_design/grid.rs",
+      "sha256": "5fcaf0cf6ba36d8459e3995be56416d5aeb53e95600c314e4fe069304f858352",
+      "bytes": 23866
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_design/parameters.rs",
+      "sha256": "3be8916ed5a4a4fbd47e30d86c9a8b4000cd4933baec1dca9f61ff23a035f0ea",
+      "bytes": 1710
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_design/parameters/tests.rs",
+      "sha256": "017c04aad55cacfd1031c8a135a7f40a7a332842683f0df4fc20c5ead1c8b9cc",
+      "bytes": 7056
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_design/retention.rs",
+      "sha256": "b280fac4b188437794eab9a72da6df59151e7b91a3632b60ab629487b6dafca3",
+      "bytes": 3162
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_design/ribbon.rs",
+      "sha256": "9b658eec5d0f329246a292ac1b2a63ab2aaa04a1cc4d8f3c5f3af5e38e065ec7",
+      "bytes": 11533
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_design/ribbon/tests.rs",
+      "sha256": "fc704ad74243c0fa375aad218c1a2757653f7279a4937649622f6eca28aed916",
+      "bytes": 11925
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_design/sources.rs",
+      "sha256": "df047d52cfb5769d3c0d16b4fcec00b00323c3f65ce9b88376dfa52d469b2191",
+      "bytes": 16092
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_design/totals.rs",
+      "sha256": "66bd702fb82c844fa6f7b5aa67cb50d77d015f757a1f6c0c12c746cc4354f474",
+      "bytes": 4011
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_design/totals/tests.rs",
+      "sha256": "c37def1d8e41f22b3688fbe2030b7cd5b69004f62e36aba9d0d169a371823b8d",
+      "bytes": 6272
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/select/name.rs",
+      "sha256": "9213ead035286711fcaffbaebcc95541b10baae2f809e8235fa9078b13f14912",
+      "bytes": 3136
+    },
+    {
+      "path": "locales/de/query-design.ftl",
+      "sha256": "535a86b744f4d627717494bebeb17435ae24631e69edb157e42f39582d59b578",
+      "bytes": 2777
+    },
+    {
+      "path": "locales/en-US/query-design.ftl",
+      "sha256": "fbba1cf8ad4abb0398dfe2309716d6f1c9c2fd1b94f6d6670453d9e8d32c3a40",
+      "bytes": 2389
+    },
+    {
+      "path": "locales/es/query-design.ftl",
+      "sha256": "5929f5c915a396241d367a25c2666cb358d91fb46fcf0cd45c0e7e452430a492",
+      "bytes": 2621
+    },
+    {
+      "path": "locales/ja/query-design.ftl",
+      "sha256": "e1130b1c158f99cb850b7c282f7c499c2f479c06f1cf715ef667911a2197b190",
+      "bytes": 2866
+    },
+    {
+      "path": "locales/ko/query-design.ftl",
+      "sha256": "ad4ffe3ff2ca09bfde267ef5eda6489b9a494b5bde755c53b3f9023e6f4985a9",
+      "bytes": 2748
+    },
+    {
+      "path": "locales/pt-BR/query-design.ftl",
+      "sha256": "9c3c25ef20937ea2a2934aaacc8c8a419b2693e5a0bd8896f42818fb6a8e3693",
+      "bytes": 2689
+    },
+    {
+      "path": "locales/ru/query-design.ftl",
+      "sha256": "e1c92fed16c3b53a097bf165213ce4d8b98a20ed82f48cf80597026bf1193f44",
+      "bytes": 3838
+    },
+    {
+      "path": "locales/zh-CN/query-design.ftl",
+      "sha256": "21e1a17cf0ef4e2c2d97727f8a0f3f2698afe31e146fcf2e8d9755128e7dac31",
+      "bytes": 2342
+    }
+  ],
+  "visual": {
+    "report": {
+      "path": ".cache/ui-previews/query-design-totals/metal-headless/render-results.json",
+      "sha256": "051519745244a8e740ef5dbd173f5a4a57df3abe187fedde5391fe962bcef854",
+      "bytes": 11518
+    },
+    "runner": {
+      "path": ".cache/ace-sql-qbe-totals-preview/render.py",
+      "sha256": "0382874ff9c67710f4dacddb67a58d0bff4570997acd8bb9c2a9a9291bf5b111",
+      "bytes": 7256
+    },
+    "binary": {
+      "path": "target/release/examples/render_preview",
+      "sha256": "0d67430ee84a65fbd240dc637e6f9397945e340f87fbd0952f4b3235b616d9cc",
+      "bytes": 39512400
+    },
+    "frames": [
+      {
+        "image": {
+          "path": ".cache/ui-previews/query-design-totals/metal-headless/en-US-light-query-design-totals.png",
+          "sha256": "8fd678e453de53874f6e2bab1c2717d1b5c7e8c5c441a9776b7ef815dc9f823e",
+          "bytes": 139855
+        },
+        "log": {
+          "path": ".cache/ui-previews/query-design-totals/metal-headless/en-US-light-render.log",
+          "sha256": "abc5008b49a703fa8a80fb14b53d7418fb4a8e281ad630bb46bf0d26c0fc51da",
+          "bytes": 134
+        },
+        "locale": "en-US",
+        "theme": "light",
+        "pixel_size": [
+          1280,
+          820
+        ],
+        "directly_viewed": true,
+        "observations": [
+          "Root directly opened this exact PNG with the local image viewer.",
+          "Normal contextual Ribbon, source card, splitter, Total row and criteria rows fit the 1280x820 viewport; selected Group By/Count/Where labels and explicit Where Show/sort disabling are readable.",
+          "Light/dark contrast and English/German row labels are legible; generated menus are closed, so popup layout is not qualified by this frame.",
+          "Existing CustomerCount alias is retained in the model but hidden from the Field row, which currently shows CustomerID. This observed gap is queued for the next UI correction.",
+          "Retained Access references establish neighboring QBE composition only; Total-row/menu, complete modern contextual Ribbon, dark and localized native equivalence remain unverified."
+        ]
+      },
+      {
+        "image": {
+          "path": ".cache/ui-previews/query-design-totals/metal-headless/en-US-dark-query-design-totals.png",
+          "sha256": "d2faeb2ad05948903f5647ddafa8dd9061675dc8f9a58a06d14588dc118d30a8",
+          "bytes": 139159
+        },
+        "log": {
+          "path": ".cache/ui-previews/query-design-totals/metal-headless/en-US-dark-render.log",
+          "sha256": "8be24d4b5dbf04604d08d34342b3f71ff9871aa05d5dcaae74ad1bc728ee9501",
+          "bytes": 133
+        },
+        "locale": "en-US",
+        "theme": "dark",
+        "pixel_size": [
+          1280,
+          820
+        ],
+        "directly_viewed": true,
+        "observations": [
+          "Root directly opened this exact PNG with the local image viewer.",
+          "Normal contextual Ribbon, source card, splitter, Total row and criteria rows fit the 1280x820 viewport; selected Group By/Count/Where labels and explicit Where Show/sort disabling are readable.",
+          "Light/dark contrast and English/German row labels are legible; generated menus are closed, so popup layout is not qualified by this frame.",
+          "Existing CustomerCount alias is retained in the model but hidden from the Field row, which currently shows CustomerID. This observed gap is queued for the next UI correction.",
+          "Retained Access references establish neighboring QBE composition only; Total-row/menu, complete modern contextual Ribbon, dark and localized native equivalence remain unverified."
+        ]
+      },
+      {
+        "image": {
+          "path": ".cache/ui-previews/query-design-totals/metal-headless/de-light-query-design-totals.png",
+          "sha256": "f7cab7a9e8132bc236f30551bc6360e335c7dffb0f9df472917060d3b1739ab7",
+          "bytes": 156305
+        },
+        "log": {
+          "path": ".cache/ui-previews/query-design-totals/metal-headless/de-light-render.log",
+          "sha256": "07db6738329af8d5d58db7cba00627e7424011818b68ab08b0449b9ed447432a",
+          "bytes": 131
+        },
+        "locale": "de",
+        "theme": "light",
+        "pixel_size": [
+          1280,
+          820
+        ],
+        "directly_viewed": true,
+        "observations": [
+          "Root directly opened this exact PNG with the local image viewer.",
+          "Normal contextual Ribbon, source card, splitter, Total row and criteria rows fit the 1280x820 viewport; selected Group By/Count/Where labels and explicit Where Show/sort disabling are readable.",
+          "Light/dark contrast and English/German row labels are legible; generated menus are closed, so popup layout is not qualified by this frame.",
+          "Existing CustomerCount alias is retained in the model but hidden from the Field row, which currently shows CustomerID. This observed gap is queued for the next UI correction.",
+          "Retained Access references establish neighboring QBE composition only; Total-row/menu, complete modern contextual Ribbon, dark and localized native equivalence remain unverified."
+        ]
+      },
+      {
+        "image": {
+          "path": ".cache/ui-previews/query-design-totals/metal-headless/de-dark-query-design-totals.png",
+          "sha256": "811ffce264a17215799dc2cd0ed7a2c91c129ed61bb516ae5c557552772f0d38",
+          "bytes": 154947
+        },
+        "log": {
+          "path": ".cache/ui-previews/query-design-totals/metal-headless/de-dark-render.log",
+          "sha256": "aeed97dc1babe320340b0b1238c0a30dd28149193d202922b2f19300b60bf90a",
+          "bytes": 130
+        },
+        "locale": "de",
+        "theme": "dark",
+        "pixel_size": [
+          1280,
+          820
+        ],
+        "directly_viewed": true,
+        "observations": [
+          "Root directly opened this exact PNG with the local image viewer.",
+          "Normal contextual Ribbon, source card, splitter, Total row and criteria rows fit the 1280x820 viewport; selected Group By/Count/Where labels and explicit Where Show/sort disabling are readable.",
+          "Light/dark contrast and English/German row labels are legible; generated menus are closed, so popup layout is not qualified by this frame.",
+          "Existing CustomerCount alias is retained in the model but hidden from the Field row, which currently shows CustomerID. This observed gap is queued for the next UI correction.",
+          "Retained Access references establish neighboring QBE composition only; Total-row/menu, complete modern contextual Ribbon, dark and localized native equivalence remain unverified."
+        ]
+      }
+    ],
+    "sandbox_attempt": {
+      "path": ".cache/ui-previews/query-design-totals/sandbox/render-results.json",
+      "sha256": "debd4c3051e8dd253bc46f22ab9e90b19e831f78cba7732bbcacfa54da097c59",
+      "bytes": 7198
+    },
+    "sandbox_first_frame_log": {
+      "path": ".cache/ui-previews/query-design-totals/sandbox/en-US-light-render.log",
+      "sha256": "b5a9bdf653d431b398966f80dfcd038735abd9c596f06d3725006a1a55125583",
+      "bytes": 306
+    },
+    "sandbox_note": "First frame failed with no adapter exposed in the sandbox; subsequent frames in that attempt were not executed. The same binary rendered four frames with requested Metal outside the sandbox, without native windows. Actual adapter identity is not exported.",
+    "reference_images": [
+      {
+        "path": ".cache/access-public-references/city-dob.gif",
+        "sha256": "951ed0bb5e231485cce3c4df43073ae2c50617d3769070c7342b0e6188f24712",
+        "bytes": 10238
+      },
+      {
+        "path": ".cache/access-public-references/city-or-dob.gif",
+        "sha256": "5786b7f7a362ab722959983eb69d8c94cae61a87dc0b48de0b66aaf82ec9b2e0",
+        "bytes": 9217
+      }
+    ]
+  },
+  "limitations": [
+    "Visual inspection found retained aliases are not yet visible as prefixes in the Field row. The next UI correction is required; these frames do not establish finished presentation polish or popup-menu layout.",
+    "Mixed-phase alternative criteria, incomplete Totals-off transitions, arbitrary SQL imports, visual action/crosstab authoring and native saved-query lifecycle remain separate work.",
+    "Default headings for other roles, localized prefixes and truncation/disambiguation are not qualified. Strict import refuses where generating a heading would change the original implicit output.",
+    "The actual retained Query Design captures show neighboring source/grid composition but no Total row/menu or full modern contextual Ribbon. Dark/localized/native equivalents remain visual adaptations; rendered Windows input emulation is not Windows execution.",
+    "One Runtime Jet4 fixture-dependent test remains explicitly ignored. Counts overlap and are not an additive compatibility score. This checkpoint adds no native write profile or general Access compatibility claim."
+  ],
+  "primary_references": [
+    "https://support.microsoft.com/en-us/access/sum-data-by-using-a-query",
+    "https://learn.microsoft.com/en-us/office/vba/access/concepts/structured-query-language/having-clause-microsoft-access-sql",
+    "https://support.microsoft.com/en-us/access/find-the-records-with-the-top-or-bottom-values-in-a-group-or-field"
+  ]
+}

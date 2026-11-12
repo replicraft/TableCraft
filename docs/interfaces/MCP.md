@@ -79,6 +79,36 @@ infer query collation or edit syntax from display preferences. Filter, sort and
 totals tools use actual runtime handles. Visual query tools import/build/rebuild
 the shared checked model against native metadata; execution remains explicit.
 
+### Query-design draft round trips
+
+`describe_query_design`, `import_query_design`, `build_query_design` and
+`rebuild_query_design` use the same metadata-only Runtime design services as the
+desktop. Build/import do not run SQL, change a saved QueryDef or acquire a native
+save capability. Execute the resulting SQL through the separate inspected read
+workflow with its actual document revision and typed inputs.
+
+The returned draft includes `totals`, per-column `total` and `parameters_sql`.
+Total roles use `group_by`, `sum`, `avg`, `min`, `max`, `count`, `first`, `last`,
+`expression` and `where`. Omitted `totals` retains false; an omitted/null column
+role retains `group_by`. Where columns must already be hidden and unsorted;
+inputs do not implicitly change Show or Sort. The model preserves record-filter
+versus HAVING ownership and refuses unrepresentable cross-phase alternatives.
+
+`parameters_sql` contains the complete canonical `PARAMETERS ...;` header, or an
+empty string. For example, `PARAMETERS [Minimum] LONG;` preserves an actual typed
+declaration; it is not a prompt value or a second query. Omitted/null declaration
+text retains an empty declaration list. The builders owner's strict SQL parser
+and formatter validate the header, refusing extra statements, malformed types
+and duplicate declarations. MCP implements no SQL type grammar and infers no
+declarations from field names. Admitted import results can be supplied directly
+to `build_query_design` without dropping typed declarations or Totals roles;
+the optional opaque rebuild handle retains those same owned facts.
+
+Qualified SELECT grouping, aggregates and HAVING are represented by that shared
+model. Unsupported imports preserve existing state; design support does not
+expand execution, write permissions or native source eligibility. These services
+remain separate from datasheet Totals computation and general saved-query CRUD.
+
 ### Per-run read-query allowances
 
 `run_query` and `run_saved_query` accept an optional `options` object. Missing or

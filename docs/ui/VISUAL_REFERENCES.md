@@ -1,5 +1,19 @@
 # Access visual references
 
+## Query-design Totals inspection — 12 November 2026
+
+The actual retained public city-dob/city-or-dob images were reopened when adding
+the working Total row. They show source cards, splitter, ruled grid and Field-row
+alias prefixes, but no Total row/menu or complete modern contextual Ribbon.
+The new row and popup remain adaptations; datasheet Totals are not substituted.
+
+[Four inspected offscreen frames](PRESENTATION_PREVIEW.md#query-design-totals--12-november-2026)
+cover normal presentation at 1280 × 820/1× on macOS 14.7.2 ARM64, in English and
+German light/dark. WGPU requested Metal; actual adapter metadata is unavailable.
+These local frames show readable role cells and a missing retained alias prefix
+in the Field row, now a tracked correction. Windows input emulation and rendered
+widgets do not establish native Windows or Access interaction parity.
+
 The initial shared desktop presentation is being corrected against three retained
 screenshots under private `docs/temp/Access Sample/`. They are local reference
 material, not copied assets or a public fixture requirement:

@@ -21,7 +21,8 @@ inert; Add explicitly requests its field metadata. Double-clicking an upper
 source field adds a typed projection to the lower QBE grid. A source's `*` adds
 its fields without inventing expanded field declarations.
 
-The grid exposes Field, Table, Sort, Show, Criteria and OR rows. Field expressions
+The grid exposes Field, Table, Sort, Show, Criteria and OR rows, with a Total row
+when query-design Totals is enabled. Field expressions
 and criteria are query syntax, independent of regional display settings. Entries
 on one criteria row combine with AND; populated rows combine with OR. Hiding a
 projection does not remove its criteria. Output aliases and column removal are
@@ -51,6 +52,76 @@ Switching existing SQL to Design explicitly imports it. Unsupported or
 nonrepresentable clauses refuse with a visible diagnosis while preserving the
 original SQL, prior draft and previous results. Import is not permission to
 execute the query. Inspecting a saved query remains inert and separate.
+
+## Grouped design and declarations
+
+The contextual Query Design Totals command changes the draft's grouping mode; it
+is separate from the [datasheet Totals footer](DATASHEET_TOTALS.md). The typed
+Total choices are Group By, Sum, Avg, Min, Max, Count, First, Last, Expression and
+Where. Group By retains its key even when Show is off. Aggregate choices wrap the
+captured field or scalar operand once; Count(field) excludes NULL values, while
+Count(*) is entered as an explicit Expression. Expression also represents
+complete grouped expressions using the existing query profile. Selecting a role
+does not promise that every input type or expression will bind successfully.
+
+Plain native Sum, Min and Max fields without explicit aliases receive the
+English `SumOf<Field>`, `MinOf<Field>` and `MaxOf<Field>` headings described by
+Microsoft's [sum-query guide](https://support.microsoft.com/en-us/access/sum-data-by-using-a-query)
+and [top/bottom-values guide](https://support.microsoft.com/en-us/access/find-the-records-with-the-top-or-bottom-values-in-a-group-or-field).
+Explicit aliases and Expression-role text keep their supplied names. Generated
+heading collisions refuse instead of inventing suffixes. Defaults for the other
+roles retain current query-owner naming; their native default-heading parity,
+localized prefixes and truncation/disambiguation rules remain unqualified. This
+does not impose an explicit-alias requirement on those roles. Import still
+refuses if adding a default would rename an existing query's implicit output.
+
+Where is available only after the user hides that column and removes its sort.
+It filters input records in WHERE and is never added to output or grouping.
+Other Total roles place criteria in HAVING, against the actual group key or
+aggregate expression. Criteria such as `>100` on Sum(Amount) compare that
+aggregate directly; an output alias is not substituted as a source field.
+Sorting likewise retains the captured key or aggregate operand.
+
+AND/OR grid composition is preserved within each clause. A single populated row
+may contain both Where and HAVING criteria. Alternative rows spanning both
+phases are currently refused because factoring those alternatives into separate
+WHERE and HAVING clauses can change which records are grouped. This is an editor
+qualification boundary, not an Access SQL restriction; SQL View retains the
+original statement. Turning Totals off is also conservative: nondefault roles or
+explicit aggregate expressions must be edited deliberately first. An unavailable
+toggle does not reset roles, clear text, rebuild SQL or execute a query. Native
+Access toggle-off restoration has not been qualified.
+
+Imported PARAMETERS declarations remain owned typed syntax in the draft, in their
+written order. Fields resolve against actual source metadata before an unqualified
+declared parameter; a qualified field cannot become a parameter. SQL View remains
+the place to edit the declaration header. The existing explicit Run acquisition
+collects values for declared inputs, with cancellation and revision checks. A
+parameter declaration grants no execution or native editing capability.
+
+The builder exports `render_parameters` and `parse_parameters` for consumers such
+as MCP. They use the SQL owner's Name/Type representation and strict parsing;
+extra statements, malformed declaration syntax and duplicate names are refused. Hosts do not
+maintain another parameter type grammar.
+
+Grouped import retains projection order, hidden keys, declarations, aliases,
+WHERE, GROUP BY, HAVING and sorting through the canonical AST round-trip check.
+Only transparent table parentheses and recognized aggregate function-name case
+are normalized; field and alias names are not rewritten. Unsupported joins,
+clause combinations, alias references or source expansions remain explicit import
+errors. Import does not drop clauses to make a statement fit the grid. The
+builder validates metadata and produces syntax without scanning user records;
+the existing query binder/executor owns grouping, type, arity, eager errors,
+collation and expression-provider semantics.
+
+The [QBE checkpoint](../../tests/results/queries/qbe-totals-workflows-2026-11-12.json)
+records executed owner/Runtime/Desktop/MCP checks, translation validation and
+directly viewed offscreen frames. This is local qualification; code or a
+synthetic preview is not native Access interaction or Windows parity evidence.
+
+The Field row currently shows the operand without its retained output alias;
+column aliases remain available through the existing context controls. Making
+that prefix visible and editable in the grid is the next presentation correction.
 
 ## Keyboard flow
 
@@ -111,8 +182,9 @@ to happen automatically during restoration.
 ## Current limits and visual evidence
 
 This is a SELECT designer, not a saved-query editor or a schema designer. It does
-not provide action-query authoring, grouping, totals, dynamic pivot design or
-arbitrary SQL round trips. Unsupported shapes remain available in SQL View
+not provide action-query authoring, dynamic pivot design or arbitrary SQL round
+trips. Grouping follows the bounded Total-role and clause rules above.
+Unsupported shapes remain available in SQL View
 through the existing explicit query profile. Native query admission may reject a
 design that can be represented syntactically.
 
@@ -137,8 +209,15 @@ Queries/Both tabs remain visible but disabled. Field aliases use a context edito
 These distinctions remain visual and interaction approximations, not verified
 Access behavior.
 
-The `query-design`, `query-design-tables` and `query-design-error` preview scenes
+The `query-design`, `query-design-tables`, `query-design-totals` and
+`query-design-error` preview scenes
 use authored synthetic metadata and drafts. Interactive mock Build/Run refuses
 with an explicit synthetic notice. It does not scan data, calculate visible-page
 results or invoke a native database. No native Windows or Access comparison has
 been performed for this slice.
+
+The retained query-design captures establish the neighboring ruled grid and
+source layout, but do not show the Total row or its complete dropdown. Its row
+placement and popup presentation are adaptations pending a corresponding Access
+capture. Datasheet Totals images do not qualify that separate query-design
+surface. No new native-window, dark-mode or Windows comparison is claimed here.

@@ -1,5 +1,26 @@
 # Implementation status
 
+## Visual query Totals and Design Run — 12 November 2026
+
+The shared query builder and grid now represent Group By, seven aggregate roles,
+Expression and Where, preserving record-filter versus HAVING ownership and typed
+parameter declarations. Design Run uses the existing inspected prompt/execution
+services with captured options and Design result provenance. Matching Cancel
+revokes its real worker request; stale IDs and ordinary SQL remain separate.
+
+The [QBE checkpoint](../tests/results/queries/qbe-totals-workflows-2026-11-12.json)
+records 54 builder, 75 selected UI, 486 Runtime, 96 selected Desktop, 77 MCP and
+98 SQL parser passes; one fixture-dependent Runtime case remains ignored.
+Strict lint across eleven packages, minimal Runtime, Rustdoc and all eight
+translation catalogs pass. Four normal-host English/German light/dark frames
+were rendered and directly viewed headlessly at 1280 × 820/1×.
+
+Mixed-phase alternatives, incomplete Totals-off transitions, remaining default
+heading rules and native saved-query lifecycle remain incomplete. The frames
+also expose retained aliases missing from the Field row; that is the next UI
+correction. These are scoped local checks, not finished QBE, native Access
+interaction or Windows compatibility evidence.
+
 ## Fixed scalar batches and grouped make-table — 12 November 2026
 
 Retained TCNI0028 updates one ordinary unindexed Byte, Int16, Int64, Single,

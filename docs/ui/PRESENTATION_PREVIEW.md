@@ -1,5 +1,28 @@
 # Presentation preview
 
+## Query-design Totals — 12 November 2026
+
+The source-free `query-design-totals` scene was rendered and directly viewed
+headlessly in English/German light/dark, using normal presentation at 1280 × 820
+logical/pixel dimensions and scale 1×. macOS 14.7.2 ARM64 ran the release WGPU
+renderer with requested Metal and Windows input emulation; actual adapter/device
+metadata is not exported. No native application window was opened.
+
+The ruled source/grid split, Group By/Count/Where cells, explicit Where Show/sort
+disabling, contextual Ribbon and translated labels fit the viewport. Popup menus
+were closed and are not visually qualified. The Field row still hides the
+retained CustomerCount alias; this is an observed correction item, not finished
+presentation polish. The actual retained city-dob/city-or-dob references were
+reopened; neither establishes Total-row/menu, dark or localized native parity.
+
+The [checkpoint](../../tests/results/queries/qbe-totals-workflows-2026-11-12.json)
+pins all four PNGs, their direct-view observations, the renderer and source.
+Frames remain under `.cache/ui-previews/query-design-totals/metal-headless/`.
+The sandbox attempt found no GPU adapter and is retained separately from the
+successful offscreen run. These images do not establish database execution;
+actual prompt, Run, cancellation and source-preservation checks are recorded
+separately in that checkpoint.
+
 ## Boolean initial-record presentation — 10 November 2026
 
 The existing `initial-table-draft` scene with
