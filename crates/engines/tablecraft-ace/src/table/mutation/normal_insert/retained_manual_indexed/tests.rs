@@ -1,7 +1,7 @@
 //! Genuine ordinary CREATE and indexed UPDATE outputs feed the manual INSERT source.
 use crate::{
-    FittedColumnUpdates, FixedScalarUpdate, InsertFieldValue, NativeImage, OmittedRowInsert,
-    SecondaryIndexCreate,
+    EditError, FittedColumnUpdates, FixedScalarUpdate, IndexConstraintViolation, InsertFieldValue,
+    InspectError, NativeImage, OmittedRowInsert, SecondaryIndexCreate,
 };
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
@@ -11,6 +11,7 @@ use tablecraft_testkit::fixtures::access::secondary_index::normal::inserting as 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(512 * 1024 * 1024, 1_000_000, 1_000_000_000)
 }
+
 fn image(bytes: &[u8]) -> NativeImage {
     NativeImage::capture_retained(
         &mut Cursor::new(bytes),
@@ -20,6 +21,7 @@ fn image(bytes: &[u8]) -> NativeImage {
     )
     .unwrap()
 }
+
 fn same(actual: &[u8], expected: &[u8]) {
     assert_eq!(actual.len(), expected.len());
     assert_eq!(
@@ -28,6 +30,7 @@ fn same(actual: &[u8], expected: &[u8]) {
         "first differing full image byte"
     );
 }
+
 fn rows(values: &[Option<i32>]) -> Vec<OmittedRowInsert> {
     values
         .iter()
@@ -115,7 +118,6 @@ fn real_create_update_then_manual_insert_keeps_direction_row_identity_and_histor
 
 #[test]
 fn preexisting_unique_and_required_insert_constraints_are_checked_before_effects() {
-    use crate::{EditError, IndexConstraintViolation, InspectError};
     for descending in [false, true] {
         for required in [false, true] {
             let case = raw::unique(descending, required);

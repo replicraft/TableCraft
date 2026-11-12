@@ -1,9 +1,12 @@
 //! Fresh TCNA11 reconstruction owns DATA, key membership and historical counters.
 use super::{Error, Intent, budget, literal};
-use crate::{InsertFieldValue, NativeImage, OmittedRowInsert, RecoverableNativeOmittedInsertPlan};
+use crate::{
+    InsertFieldValue, NativeImage, NativeRecoveryQualificationError, OmittedRowInsert,
+    RecoverableNativeOmittedInsertPlan, qualify_native_omitted_insert_recovery,
+};
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
-use tablecraft_io::journal::{self, RecoveryOutcome, ResizableState};
+use tablecraft_io::journal::{self, JournalError, RecoveryOutcome, ResizableState};
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::{
     fixtures::access::secondary_index::normal::inserting as raw,
@@ -19,6 +22,7 @@ fn image(before: &[u8], scope: u64) -> NativeImage {
     )
     .unwrap()
 }
+
 fn rows(case: &raw::Case) -> Vec<Vec<Option<Value>>> {
     case.values
         .iter()
@@ -32,6 +36,7 @@ fn rows(case: &raw::Case) -> Vec<Vec<Option<Value>>> {
         })
         .collect()
 }
+
 fn requests(case: &raw::Case) -> Vec<OmittedRowInsert> {
     rows(case)
         .into_iter()
@@ -47,6 +52,7 @@ fn requests(case: &raw::Case) -> Vec<OmittedRowInsert> {
         })
         .collect()
 }
+
 fn wire(case: &raw::Case) -> Vec<u8> {
     literal(
         &case.updated.expected,
@@ -54,9 +60,11 @@ fn wire(case: &raw::Case) -> Vec<u8> {
         rows(case),
     )
 }
+
 fn decoded(case: &raw::Case) -> Intent {
     Intent::decode_retained_manual_indexed(&wire(case), &mut budget(), &|| false).unwrap()
 }
+
 fn plan(case: &raw::Case) -> RecoverableNativeOmittedInsertPlan {
     image(&case.updated.expected, 41120)
         .plan_recoverable_retained_manual_indexed_insert(
@@ -67,6 +75,7 @@ fn plan(case: &raw::Case) -> RecoverableNativeOmittedInsertPlan {
         )
         .unwrap()
 }
+
 fn same(actual: &[u8], expected: &[u8]) {
     assert_eq!(actual.len(), expected.len());
     assert_eq!(
@@ -280,8 +289,6 @@ fn wrong_source_request_after_and_constraint_intents_cannot_publish_a_partial_in
 
 #[test]
 fn manual_indexed_original_cannot_prepare_or_qualify_a_v1_save() {
-    use crate::{NativeRecoveryQualificationError, qualify_native_omitted_insert_recovery};
-    use tablecraft_io::journal::JournalError;
     let case = raw::source(false);
     let mut target = MemoryStorage::new(case.updated.expected.to_vec());
     let mut file = MemoryStorage::new(Vec::new());

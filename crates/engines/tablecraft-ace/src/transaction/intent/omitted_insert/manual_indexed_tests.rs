@@ -8,9 +8,19 @@ use sha2::{Digest, Sha256};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_testkit::fixtures::access::tcna2;
 
+#[cfg(not(feature = "ace16-create"))]
+use crate::{EditError, NativeRecoveryQualificationError, WriteBlocker};
+#[cfg(not(feature = "ace16-create"))]
+use tablecraft_io::journal;
+#[cfg(not(feature = "ace16-create"))]
+use tablecraft_model::CatalogScope;
+#[cfg(not(feature = "ace16-create"))]
+use tablecraft_testkit::support::io::journal::MemoryStorage;
+
 fn budget() -> ResourceBudget {
     ResourceBudget::new(512 * 1024 * 1024, 1_000_000, 1_000_000_000)
 }
+
 fn literal(before: &[u8], table: &str, rows: Vec<Vec<Option<Value>>>) -> Vec<u8> {
     let mut digest = Sha256::new();
     digest.update(b"TCNI0001:BEFORE\0");
@@ -23,6 +33,7 @@ fn literal(before: &[u8], table: &str, rows: Vec<Vec<Option<Value>>>) -> Vec<u8>
     assert_eq!(&wire[68..68 + table.len()], table.as_bytes());
     wire
 }
+
 fn requests() -> Vec<OmittedRowInsert> {
     vec![
         OmittedRowInsert::new(vec![InsertFieldValue::Omitted]),
@@ -30,6 +41,7 @@ fn requests() -> Vec<OmittedRowInsert> {
         OmittedRowInsert::new(vec![InsertFieldValue::Supplied(Value::Int32(i32::MIN))]),
     ]
 }
+
 fn original_rows() -> Vec<Vec<Option<Value>>> {
     vec![
         vec![None],
@@ -139,10 +151,6 @@ fn malformed_framing_flags_presence_and_source_binding_refuse_without_decoder_fa
 #[cfg(not(feature = "ace16-create"))]
 #[test]
 fn journal_only_manual_indexed_presence_cannot_authorize_native_effects() {
-    use crate::{EditError, NativeRecoveryQualificationError, WriteBlocker};
-    use tablecraft_io::journal;
-    use tablecraft_model::CatalogScope;
-    use tablecraft_testkit::support::io::journal::MemoryStorage;
     let before = vec![0x11; 4096];
     let mut after = before.to_vec();
     after[3000] ^= 1;

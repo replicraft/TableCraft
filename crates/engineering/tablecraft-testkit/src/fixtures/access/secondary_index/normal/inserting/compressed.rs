@@ -30,9 +30,11 @@ pub fn values() -> Vec<Value> {
 fn word(bytes: &[u8], at: usize) -> usize {
     u16::from_le_bytes(bytes[at..at + 2].try_into().unwrap()) as usize
 }
+
 fn long(bytes: &[u8], at: usize) -> u32 {
     u32::from_le_bytes(bytes[at..at + 4].try_into().unwrap())
 }
+
 fn physical(bytes: &[u8], definition: u32) -> usize {
     let base = definition as usize * PAGE;
     let mut at = base + 63 + long(bytes, base + 51) as usize * 12 + word(bytes, base + 45) * 25;
@@ -41,6 +43,7 @@ fn physical(bytes: &[u8], definition: u32) -> usize {
     }
     at
 }
+
 fn wires(values: impl IntoIterator<Item = (Option<i32>, u32)>, descending: bool) -> Vec<Vec<u8>> {
     let mut entries = values
         .into_iter()
@@ -53,6 +56,7 @@ fn wires(values: impl IntoIterator<Item = (Option<i32>, u32)>, descending: bool)
     entries.sort();
     entries
 }
+
 fn frame(bytes: &mut [u8], root: u32, definition: u32, entries: &[Vec<u8>], prefix: usize) {
     let start = root as usize * PAGE;
     let expected = multiple_indexes::leaf_owned(

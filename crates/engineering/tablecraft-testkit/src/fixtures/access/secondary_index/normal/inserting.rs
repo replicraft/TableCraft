@@ -46,6 +46,7 @@ pub fn unique(descending: bool, required: bool) -> Case {
 fn word(bytes: &[u8], at: usize) -> usize {
     u16::from_le_bytes(bytes[at..at + 2].try_into().unwrap()) as usize
 }
+
 fn long(bytes: &[u8], at: usize) -> u32 {
     u32::from_le_bytes(bytes[at..at + 4].try_into().unwrap())
 }

@@ -165,6 +165,8 @@ fn late_assignment_failure_preserves_the_created_index_and_previous_published_ro
         .unwrap()
         .rows
         .as_ptr();
+    // NO_CLONE: The editor owns its SQL; retain an independent expected string
+    // to verify the refused action preserves the exact submitted statement.
     assert!(harness.state_mut().state.replace_query_sql(sql.clone()));
     harness.run_steps(2);
     harness
