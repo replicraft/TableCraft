@@ -3,6 +3,7 @@ mod audit;
 mod effect;
 pub(crate) use effect::{NativeIndexCreateEffect, NativeIndexCreateParts};
 mod maps;
+mod selection;
 mod source;
 #[cfg(test)]
 mod tests;
