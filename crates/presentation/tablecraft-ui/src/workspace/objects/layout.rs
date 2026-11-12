@@ -19,11 +19,13 @@ use crate::workspace::{DocumentView, State};
 
 pub struct WorkspaceLayout {
     entries: Vec<Preference>,
+    revision: Option<u64>,
     active: Option<ObjectKind>,
     scratch_sql: String,
 }
 
 struct Preference {
+    id: u64,
     kind: ObjectKind,
     design: bool,
     offset: u32,
@@ -81,6 +83,7 @@ impl State {
                     }
                 };
                 Preference {
+                    id: entry.tab.id,
                     query_design,
                     totals,
                     // NO_CLONE: Capture a distinct restoration/edit-input snapshot while the
@@ -96,6 +99,7 @@ impl State {
             .collect();
         WorkspaceLayout {
             entries,
+            revision: self.objects.revision,
             active: self.active_object().and_then(|tab| {
                 (!matches!(tab.target.kind, ObjectKind::DraftTable { .. }))
                     .then_some(tab.target.kind)
@@ -112,6 +116,29 @@ impl State {
         layout: WorkspaceLayout,
         preferred: ObjectKind,
     ) -> bool {
+        self.restore_workspace_layout_with_identity(layout, preferred, false)
+    }
+
+    /// Restore presentation identities after the host has saved and reopened
+    /// the same document. Every source-bound session is reconstructed empty at
+    /// the fresh revision; retaining a UI ID grants no old row or query rights.
+    ///
+    /// The host must correlate the completed save and fresh open before calling
+    /// this method. Ordinary cross-document preference restore uses fresh IDs.
+    pub fn restore_workspace_layout_after_save(
+        &mut self,
+        layout: WorkspaceLayout,
+        preferred: ObjectKind,
+    ) -> bool {
+        self.restore_workspace_layout_with_identity(layout, preferred, true)
+    }
+
+    fn restore_workspace_layout_with_identity(
+        &mut self,
+        layout: WorkspaceLayout,
+        preferred: ObjectKind,
+        retain_ids: bool,
+    ) -> bool {
         let Some(revision) = self
             .database
             .as_ref()
@@ -119,7 +146,8 @@ impl State {
         else {
             return false;
         };
-        if !self.object_switch_ready()
+        if (retain_ids && layout.revision.is_none_or(|old| old == revision))
+            || !self.object_switch_ready()
             || self.has_unsaved_table_drafts()
             || layout.entries.len() > MAX_OBJECTS
             || layout.entries.iter().any(|entry| {
@@ -135,7 +163,12 @@ impl State {
             self.error = Some(self.localizer.text("objects-restore-refused"));
             return false;
         }
-        let restored = match restoration::prepare(layout.entries, revision, None) {
+        let prepared = if retain_ids {
+            restoration::prepare_after_save(layout.entries, revision)
+        } else {
+            restoration::prepare(layout.entries, revision, None)
+        };
+        let restored = match prepared {
             Ok(objects) => objects,
             Err(restoration::PrepareError::Allocation) => {
                 self.error = Some(self.localizer.text("objects-memory-limit"));

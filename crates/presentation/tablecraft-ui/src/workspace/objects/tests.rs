@@ -396,3 +396,5 @@ fn borrowed_tab_binding_includes_parked_owners_but_grants_no_activation_permissi
     assert!(!state.object_tab_is_current(&reopened));
     assert!(!state.object_tab_is_current(&b));
 }
+
+mod save_layout;

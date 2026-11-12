@@ -347,9 +347,13 @@ services retain their independent limits and checked completion requirements.
 An acknowledged offline save reopens a fresh read source. The host can retain a
 source-free workspace layout: object identities by catalog kind/name, table
 mode/page preferences, scratch SQL and saved-input preferences. It does not
-restore old rows, query results, native handles, reviews or tab authority. New
-tabs bind the fresh document revision; inactive objects load lazily when
-activated, and retained filter/sort preferences are revalidated by the runtime
+restore old rows, query results, native handles, reviews or tab authority.
+After an acknowledged save to the same document, the handoff retains each open
+tab's presentation ID and binds its reconstructed empty session to the fresh
+document revision. An old `ObjectTab` still carries the old revision and cannot
+activate, close or publish into that fresh session. Ordinary cross-document
+layout restoration continues to allocate new tab IDs. Inactive objects load
+lazily when activated, and retained filter/sort preferences are revalidated by the runtime
 against the new source. Saved definitions are inspected afresh and are never
 rerun automatically. This in-memory layout handoff is not persistent workspace
 storage or a resumed native-project feature.

@@ -20,6 +20,22 @@ pub(super) fn prepare(
     revision: u64,
     retained: Option<&Objects>,
 ) -> Result<Objects, PrepareError> {
+    prepare_with_identity(preferences, revision, retained, false)
+}
+
+pub(super) fn prepare_after_save(
+    preferences: Vec<Preference>,
+    revision: u64,
+) -> Result<Objects, PrepareError> {
+    prepare_with_identity(preferences, revision, None, true)
+}
+
+fn prepare_with_identity(
+    preferences: Vec<Preference>,
+    revision: u64,
+    retained: Option<&Objects>,
+    retain_ids: bool,
+) -> Result<Objects, PrepareError> {
     if preferences.len() > MAX_OBJECTS
         || retained.is_some_and(|old| old.entries.len() != preferences.len())
     {
@@ -41,6 +57,17 @@ pub(super) fn prepare(
                     return Err(PrepareError::Identity);
                 }
                 entry.tab.id
+            }
+            None if retain_ids => {
+                if preference.id == 0
+                    || restored
+                        .entries
+                        .iter()
+                        .any(|entry| entry.tab.id == preference.id)
+                {
+                    return Err(PrepareError::Identity);
+                }
+                preference.id
             }
             None => {
                 NEXT_OBJECT_ID

@@ -348,7 +348,7 @@ impl Desktop {
         };
         if !self
             .state
-            .restore_workspace_layout(restore.layout, preferred)
+            .restore_workspace_layout_after_save(restore.layout, preferred)
         {
             return false;
         }
