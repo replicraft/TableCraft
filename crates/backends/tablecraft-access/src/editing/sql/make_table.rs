@@ -93,8 +93,10 @@ impl PreparedNativeMakeTable {
 /// row-local fixed scalar expressions, WHERE, selection predicates and direct-field
 /// ORDER BY. Computed aliases are a current native name qualification, not an
 /// Access language restriction. Computed Text/Decimal declarations, source-expanding
-/// expressions, groups, wildcards, parameters, named/linked sources, external
-/// selectors and owner access refuse. Direct fields keep actual native sizes.
+/// expressions, groups, named/linked sources, external selectors and owner access
+/// refuse. Bare and qualified source wildcards expand through actual native field
+/// declarations. This entry refuses SQL parameter declarations; use the explicit
+/// parameterized entry for that profile. Direct fields keep actual native sizes.
 /// Fixed expression declarations come from complete typed query staging; no native
 /// width, Required policy, primary key or default is inferred from selected rows.
 /// Complete row retention obeys the caller's native/query/snapshot allowances;
