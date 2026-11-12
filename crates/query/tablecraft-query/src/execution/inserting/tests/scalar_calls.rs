@@ -136,7 +136,7 @@ fn runtime_qualified_source_and_malformed_calls_refuse_in_raw_preflight() {
         "Eval('1')",
         "DCount('*','Items')",
         "[Module].Abs(2)",
-        "Unknown(2)",
+        "UserFunction(2)",
         "[Array](1,2)",
         "CVDate('2026-01-01')",
         "Sqr(1,2)",
@@ -145,7 +145,9 @@ fn runtime_qualified_source_and_malformed_calls_refuse_in_raw_preflight() {
         "Left('alpha',*)",
         "Abs(ID)",
     ] {
-        let parsed = query(&format!("INSERT INTO Items VALUES({expression},NULL)"));
+        let sql = format!("INSERT INTO Items VALUES({expression},NULL)");
+        let parsed = tablecraft_sql::parse_query(&sql, tablecraft_sql::ParseLimits::default())
+            .unwrap_or_else(|error| panic!("refusal fixture {expression} must parse: {error:?}"));
         assert!(matches!(
             local_insert_table(parsed.query(), false, false, &mut budget(), &|| false),
             Err(QueryError::Unsupported)
