@@ -11,6 +11,7 @@ pub(super) enum Grammar {
     Legacy,
     RetainedEmpty,
     RetainedLongColumnBatch,
+    RetainedIndexedLong,
     Retained,
     RetainedFixedScalars,
     RetainedWideValues,
@@ -24,7 +25,8 @@ impl Grammar {
             | Self::RetainedFixedScalars
             | Self::RetainedWideValues
             | Self::RetainedEmpty
-            | Self::RetainedLongColumnBatch => u32::MAX as usize,
+            | Self::RetainedLongColumnBatch
+            | Self::RetainedIndexedLong => u32::MAX as usize,
         }
     }
 
@@ -35,13 +37,14 @@ impl Grammar {
             Self::Retained
             | Self::RetainedFixedScalars
             | Self::RetainedWideValues
-            | Self::RetainedLongColumnBatch => u32::MAX as usize,
+            | Self::RetainedLongColumnBatch
+            | Self::RetainedIndexedLong => u32::MAX as usize,
         }
     }
 
     pub(super) const fn groups(self) -> usize {
         match self {
-            Self::RetainedLongColumnBatch => 1,
+            Self::RetainedLongColumnBatch | Self::RetainedIndexedLong => 1,
             Self::Legacy => NativeImage::MAX_FIXED_BATCH_GROUPS,
             Self::Retained
             | Self::RetainedFixedScalars
@@ -69,7 +72,8 @@ impl Grammar {
             | Self::RetainedFixedScalars
             | Self::RetainedWideValues
             | Self::RetainedEmpty
-            | Self::RetainedLongColumnBatch => binding::retained_length(length),
+            | Self::RetainedLongColumnBatch
+            | Self::RetainedIndexedLong => binding::retained_length(length),
         }
     }
 
@@ -85,7 +89,8 @@ impl Grammar {
             | Self::RetainedFixedScalars
             | Self::RetainedWideValues
             | Self::RetainedEmpty
-            | Self::RetainedLongColumnBatch => binding::digest_retained(before, budget, cancelled),
+            | Self::RetainedLongColumnBatch
+            | Self::RetainedIndexedLong => binding::digest_retained(before, budget, cancelled),
         }
     }
 
@@ -95,7 +100,7 @@ impl Grammar {
         family: Family,
     ) -> Result<carrier::Encoded<'_>, NativeIntentError> {
         match self {
-            Self::RetainedLongColumnBatch => {
+            Self::RetainedLongColumnBatch | Self::RetainedIndexedLong => {
                 if family != Family::Fixed || !matches!(value, Value::Null | Value::Int32(_)) {
                     return Err(NativeIntentError::InvalidRecord);
                 }
@@ -118,7 +123,7 @@ impl Grammar {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<carrier::Borrowed<'a>, NativeIntentError> {
         match self {
-            Self::RetainedLongColumnBatch => {
+            Self::RetainedLongColumnBatch | Self::RetainedIndexedLong => {
                 if family != Family::Fixed {
                     return Err(NativeIntentError::InvalidRecord);
                 }

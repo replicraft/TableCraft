@@ -99,6 +99,7 @@ impl<'a> Cursor<'a> {
             Grammar::RetainedFixedScalars
                 | Grammar::RetainedEmpty
                 | Grammar::RetainedLongColumnBatch
+                | Grammar::RetainedIndexedLong
         ) && family != Family::Fixed
         {
             return Err(NativeIntentError::InvalidRecord);

@@ -70,6 +70,22 @@ impl NativeFittedIntentGroup {
         Self::new_with_grammar(column, updates, Grammar::Retained, budget, cancelled)
     }
 
+    /// Original TCNI26 indexed LONG group, including zero-match requests.
+    pub fn new_retained_indexed_long(
+        column: &str,
+        updates: NativeFittedUpdates,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        Self::new_with_grammar(
+            column,
+            updates,
+            Grammar::RetainedIndexedLong,
+            budget,
+            cancelled,
+        )
+    }
+
     /// Original TCNI25 fixed LONG group, retaining every requested row.
     pub fn new_retained_long_column_batch(
         column: &str,
@@ -134,6 +150,7 @@ impl NativeFittedIntentGroup {
             Grammar::RetainedFixedScalars
                 | Grammar::RetainedEmpty
                 | Grammar::RetainedLongColumnBatch
+                | Grammar::RetainedIndexedLong
         ) && !matches!(updates, NativeFittedUpdates::Fixed(_))
         {
             return Err(NativeIntentError::InvalidRecord);
@@ -261,6 +278,24 @@ impl NativeFittedEditIntent {
             groups,
             before,
             Grammar::RetainedEmpty,
+            budget,
+            cancelled,
+        )
+    }
+
+    /// Bind TCNI26 indexed LONG originals to the complete immutable source.
+    pub fn new_retained_indexed_long(
+        table: &str,
+        groups: Vec<NativeFittedIntentGroup>,
+        before: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        Self::new_with_grammar(
+            table,
+            groups,
+            before,
+            Grammar::RetainedIndexedLong,
             budget,
             cancelled,
         )
@@ -449,14 +484,17 @@ pub(super) fn validate_groups(
     if groups.is_empty() || groups.len() > grammar.groups() {
         return Err(InspectError::StructureLimit.into());
     }
-    if grammar == Grammar::RetainedLongColumnBatch {
+    if matches!(
+        grammar,
+        Grammar::RetainedLongColumnBatch | Grammar::RetainedIndexedLong
+    ) {
         let [group] = groups else {
             return Err(NativeIntentError::InvalidRecord);
         };
         let NativeFittedUpdates::Fixed(updates) = group.updates() else {
             return Err(NativeIntentError::InvalidRecord);
         };
-        if updates.len() < 2 {
+        if grammar == Grammar::RetainedLongColumnBatch && updates.len() < 2 {
             return Err(NativeIntentError::InvalidRecord);
         }
         for update in updates {
@@ -473,6 +511,7 @@ pub(super) fn validate_groups(
             Grammar::RetainedFixedScalars
                 | Grammar::RetainedEmpty
                 | Grammar::RetainedLongColumnBatch
+                | Grammar::RetainedIndexedLong
         ) && !matches!(group.updates(), NativeFittedUpdates::Fixed(_))
         {
             return Err(NativeIntentError::InvalidRecord);

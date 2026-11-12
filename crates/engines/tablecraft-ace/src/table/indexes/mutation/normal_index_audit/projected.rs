@@ -8,7 +8,7 @@ use crate::{
         data_type::INT32,
         page::{DATA_SIGNATURE, OWNER_OFFSET},
         reader::{Reader, live_row_range, row_count},
-        row::{COLUMN_COUNT_BYTES, MASK_BITS, reference},
+        row::{COLUMN_COUNT_BYTES, MASK_BITS, reference, reference_page},
     },
     header::check,
     table::record_layout,
@@ -110,8 +110,35 @@ where
     )
 }
 
+/// Retained LONG proof follows the same paid owned relocation scope as its
+/// original row source. Existing projected proof languages retain their traversal.
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(in crate::table) fn reconstruct_retained_long<F>(
+    image: &NativeImage,
+    checked: &TableCheck,
+    expected: &mut [u8],
+    mut final_value: F,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError>
+where
+    F: FnMut(usize, usize, Option<i32>, &mut ResourceBudget) -> Result<Option<i32>, EditError>,
+{
+    reconstruct_with(
+        image,
+        checked,
+        expected,
+        &mut final_value,
+        Selection::RetainedLong,
+        budget,
+        cancelled,
+    )
+}
+
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Selection {
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    RetainedLong,
     Legacy,
     RetainedBinary,
     Omitted,
@@ -194,7 +221,21 @@ where
         cancelled,
         reads: 0,
     };
-    for number in allocation::pages(&mut reader, schema.layout.usage)? {
+    let owned = allocation::pages(&mut reader, schema.layout.usage)?;
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    let retained_long = selected == Selection::RetainedLong;
+    #[cfg(not(all(feature = "journal", feature = "ace16-create")))]
+    let retained_long = false;
+    if retained_long {
+        for pair in owned.windows(2) {
+            reader.tick()?;
+            if pair[0] >= pair[1] {
+                return Err(EditError::Preservation);
+            }
+        }
+    }
+    let owned_levels = owned.len().checked_ilog2().unwrap_or(0) as usize + 1;
+    for &number in &owned {
         let page = reader.page(number)?;
         if page[..DATA_SIGNATURE.len()] != DATA_SIGNATURE
             || u32_at(&page, OWNER_OFFSET)? != schema.definition_page()
@@ -214,7 +255,23 @@ where
                 .charge(Resource::Rows, 1)
                 .map_err(InspectError::from)?;
             let slot = u8::try_from(slot).map_err(|_| InspectError::Malformed)?;
-            let record = reader.row_location(number, slot, schema.definition_page(), &page)?;
+            let record = if retained_long {
+                reader.read_location_observed(
+                    number,
+                    slot,
+                    schema.definition_page(),
+                    &page,
+                    &mut |reference, budget| {
+                        budget.charge(Resource::Steps, owned_levels as u64)?;
+                        if owned.binary_search(&reference_page(reference)).is_err() {
+                            return Err(InspectError::Malformed);
+                        }
+                        Ok(())
+                    },
+                )?
+            } else {
+                reader.row_location(number, slot, schema.definition_page(), &page)?
+            };
             let layout = record_layout::parse(&record.data, schema, reader.budget)?;
             if layout.count != schema.layout.max_columns {
                 return Err(EditError::Unsupported(WriteBlocker::RowLayout));

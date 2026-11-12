@@ -13,6 +13,8 @@ const ACE_PROFILE: u16 = 2;
 /// A versioned validation route, never a serialized native permission.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum NativeUpdateProfile {
+    /// Source-qualified retained indexed manual LONG requests of any cardinality.
+    Ace16RetainedIndexedLongRows,
     /// Atomic unindexed LONG column batches with two or more original rows.
     Ace16RetainedLongColumnBatch,
     /// Source-qualified named ordinary LONG targets with no selected rows.
@@ -88,6 +90,13 @@ pub enum NativeUpdateBody {
 }
 
 impl NativeUpdateIntent {
+    pub(super) fn from_retained_indexed_long(original: NativeFittedEditIntent) -> Self {
+        Self {
+            profile: NativeUpdateProfile::Ace16RetainedIndexedLongRows,
+            body: NativeUpdateBody::Fitted(original),
+        }
+    }
+
     pub(super) fn from_retained_long_column_batch(original: NativeFittedEditIntent) -> Self {
         Self {
             profile: NativeUpdateProfile::Ace16RetainedLongColumnBatch,
@@ -395,6 +404,10 @@ impl NativeUpdateIntent {
         match (&self.body, self.profile) {
             (
                 NativeUpdateBody::Fitted(original),
+                NativeUpdateProfile::Ace16RetainedIndexedLongRows,
+            ) => original.encode_retained_indexed_long(budget, cancelled),
+            (
+                NativeUpdateBody::Fitted(original),
                 NativeUpdateProfile::Ace16RetainedLongColumnBatch,
             ) => original.encode_retained_long_column_batch(budget, cancelled),
             (NativeUpdateBody::Fitted(original), NativeUpdateProfile::Ace16RetainedEmptyRows) => {
@@ -496,6 +509,12 @@ impl NativeUpdateIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
+        if bytes.get(..super::fitted::RETAINED_INDEXED_LONG_MAGIC.len())
+            == Some(super::fitted::RETAINED_INDEXED_LONG_MAGIC.as_slice())
+        {
+            return NativeFittedEditIntent::decode_retained_indexed_long(bytes, budget, cancelled)
+                .map(Self::from_retained_indexed_long);
+        }
         if bytes.get(..super::fitted::RETAINED_LONG_COLUMN_BATCH_MAGIC.len())
             == Some(super::fitted::RETAINED_LONG_COLUMN_BATCH_MAGIC.as_slice())
         {

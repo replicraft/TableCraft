@@ -119,3 +119,6 @@ pub(in crate::table) use projected::reconstruct_nullable as reconstruct_nullable
 
 #[cfg(feature = "journal")]
 pub(in crate::table) use projected::reconstruct_retained_i32;
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(in crate::table) use projected::reconstruct_retained_long;

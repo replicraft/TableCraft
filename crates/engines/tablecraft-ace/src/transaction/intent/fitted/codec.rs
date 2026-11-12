@@ -302,6 +302,24 @@ impl NativeFittedEditIntent {
         read::decode(bytes, WireProfile::RetainedCurrencyRows, budget, cancelled)
     }
 
+    /// Encode only TCNI26 indexed LONG original requests.
+    pub fn encode_retained_indexed_long(
+        &self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<u8>, NativeIntentError> {
+        self.encode_profile(WireProfile::RetainedIndexedLong, budget, cancelled)
+    }
+
+    /// Decode inert TCNI26 data; actual source/index qualification remains required.
+    pub fn decode_retained_indexed_long(
+        bytes: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        read::decode(bytes, WireProfile::RetainedIndexedLong, budget, cancelled)
+    }
+
     /// Encode exactly TCNI25 one-column original LONG batches.
     pub fn encode_retained_long_column_batch(
         &self,

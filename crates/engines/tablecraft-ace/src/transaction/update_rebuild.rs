@@ -28,6 +28,16 @@ pub(super) fn rebuild_verified_binding(
 ) -> Result<NativeEditPlan, NativeRecoveryQualificationError> {
     let plan = match (intent.profile(), intent.body()) {
         #[cfg(feature = "ace16-create")]
+        (NativeUpdateProfile::Ace16RetainedIndexedLongRows, NativeUpdateBody::Fitted(original)) => {
+            let groups = original.borrowed_groups(budget, cancelled)?;
+            image.plan_retained_indexed_long_updates(
+                original.table(),
+                &groups,
+                budget,
+                cancelled,
+            )?
+        }
+        #[cfg(feature = "ace16-create")]
         (NativeUpdateProfile::Ace16RetainedLongColumnBatch, NativeUpdateBody::Fitted(original)) => {
             let groups = original.borrowed_groups(budget, cancelled)?;
             image.plan_retained_long_column_batch_updates(

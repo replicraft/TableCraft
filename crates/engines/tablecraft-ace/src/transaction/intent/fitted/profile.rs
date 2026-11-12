@@ -36,6 +36,9 @@ const RETAINED_EMPTY_ROWS_PROFILE: u16 = 24;
 pub(in crate::transaction::intent) const RETAINED_LONG_COLUMN_BATCH_MAGIC: &[u8; 8] = b"TCNI0025";
 const RETAINED_LONG_COLUMN_BATCH_PROFILE: u16 = 25;
 
+pub(in crate::transaction::intent) const RETAINED_INDEXED_LONG_MAGIC: &[u8; 8] = b"TCNI0026";
+const RETAINED_INDEXED_LONG_PROFILE: u16 = 26;
+
 #[derive(Clone, Copy)]
 pub(in crate::transaction::intent) enum WireProfile {
     Fitted,
@@ -52,11 +55,13 @@ pub(in crate::transaction::intent) enum WireProfile {
     RetainedBooleanMaterialization,
     RetainedEmptyRows,
     RetainedLongColumnBatch,
+    RetainedIndexedLong,
 }
 
 impl WireProfile {
     pub(super) const fn grammar(self) -> Grammar {
         match self {
+            Self::RetainedIndexedLong => Grammar::RetainedIndexedLong,
             Self::RetainedLongColumnBatch => Grammar::RetainedLongColumnBatch,
             Self::RetainedEmptyRows => Grammar::RetainedEmpty,
             Self::RetainedFixedScalarRows => Grammar::RetainedFixedScalars,
@@ -72,6 +77,7 @@ impl WireProfile {
 
     pub(super) const fn magic(self) -> &'static [u8; 8] {
         match self {
+            Self::RetainedIndexedLong => RETAINED_INDEXED_LONG_MAGIC,
             Self::RetainedLongColumnBatch => RETAINED_LONG_COLUMN_BATCH_MAGIC,
             Self::RetainedEmptyRows => RETAINED_EMPTY_ROWS_MAGIC,
             Self::Fitted => MAGIC,
@@ -91,6 +97,7 @@ impl WireProfile {
 
     pub(super) const fn number(self) -> u16 {
         match self {
+            Self::RetainedIndexedLong => RETAINED_INDEXED_LONG_PROFILE,
             Self::RetainedLongColumnBatch => RETAINED_LONG_COLUMN_BATCH_PROFILE,
             Self::RetainedEmptyRows => RETAINED_EMPTY_ROWS_PROFILE,
             Self::Fitted => PROFILE,
