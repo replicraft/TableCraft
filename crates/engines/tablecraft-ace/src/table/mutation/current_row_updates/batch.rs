@@ -87,7 +87,7 @@ fn bind<'value>(
             return Err(EditError::Unsupported(WriteBlocker::Column));
         }
 
-        for update in updates {
+        for update in *updates {
             check(budget, cancelled)?;
             if !kind.accepts(update.expected()) || !kind.accepts(update.value()) {
                 return Err(EditError::Unsupported(WriteBlocker::Column));
