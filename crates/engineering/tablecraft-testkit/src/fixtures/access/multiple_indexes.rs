@@ -126,13 +126,26 @@ pub fn leaf(
     previous: u32,
     next: u32,
 ) -> Vec<u8> {
+    leaf_owned(original, entries, seed, previous, next, 10)
+}
+
+/// Literal existing-page packing for a caller's actual independent TDEF owner.
+/// The original Items fixture above retains its exact owner and byte language.
+pub(in crate::fixtures::access) fn leaf_owned(
+    original: Option<&[u8]>,
+    entries: &[Vec<u8>],
+    seed: usize,
+    previous: u32,
+    next: u32,
+    owner: u32,
+) -> Vec<u8> {
     let (prefix, active) = framing(entries, seed);
     assert!(active <= 3616);
     let mut page = original.map_or_else(|| vec![0; PAGE], <[u8]>::to_vec);
     page[..480].fill(0);
     page[..2].copy_from_slice(&[4, 1]);
     raw::put16(&mut page, 2, (3616 - active) as u16);
-    raw::put32(&mut page, 4, 10);
+    raw::put32(&mut page, 4, owner);
     raw::put32(&mut page, 12, previous);
     raw::put32(&mut page, 16, next);
     raw::put16(&mut page, 24, prefix as u16);

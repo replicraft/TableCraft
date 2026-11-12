@@ -2,6 +2,8 @@
 pub(super) mod definition;
 pub mod dropping;
 pub mod history;
+/// Literal fresh manual rows after real ordinary index creation and update.
+pub mod inserting;
 pub(super) mod tree;
 /// Independent existing-tree effects after ordinary CREATE INDEX.
 pub mod updating;
