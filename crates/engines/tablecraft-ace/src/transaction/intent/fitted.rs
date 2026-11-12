@@ -63,3 +63,6 @@ mod indexed_long_tests;
 
 #[cfg(test)]
 mod currency_column_batch_tests;
+
+#[cfg(test)]
+mod fixed_scalar_column_batch_tests;

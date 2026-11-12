@@ -1,4 +1,5 @@
 //! Independent complete fixed-row measurements beside retained Access tables.
+pub mod batch;
 pub mod historical;
 use super::desktop;
 use crate::fixtures::access::{

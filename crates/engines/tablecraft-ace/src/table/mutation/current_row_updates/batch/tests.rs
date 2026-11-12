@@ -1,5 +1,6 @@
 //! Independent original rows, complete fixed-field effects and atomic refusals.
 mod currency;
+mod fixed_scalars;
 mod scale;
 use super::Policy;
 use crate::{EditError, FittedColumnUpdates, FixedScalarUpdate, NativeImage};
