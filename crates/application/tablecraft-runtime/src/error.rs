@@ -10,7 +10,10 @@ use tablecraft_ace::{
 #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
 use tablecraft_access::editing::sql::NativeMakeTableError;
 #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
-use tablecraft_ace::{FreshIndexCreateIntentError, IndexCreateIntentError, IndexDropIntentError};
+use tablecraft_ace::{
+    FreshIndexCreateIntentError, IndexCreateIntentError, IndexDropIntentError,
+    NumericIndexCreateIntentError,
+};
 
 #[cfg(feature = "offline-edit")]
 use crate::{EditError, QuerySqlEditError, ReplaceError};
@@ -158,6 +161,10 @@ pub enum Error {
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error(transparent)]
     FreshIndexCreation(#[from] FreshIndexCreateIntentError),
+    /// Numeric index original source or exact effect qualification refused.
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    #[error(transparent)]
+    NumericIndexCreation(#[from] NumericIndexCreateIntentError),
     /// Original native index DROP or complete source admission refused.
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error(transparent)]

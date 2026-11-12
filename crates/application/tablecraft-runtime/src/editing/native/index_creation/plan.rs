@@ -1,9 +1,13 @@
 //! Private original/fresh composition, chosen before native consumption.
-use tablecraft_ace::{RecoverableNativeFreshIndexCreatePlan, RecoverableNativeIndexCreatePlan};
+use tablecraft_ace::{
+    RecoverableNativeFreshIndexCreatePlan, RecoverableNativeIndexCreatePlan,
+    RecoverableNativeNumericIndexCreatePlan,
+};
 
 pub(in crate::editing) enum Plan {
     Original(RecoverableNativeIndexCreatePlan),
     Fresh(RecoverableNativeFreshIndexCreatePlan),
+    Numeric(RecoverableNativeNumericIndexCreatePlan),
 }
 
 /// Actual native field witness copied into the immutable guarded-reopen owner.
@@ -38,6 +42,16 @@ impl Plan {
                     descending: intent.descending(),
                 }
             }
+            Self::Numeric(plan) => {
+                let intent = plan.intent();
+                Target {
+                    native_table: intent.native_table_id(),
+                    definition: intent.definition_page(),
+                    number: intent.native_number(),
+                    column_id: intent.column_id(),
+                    descending: intent.descending(),
+                }
+            }
         }
     }
 
@@ -45,6 +59,7 @@ impl Plan {
         match self {
             Self::Original(plan) => plan.table(),
             Self::Fresh(plan) => plan.table(),
+            Self::Numeric(plan) => plan.table(),
         }
     }
 
@@ -52,6 +67,7 @@ impl Plan {
         match self {
             Self::Original(plan) => plan.column(),
             Self::Fresh(plan) => plan.column(),
+            Self::Numeric(plan) => plan.column(),
         }
     }
 
@@ -59,6 +75,7 @@ impl Plan {
         match self {
             Self::Original(plan) => plan.index_name(),
             Self::Fresh(plan) => plan.index_name(),
+            Self::Numeric(plan) => plan.index_name(),
         }
     }
 
@@ -66,6 +83,7 @@ impl Plan {
         match self {
             Self::Original(plan) => plan.indexed_rows(),
             Self::Fresh(plan) => plan.indexed_rows(),
+            Self::Numeric(plan) => plan.indexed_rows(),
         }
     }
 
@@ -73,6 +91,7 @@ impl Plan {
         match self {
             Self::Original(plan) => plan.before_bytes(),
             Self::Fresh(plan) => plan.before_bytes(),
+            Self::Numeric(plan) => plan.before_bytes(),
         }
     }
 
@@ -80,6 +99,7 @@ impl Plan {
         match self {
             Self::Original(plan) => plan.after_bytes(),
             Self::Fresh(plan) => plan.after_bytes(),
+            Self::Numeric(plan) => plan.after_bytes(),
         }
     }
 
@@ -87,6 +107,7 @@ impl Plan {
         match self {
             Self::Original(plan) => plan.after_shared_bytes(),
             Self::Fresh(plan) => plan.after_shared_bytes(),
+            Self::Numeric(plan) => plan.after_shared_bytes(),
         }
     }
 }

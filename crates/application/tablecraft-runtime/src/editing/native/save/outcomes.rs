@@ -10,6 +10,7 @@ mod fresh_index_creation;
 mod index_drop;
 #[cfg(feature = "ace16-create")]
 mod number_column;
+mod numeric_index_creation;
 mod query_expression_edits;
 mod table_drop;
 
@@ -36,10 +37,10 @@ use tablecraft_ace::{
 use tablecraft_ace::{
     CurrentFieldAdditionError, CurrentFieldAdditionIntentError, DeclaredFieldAdditionIntentError,
     EditError, FreshIndexCreateIntentError, IndexDropIntentError, InspectError, NativeIntentError,
-    NativeRecoveryQualificationError, QueryExpressionEditsError, QueryExpressionEditsIntentError,
-    QueryExpressionError, QueryExpressionIntentError, QueryExpressionRecoveryError,
-    RecoverableQueryExpressionError, TableRenameError, TableRenameIntentError,
-    UnadornedFieldAdditionIntentError,
+    NativeRecoveryQualificationError, NumericIndexCreateIntentError, QueryExpressionEditsError,
+    QueryExpressionEditsIntentError, QueryExpressionError, QueryExpressionIntentError,
+    QueryExpressionRecoveryError, RecoverableQueryExpressionError, TableRenameError,
+    TableRenameIntentError, UnadornedFieldAdditionIntentError,
 };
 use tablecraft_core::limits::LimitError;
 use tablecraft_io::{
@@ -253,6 +254,7 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
             Cause::Native(error) => inspection_failure(error),
             Cause::IndexDropIntent(error) => index_drop::intent(error),
             Cause::FreshIndexCreationIntent(error) => fresh_index_creation::intent(error),
+            Cause::NumericIndexCreationIntent(error) => numeric_index_creation::intent(error),
             Cause::Intent(error) => intent_failure(error),
             Cause::Qualification(error) => qualification_failure(error),
             Cause::TableRenameIntent(error) => rename_intent_failure(error),
@@ -453,6 +455,9 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
     }
     if let Some(error) = error.downcast_ref::<InspectError>() {
         return inspection_failure(error);
+    }
+    if let Some(error) = error.downcast_ref::<NumericIndexCreateIntentError>() {
+        return numeric_index_creation::intent(error);
     }
     if let Some(error) = error.downcast_ref::<FreshIndexCreateIntentError>() {
         return fresh_index_creation::intent(error);

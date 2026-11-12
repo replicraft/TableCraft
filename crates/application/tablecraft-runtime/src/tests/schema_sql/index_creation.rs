@@ -148,11 +148,15 @@ fn create_index_rejects_unimplemented_flags_fields_duplicates_and_foreign_inspec
 
     let companion = raw::protected_companion(false);
     let (_directory, path, worker, revision) = opened(&companion.before);
-    let sql = format!("CREATE INDEX Ix ON [{}] (Amount)", companion.table);
+    let sql = format!("CREATE INDEX Ix ON [{}] (Label)", companion.table);
     let target = inspect(&worker, revision, &sql);
     assert!(matches!(
         review(&worker, &target),
-        Err(Error::IndexCreation(_))
+        Err(Error::Native(
+            tablecraft_ace::InspectError::UnsupportedColumn
+        ))
     ));
     assert_image(&fs::read(path).unwrap(), &companion.before);
 }
+
+mod numeric;
