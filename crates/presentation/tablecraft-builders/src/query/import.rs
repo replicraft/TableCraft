@@ -259,7 +259,12 @@ fn imported(
         column_for(&mut draft, key, DesignTotal::GroupBy)?;
     }
     for sort in &select.order_by {
-        let index = column_for(&mut draft, &sort.expression, DesignTotal::Expression)?;
+        let role = if totals {
+            DesignTotal::Expression
+        } else {
+            DesignTotal::GroupBy
+        };
+        let index = column_for(&mut draft, &sort.expression, role)?;
         if draft.columns[index].sort.is_some() {
             return Err(QueryDesignError::Unsupported);
         }
