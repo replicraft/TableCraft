@@ -240,3 +240,5 @@ fn typed_self_join_graphs_build_then_execute_with_native_outer_join_membership()
 }
 
 mod totals;
+
+mod aliases;

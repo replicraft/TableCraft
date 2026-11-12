@@ -402,3 +402,6 @@ mod tests {
 
 #[cfg(test)]
 mod totals_tests;
+
+#[cfg(test)]
+mod alias_tests;

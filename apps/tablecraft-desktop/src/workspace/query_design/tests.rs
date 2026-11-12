@@ -422,3 +422,5 @@ fn design_build_captures_read_limits_and_failed_run_preserves_previous_results()
 mod totals;
 
 mod cancellation;
+
+mod aliases;
