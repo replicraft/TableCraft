@@ -570,6 +570,7 @@ fn typed_values_and_select_appends_preserve_presence_and_save_the_original_batch
 }
 
 mod joined;
+mod joined_delete;
 
 fn assert_image(actual: &[u8], expected: &[u8]) {
     assert_eq!(actual.len(), expected.len(), "complete image length");
