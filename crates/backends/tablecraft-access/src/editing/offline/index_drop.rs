@@ -26,7 +26,7 @@ impl OfflineWriteSession {
         proof: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<StagedIndexDrop, Failure> {
-        self.stage_index_plan(Plan::Original(reviewed), native, proof, cancelled)
+        self.stage_index_drop_plan(Plan::Original(reviewed), native, proof, cancelled)
     }
 
     /// Reconstruct only the reviewed TCID0002 unique LONG original.
@@ -41,10 +41,10 @@ impl OfflineWriteSession {
         proof: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<StagedIndexDrop, Failure> {
-        self.stage_index_plan(Plan::UniqueLong(reviewed), native, proof, cancelled)
+        self.stage_index_drop_plan(Plan::UniqueLong(reviewed), native, proof, cancelled)
     }
 
-    fn stage_index_plan(
+    fn stage_index_drop_plan(
         mut self,
         reviewed: Plan,
         native: &mut ResourceBudget,

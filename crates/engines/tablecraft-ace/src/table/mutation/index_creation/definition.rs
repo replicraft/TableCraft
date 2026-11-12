@@ -27,6 +27,7 @@ const FREE_OFFSET: usize = 2;
 const INDEX_MAGIC: u32 = 1923;
 const LOGICAL_MAGIC: u32 = 1625;
 const ORDINARY_FLAGS: u8 = 0x80;
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
 const UNIQUE_SECONDARY_FLAGS: u8 = 0x81;
 const RELATED_INDEX_OFFSET: usize = 13;
 const NEW_COUNTER_OFFSET: usize = 4;
@@ -198,6 +199,7 @@ pub(in crate::table::mutation) fn compose_fresh(
     )
 }
 
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub(in crate::table::mutation) fn compose_unique_long(
     image: &NativeImage,
     layout: &DefinitionLayout,
@@ -219,6 +221,7 @@ pub(in crate::table::mutation) fn compose_unique_long(
 
 enum Policy {
     Ordinary,
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
     UniqueLong,
 }
 
@@ -274,6 +277,7 @@ fn compose_with_policy(
         .copy_from_slice(&descriptor.root.to_le_bytes());
     physical[FLAGS_OFFSET] = match policy {
         Policy::Ordinary => ORDINARY_FLAGS,
+        #[cfg(all(feature = "journal", feature = "ace16-create"))]
         Policy::UniqueLong => UNIQUE_SECONDARY_FLAGS,
     };
     active.extend_from_slice(&physical);
