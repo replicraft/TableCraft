@@ -1,8 +1,12 @@
 //! Real SQL View and saved native crosstabs use the shared read/prompt pipeline.
 use super::{confirm, enter, opened, opened_with_source, run, run_until_terminal};
+use crate::workspace::Desktop;
 use crate::workspace::test_support::finish_reads;
 use egui::accesskit::Role;
-use egui_kittest::kittest::Queryable;
+use egui_kittest::{
+    Harness,
+    kittest::{NodeT, Queryable},
+};
 use std::path::Path;
 use tablecraft_runtime::journal_path;
 use tablecraft_testkit::fixtures::access::saved_queries::{
@@ -108,7 +112,7 @@ fn late_transform_aggregate_error_preserves_the_complete_previous_result() {
     // ID1 contributes successfully; ID2 fails before publication of the pivot.
     run_until_terminal(
         &mut harness,
-        "TRANSFORM Sum(10 \\ (2-Id)) AS Measure SELECT 0 AS Bucket FROM Items GROUP BY 0 PIVOT Id IN (3,1,4)",
+        "TRANSFORM Sum(10 \\ (2-Id)) AS Measure SELECT 0 AS Bucket FROM Items GROUP BY 0 PIVOT Id IN (1,2,3,4)",
     );
     let error = harness
         .state()
@@ -133,6 +137,40 @@ fn late_transform_aggregate_error_preserves_the_complete_previous_result() {
     );
     assert!(!harness.state().editing.has_save());
     unchanged(&path, &before);
+}
+
+fn saved_floor_two(harness: &mut Harness<'_, Desktop>) {
+    let columns = harness
+        .get_all_by_role(Role::ColumnHeader)
+        .filter_map(|node| {
+            let accessible = node.accesskit_node();
+            accessible
+                .data()
+                .column_index()
+                .map(|index| (index, accessible.label().unwrap_or_default().to_owned()))
+        })
+        .filter(|(index, _)| *index > 0)
+        .collect::<Vec<_>>();
+    assert_eq!(
+        columns,
+        [
+            (1, "Bucket".into()),
+            (2, "Total".into()),
+            (3, "3".into()),
+            (4, "1".into()),
+            (5, "4".into())
+        ]
+    );
+    assert_eq!(harness.get_all_by_role(Role::GridCell).count(), 5);
+    for (column, text) in [(1, "0"), (2, "2"), (3, "1"), (4, "NULL"), (5, "NULL")] {
+        harness
+            .get_all_by_role(Role::GridCell)
+            .find(|node| node.accesskit_node().data().column_index() == Some(column))
+            .unwrap()
+            .click();
+        harness.run_steps(2);
+        assert_eq!(harness.state().state.selected_cell_text(), Some(text));
+    }
 }
 
 fn fragment(attribute: u8) -> Fragment<'static> {
@@ -245,9 +283,9 @@ fn saved_native_crosstab_inspects_inertly_then_runs_with_its_own_parameters_and_
     enter(&mut harness, "Floor", "2");
     confirm(&mut harness);
     finish_reads(&mut harness);
-    floor_two(harness.state().state.data.as_ref().unwrap());
+    saved_floor_two(&mut harness);
     assert!(harness.state().state.query_data.is_none());
-    let previous = harness.state().state.data.as_ref().unwrap().rows.as_ptr();
+    let previous = harness.state().state.selected_cell_text().unwrap().as_ptr();
     harness
         .get_by_role_and_label(Role::Button, "Run saved query")
         .click_accesskit();
@@ -265,7 +303,7 @@ fn saved_native_crosstab_inspects_inertly_then_runs_with_its_own_parameters_and_
         .click_accesskit();
     harness.run_steps(2);
     assert_eq!(
-        harness.state().state.data.as_ref().unwrap().rows.as_ptr(),
+        harness.state().state.selected_cell_text().unwrap().as_ptr(),
         previous
     );
 
@@ -277,7 +315,7 @@ fn saved_native_crosstab_inspects_inertly_then_runs_with_its_own_parameters_and_
     );
     harness.state_mut().activate_object(saved_tab);
     finish_reads(&mut harness);
-    floor_two(harness.state().state.data.as_ref().unwrap());
+    saved_floor_two(&mut harness);
     assert!(!harness.state().editing.has_save());
     unchanged(&path, &before);
 }
