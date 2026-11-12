@@ -928,6 +928,20 @@ all final keys, protected companions and prior results on refusal. The
 [connected checkpoint](../../tests/results/queries/retained-indexed-long-workflows-2026-11-12.json)
 records local acceptance, separately from native Windows parity.
 
+For one actual retained ordinary unindexed Byte, Int16, Int64, Single, Double
+or legacy DateTime target, zero or multiple requests select descriptor-bearing
+TCNI28. The native observer captures the actual kind from the same immutable
+image before original construction; neither NULL rows nor an empty selection
+supply a type. A singleton remains TCNI21. Currency retains its separate TCNI27
+batch/TCNI19 singleton selection. A failed observation or proof is terminal.
+
+The existing UPDATE review, No/Yes, SaveWorker and guarded reopen publish one
+complete checked image with actual matched/changed counts and no schema effect.
+Typed BIGINT inputs retain exact Int64 carriers independently of Double precision.
+Late conversion/overflow errors preserve the complete original source and prior
+results. Save and cold recovery reconstruct the retained originals without
+reevaluating SQL or parameter expressions.
+
 For selected retained fitted UPDATE plans, complete native original encoding
 consumes the save allowance before journal namespace setup. Setup receives the
 actual paid encoded byte length, checked against the native original's u32
@@ -1124,13 +1138,22 @@ from one immutable native image. Its native comparison resolver uses that image'
 actual default and field policies under a separate cumulative pool. WHERE,
 DISTINCT, single-table DISTINCTROW and TOP/PERCENT retain the original query
 evaluator's NULL, eager-error, rounding and ordered boundary-tie semantics. The
-captured source supplies its stored LIKE mode; unknown/absent mode stays unset.
+captured source supplies its observed LIKE mode. SQL View supplies its explicit
+ANSI-89 default only for absence; an unknown mode remains unset.
 The worker supplies the existing statement expression context, including its
 clock. Inspection and stale requests do not read it; save/recovery do not rerun
 provider expressions. Explicit fixed computed outputs and native wildcard
 expansions retain their established declarations, including empty results, without
 inheriting generation, keys or defaults. Computed Text/Decimal physical sizes,
 NULL-only/Dynamic outputs and broader native source shapes remain unqualified.
+
+Single-table grouped publication also retains GROUP BY, HAVING and aggregate
+ordering through complete query staging. Direct grouped fields preserve actual
+native Text widths and Decimal parameters; aggregate and parameter output types
+come from the static query declarations, including empty results. All group and
+HAVING work completes before one native publication, so TOP cannot hide a later
+aggregate error. Named/joined/external sources and computed Text/Decimal physical
+declarations remain separately restricted.
 
 `ReviewParameterizedSchemaSql` uses the same issued inspection for explicitly
 declared inputs. Source/revision and operation checks precede input parsing;

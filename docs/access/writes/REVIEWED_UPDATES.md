@@ -119,6 +119,36 @@ cold reopening, retaining resource/cancellation and committed-state checks. Its
 normal aggregate ignore is not passing evidence. This is not general typed or
 multiple-column batch, Windows API or native Access qualification.
 
+## Retained descriptor-bearing fixed scalar column batches
+
+TCNI0028/profile28 retains one ordinary unindexed Byte, Int16, Int64, Single,
+Double or legacy DateTime column with zero or at least two original requests.
+Its explicit native descriptor remains part of the original even when every
+value is NULL or no row matches. Actual BEFORE metadata must agree before
+original materialization, producer admission and independent reconstruction.
+Only exact per-kind stored carriers or NULL are accepted; finite IEEE checks and
+legacy date validation remain with their existing owners. No numeric coercion
+or inference from observed values supplies the descriptor.
+
+The complete original group binds before one cumulative record/page plan.
+Independent proof recaptures the source and reconstructs placement and complete
+AFTER separately. Existing field shape, source/program/constraint and ownership
+checks remain mandatory for empty and unchanged groups as well as changed rows.
+Historical materialization and forwarded records retain their native qualification;
+protected companions, generated identity, indexes, maps and inactive payloads
+remain outside the edit scope.
+
+Singleton requests retain TCNI21; LONG and Currency keep their distinct families.
+Old originals cannot accept descriptor-bearing groups, and TCNI28 cannot strip
+its descriptor into an old grammar. Exact dispatch, full source binding and
+checked V3 recovery remain mandatory; V1/V2 and builds without construction
+support cannot acquire effects through an inert decoded original. Equal images
+do not establish journal state. This does not qualify multiple-column batches,
+other carriers, broader native source profiles or Windows/Access parity.
+
+The [combined checkpoint](../../../tests/results/queries/fixed-scalar-and-grouped-workflows-2026-11-12.json)
+records complete-image, original/recovery and connected headless host acceptance.
+
 ## Retained indexed LONG updates
 
 The TCNI0026/profile26 route retains one ordinary indexed LONG column

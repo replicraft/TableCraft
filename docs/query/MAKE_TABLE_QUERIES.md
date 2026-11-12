@@ -98,15 +98,30 @@ bindings refuse. The earlier strict preparation entry points retain their
 parameter refusal. Finish and recovery retain only declarations and complete
 cells, not a need to evaluate those input providers again.
 
-Groups, named/joined/external sources, Binary, Long Text and extended date/time
+Single-table GROUP BY, HAVING and aggregate projections use the same complete
+query staging. COUNT(*) and COUNT(field) retain their distinct NULL semantics;
+aggregate and group-field ordering run through the query owner. Direct grouped
+Text and Decimal fields retain their actual native capacity and parameters.
+Computed aggregates and declared input projections use established static query
+declarations, including empty results and a global empty-source COUNT. No result
+row supplies a destination type or width. All aggregate/HAVING work finishes
+before publication, including work omitted by TOP.
+
+The [combined checkpoint](../../tests/results/queries/fixed-scalar-and-grouped-workflows-2026-11-12.json)
+records grouped declarations, complete raw images and consuming save/reopen
+workflows, separately from native Access qualification.
+
+Named/joined/external sources, Binary, Long Text and extended date/time
 declarations remain refused rather than guessing their physical shape. The native-comparison
 entry point constructs the database-default and exact field-policy resolver from
 that same captured image, using a separate cumulative comparison budget. Unknown
 policies never silently become binary comparison.
 
 The same captured source supplies the stored ANSI query mode for LIKE. ANSI-89
-and ANSI-92 remain distinct; an absent or unknown setting does not inherit a
-caller fallback. Runtime supplies the same statement clock, random state, error
+and ANSI-92 remain distinct. Strict native-comparison preparation leaves absent
+and unknown modes unset. The explicit options entry can select a host default
+only for observed absence; Runtime SQL View supplies ANSI-89 there, while Unknown
+remains unset. Runtime supplies the same statement clock, random state, error
 catalog and Access expression-session context used by retrieval. Inspection and
 stale-review checks do not evaluate them. Review materializes their results once;
 save and cold recovery reconstruct original cells without consulting providers.

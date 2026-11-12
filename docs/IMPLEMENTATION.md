@@ -1,5 +1,25 @@
 # Implementation status
 
+## Fixed scalar batches and grouped make-table — 12 November 2026
+
+Retained TCNI0028 updates one ordinary unindexed Byte, Int16, Int64, Single,
+Double or legacy DateTime column with zero or multiple original requests. Exact
+native descriptors remain bound for NULL and empty selections. Terminal replay
+checks immutable grammar agreement before constructing borrowed native requests.
+Singleton and earlier original families retain their separate admission.
+
+Direct-local SELECT INTO now stages GROUP BY, HAVING and aggregate ordering before
+one atomic publication. Native Text/Decimal declarations remain source-derived;
+computed fixed output types remain static, including empty results.
+
+The [combined checkpoint](../tests/results/queries/fixed-scalar-and-grouped-workflows-2026-11-12.json)
+records 103 native passes, 334 adapter passes with one explicit heavy-case ignore,
+483 Runtime passes with one fixture-dependent ignore, and 88 selected headless
+Desktop workflows. Strict lint across nine packages, narrow feature checks and
+Rustdoc pass. Failed compilation and test expectations remain separately recorded.
+This is local persistence/recovery and interaction evidence, not Windows/Access
+qualification or complete ACE SQL compatibility.
+
 ## Retained Currency batches — 12 November 2026
 
 TCNI0027 supports updates to one existing Currency column with zero or at least
