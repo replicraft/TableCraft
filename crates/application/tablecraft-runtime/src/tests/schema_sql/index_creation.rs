@@ -152,9 +152,7 @@ fn create_index_rejects_unimplemented_flags_fields_duplicates_and_foreign_inspec
     let target = inspect(&worker, revision, &sql);
     assert!(matches!(
         review(&worker, &target),
-        Err(Error::Native(
-            tablecraft_ace::InspectError::UnsupportedColumn
-        ))
+        Err(Error::Native(tablecraft_ace::InspectError::Unsupported))
     ));
     assert_image(&fs::read(path).unwrap(), &companion.before);
 }

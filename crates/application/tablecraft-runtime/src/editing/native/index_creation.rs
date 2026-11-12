@@ -90,7 +90,7 @@ pub(in crate::editing) fn review(
             &mut work,
             cancelled,
         )?),
-        _ => return Err(InspectError::UnsupportedColumn.into()),
+        _ => return Err(InspectError::Unsupported.into()),
     };
     let target = plan.target();
     let mut output = Presentation::new(cancelled);
