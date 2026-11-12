@@ -6,7 +6,7 @@ mod tests;
 
 use super::Family;
 use crate::table::{
-    indexes::{IndexKeyUpdate, MutationKey, composite::DecimalValue, mutation::normal_fitting},
+    indexes::{IndexKeyUpdate, MutationKey, mutation::normal_fitting},
     mutation::{
         fixed_records::{self, indexed::i32_updates::I32UpdateIndexes},
         historical_fixed::source::Source,
@@ -162,8 +162,12 @@ impl NativeImage {
             updates.push(IndexKeyUpdate {
                 reference: record.reference,
                 column: request.column,
-                expected: stored(original.first().ok_or(EditError::Preservation)?, &kind)?,
-                value: stored(request.value, &kind)?,
+                expected: long_value(original.first().ok_or(EditError::Preservation)?)?
+                    .map(|value| kind.stored(&value.to_le_bytes()))
+                    .transpose()?,
+                value: long_value(request.value)?
+                    .map(|value| kind.stored(&value.to_le_bytes()))
+                    .transpose()?,
             });
             changed_rows = changed_rows
                 .checked_add(1)
@@ -224,10 +228,10 @@ impl NativeImage {
     }
 }
 
-fn stored(value: &Value, kind: &MutationKey) -> Result<Option<DecimalValue>, EditError> {
+fn long_value(value: &Value) -> Result<Option<i32>, EditError> {
     match value {
         Value::Null => Ok(None),
-        Value::Int32(value) => Ok(Some(kind.stored(&value.to_le_bytes())?)),
+        Value::Int32(value) => Ok(Some(*value)),
         _ => Err(EditError::Unsupported(WriteBlocker::Column)),
     }
 }
