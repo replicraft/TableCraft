@@ -354,7 +354,8 @@ All supplied operands evaluate in written order before function selection.
 
 Wrong arity, wildcard/missing arguments and qualifiers fail during binding,
 including for empty sources. Built-in operands participate in pruning, correlation,
-aggregate detection and grouping validation. UPDATE still rejects function calls.
+aggregate detection and grouping validation. Mutation calls use the explicit
+[deterministic action profile](../query/MUTATION_SCALAR_FUNCTIONS.md).
 Byte-string functions now have their [separate lossless carrier profile](text/BYTE_STRING_FUNCTIONS.md),
 and casing uses [explicit ICU language data](text/TEXT_CASING.md). Missing string aliases,
 complete Variant coercion and native Access/NLS qualification remain open.
@@ -443,8 +444,8 @@ and [VBA DateAdd reference](https://learn.microsoft.com/en-us/office/vba/languag
 Half-even count conversion reuses the existing explicit numeric profile. Extended
 carrier preservation and legacy subsecond/endpoint behavior remain implemented
 contracts awaiting actual Access SQL qualification. Source projection, aggregate/
-group validation and correlation mapping retain all three arguments; UPDATE
-continues to reject function calls.
+group validation and correlation mapping retain all three arguments; Mutation calls use the explicit
+[deterministic action profile](../query/MUTATION_SCALAR_FUNCTIONS.md).
 
 
 ## Gregorian DateDiff
@@ -529,7 +530,8 @@ All provided arguments evaluate eagerly in written order and participate in
 projection/correlation and aggregate/group validation. Wrong shapes, required
 missing arguments, qualified calls, unsupported date conversion and explicit NULL
 settings fail. NULL dates propagate only after interval/settings validation.
-UPDATE continues to reject calls. Function/aggregate binding now lives in
+Mutation call admission follows the explicit
+[deterministic action profile](../query/MUTATION_SCALAR_FUNCTIONS.md). Function/aggregate binding now lives in
 `binding/calls.rs`; the expression walker retains composition and tree traversal.
 
 

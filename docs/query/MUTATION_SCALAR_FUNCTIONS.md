@@ -27,9 +27,13 @@ single-column Int32/Jet 4 editing limits and ordinary ACE refusal.
 | Eager choice | IIf, Nz |
 | NULL inspection | IsNull |
 | Text length, slicing and spaces | Len, Left, Right, Mid, LTrim, RTrim, Trim |
-| Numeric operations | Abs, Int, Fix, Round |
+| Numeric operations | Abs, Sgn, Int, Fix, Sqr, Exp, Log, Sin, Cos, Tan, Atn, Round |
+| Packed numeric colors | RGB, QBColor |
+| Explicit text conversion | CStr |
 | Gregorian date components | Year, Month, Day, Hour, Minute, Second |
 | Numeric date/time construction | DateSerial, TimeSerial |
+| Gregorian date intervals | DateAdd, DateDiff, DatePart |
+| Explicit date conversion | CDate, DateValue, TimeValue |
 
 These are existing query function implementations and argument rules. Numeric
 literals, existing literal/date/GUID forms, depth-zero original fields, unary and
@@ -55,7 +59,42 @@ and `SET Moment=DateSerial(1900,1,1)+TimeSerial(12,0,0)` produces the exact lega
 DATE serial 2.5. The target must admit that carrier; assigning a constructed Date
 to an Int32 field fails rather than extracting its serial implicitly.
 
-The function set excludes CStr, CDate, DateValue, DateAdd/DateDiff/DatePart and other date calls, case/encoding/formatting
+Pure math calls reuse the query evaluator's checked domains, carrier conversions
+and eager argument evaluation. `Sqr`, `Exp`, `Log` and trigonometric results are
+Double values; use an explicit conversion such as `CLng(Sqr(ID*ID*4))` when
+assigning to a LONG field. RGB and QBColor produce numeric Long color codes;
+they do not access UI or platform color state. Rnd remains excluded because it
+requires a caller-owned random sequence.
+
+`CStr` uses an explicit `MutationOptions.number_format` for numeric output and
+`MutationOptions.date_format` for date output. Missing required context fails
+rather than selecting an ambient system locale. Text and Boolean arguments do
+not require those profiles; NULL remains an invalid text conversion. These
+expression profiles are separate from display preferences and query collation.
+
+CDate, DateValue and TimeValue use the existing read evaluator conversion with
+one source-closed argument. Text input requires the selected date-format policy;
+missing-year spellings still require a supplied reference year. No clock, calendar
+or reference year is invented. Date output remains a native date carrier, and
+assignment must admit that carrier or use an explicit component/conversion.
+CVDate retains its read-query implementation and is a separate action-admission
+item pending specific query-availability evidence.
+
+DateAdd, DateDiff and DatePart share the read query binder's argument lowering
+and the existing evaluator kernels. Full-year date literals and stored native
+date carriers need no text-format policy. DateAdd retains checked calendar bounds
+and end-of-month adjustment; DateDiff counts interval boundaries, and DatePart
+returns the selected calendar component. Their results still pass through normal
+stored assignment conversion.
+
+Omitted DateDiff/DatePart controls retain Sunday and the Jan-1 week defaults.
+Missing argument slots are distinct from explicit NULL. Explicit zero controls
+request system settings and fail with CalendarPolicyRequired when the host has
+not supplied the corresponding calendar provider; no system locale is inferred.
+All supplied controls remain eager even when the selected interval does not use
+a week field. See the [week settings contract](../expressions/dates/WEEK_SETTINGS.md).
+
+The function set excludes CVDate and other date calls, case/encoding/formatting
 APIs, Domain functions, Eval, Rnd, clocks, CurrentUser and user-defined or qualified
 calls. Parameters, subqueries, aggregates, collections, correlated fields and
 external/saved edit targets remain closed. Refusal occurs during binding, even
