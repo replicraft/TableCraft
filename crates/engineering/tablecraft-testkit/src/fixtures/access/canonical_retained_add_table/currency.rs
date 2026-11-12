@@ -1,4 +1,5 @@
 //! Literal desktop Currency declarations and exact scaled fixed-cell changes.
+pub mod batch;
 pub mod mixed;
 use super::desktop;
 use crate::fixtures::access::{
