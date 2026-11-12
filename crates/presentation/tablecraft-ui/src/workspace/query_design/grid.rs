@@ -6,7 +6,6 @@ use crate::localization::tr;
 use crate::workspace::focus::{self, Pane};
 use egui::{Align, Layout, ScrollArea, TextBuffer, TextEdit, Ui};
 use egui_extras::{Column, TableBuilder};
-use std::borrow::Cow;
 use tablecraft_builders::query::{DesignColumn, DesignExpression, DesignSort, DesignTotal};
 
 const GRID_COLUMN_WIDTH: f32 = 175.0;
