@@ -92,6 +92,7 @@ pub fn plan_recoverable_delete_with_options(
             parameters: Some(options.parameters),
             collation: Some(options.collation),
             collation_resolver: Some(options.resolver),
+            like_mode: options.like_mode,
             text_collations: &policies,
         },
         cancelled,

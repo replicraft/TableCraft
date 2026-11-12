@@ -141,6 +141,7 @@ where
         parameters: Some(options.parameters),
         collation: Some(options.collation),
         collation_resolver: Some(options.resolver),
+        like_mode: options.like_mode,
         text_collations: &[],
     };
     if omitted {

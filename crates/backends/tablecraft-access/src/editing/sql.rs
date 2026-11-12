@@ -2,6 +2,10 @@
 #[cfg(feature = "journal")]
 mod comparison;
 #[cfg(feature = "journal")]
+mod like_mode;
+#[cfg(feature = "journal")]
+pub use like_mode::native_mutation_like_mode;
+#[cfg(feature = "journal")]
 mod joined;
 #[cfg(feature = "journal")]
 mod joined_target;
@@ -201,6 +205,8 @@ pub fn plan_recoverable_batch_update_with_budgets(
 /// Explicit evaluation inputs for one native original-snapshot mutation.
 #[cfg(feature = "journal")]
 pub struct NativeMutationOptions<'a> {
+    /// Source-bound database wildcard syntax; absent or unknown remains None.
+    pub like_mode: Option<tablecraft_expressions::predicates::LikeMode>,
     /// Complete typed literal inputs, validated against the SQL declarations.
     pub parameters: &'a [(&'a str, Value)],
     /// Database comparison provider for expressions without stored-field policy.
@@ -230,6 +236,7 @@ pub fn plan_recoverable_batch_update_with_options(
         parameters: Some(options.parameters),
         collation: Some(options.collation),
         collation_resolver: Some(options.resolver),
+        like_mode: options.like_mode,
         text_collations: &policies,
     };
 

@@ -54,6 +54,7 @@ fn actual_text_field_policy_is_used_even_when_the_explicit_caller_default_refuse
             &mut budget(),
             &mut budget(),
             NativeMutationOptions {
+                like_mode: None,
                 parameters: &[],
                 collation: resolver.default_collation(),
                 resolver: &resolver,
@@ -82,6 +83,7 @@ fn actual_text_field_policy_is_used_even_when_the_explicit_caller_default_refuse
                 &mut budget(),
                 &mut budget(),
                 NativeMutationOptions {
+                    like_mode: None,
                     parameters: &[],
                     collation: resolver.default_collation(),
                     resolver: &resolver
@@ -160,6 +162,7 @@ fn native_metadata_refusal_cannot_consume_or_refill_the_independent_query_allowa
             &mut ResourceBudget::new(0, 0, 0),
             &mut query,
             NativeMutationOptions {
+                like_mode: None,
                 parameters: &[],
                 collation: resolver.default_collation(),
                 resolver: &resolver,
@@ -225,6 +228,7 @@ fn explicit_native_parameter_context_preserves_legacy_declaration_refusal() {
         &mut budget(),
         &mut budget(),
         NativeMutationOptions {
+            like_mode: None,
             parameters: &parameters,
             collation: resolver.default_collation(),
             resolver: &resolver,

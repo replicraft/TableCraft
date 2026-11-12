@@ -97,6 +97,7 @@ fn reviewed_guid_decimal_sql_and_long_control_preserve_exact_values_and_families
             &mut budget(),
             &mut budget(),
             NativeMutationOptions {
+                like_mode: None,
                 parameters: &parameters,
                 collation: resolver.default_collation(),
                 resolver: &resolver,
