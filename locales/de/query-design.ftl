@@ -63,3 +63,6 @@ qbe-total-expression = Ausdruck
 qbe-total-where = Bedingung
 qbe-totals-off-unavailable = Ändern Sie vor dem Ausschalten der Summen die Aggregat- und Bedingungsfunktionen in Gruppierung und korrigieren Sie Aggregatausdrücke oder ungültige Ausdrücke. Die bisherigen Einstellungen bleiben erhalten.
 qbe-total-where-requires-hidden = Bedingung erfordert ein deaktiviertes Anzeigen-Feld und keine Sortierung. Ändern Sie zuerst diese Zellen.
+
+qbe-finish-field-edit = Schließen Sie die unvollständige Feldbearbeitung ab oder brechen Sie sie ab, bevor Sie diese Abfrage erstellen, ausführen oder schließen.
+qbe-cancel-field-edit = Feldbearbeitung abbrechen

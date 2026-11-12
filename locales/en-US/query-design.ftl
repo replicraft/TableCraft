@@ -63,3 +63,6 @@ qbe-total-expression = Expression
 qbe-total-where = Where
 qbe-totals-off-unavailable = Before turning Totals off, change aggregate and Where roles to Group By and correct aggregate or invalid expressions. Existing choices are retained.
 qbe-total-where-requires-hidden = Where requires Show to be cleared and no sort. Change those cells first.
+
+qbe-finish-field-edit = Finish or cancel the incomplete Field edit before building, running or closing this query.
+qbe-cancel-field-edit = Cancel field edit

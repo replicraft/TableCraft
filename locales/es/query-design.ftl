@@ -63,3 +63,6 @@ qbe-total-expression = Expresión
 qbe-total-where = Dónde
 qbe-totals-off-unavailable = Antes de desactivar Totales, cambie las funciones de agregado y Dónde a Agrupar por y corrija las expresiones de agregado o no válidas. Se conservan las opciones existentes.
 qbe-total-where-requires-hidden = Dónde requiere desmarcar Mostrar y no ordenar. Cambie primero esas celdas.
+
+qbe-finish-field-edit = Complete o cancele la edición incompleta del campo antes de crear, ejecutar o cerrar esta consulta.
+qbe-cancel-field-edit = Cancelar edición del campo

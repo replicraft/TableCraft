@@ -63,3 +63,6 @@ qbe-total-expression = 表达式
 qbe-total-where = 条件
 qbe-totals-off-unavailable = 关闭总计前，请将聚合和条件角色更改为分组，并更正聚合表达式或无效表达式。现有选择将保留。
 qbe-total-where-requires-hidden = 选择条件前，请取消显示并清除排序。请先更改这些单元格。
+
+qbe-finish-field-edit = 在生成、运行或关闭此查询之前，请完成或取消尚未完成的字段编辑。
+qbe-cancel-field-edit = 取消字段编辑

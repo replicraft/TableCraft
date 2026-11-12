@@ -63,3 +63,6 @@ qbe-total-expression = 식
 qbe-total-where = 조건
 qbe-totals-off-unavailable = 요약을 끄기 전에 집계 및 조건 역할을 묶는 방법으로 변경하고 집계 식이나 잘못된 식을 수정하세요. 기존 선택은 유지됩니다.
 qbe-total-where-requires-hidden = 조건을 선택하려면 표시를 해제하고 정렬을 없애야 합니다. 먼저 해당 셀을 변경하세요.
+
+qbe-finish-field-edit = 이 쿼리를 작성, 실행 또는 닫기 전에 완료되지 않은 필드 편집을 마치거나 취소하세요.
+qbe-cancel-field-edit = 필드 편집 취소
