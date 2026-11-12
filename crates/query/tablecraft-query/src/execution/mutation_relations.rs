@@ -5,6 +5,7 @@ use crate::{
     execution::{Environment, Runtime},
     plan::{Relation, RelationNode},
 };
+use tablecraft_core::limits::Resource;
 use tablecraft_db::{ProjectedRow, RowHandle, Snapshot};
 use tablecraft_sql::select::JoinKind;
 
