@@ -1,4 +1,5 @@
 //! Current sparse declarations use one source-bound scalar replacement language.
+mod batch;
 mod proof;
 
 use super::{

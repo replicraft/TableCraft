@@ -24,6 +24,8 @@ mod retained_empty_rows;
 #[cfg(feature = "ace16-create")]
 mod retained_fixed_scalar_rows;
 #[cfg(feature = "ace16-create")]
+mod retained_long_column_batch;
+#[cfg(feature = "ace16-create")]
 mod retained_opaque_rows;
 #[cfg(feature = "ace16-create")]
 mod retained_rows;
@@ -309,7 +311,7 @@ impl RecoverableNativeEditPlan {
     /// Delegate existing expected-image journal preparation. Hosts still own
     /// correct distinct pairing, durable namespace setup and retained resources.
     /// Dropping/interruption retains the journal; every commit error needs recovery.
-    /// EOF allocation requires prepare_update; retained TCNI17–24 requires prepare_retained.
+    /// EOF allocation requires prepare_update; retained TCNI17–25 requires prepare_retained.
     /// Both are rejected here before effects.
     pub fn prepare<'a, D: DurableStorage, J: DurableStorage>(
         self,
@@ -329,13 +331,14 @@ impl RecoverableNativeEditPlan {
                 | NativeUpdateProfile::Ace16RetainedWideValueRows
                 | NativeUpdateProfile::Ace16RetainedBooleanMaterialization
                 | NativeUpdateProfile::Ace16RetainedEmptyRows
+                | NativeUpdateProfile::Ace16RetainedLongColumnBatch
         ) {
             return Err(JournalError::ImageSize);
         }
         self.plan.prepare(target, journal, budget, cancelled)
     }
 
-    /// Prepare only TCNI17–24 through the original retained V3 journal family.
+    /// Prepare only TCNI17–25 through the original retained V3 journal family.
     pub fn prepare_retained<'a, D: ResizableDurableStorage, J: DurableStorage>(
         self,
         target: &'a mut D,
@@ -353,6 +356,7 @@ impl RecoverableNativeEditPlan {
                 | NativeUpdateProfile::Ace16RetainedWideValueRows
                 | NativeUpdateProfile::Ace16RetainedBooleanMaterialization
                 | NativeUpdateProfile::Ace16RetainedEmptyRows
+                | NativeUpdateProfile::Ace16RetainedLongColumnBatch
         ) {
             return Err(JournalError::ImageSize);
         }
@@ -363,7 +367,7 @@ impl RecoverableNativeEditPlan {
     /// Prepare the record-selected journal with an explicit resizable target.
     /// EOF allocation uses V2; existing profiles use the unchanged V1 path.
     /// Both branches retain the same target/journal resources and host duties.
-    /// Retained TCNI17–24 requires prepare_retained and refuses here before effects.
+    /// Retained TCNI17–25 requires prepare_retained and refuses here before effects.
     pub fn prepare_update<'a, D: ResizableDurableStorage, J: DurableStorage>(
         self,
         target: &'a mut D,
@@ -381,6 +385,7 @@ impl RecoverableNativeEditPlan {
                 | NativeUpdateProfile::Ace16RetainedWideValueRows
                 | NativeUpdateProfile::Ace16RetainedBooleanMaterialization
                 | NativeUpdateProfile::Ace16RetainedEmptyRows
+                | NativeUpdateProfile::Ace16RetainedLongColumnBatch
         ) {
             return Err(JournalError::ImageSize);
         }

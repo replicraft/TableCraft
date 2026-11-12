@@ -70,6 +70,22 @@ impl NativeFittedIntentGroup {
         Self::new_with_grammar(column, updates, Grammar::Retained, budget, cancelled)
     }
 
+    /// Original TCNI25 fixed LONG group, retaining every requested row.
+    pub fn new_retained_long_column_batch(
+        column: &str,
+        updates: NativeFittedUpdates,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        Self::new_with_grammar(
+            column,
+            updates,
+            Grammar::RetainedLongColumnBatch,
+            budget,
+            cancelled,
+        )
+    }
+
     /// Retain only TCNI21 original exact fixed-scalar carriers.
     pub fn new_retained_fixed_scalars(
         column: &str,
@@ -115,9 +131,14 @@ impl NativeFittedIntentGroup {
         check(budget, cancelled)?;
         if matches!(
             grammar,
-            Grammar::RetainedFixedScalars | Grammar::RetainedEmpty
+            Grammar::RetainedFixedScalars
+                | Grammar::RetainedEmpty
+                | Grammar::RetainedLongColumnBatch
         ) && !matches!(updates, NativeFittedUpdates::Fixed(_))
         {
+            return Err(NativeIntentError::InvalidRecord);
+        }
+        if grammar == Grammar::RetainedLongColumnBatch && updates.len() < 2 {
             return Err(NativeIntentError::InvalidRecord);
         }
         grammar.name(column, budget, cancelled)?;
@@ -240,6 +261,24 @@ impl NativeFittedEditIntent {
             groups,
             before,
             Grammar::RetainedEmpty,
+            budget,
+            cancelled,
+        )
+    }
+
+    /// Bind the distinct TCNI25 one-column LONG batch to all BEFORE bytes.
+    pub fn new_retained_long_column_batch(
+        table: &str,
+        groups: Vec<NativeFittedIntentGroup>,
+        before: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        Self::new_with_grammar(
+            table,
+            groups,
+            before,
+            Grammar::RetainedLongColumnBatch,
             budget,
             cancelled,
         )
@@ -410,12 +449,30 @@ pub(super) fn validate_groups(
     if groups.is_empty() || groups.len() > grammar.groups() {
         return Err(InspectError::StructureLimit.into());
     }
+    if grammar == Grammar::RetainedLongColumnBatch {
+        let [group] = groups else {
+            return Err(NativeIntentError::InvalidRecord);
+        };
+        let NativeFittedUpdates::Fixed(updates) = group.updates() else {
+            return Err(NativeIntentError::InvalidRecord);
+        };
+        if updates.len() < 2 {
+            return Err(NativeIntentError::InvalidRecord);
+        }
+        for update in updates {
+            check(budget, cancelled)?;
+            grammar.view(update.expected(), Family::Fixed)?;
+            grammar.view(update.value(), Family::Fixed)?;
+        }
+    }
     let mut count = 0_usize;
     for (position, group) in groups.iter().enumerate() {
         check(budget, cancelled)?;
         if matches!(
             grammar,
-            Grammar::RetainedFixedScalars | Grammar::RetainedEmpty
+            Grammar::RetainedFixedScalars
+                | Grammar::RetainedEmpty
+                | Grammar::RetainedLongColumnBatch
         ) && !matches!(group.updates(), NativeFittedUpdates::Fixed(_))
         {
             return Err(NativeIntentError::InvalidRecord);

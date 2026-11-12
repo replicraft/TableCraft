@@ -44,6 +44,7 @@ impl NativeUpdateIntent {
                 | NativeUpdateProfile::Ace16RetainedWideValueRows
                 | NativeUpdateProfile::Ace16RetainedBooleanMaterialization
                 | NativeUpdateProfile::Ace16RetainedEmptyRows
+                | NativeUpdateProfile::Ace16RetainedLongColumnBatch
         ) {
             return Err(NativeIntentError::UnsupportedProfile.into());
         }

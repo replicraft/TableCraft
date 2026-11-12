@@ -302,6 +302,29 @@ impl NativeFittedEditIntent {
         read::decode(bytes, WireProfile::RetainedCurrencyRows, budget, cancelled)
     }
 
+    /// Encode exactly TCNI25 one-column original LONG batches.
+    pub fn encode_retained_long_column_batch(
+        &self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<u8>, NativeIntentError> {
+        self.encode_profile(WireProfile::RetainedLongColumnBatch, budget, cancelled)
+    }
+
+    /// Decode TCNI25 data without granting native source or recovery authority.
+    pub fn decode_retained_long_column_batch(
+        bytes: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        read::decode(
+            bytes,
+            WireProfile::RetainedLongColumnBatch,
+            budget,
+            cancelled,
+        )
+    }
+
     /// Encode only TCNI24 named fixed groups with zero row assignments.
     /// Native source and target qualification remain consuming checks.
     ///

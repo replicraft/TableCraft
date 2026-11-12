@@ -96,9 +96,14 @@ impl<'a> Cursor<'a> {
         };
         if matches!(
             self.grammar,
-            Grammar::RetainedFixedScalars | Grammar::RetainedEmpty
+            Grammar::RetainedFixedScalars
+                | Grammar::RetainedEmpty
+                | Grammar::RetainedLongColumnBatch
         ) && family != Family::Fixed
         {
+            return Err(NativeIntentError::InvalidRecord);
+        }
+        if self.grammar == Grammar::RetainedLongColumnBatch && count < 2 {
             return Err(NativeIntentError::InvalidRecord);
         }
         if count > self.grammar.assignments() {
@@ -253,6 +258,9 @@ fn scan<'a>(
     let assignments = u32_at(bytes, codec::ASSIGNMENT_COUNT_AT) as usize;
     if groups == 0 || groups > grammar.groups() || assignments > grammar.assignments() {
         return Err(InspectError::StructureLimit.into());
+    }
+    if grammar == Grammar::RetainedLongColumnBatch && assignments < 2 {
+        return Err(NativeIntentError::InvalidRecord);
     }
     let mut cursor = Cursor {
         bytes,
