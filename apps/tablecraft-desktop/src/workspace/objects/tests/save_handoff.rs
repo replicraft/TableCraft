@@ -1,9 +1,8 @@
 //! A real SQL save renews authority while preserving workspace tab preferences.
 use super::*;
+use tablecraft_testkit::fixtures::access::saved_queries::writable;
 
 const UPDATE: &str = "UPDATE Items SET Score=Score+7 WHERE Id>=2";
-const USER_DATA_PAGE: usize = 12;
-const PAGE_BYTES: usize = 4096;
 
 fn run_sql(harness: &mut Harness<'_, Desktop>, sql: &str) {
     assert!(harness.state_mut().state.replace_query_sql(sql.into()));
@@ -86,7 +85,9 @@ fn assert_saved_input(harness: &mut Harness<'_, Desktop>, prompt: &str, value: &
 
 #[test]
 fn sql_save_ack_keeps_tab_ids_design_and_saved_inputs_but_revokes_old_sessions() {
-    let (_directory, path, original, mut harness) = opened(query_source());
+    let source = writable::source();
+    let expected = source.expected;
+    let (_directory, path, original, mut harness) = opened(source.before);
     let items = table(harness.state(), "Items");
     // NO_CLONE: The command consumes its target; the test retains the original
     // revision-bearing target for stale replay after the real save.
@@ -249,13 +250,6 @@ fn sql_save_ack_keeps_tab_ids_design_and_saved_inputs_but_revokes_old_sessions()
         "Items"
     );
 
-    // The raw owner supplies the complete replacement user DATA page; catalog,
-    // query definitions, schema and every other original byte remain protected.
-    let updated_rows = mutation_fixture::with_rows(&[(1, 10), (2, 27), (3, 37)]);
-    let mut expected = original;
-    let start = USER_DATA_PAGE * PAGE_BYTES;
-    let end = (USER_DATA_PAGE + 1) * PAGE_BYTES;
-    expected[start..end].copy_from_slice(&updated_rows[start..end]);
     assert_eq!(std::fs::read(path).unwrap(), expected);
 }
 
