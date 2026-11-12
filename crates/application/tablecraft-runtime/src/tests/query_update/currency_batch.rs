@@ -85,7 +85,7 @@ fn currency_null_noop_empty_and_singleton_updates_save_exact_original_bound_imag
             &worker,
             Command::Query {
                 options: Default::default(),
-                sql: "SELECT CLng(KeyValue*10000) AS ScaledUnits, Amount, Label FROM CurrencyValues ORDER BY Guard".into(),
+                sql: "SELECT IIf(IsNull(KeyValue),NULL,CLng(Nz(KeyValue,0)*10000)) AS ScaledUnits, Amount, Label FROM CurrencyValues ORDER BY Guard".into(),
             },
         )
         .unwrap() else {

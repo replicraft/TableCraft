@@ -113,7 +113,7 @@ fn currency_batch_normal_run_no_yes_null_and_zero_keep_complete_native_images() 
 
         run(
             &mut harness,
-            "SELECT CLng(KeyValue*10000) AS ScaledUnits, Amount, Label FROM CurrencyValues ORDER BY Guard",
+            "SELECT IIf(IsNull(KeyValue),NULL,CLng(Nz(KeyValue,0)*10000)) AS ScaledUnits, Amount, Label FROM CurrencyValues ORDER BY Guard",
         );
         let rows = &harness.state().state.query_data.as_ref().unwrap().rows;
         assert_eq!(rows.len(), values.len());
