@@ -2,7 +2,7 @@
 use super::{design, opened, run, scratch, sql};
 use crate::workspace::test_support::finish_reads;
 use egui::accesskit::Role;
-use egui_kittest::kittest::{NodeT, Queryable};
+use egui_kittest::kittest::Queryable;
 use std::{
     fs,
     time::{Duration, Instant},
