@@ -125,11 +125,19 @@ fn definition(columns: &[Column], count: usize, owned: u32, candidate: u32) -> V
     put32(&mut bytes, 59, candidate);
     let mut end = 63;
     let mut fixed_offset = 0;
+    let mut ordinary_variable = 0;
     for (index, column) in columns.iter().enumerate() {
         bytes[end] = column.native;
         put32(&mut bytes, end + 1, 1625);
         put16(&mut bytes, end + 5, index as u16);
-        put16(&mut bytes, end + 7, column.variable.unwrap_or(0));
+        // Every descriptor stores the current ordinary variable ordinal, even
+        // a fixed field whose reader does not use this word. Jackcess's
+        // TableMutator.ColumnOffsets follows this same construction rule.
+        put16(&mut bytes, end + 7, ordinary_variable);
+        if let Some(variable) = column.variable {
+            assert_eq!(variable, ordinary_variable);
+            ordinary_variable += 1;
+        }
         put16(&mut bytes, end + 9, index as u16);
         if column.native == 10 {
             bytes[end + 11..end + 15].copy_from_slice(&[9, 4, 0, 1]);

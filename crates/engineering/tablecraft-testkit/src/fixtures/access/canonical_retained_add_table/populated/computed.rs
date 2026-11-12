@@ -67,3 +67,24 @@ pub fn dates(before: &[u8], table: &str, values: &[Option<f64>]) -> Vec<u8> {
         .collect::<Vec<_>>();
     append(before, table, &columns, &records, 11)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::fixtures::access::canonical_retained_add_table::fields;
+
+    #[test]
+    fn a_fixed_field_after_two_variable_fields_retains_the_literal_ordinary_ordinal() {
+        let before = fields::source(fields::Case::FirstNumber).bytes;
+        let definition = before.len();
+        let image = after(&before, "Archive", &[]);
+        // Third 25-byte native descriptor: manual LONG native2/ID2,
+        // ordinary variable ordinal2, flags3, fixed offset0 and width4.
+        assert_eq!(
+            &image[definition + 113..definition + 138],
+            &[
+                4, 89, 6, 0, 0, 2, 0, 2, 0, 2, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 4, 0
+            ]
+        );
+    }
+}
