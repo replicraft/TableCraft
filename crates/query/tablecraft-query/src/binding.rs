@@ -16,6 +16,7 @@ mod arrays;
 mod calls;
 mod cashflows;
 mod crosstab;
+mod date_intervals;
 mod declarations;
 mod depth;
 pub use depth::BindingDepth;

@@ -158,73 +158,12 @@ impl Binder<'_> {
                     ));
                 }
                 (
-                    Some(Builtin::DateAdd),
-                    [
-                        A::Expression(interval),
-                        A::Expression(number),
-                        A::Expression(date),
-                    ],
+                    Some(function @ (Builtin::DateAdd | Builtin::DateDiff | Builtin::DatePart)),
+                    arguments,
                 ) => {
-                    return Ok(Expr::DateAdd(
-                        Box::new(self.expression(interval, scopes, aggregates, depth + 1)?),
-                        Box::new(self.expression(number, scopes, aggregates, depth + 1)?),
-                        Box::new(self.expression(date, scopes, aggregates, depth + 1)?),
-                    ));
-                }
-                (
-                    Some(Builtin::DateDiff),
-                    [
-                        A::Expression(interval),
-                        A::Expression(first),
-                        A::Expression(second),
-                        options @ ..,
-                    ],
-                ) if options.len() <= 2
-                    && options
-                        .iter()
-                        .all(|arg| matches!(arg, A::Expression(_) | A::Missing)) =>
-                {
-                    let interval =
-                        Box::new(self.expression(interval, scopes, aggregates, depth + 1)?);
-                    let first = Box::new(self.expression(first, scopes, aggregates, depth + 1)?);
-                    let second =
-                        Box::new(self.expression(second, scopes, aggregates, depth + 1)?);
-                    let mut settings = [None, None];
-                    for (argument, setting) in options.iter().zip(&mut settings) {
-                        if let A::Expression(expr) = argument {
-                            *setting = Some(Box::new(self.expression(
-                                expr,
-                                scopes,
-                                aggregates,
-                                depth + 1,
-                            )?));
-                        }
-                    }
-                    return Ok(Expr::DateDiff(interval, first, second, settings));
-                }
-                (
-                    Some(Builtin::DatePart),
-                    [A::Expression(interval), A::Expression(date), options @ ..],
-                ) if options.len() <= 2
-                    && options
-                        .iter()
-                        .all(|arg| matches!(arg, A::Expression(_) | A::Missing)) =>
-                {
-                    let interval =
-                        Box::new(self.expression(interval, scopes, aggregates, depth + 1)?);
-                    let date = Box::new(self.expression(date, scopes, aggregates, depth + 1)?);
-                    let mut settings = [None, None];
-                    for (argument, setting) in options.iter().zip(&mut settings) {
-                        if let A::Expression(expr) = argument {
-                            *setting = Some(Box::new(self.expression(
-                                expr,
-                                scopes,
-                                aggregates,
-                                depth + 1,
-                            )?));
-                        }
-                    }
-                    return Ok(Expr::DatePart(interval, date, settings));
+                    return super::date_intervals::bind_call(
+                        self, function, arguments, scopes, aggregates, depth,
+                    );
                 }
                 (Some(Builtin::Weekday), [A::Expression(value), options @ ..])
                     if options.len() <= 1

@@ -30,10 +30,38 @@ fn admit_with(expression: &Expr, binder: &mut Binder<'_>, like: bool) -> Result<
             admit_with(left, binder, like)?;
             admit_with(right, binder, like)
         }
-        Expr::Between(value, first, last, _) | Expr::IIf(value, first, last) => {
+        Expr::Between(value, first, last, _)
+        | Expr::IIf(value, first, last)
+        | Expr::DateAdd(value, first, last) => {
             admit_with(value, binder, like)?;
             admit_with(first, binder, like)?;
             admit_with(last, binder, like)
+        }
+        Expr::DateConvert(function, value)
+            if super::mutation_scalar::date_conversion_allowed(*function) =>
+        {
+            admit_with(value, binder, like)
+        }
+        Expr::DatePart(interval, date, options) => {
+            admit_with(interval, binder, like)?;
+            admit_with(date, binder, like)?;
+
+            for value in options.iter().flatten() {
+                admit_with(value, binder, like)?;
+            }
+
+            Ok(())
+        }
+        Expr::DateDiff(interval, first, second, options) => {
+            admit_with(interval, binder, like)?;
+            admit_with(first, binder, like)?;
+            admit_with(second, binder, like)?;
+
+            for value in options.iter().flatten() {
+                admit_with(value, binder, like)?;
+            }
+
+            Ok(())
         }
         Expr::InList(value, values, _) => {
             admit_with(value, binder, like)?;

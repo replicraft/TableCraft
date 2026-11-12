@@ -80,6 +80,8 @@ pub(super) fn prepare<E: InsertableTable>(
             discovery: &discovery,
             parameters: Vec::new(),
             options: ExecutionOptions {
+                number_format: options.number_format,
+                date_format: options.date_format,
                 collation: options.collation,
                 collation_resolver: options.collation_resolver,
                 cancelled: Some(cancelled),

@@ -6,6 +6,7 @@ use crate::{
 };
 use tablecraft_expressions::functions::{
     Builtin,
+    dates::parsing::DateConversion,
     math::MathFunction,
     text::{
         TextFunction,
@@ -103,6 +104,18 @@ pub(super) fn bind_call(
             }
             Ok(Expr::MathCall(function, values))
         }
+        (Some(Builtin::DateConvert(function)), [FunctionArgument::Expression(value)])
+            if date_conversion_allowed(function) =>
+        {
+            Ok(Expr::DateConvert(
+                function,
+                Box::new(binder.expression(value, scopes, false, depth + 1)?),
+            ))
+        }
+        (
+            Some(function @ (Builtin::DateAdd | Builtin::DateDiff | Builtin::DatePart)),
+            arguments,
+        ) => super::date_intervals::bind_call(binder, function, arguments, scopes, false, depth),
         (Some(Builtin::Date(function)), [FunctionArgument::Expression(value)]) => {
             Ok(Expr::DateCall(
                 function,
@@ -154,8 +167,27 @@ fn admitted_with(expression: &Expr, like: bool) -> bool {
             admitted_with(left, like) && admitted_with(right, like)
         }
         Expr::Binary(_, left, right) => admitted_with(left, like) && admitted_with(right, like),
-        Expr::Between(value, first, last, _) | Expr::IIf(value, first, last) => {
+        Expr::Between(value, first, last, _)
+        | Expr::IIf(value, first, last)
+        | Expr::DateAdd(value, first, last) => {
             admitted_with(value, like) && admitted_with(first, like) && admitted_with(last, like)
+        }
+        Expr::DatePart(interval, date, options) => {
+            admitted_with(interval, like)
+                && admitted_with(date, like)
+                && options
+                    .iter()
+                    .flatten()
+                    .all(|value| admitted_with(value, like))
+        }
+        Expr::DateDiff(interval, first, second, options) => {
+            admitted_with(interval, like)
+                && admitted_with(first, like)
+                && admitted_with(second, like)
+                && options
+                    .iter()
+                    .flatten()
+                    .all(|value| admitted_with(value, like))
         }
         Expr::InList(value, values, _) => {
             admitted_with(value, like) && values.iter().all(|value| admitted_with(value, like))
@@ -165,6 +197,9 @@ fn admitted_with(expression: &Expr, like: bool) -> bool {
                 && replacement
                     .as_ref()
                     .is_none_or(|value| admitted_with(value, like))
+        }
+        Expr::DateConvert(function, value) => {
+            date_conversion_allowed(*function) && admitted_with(value, like)
         }
         Expr::TextCall(function, values) => {
             text_allowed(*function) && values.iter().all(|value| admitted_with(value, like))
@@ -183,7 +218,8 @@ fn admitted_with(expression: &Expr, like: bool) -> bool {
 fn text_allowed(function: TextFunction) -> bool {
     matches!(
         function,
-        TextFunction::Len
+        TextFunction::CStr
+            | TextFunction::Len
             | TextFunction::Left
             | TextFunction::Right
             | TextFunction::Mid
@@ -196,6 +232,26 @@ fn text_allowed(function: TextFunction) -> bool {
 fn math_allowed(function: MathFunction) -> bool {
     matches!(
         function,
-        MathFunction::Abs | MathFunction::Int | MathFunction::Fix | MathFunction::Round
+        MathFunction::Abs
+            | MathFunction::Sgn
+            | MathFunction::Int
+            | MathFunction::Fix
+            | MathFunction::Sqr
+            | MathFunction::Exp
+            | MathFunction::Log
+            | MathFunction::Sin
+            | MathFunction::Cos
+            | MathFunction::Tan
+            | MathFunction::Atn
+            | MathFunction::Round
+            | MathFunction::Rgb
+            | MathFunction::QbColor
+    )
+}
+
+pub(super) fn date_conversion_allowed(function: DateConversion) -> bool {
+    matches!(
+        function,
+        DateConversion::CDate | DateConversion::DateValue | DateConversion::TimeValue
     )
 }

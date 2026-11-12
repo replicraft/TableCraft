@@ -131,6 +131,8 @@ pub fn prepare_joined_delete_with_options<E: DeletableTable>(
         discovery: &discovery,
         parameters: Vec::new(),
         options: ExecutionOptions {
+            number_format: options.mutation.number_format,
+            date_format: options.mutation.date_format,
             collation: options.mutation.collation,
             collation_resolver: options.mutation.collation_resolver,
             like_mode: options.mutation.like_mode,

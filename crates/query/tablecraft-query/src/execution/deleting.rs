@@ -186,6 +186,8 @@ fn select_rows_with_source<E: DeletableTable>(
         discovery: &discovery,
         parameters: Vec::new(),
         options: ExecutionOptions {
+            number_format: options.number_format,
+            date_format: options.date_format,
             collation: options.collation,
             collation_resolver: options.collation_resolver,
             like_mode: options.like_mode,

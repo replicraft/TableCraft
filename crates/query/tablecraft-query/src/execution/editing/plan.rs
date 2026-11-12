@@ -317,6 +317,8 @@ pub(super) fn prepare_with_source<E: EditableTable>(
         discovery: &discovery,
         parameters: Vec::new(),
         options: ExecutionOptions {
+            number_format: comparison.number_format,
+            date_format: comparison.date_format,
             collation: comparison.collation,
             collation_resolver: comparison.collation_resolver,
             like_mode: comparison.like_mode,

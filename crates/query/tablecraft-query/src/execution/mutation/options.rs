@@ -6,6 +6,10 @@ use tablecraft_expressions::comparison::Collation;
 /// Policy identities remain opaque; this layer never chooses native comparers.
 #[derive(Default)]
 pub struct MutationOptions<'a> {
+    /// Explicit numeric Text conversion/output policy; no ambient locale.
+    pub number_format: Option<tablecraft_expressions::functions::conversions::text::NumberFormat>,
+    /// Explicit Gregorian date/time Text conversion/output policy.
+    pub date_format: Option<tablecraft_expressions::functions::dates::parsing::DateTextFormat>,
     /// Exact typed inputs for all declarations. None preserves legacy refusal.
     /// Values are literal carriers, never SQL fragments or expressions.
     pub parameters: Option<&'a [(&'a str, Value)]>,
