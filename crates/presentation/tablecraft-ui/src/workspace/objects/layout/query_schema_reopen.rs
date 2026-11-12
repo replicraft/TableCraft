@@ -34,7 +34,8 @@ impl State {
             }
             QuerySchemaEffect::AddColumn { .. }
             | QuerySchemaEffect::DropColumn { .. }
-            | QuerySchemaEffect::CreateIndex { .. } => catalog::Change::Unchanged,
+            | QuerySchemaEffect::CreateIndex { .. }
+            | QuerySchemaEffect::DropIndex { .. } => catalog::Change::Unchanged,
         };
         if self
             .database
