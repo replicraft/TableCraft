@@ -114,7 +114,6 @@ fn unsupported_schema_contexts_and_parameters_never_issue_a_save_capability() {
         "ALTER TABLE Items ADD COLUMN Note BINARY(20)",
         "ALTER TABLE Items ALTER COLUMN Note TEXT(20) DEFAULT Unknown",
         "ALTER TABLE Items ADD CONSTRAINT Rule CHECK (Id > 0)",
-        "CREATE UNIQUE INDEX OtherIndex ON Items (Id)",
         "DROP VIEW Items",
         "SELECT 1",
     ] {

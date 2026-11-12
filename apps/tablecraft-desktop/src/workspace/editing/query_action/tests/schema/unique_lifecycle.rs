@@ -100,7 +100,11 @@ fn decide(
     finish_reads(harness);
     assert!(!harness.state().editing.has_save());
     assert!(!harness.state().state.native_source_stale());
-    assert_eq!(harness.state().state.active_object().unwrap().id, tab.id);
+    assert_eq!(
+        harness.state().state.active_object().unwrap().id,
+        tab.id,
+        "SQL tab after acknowledged operation: {sql}"
+    );
     assert_eq!(harness.state().state.sql, sql);
     assert!(
         harness.state().state.query_data.is_none(),

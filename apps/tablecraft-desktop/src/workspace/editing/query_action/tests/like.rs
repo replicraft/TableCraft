@@ -37,6 +37,8 @@ fn normal_run_like_update_observes_database_mode_no_yes_save_ack_and_reopen() {
         let before = database_properties::with_native17_properties(&before, &properties);
         let expected = mixed::update_number(&before, definition, 0, Some(25));
         let (_directory, path, before, mut harness) = opened(before);
+        harness.state_mut().state.formatting.system_locale = Some("en-US".into());
+        harness.run_steps(1);
         let prior = harness
             .state()
             .state
@@ -93,7 +95,7 @@ fn normal_run_like_update_observes_database_mode_no_yes_save_ack_and_reopen() {
         let rows = &harness.state().state.query_data.as_ref().unwrap().rows;
         assert_eq!(rows[0][1].text, "25");
         assert_eq!(rows[1][1].text, "NULL");
-        assert_eq!(rows[0][2].text, "1.2345");
+        assert_eq!(rows[0][2].text, "$1.23");
         assert_eq!(rows[0][3].text, "Apple");
         assert_image(&std::fs::read(&path).unwrap(), &expected);
     }

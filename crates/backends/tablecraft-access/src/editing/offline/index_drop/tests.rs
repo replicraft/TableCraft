@@ -1,7 +1,7 @@
 //! Actual offline DROP keeps original identity, exclusive resources and V3 receipts.
 use super::*;
 use crate::editing::offline::{
-    CompletionKind,
+    Cause, CompletionKind,
     plan::MutationIntent,
     test_support::{assert_staged_read_state, retained_schema_recovery::cold_case},
 };

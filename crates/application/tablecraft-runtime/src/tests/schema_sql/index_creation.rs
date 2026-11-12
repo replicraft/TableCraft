@@ -5,6 +5,9 @@ use crate::{
     CellKind, Command, Error, QueryOperation, Response, SaveOutcome, SaveSchemaChange, SaveWorker,
 };
 use std::fs;
+use tablecraft_ace::{
+    EditError, FreshIndexCreateIntentError, IndexConstraintViolation, InspectError,
+};
 use tablecraft_testkit::fixtures::access::secondary_index::normal::{self as raw, Population};
 
 fn assert_image(actual: &[u8], expected: &[u8]) {
@@ -104,8 +107,23 @@ fn create_index_reviews_native_field_zero_saves_schema_only_and_reopens_unchange
 fn create_index_rejects_unimplemented_flags_fields_duplicates_and_foreign_inspection() {
     let source = raw::source(Population::NullableDuplicate, false);
     let (_directory, path, worker, revision) = opened(&source.before);
-    for sql in [
+    let duplicate_unique = inspect(
+        &worker,
+        revision,
         "CREATE UNIQUE INDEX Ix ON Archive (CopiedScore)",
+    );
+    assert!(matches!(
+        review(&worker, &duplicate_unique),
+        Err(Error::FreshIndexCreation(
+            FreshIndexCreateIntentError::Edit(EditError::Inspect(InspectError::IndexConstraint(
+                IndexConstraintViolation::DuplicateKey
+            )))
+        ))
+    ));
+    assert_image(&fs::read(&path).unwrap(), &source.before);
+    assert!(!crate::journal_path(&path).exists());
+
+    for sql in [
         "CREATE INDEX Ix ON Archive (CopiedScore) WITH PRIMARY",
         "CREATE INDEX Ix ON Archive (CopiedScore) WITH IGNORE NULL",
         "CREATE INDEX Ix ON Archive (CopiedScore) WITH DISALLOW NULL",
