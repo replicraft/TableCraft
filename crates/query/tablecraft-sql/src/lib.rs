@@ -22,7 +22,7 @@ pub mod select;
 pub use parser::{
     ParseError, ParseErrorKind, ParseLimits, ParsedQuery, ParsedSelect, SourceLocation,
     parse_expression, parse_expression_strict, parse_field_rule, parse_qbe_field_prefix,
-    parse_query, parse_select,
+    parse_query, parse_select, qbe_identifier_is_bare,
 };
 
 #[cfg(test)]
