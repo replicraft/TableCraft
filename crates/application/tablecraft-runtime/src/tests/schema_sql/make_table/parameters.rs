@@ -1,5 +1,6 @@
 //! Actual issued parameter review stages once and saves the complete native relation.
 use super::{assert_image, fields, inspect, populated, review};
+use crate::query::context::{Environment, LocalClock, formats::QueryExpressionFormats};
 use crate::tests::{request, stored::opened, terminal};
 use crate::{Command, Error, ParameterInput, Response, SaveOutcome, SaveSchemaChange, SaveWorker};
 use std::{fs, sync::Arc};
@@ -173,7 +174,10 @@ fn late_parameterized_expression_errors_and_cancelled_reviews_have_no_effects() 
         document.review_parameterized_schema_sql(
             &target,
             &[minimum("5", false)],
-            &crate::query::context::LocalClock,
+            Environment {
+                clock: &LocalClock,
+                formats: QueryExpressionFormats::default(),
+            },
             &|| true,
         ),
         Err(Error::Cancelled)
