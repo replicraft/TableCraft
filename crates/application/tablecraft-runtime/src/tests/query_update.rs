@@ -583,3 +583,6 @@ mod read_source;
 
 #[cfg(feature = "ace16-create")]
 mod retained_batch;
+
+#[cfg(feature = "ace16-create")]
+mod indexed_long;
