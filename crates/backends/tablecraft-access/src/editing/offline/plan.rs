@@ -7,6 +7,8 @@ use super::database_options::{
 use super::field_addition::plan::Plan as FieldAdditionPlan;
 #[cfg(feature = "ace16-create")]
 use super::index_creation::plan::Plan as IndexCreationPlan;
+#[cfg(feature = "ace16-create")]
+use super::index_drop::plan::Plan as IndexDropPlan;
 use super::{Cause, QueryChange, SchemaChange, query_expression::QueryExpressionPlan};
 use crate::editing::journal::NativeJournalInsertPlan;
 #[cfg(feature = "ace16-create")]
@@ -18,8 +20,8 @@ use tablecraft_ace::{
     NativeIndexCreateIntent, NativeIndexDropIntent, NativeNumericIndexCreateIntent,
     NativePopulatedAddTableIntent, NativeRepeatedDefaultZeroAddColumnIntent,
     NativeRetainedTypedFieldAdditionIntent, NativeUnadornedFieldAdditionIntent,
-    PopulatedAddTablePlan, RecoverableAddColumnPlan, RecoverableFieldDropPlan,
-    RecoverableFieldRenamePlan, RecoverableNativeIndexDropPlan,
+    NativeUniqueLongIndexCreateIntent, NativeUniqueLongIndexDropIntent, PopulatedAddTablePlan,
+    RecoverableAddColumnPlan, RecoverableFieldDropPlan, RecoverableFieldRenamePlan,
 };
 #[cfg(not(feature = "ace16-create"))]
 use tablecraft_ace::{
@@ -72,7 +74,7 @@ pub(super) enum MutationPlan {
     #[cfg(feature = "ace16-create")]
     IndexCreation(IndexCreationPlan),
     #[cfg(feature = "ace16-create")]
-    IndexDrop(RecoverableNativeIndexDropPlan),
+    IndexDrop(IndexDropPlan),
     #[cfg(feature = "ace16-create")]
     DatabaseOptions(DatabaseOptionsPlan),
     QueryExpression(QueryExpressionPlan),
@@ -117,10 +119,7 @@ impl MutationPlan {
             #[cfg(feature = "ace16-create")]
             Self::IndexCreation(plan) => plan.encode_intent(budget, cancelled),
             #[cfg(feature = "ace16-create")]
-            Self::IndexDrop(plan) => plan
-                .intent()
-                .encode(budget, cancelled)
-                .map_err(Cause::IndexDropIntent),
+            Self::IndexDrop(plan) => plan.encode_intent(budget, cancelled),
             #[cfg(feature = "ace16-create")]
             Self::PopulatedTable(plan) => plan
                 .encode_intent(budget, cancelled)
@@ -187,11 +186,7 @@ impl MutationPlan {
             }
             #[cfg(feature = "ace16-create")]
             Self::IndexDrop(plan) => {
-                return plan
-                    .prepare_retained(target, journal, budget, cancelled)
-                    .map_err(Cause::Prepare)?
-                    .commit(budget, cancelled)
-                    .map_err(Cause::Commit);
+                return plan.commit(target, journal, budget, cancelled);
             }
             #[cfg(feature = "ace16-create")]
             Self::PopulatedTable(plan) => {
@@ -334,9 +329,13 @@ pub(super) enum MutationIntent {
     #[cfg(feature = "ace16-create")]
     FreshIndexCreation(NativeFreshIndexCreateIntent),
     #[cfg(feature = "ace16-create")]
+    UniqueLongIndexCreation(NativeUniqueLongIndexCreateIntent),
+    #[cfg(feature = "ace16-create")]
     NumericIndexCreation(NativeNumericIndexCreateIntent),
     #[cfg(feature = "ace16-create")]
     IndexDrop(NativeIndexDropIntent),
+    #[cfg(feature = "ace16-create")]
+    UniqueLongIndexDrop(NativeUniqueLongIndexDropIntent),
     #[cfg(feature = "ace16-create")]
     DatabaseOptions(DatabaseOptionsIntent),
     QueryExpression(NativeQueryExpressionIntent),
@@ -402,10 +401,11 @@ impl MutationIntent {
         match self {
             #[cfg(feature = "ace16-create")]
             Self::IndexCreation(_)
+            | Self::UniqueLongIndexCreation(_)
             | Self::FreshIndexCreation(_)
             | Self::NumericIndexCreation(_) => Some(SchemaChange::IndexCreated),
             #[cfg(feature = "ace16-create")]
-            Self::IndexDrop(_) => Some(SchemaChange::IndexDropped),
+            Self::IndexDrop(_) | Self::UniqueLongIndexDrop(_) => Some(SchemaChange::IndexDropped),
             #[cfg(feature = "ace16-create")]
             Self::AddColumn(_)
             | Self::DefaultZeroAddColumn(_)
@@ -473,6 +473,26 @@ impl MutationIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, Cause> {
+        if raw.starts_with(b"TCIC0004") {
+            #[cfg(feature = "ace16-create")]
+            return NativeUniqueLongIndexCreateIntent::decode(raw, budget, cancelled)
+                .map(Self::UniqueLongIndexCreation)
+                .map_err(Cause::FreshIndexCreationIntent);
+            #[cfg(not(feature = "ace16-create"))]
+            return Err(Cause::FreshIndexCreationIntent(
+                FreshIndexCreateIntentError::UnsupportedSource,
+            ));
+        }
+        if raw.starts_with(b"TCID0002") {
+            #[cfg(feature = "ace16-create")]
+            return NativeUniqueLongIndexDropIntent::decode(raw, budget, cancelled)
+                .map(Self::UniqueLongIndexDrop)
+                .map_err(Cause::IndexDropIntent);
+            #[cfg(not(feature = "ace16-create"))]
+            return Err(Cause::IndexDropIntent(
+                IndexDropIntentError::UnsupportedSource,
+            ));
+        }
         if raw.starts_with(INDEX_DROP_FAMILY) {
             #[cfg(feature = "ace16-create")]
             return NativeIndexDropIntent::decode(raw, budget, cancelled)

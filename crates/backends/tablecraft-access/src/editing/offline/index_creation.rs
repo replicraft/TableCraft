@@ -4,7 +4,7 @@ use plan::Plan;
 use std::path::Path;
 use tablecraft_ace::{
     RecoverableNativeFreshIndexCreatePlan, RecoverableNativeIndexCreatePlan,
-    RecoverableNativeNumericIndexCreatePlan,
+    RecoverableNativeNumericIndexCreatePlan, RecoverableNativeUniqueLongIndexCreatePlan,
 };
 pub(super) mod plan;
 use tablecraft_core::limits::ResourceBudget;
@@ -58,6 +58,21 @@ impl OfflineWriteSession {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<StagedIndexCreation, Failure> {
         self.stage_index_plan(Plan::Numeric(reviewed), native, proof, cancelled)
+    }
+
+    /// Reconstruct only the reviewed TCIC0004 unique LONG original.
+    ///
+    /// # Errors
+    /// Refuses stale images, source or constraint mismatches, proof failure,
+    /// cancellation and resource exhaustion while retaining the source owner.
+    pub fn stage_reviewed_unique_long_index_creation_with_budgets(
+        self,
+        reviewed: RecoverableNativeUniqueLongIndexCreatePlan,
+        native: &mut ResourceBudget,
+        proof: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<StagedIndexCreation, Failure> {
+        self.stage_index_plan(Plan::UniqueLong(reviewed), native, proof, cancelled)
     }
 
     fn stage_index_plan(

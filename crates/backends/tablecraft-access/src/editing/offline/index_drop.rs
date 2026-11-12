@@ -1,15 +1,15 @@
 //! A distinct original index DROP request over the same retained exclusive source.
-use super::{
-    Cause, Failure, OfflineWriteSession, Phase, Receipt, SchemaChange, plan::MutationPlan,
-};
+use super::{Failure, OfflineWriteSession, Phase, Receipt, SchemaChange, plan::MutationPlan};
+pub(super) mod plan;
+use plan::Plan;
 use std::path::Path;
-use tablecraft_ace::RecoverableNativeIndexDropPlan;
+use tablecraft_ace::{RecoverableNativeIndexDropPlan, RecoverableNativeUniqueLongIndexDropPlan};
 use tablecraft_core::limits::ResourceBudget;
 
 /// Source-requalified ordinary secondary index DROP, without a journal before apply.
 pub struct StagedIndexDrop {
     session: OfflineWriteSession,
-    plan: RecoverableNativeIndexDropPlan,
+    plan: Plan,
 }
 
 impl OfflineWriteSession {
@@ -20,8 +20,33 @@ impl OfflineWriteSession {
     /// Returns native source, stale-image, proof, cancellation or resource refusal
     /// while retaining the same exclusive target without creating a namespace.
     pub fn stage_reviewed_index_drop_with_budgets(
-        mut self,
+        self,
         reviewed: RecoverableNativeIndexDropPlan,
+        native: &mut ResourceBudget,
+        proof: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<StagedIndexDrop, Failure> {
+        self.stage_index_plan(Plan::Original(reviewed), native, proof, cancelled)
+    }
+
+    /// Reconstruct only the reviewed TCID0002 unique LONG original.
+    ///
+    /// # Errors
+    /// Refuses stale images, source or constraint mismatches, proof failure,
+    /// cancellation and resource exhaustion while retaining the same source.
+    pub fn stage_reviewed_unique_long_index_drop_with_budgets(
+        self,
+        reviewed: RecoverableNativeUniqueLongIndexDropPlan,
+        native: &mut ResourceBudget,
+        proof: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<StagedIndexDrop, Failure> {
+        self.stage_index_plan(Plan::UniqueLong(reviewed), native, proof, cancelled)
+    }
+
+    fn stage_index_plan(
+        mut self,
+        reviewed: Plan,
         native: &mut ResourceBudget,
         proof: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
@@ -29,11 +54,7 @@ impl OfflineWriteSession {
         let _span = tracing::debug_span!("access.offline.stage_index_drop").entered();
         let result = self
             .capture_schema_source(None, super::SchemaCapture::TableAppend, native, cancelled)
-            .and_then(|image| {
-                reviewed
-                    .requalify_with_budgets(image, native, proof, cancelled)
-                    .map_err(Cause::IndexDropIntent)
-            });
+            .and_then(|image| reviewed.requalify_with_budgets(image, native, proof, cancelled));
         match result {
             Ok(plan) => Ok(StagedIndexDrop {
                 session: self,

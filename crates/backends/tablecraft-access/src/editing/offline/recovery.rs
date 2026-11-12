@@ -390,6 +390,19 @@ impl OfflineWriteSession {
                         .map_err(Cause::Recovery)
                 }
                 #[cfg(feature = "ace16-create")]
+                MutationIntent::UniqueLongIndexCreation(intent) => {
+                    let (mut target, mut journal) =
+                        pair.resizable_storage().map_err(Cause::Pair)?;
+                    let checked =
+                        inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = intent
+                        .qualify_retained_recovery(checked, slot.scope, budget, cancelled)
+                        .map_err(Cause::FreshIndexCreationIntent)?;
+                    qualified
+                        .recover_retained(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
+                #[cfg(feature = "ace16-create")]
                 MutationIntent::NumericIndexCreation(intent) => {
                     let (mut target, mut journal) =
                         pair.resizable_storage().map_err(Cause::Pair)?;
@@ -404,6 +417,19 @@ impl OfflineWriteSession {
                 }
                 #[cfg(feature = "ace16-create")]
                 MutationIntent::IndexDrop(intent) => {
+                    let (mut target, mut journal) =
+                        pair.resizable_storage().map_err(Cause::Pair)?;
+                    let checked =
+                        inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = intent
+                        .qualify_retained_recovery(checked, slot.scope, budget, cancelled)
+                        .map_err(Cause::IndexDropIntent)?;
+                    qualified
+                        .recover_retained(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
+                #[cfg(feature = "ace16-create")]
+                MutationIntent::UniqueLongIndexDrop(intent) => {
                     let (mut target, mut journal) =
                         pair.resizable_storage().map_err(Cause::Pair)?;
                     let checked =
@@ -923,6 +949,17 @@ impl OfflineWriteSession {
                         .map_err(Cause::Recovery)
                 }
                 #[cfg(feature = "ace16-create")]
+                MutationIntent::UniqueLongIndexCreation(intent) => {
+                    let checked =
+                        inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = intent
+                        .qualify_retained_recovery(checked, slot.scope, budget, cancelled)
+                        .map_err(Cause::FreshIndexCreationIntent)?;
+                    qualified
+                        .confirm_completed(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
+                #[cfg(feature = "ace16-create")]
                 MutationIntent::NumericIndexCreation(intent) => {
                     let checked =
                         inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
@@ -935,6 +972,17 @@ impl OfflineWriteSession {
                 }
                 #[cfg(feature = "ace16-create")]
                 MutationIntent::IndexDrop(intent) => {
+                    let checked =
+                        inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = intent
+                        .qualify_retained_recovery(checked, slot.scope, budget, cancelled)
+                        .map_err(Cause::IndexDropIntent)?;
+                    qualified
+                        .confirm_completed(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
+                #[cfg(feature = "ace16-create")]
+                MutationIntent::UniqueLongIndexDrop(intent) => {
                     let checked =
                         inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
                     let qualified = intent
