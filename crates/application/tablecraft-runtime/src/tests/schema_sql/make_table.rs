@@ -1,6 +1,7 @@
 //! Issued SQL creates its complete materialized relation through one native save.
 mod computed;
 mod context;
+mod grouping;
 mod parameters;
 use super::{inspect, review};
 use crate::tests::{request, stored::opened, terminal};
@@ -94,7 +95,7 @@ fn make_table_rejects_existing_destinations_closed_shapes_and_stale_inspections_
     for sql in [
         "SELECT CopiedScore INTO Items FROM Items",
         "SELECT CStr(CopiedScore) AS Computed INTO Archive FROM Items",
-        "SELECT CopiedScore INTO Archive FROM Items GROUP BY CopiedScore",
+        "SELECT CopiedScore INTO Archive FROM Items GROUP BY CopiedScore+1",
     ] {
         let target = inspect(&worker, revision, sql);
         assert!(review(&worker, &target).is_err());

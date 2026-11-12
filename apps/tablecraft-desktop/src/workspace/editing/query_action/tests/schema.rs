@@ -1,7 +1,9 @@
 //! Real SQL Run → native schema review → explicit decision → guarded publication.
+mod grouping;
 mod index_creation;
 mod index_drop;
 mod unique_lifecycle;
+
 use super::{finish_reads, finish_save, opened, reviewed, run};
 use crate::workspace::{Desktop, PendingOperation};
 use egui::{Key, accesskit::Role};
