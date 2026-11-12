@@ -10,7 +10,7 @@ use tablecraft_ace::{
 #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
 use tablecraft_access::editing::sql::NativeMakeTableError;
 #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
-use tablecraft_ace::IndexCreateIntentError;
+use tablecraft_ace::{FreshIndexCreateIntentError, IndexCreateIntentError, IndexDropIntentError};
 
 #[cfg(feature = "offline-edit")]
 use crate::{EditError, QuerySqlEditError, ReplaceError};
@@ -154,6 +154,18 @@ pub enum Error {
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error(transparent)]
     IndexCreation(#[from] IndexCreateIntentError),
+    /// Fresh native index creation on represented historical metadata refused.
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    #[error(transparent)]
+    FreshIndexCreation(#[from] FreshIndexCreateIntentError),
+    /// Original native index DROP or complete source admission refused.
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    #[error(transparent)]
+    IndexDrop(#[from] IndexDropIntentError),
+    /// Saved index-drop image differs before guarded read publication.
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    #[error("saved index-drop source changed before reopening")]
+    IndexDropSourceChanged,
     /// Complete saved index image differs before guarded publication.
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error("saved index source changed before reopening")]

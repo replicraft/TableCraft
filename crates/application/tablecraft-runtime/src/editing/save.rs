@@ -71,6 +71,8 @@ pub enum SaveCompletion {
 pub enum SaveSchemaChange {
     /// One ordinary secondary index was added; table rows are unchanged.
     IndexCreated,
+    /// Remove the selected ordinary index; no data-record effect is implied.
+    IndexDropped,
     TableRenamed,
     /// One qualified closed empty table was removed from the native catalog.
     TableDropped,

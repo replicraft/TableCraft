@@ -3,6 +3,7 @@ use super::{
     RetainedOwner,
     outcomes::{failed_open, finish, no_session, retain},
 };
+use crate::editing::platform::index_creation::Plan;
 use crate::{
     controls::{SCOPE, action_persistence_budget, action_proof_budget, budget},
     editing::{ReviewedIndexCreation, SaveFailureKind, SaveOutcome},
@@ -36,12 +37,21 @@ pub(super) fn apply_index_creation(
             Ok(session) => session,
             Err(error) => return failed_open(&error),
         };
-    let staged = match session.stage_reviewed_index_creation_with_budgets(
-        reviewed.plan,
-        &mut native,
-        &mut proof,
-        &cancel,
-    ) {
+    let staged = match reviewed.plan {
+        Plan::Original(plan) => session.stage_reviewed_index_creation_with_budgets(
+            plan,
+            &mut native,
+            &mut proof,
+            &cancel,
+        ),
+        Plan::Fresh(plan) => session.stage_reviewed_fresh_index_creation_with_budgets(
+            plan,
+            &mut native,
+            &mut proof,
+            &cancel,
+        ),
+    };
+    let staged = match staged {
         Ok(staged) => staged,
         Err(failure) => return retain(failure, retained),
     };

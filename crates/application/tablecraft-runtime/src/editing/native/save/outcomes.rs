@@ -6,6 +6,8 @@ mod database_options_field_history;
 mod field_addition;
 mod field_drop;
 mod field_rename;
+mod fresh_index_creation;
+mod index_drop;
 #[cfg(feature = "ace16-create")]
 mod number_column;
 mod query_expression_edits;
@@ -33,10 +35,11 @@ use tablecraft_ace::{
 };
 use tablecraft_ace::{
     CurrentFieldAdditionError, CurrentFieldAdditionIntentError, DeclaredFieldAdditionIntentError,
-    EditError, InspectError, NativeIntentError, NativeRecoveryQualificationError,
-    QueryExpressionEditsError, QueryExpressionEditsIntentError, QueryExpressionError,
-    QueryExpressionIntentError, QueryExpressionRecoveryError, RecoverableQueryExpressionError,
-    TableRenameError, TableRenameIntentError, UnadornedFieldAdditionIntentError,
+    EditError, FreshIndexCreateIntentError, IndexDropIntentError, InspectError, NativeIntentError,
+    NativeRecoveryQualificationError, QueryExpressionEditsError, QueryExpressionEditsIntentError,
+    QueryExpressionError, QueryExpressionIntentError, QueryExpressionRecoveryError,
+    RecoverableQueryExpressionError, TableRenameError, TableRenameIntentError,
+    UnadornedFieldAdditionIntentError,
 };
 use tablecraft_core::limits::LimitError;
 use tablecraft_io::{
@@ -129,6 +132,7 @@ pub(super) fn receipt(value: Receipt) -> SaveReceipt {
         changed_rows: value.changed_rows(),
         schema_change: value.schema_change().map(|change| match change {
             SchemaChange::IndexCreated => SaveSchemaChange::IndexCreated,
+            SchemaChange::IndexDropped => SaveSchemaChange::IndexDropped,
             SchemaChange::TableRenamed => SaveSchemaChange::TableRenamed,
             SchemaChange::TableDropped => SaveSchemaChange::TableDropped,
             SchemaChange::ColumnAdded => SaveSchemaChange::ColumnAdded,
@@ -247,6 +251,8 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
     if let Some(cause) = error.downcast_ref::<Cause>() {
         return match cause {
             Cause::Native(error) => inspection_failure(error),
+            Cause::IndexDropIntent(error) => index_drop::intent(error),
+            Cause::FreshIndexCreationIntent(error) => fresh_index_creation::intent(error),
             Cause::Intent(error) => intent_failure(error),
             Cause::Qualification(error) => qualification_failure(error),
             Cause::TableRenameIntent(error) => rename_intent_failure(error),
@@ -447,6 +453,12 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
     }
     if let Some(error) = error.downcast_ref::<InspectError>() {
         return inspection_failure(error);
+    }
+    if let Some(error) = error.downcast_ref::<FreshIndexCreateIntentError>() {
+        return fresh_index_creation::intent(error);
+    }
+    if let Some(error) = error.downcast_ref::<IndexDropIntentError>() {
+        return index_drop::intent(error);
     }
     if let Some(error) = error.downcast_ref::<IoError>() {
         return io_failure(error);

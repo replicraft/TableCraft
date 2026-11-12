@@ -3,7 +3,8 @@ use crate::editing::save::{SaveReport, SaveStartError, SaveStartFailure};
 #[cfg(feature = "ace16-create")]
 use crate::editing::{
     ReviewedAddColumn, ReviewedDatabaseOptions, ReviewedFieldAddition, ReviewedFieldDrop,
-    ReviewedFieldRename, ReviewedIndexCreation, ReviewedNumberColumn, ReviewedTableCreation,
+    ReviewedFieldRename, ReviewedIndexCreation, ReviewedIndexDrop, ReviewedNumberColumn,
+    ReviewedTableCreation,
 };
 use crate::editing::{
     ReviewedDelete, ReviewedEdit, ReviewedInsert, ReviewedQueryDelete, ReviewedQueryExpression,
@@ -188,6 +189,19 @@ impl SaveWorker {
         reviewed: ReviewedIndexCreation,
         _bundle: PathBuf,
     ) -> Result<u64, SaveStartError<ReviewedIndexCreation>> {
+        Err(SaveStartError {
+            kind: SaveStartFailure::UnsupportedPlatform,
+            reviewed: Some(reviewed),
+        })
+    }
+
+    /// Consume one original index DROP; refusal returns the same capability.
+    #[cfg(feature = "ace16-create")]
+    pub fn start_index_drop(
+        &self,
+        reviewed: ReviewedIndexDrop,
+        _bundle: PathBuf,
+    ) -> Result<u64, SaveStartError<ReviewedIndexDrop>> {
         Err(SaveStartError {
             kind: SaveStartFailure::UnsupportedPlatform,
             reviewed: Some(reviewed),

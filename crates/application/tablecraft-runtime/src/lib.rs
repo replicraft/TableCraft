@@ -45,8 +45,9 @@ pub use editing::{
     FieldAdditionOutcomeError, FieldAdditionReopenFacts, FieldAdditionReview,
     FieldRenameOutcomeError, FieldRenameReopenFacts, FieldRenameReview,
     FieldRenameSourceInspection, FieldRenamedReopen, IndexCreatedReopen, IndexCreationOutcomeError,
-    IndexCreationReopenFacts, NameAutoCorrectState, NumberColumnAvailability, ReviewedAddColumn,
-    ReviewedDatabaseOptions, ReviewedFieldAddition, ReviewedFieldRename, ReviewedIndexCreation,
+    IndexCreationReopenFacts, IndexDropOutcomeError, IndexDropReopenFacts, IndexDroppedReopen,
+    NameAutoCorrectState, NumberColumnAvailability, ReviewedAddColumn, ReviewedDatabaseOptions,
+    ReviewedFieldAddition, ReviewedFieldRename, ReviewedIndexCreation, ReviewedIndexDrop,
     ReviewedNumberColumn, ReviewedTableCreation, TableCreationOutcomeError,
     TableCreationReopenFacts,
 };

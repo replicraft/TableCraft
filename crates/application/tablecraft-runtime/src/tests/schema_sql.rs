@@ -13,6 +13,7 @@ mod create;
 mod field_drop;
 #[cfg(feature = "ace16-create")]
 mod index_creation;
+mod index_drop;
 #[cfg(feature = "ace16-create")]
 mod make_table;
 

@@ -13,6 +13,8 @@ mod apply_field_drop;
 mod apply_field_rename;
 #[cfg(feature = "ace16-create")]
 mod apply_index_creation;
+#[cfg(feature = "ace16-create")]
+mod apply_index_drop;
 mod apply_insert;
 mod apply_query_action;
 mod apply_query_expression;
@@ -30,6 +32,8 @@ use self::apply_add_column::apply_add_column;
 use self::apply_database_options::apply_database_options;
 #[cfg(feature = "ace16-create")]
 use self::apply_index_creation::apply_index_creation;
+#[cfg(feature = "ace16-create")]
+use self::apply_index_drop::apply_index_drop;
 #[cfg(feature = "ace16-create")]
 use self::apply_table_creation::apply_table_creation;
 use self::{
@@ -49,7 +53,8 @@ use crate::editing::save::{
 #[cfg(feature = "ace16-create")]
 use crate::editing::{
     ReviewedAddColumn, ReviewedDatabaseOptions, ReviewedFieldAddition, ReviewedFieldDrop,
-    ReviewedFieldRename, ReviewedIndexCreation, ReviewedNumberColumn, ReviewedTableCreation,
+    ReviewedFieldRename, ReviewedIndexCreation, ReviewedIndexDrop, ReviewedNumberColumn,
+    ReviewedTableCreation,
 };
 use crate::{
     controls::action_recovery_budget,
@@ -96,6 +101,8 @@ enum Task {
     ApplyTableCreation(ReviewedTableCreation, PathBuf),
     #[cfg(feature = "ace16-create")]
     ApplyIndexCreation(ReviewedIndexCreation, PathBuf),
+    #[cfg(feature = "ace16-create")]
+    ApplyIndexDrop(ReviewedIndexDrop, PathBuf),
     Apply(ReviewedEdit, PathBuf),
     ApplyTableRename(ReviewedTableRename, PathBuf),
     ApplyTableDrop(ReviewedTableDrop, PathBuf),
@@ -414,9 +421,9 @@ impl SaveWorker {
                         #[cfg(feature = "ace16-create")]
                         Task::ApplyDatabaseOptions(..) => SaveOperation::Apply,
                         #[cfg(feature = "ace16-create")]
-                        Task::ApplyTableCreation(..) | Task::ApplyIndexCreation(..) => {
-                            SaveOperation::Apply
-                        }
+                        Task::ApplyTableCreation(..)
+                        | Task::ApplyIndexCreation(..)
+                        | Task::ApplyIndexDrop(..) => SaveOperation::Apply,
                         #[cfg(feature = "ace16-create")]
                         Task::ApplyAddColumn(..)
                         | Task::ApplyNumberColumn(..)
@@ -508,6 +515,10 @@ impl SaveWorker {
                         #[cfg(feature = "ace16-create")]
                         Task::ApplyIndexCreation(reviewed, bundle) => {
                             apply_index_creation(reviewed, bundle, &mut retained, &cancelled)
+                        }
+                        #[cfg(feature = "ace16-create")]
+                        Task::ApplyIndexDrop(reviewed, bundle) => {
+                            apply_index_drop(reviewed, bundle, &mut retained, &cancelled)
                         }
                         #[cfg(feature = "ace16-create")]
                         Task::ApplyTableCreation(reviewed, bundle) => {
@@ -913,6 +924,17 @@ impl SaveWorker {
     ) -> Result<u64, SaveStartError<ReviewedIndexCreation>> {
         let valid = Some(Arc::clone(&reviewed.state.valid));
         self.start_reviewed(reviewed, bundle, valid, Task::ApplyIndexCreation)
+    }
+
+    /// Consume one original index DROP; refusal returns the same capability.
+    #[cfg(feature = "ace16-create")]
+    pub fn start_index_drop(
+        &self,
+        reviewed: ReviewedIndexDrop,
+        bundle: PathBuf,
+    ) -> Result<u64, SaveStartError<ReviewedIndexDrop>> {
+        let valid = Some(Arc::clone(&reviewed.state.valid));
+        self.start_reviewed(reviewed, bundle, valid, Task::ApplyIndexDrop)
     }
 
     /// Consume the exact lease-free rename reviewed by the current document.

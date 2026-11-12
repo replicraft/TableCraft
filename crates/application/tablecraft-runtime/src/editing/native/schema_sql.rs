@@ -38,6 +38,10 @@ pub(in crate::editing) fn review(
         #[cfg(feature = "ace16-create")]
         Definition::CreateIndex(index) => index_creation::review(document, index, cancelled),
         #[cfg(feature = "ace16-create")]
+        Definition::DropIndex { index, table } => {
+            super::index_drop::review(document, table.as_str(), index.as_str(), cancelled)
+        }
+        #[cfg(feature = "ace16-create")]
         Definition::CreateTable(table) => {
             let profile = document.table_creation.ok_or(EditError::Unavailable)?;
             let definition = create::capture(table, profile, &mut work, cancelled)?;

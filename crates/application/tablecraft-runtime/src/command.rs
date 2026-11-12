@@ -4,7 +4,7 @@ use crate::CreationReport;
 #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
 use crate::{
     AddedColumnReopen, CreatedTableReopen, DatabaseOptionsReopen, FieldDroppedReopen,
-    FieldRenamedReopen, IndexCreatedReopen,
+    FieldRenamedReopen, IndexCreatedReopen, IndexDroppedReopen,
 };
 use crate::{
     ContentsTarget, DiscoveredQuery, FieldFilterOperator, FieldFilterTarget, FilterComparison,
@@ -25,6 +25,10 @@ use zeroize::Zeroize;
 
 /// Explicit host requests. Queued and consumed passwords are erased on drop.
 pub enum Command {
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    OpenIndexDropped {
+        witness: Arc<IndexDroppedReopen>,
+    },
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     OpenIndexCreated {
         witness: Arc<IndexCreatedReopen>,

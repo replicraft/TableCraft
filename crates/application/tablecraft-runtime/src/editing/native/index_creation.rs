@@ -1,4 +1,5 @@
-//! Native source admission remains inside the distinct recoverable TCIC plan.
+//! Positive metadata chooses the original or fresh consuming native language.
+mod plan;
 use crate::{
     Error, Response,
     controls::{SCOPE, action_review_budget, check},
@@ -6,17 +7,15 @@ use crate::{
     document::Document,
     editing::{EditError, IndexCreatedReopen, ReviewedIndexCreation, platform::ids::issue_id},
 };
+pub(in crate::editing) use plan::Plan;
 use std::sync::{Arc, atomic::AtomicBool};
-use tablecraft_ace::{
-    InspectError, NativeImage, RecoverableNativeIndexCreatePlan, SecondaryIndexCreate,
-    inspect_table_schema,
-};
+use tablecraft_ace::{InspectError, NativeImage, SecondaryIndexCreate, inspect_table_schema};
 use tablecraft_core::limits::Resource;
 
 pub(in crate::editing) struct State {
     pub(in crate::editing) id: u64,
     pub(in crate::editing) reopen: Arc<IndexCreatedReopen>,
-    pub(in crate::editing) plan: RecoverableNativeIndexCreatePlan,
+    pub(in crate::editing) plan: Plan,
     pub(in crate::editing) valid: Arc<AtomicBool>,
 }
 
@@ -52,13 +51,27 @@ pub(in crate::editing) fn review(
     }
     let column = selected.ok_or(InspectError::UnknownColumn)?;
     let request = SecondaryIndexCreate::new(index, column.name(), descending);
-    let plan = image.plan_recoverable_retained_long_index_creation(
+    let needs_fresh = image.select_native_fresh_long_index_creation_source(
         schema.name(),
-        &request,
         &mut work,
         cancelled,
     )?;
-    let intent = plan.intent();
+    let plan = if needs_fresh {
+        Plan::Fresh(image.plan_recoverable_retained_fresh_long_index_creation(
+            schema.name(),
+            &request,
+            &mut work,
+            cancelled,
+        )?)
+    } else {
+        Plan::Original(image.plan_recoverable_retained_long_index_creation(
+            schema.name(),
+            &request,
+            &mut work,
+            cancelled,
+        )?)
+    };
+    let target = plan.target();
     let mut output = Presentation::new(cancelled);
     work.charge_allocation(document.edits.path.as_os_str().len() as u64, 1)?;
     work.charge_allocation(1, size_of::<IndexCreatedReopen>() as u64)?;
@@ -72,11 +85,11 @@ pub(in crate::editing) fn review(
         table: output.text(plan.table())?,
         index: output.text(plan.index_name())?,
         column: output.text(plan.column())?,
-        native_table_id: intent.native_table_id(),
-        definition_page: intent.definition_page(),
-        native_number: intent.native_number(),
-        column_id: intent.column_id(),
-        descending: intent.descending(),
+        native_table_id: target.native_table,
+        definition_page: target.definition,
+        native_number: target.number,
+        column_id: target.column_id,
+        descending: target.descending,
         indexed_rows: plan.indexed_rows(),
     });
     check(cancelled)?;

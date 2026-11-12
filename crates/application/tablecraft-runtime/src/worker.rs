@@ -379,6 +379,17 @@ impl Worker {
                 .ok_or(Error::NoDatabase)?
                 .review_table_creation(*document_revision, snapshot, cancelled),
             #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+            Command::OpenIndexDropped { witness } => {
+                document = None;
+                document_revision = document_revision
+                    .checked_add(1)
+                    .ok_or(Error::RevisionExhausted)?;
+                let (opened, response) =
+                    Document::open_index_dropped(witness, document_revision, cancelled)?;
+                document = Some(opened);
+                Ok(response)
+            }
+            #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
             Command::OpenIndexCreated { witness } => {
                 document = None;
                 document_revision = document_revision
@@ -775,6 +786,8 @@ impl Worker {
                         Command::OpenColumnAdded { .. } => "open_column_added",
                         #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
                         Command::OpenIndexCreated { .. } => "open_index_created",
+                        #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                        Command::OpenIndexDropped { .. } => "open_index_dropped",
                         #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
                         Command::OpenTableCreated { .. } => "open_table_created",
                         Command::Open { .. } => "open",
