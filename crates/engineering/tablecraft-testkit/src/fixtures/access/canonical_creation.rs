@@ -70,7 +70,13 @@ pub(super) struct Field<'a> {
 }
 
 impl<'a> Field<'a> {
-    const fn fixed(name: &'a str, kind: u8, width: u16, offset: u16, variable: u16) -> Self {
+    pub(super) const fn fixed(
+        name: &'a str,
+        kind: u8,
+        width: u16,
+        offset: u16,
+        variable: u16,
+    ) -> Self {
         Self {
             name,
             kind,
@@ -80,7 +86,7 @@ impl<'a> Field<'a> {
         }
     }
 
-    const fn variable(name: &'a str, kind: u8, width: u16, slot: u16) -> Self {
+    pub(super) const fn variable(name: &'a str, kind: u8, width: u16, slot: u16) -> Self {
         Self {
             name,
             kind,

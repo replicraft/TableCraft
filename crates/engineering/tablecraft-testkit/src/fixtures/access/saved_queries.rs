@@ -4,6 +4,9 @@ pub mod attachments;
 /// Independent fitting SELECT expression BEFORE/AFTER byte oracles.
 pub mod fitting_select;
 
+/// Genuine canonical ACE16 saved-query source with independent ordinary UPDATE bytes.
+pub mod writable;
+
 use super::{data_page, mutation_fixture as base, put16, put32, record};
 
 pub const PAGE_BYTES: usize = 4096;
@@ -99,7 +102,37 @@ fn install_query_table(
     put16(&mut definition, 43, 4);
     bytes[definition_page * PAGE_BYTES..(definition_page + 1) * PAGE_BYTES]
         .copy_from_slice(&definition);
-    let rows: Vec<_> = fragments
+    let rows = fragment_records(fragments);
+    let mut pages = Vec::new();
+    let mut page = Vec::new();
+    let mut occupied = 14;
+    for row in rows {
+        let cost = 2 + row.1.len();
+        assert!(cost + 14 <= PAGE_BYTES);
+        if occupied + cost > PAGE_BYTES {
+            pages.push(std::mem::take(&mut page));
+            occupied = 14;
+        }
+        occupied += cost;
+        page.push(row);
+    }
+    pages.push(page);
+    bytes.resize(bytes.len().max((data_page + pages.len()) * PAGE_BYTES), 0);
+    let mut bitmap = vec![0; 5 + (data_page + pages.len()).div_ceil(8)];
+    for page in data_page..data_page + pages.len() {
+        bitmap[5 + page / 8] |= 1 << (page % 8);
+    }
+    bytes[map_page * PAGE_BYTES..(map_page + 1) * PAGE_BYTES]
+        .copy_from_slice(&super::data_page(1, &[(0, bitmap)]));
+    for (ordinal, rows) in pages.into_iter().enumerate() {
+        let page = data_page + ordinal;
+        bytes[page * PAGE_BYTES..(page + 1) * PAGE_BYTES]
+            .copy_from_slice(&super::data_page(definition_page as u32, &rows));
+    }
+}
+
+fn fragment_records(fragments: &[Fragment<'_>]) -> Vec<(u16, Vec<u8>)> {
+    fragments
         .iter()
         .map(|fragment| {
             let mut row = 8_u16.to_le_bytes().to_vec();
@@ -135,33 +168,7 @@ fn install_query_table(
             );
             (0, row)
         })
-        .collect::<Vec<_>>();
-    let mut pages = Vec::new();
-    let mut page = Vec::new();
-    let mut occupied = 14;
-    for row in rows {
-        let cost = 2 + row.1.len();
-        assert!(cost + 14 <= PAGE_BYTES);
-        if occupied + cost > PAGE_BYTES {
-            pages.push(std::mem::take(&mut page));
-            occupied = 14;
-        }
-        occupied += cost;
-        page.push(row);
-    }
-    pages.push(page);
-    bytes.resize(bytes.len().max((data_page + pages.len()) * PAGE_BYTES), 0);
-    let mut bitmap = vec![0; 5 + (data_page + pages.len()).div_ceil(8)];
-    for page in data_page..data_page + pages.len() {
-        bitmap[5 + page / 8] |= 1 << (page % 8);
-    }
-    bytes[map_page * PAGE_BYTES..(map_page + 1) * PAGE_BYTES]
-        .copy_from_slice(&super::data_page(1, &[(0, bitmap)]));
-    for (ordinal, rows) in pages.into_iter().enumerate() {
-        let page = data_page + ordinal;
-        bytes[page * PAGE_BYTES..(page + 1) * PAGE_BYTES]
-            .copy_from_slice(&super::data_page(definition_page as u32, &rows));
-    }
+        .collect::<Vec<_>>()
 }
 
 pub fn database() -> Vec<u8> {
