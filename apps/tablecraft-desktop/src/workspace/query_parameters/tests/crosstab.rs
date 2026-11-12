@@ -142,25 +142,22 @@ fn late_transform_aggregate_error_preserves_the_complete_previous_result() {
 fn saved_floor_two(harness: &mut Harness<'_, Desktop>) {
     let columns = harness
         .get_all_by_role(Role::ColumnHeader)
-        .filter_map(|node| {
-            let accessible = node.accesskit_node();
-            accessible
-                .data()
-                .column_index()
-                .map(|index| (index, accessible.label().unwrap_or_default().to_owned()))
-        })
-        .filter(|(index, _)| *index > 0)
+        .filter_map(|node| node.accesskit_node().data().column_index())
+        .filter(|index| *index > 0)
         .collect::<Vec<_>>();
-    assert_eq!(
-        columns,
-        [
-            (1, "Bucket".into()),
-            (2, "Total".into()),
-            (3, "3".into()),
-            (4, "1".into()),
-            (5, "4".into())
-        ]
-    );
+    assert_eq!(columns, [1, 2, 3, 4, 5]);
+    for (column, name) in [(1, "Bucket"), (2, "Total"), (3, "3"), (4, "1"), (5, "4")] {
+        let header = harness
+            .get_all_by_role(Role::ColumnHeader)
+            .find(|node| node.accesskit_node().data().column_index() == Some(column))
+            .unwrap();
+        // The header container owns its column index; its child label owns the
+        // visible caption. Verify that caption inside the corresponding header.
+        assert!(
+            header.query_by_role_and_label(Role::Label, name).is_some(),
+            "missing caption for column {column}: {name}"
+        );
+    }
     assert_eq!(harness.get_all_by_role(Role::GridCell).count(), 5);
     for (column, text) in [(1, "0"), (2, "2"), (3, "1"), (4, "NULL"), (5, "NULL")] {
         harness
