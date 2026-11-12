@@ -42,6 +42,65 @@ pub fn read_table_index_with_references<R: NativeReadSource>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<IndexedTableSnapshot, InspectError> {
+    read_with_ownership(
+        source,
+        scope,
+        table,
+        index,
+        ReferenceOptions {
+            request,
+            complete_ownership: false,
+        },
+        budget,
+        cancelled,
+    )
+}
+
+/// Complete retained readonly membership for the unique creation proof. This
+/// grants no source, mutation or allocation authority and exposes no mode flag.
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(in crate::table) fn read_retained_index_with_references<R: NativeReadSource>(
+    source: &mut R,
+    scope: CatalogScope,
+    table: &str,
+    index: &str,
+    request: IndexReadRequest<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<IndexedTableSnapshot, InspectError> {
+    read_with_ownership(
+        source,
+        scope,
+        table,
+        index,
+        ReferenceOptions {
+            request,
+            complete_ownership: true,
+        },
+        budget,
+        cancelled,
+    )
+}
+
+struct ReferenceOptions<'a> {
+    request: IndexReadRequest<'a>,
+    complete_ownership: bool,
+}
+
+fn read_with_ownership<R: NativeReadSource>(
+    source: &mut R,
+    scope: CatalogScope,
+    table: &str,
+    index: &str,
+    options: ReferenceOptions<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<IndexedTableSnapshot, InspectError> {
+    let ReferenceOptions {
+        request,
+        complete_ownership,
+    } = options;
+
     if request.maximum_rows == 0 {
         return Err(InspectError::InvalidSnapshotLimits);
     }
@@ -60,7 +119,7 @@ pub fn read_table_index_with_references<R: NativeReadSource>(
             eligible_rows: None,
             row_references: Some(&mut references),
             stored_features: None,
-            complete_ownership: false,
+            complete_ownership,
         },
         budget,
         cancelled,

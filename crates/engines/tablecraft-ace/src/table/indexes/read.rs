@@ -28,6 +28,8 @@ use crate::{
     },
 };
 use membership::{DataPages, OwnershipStrategy};
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(in crate::table) use references::read_retained_index_with_references;
 pub use references::{IndexedTableSnapshot, read_table_index_with_references};
 pub use stored::{
     read_stored_table_index_in_table_order, read_stored_table_index_with_references,

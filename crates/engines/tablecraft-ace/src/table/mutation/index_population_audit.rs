@@ -9,7 +9,7 @@ use crate::{
     header::check,
     inspect_table_index_counter, read_table_index_with_references,
     table::{
-        indexes::check_table_retained,
+        indexes::{check_table_retained, read_retained_index_with_references},
         mutation::{
             index_creation::{SecondaryIndexCreate, buffer},
             normal_ordinary,
@@ -164,20 +164,32 @@ fn prove_original(
         return Err(EditError::Preservation);
     }
     let names = [request.column];
-    let indexed = read_table_index_with_references(
-        &mut after.reader(),
-        scope,
-        table,
-        original.name.as_str(),
-        IndexReadRequest {
-            columns: Some(&names),
-            selection: IndexProjectionSelection::All,
-            maximum_rows: u32::try_from(keys.len().max(1))
-                .map_err(|_| InspectError::StructureLimit)?,
-        },
-        budget,
-        cancelled,
-    )?;
+    let projection = IndexReadRequest {
+        columns: Some(&names),
+        selection: IndexProjectionSelection::All,
+        maximum_rows: u32::try_from(keys.len().max(1)).map_err(|_| InspectError::StructureLimit)?,
+    };
+    let indexed = if original.is_unique() {
+        read_retained_index_with_references(
+            &mut after.reader(),
+            scope,
+            table,
+            original.name.as_str(),
+            projection,
+            budget,
+            cancelled,
+        )?
+    } else {
+        read_table_index_with_references(
+            &mut after.reader(),
+            scope,
+            table,
+            original.name.as_str(),
+            projection,
+            budget,
+            cancelled,
+        )?
+    };
     if indexed.snapshot().rows().len() != keys.len() || indexed.row_references().len() != keys.len()
     {
         return Err(EditError::Preservation);

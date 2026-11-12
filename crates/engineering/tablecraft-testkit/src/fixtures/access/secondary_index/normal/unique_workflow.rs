@@ -62,11 +62,37 @@ fn long(bytes: &[u8], at: usize) -> u32 {
 /// Emit UNIQUE at descriptor construction, with independently authored native 0x81.
 /// Ordinary declaration writers continue to emit 0x80 through their closed entry.
 pub fn creation(descending: bool, values: &[Option<i32>]) -> Source {
+    let (before, definition) = source_rows(values);
+    finish_creation(before, definition, descending, values)
+}
+
+/// Forward the first logical row through twenty real same-owner DATA links
+/// before constructing the independent UNIQUE index image. No expected INDEX
+/// page or production reader contributes the retained-row fixture bytes.
+pub fn forwarded(descending: bool) -> Source {
+    let values = [Some(1), Some(2), Some(3)];
+    let (before, definition) = source_rows(&values);
+    let before = raw_forwarding_chain::extend(&before, definition + 1, 0, 20);
+    finish_creation(before, definition, descending, &values)
+}
+
+fn source_rows(values: &[Option<i32>]) -> (Vec<u8>, u32) {
     let mut nonnull = BTreeSet::new();
     assert!(values.iter().flatten().all(|value| nonnull.insert(*value)));
     let seed = fields::source(fields::Case::FirstNumber).bytes;
     let definition = (seed.len() / PAGE) as u32;
-    let before = populated::numbers(&seed, "UniqueValues", values);
+    (
+        populated::numbers(&seed, "UniqueValues", values),
+        definition,
+    )
+}
+
+fn finish_creation(
+    before: Vec<u8>,
+    definition: u32,
+    descending: bool,
+    values: &[Option<i32>],
+) -> Source {
     let rows = values
         .iter()
         .copied()

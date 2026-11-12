@@ -122,6 +122,9 @@ pub(in crate::table) use mutation::{
     row_patches as index_row_patches, slot_patches as index_slot_patches,
 };
 mod read;
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(in crate::table) use read::read_retained_index_with_references;
+
 pub use read::{
     read_stored_table_index_in_table_order, read_stored_table_index_with_references,
     read_stored_table_index_with_request,

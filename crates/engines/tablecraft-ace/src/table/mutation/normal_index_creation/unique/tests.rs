@@ -95,3 +95,41 @@ fn duplicate_source_cancel_and_budget_refuse_before_any_candidate_is_published()
         );
     }
 }
+
+#[test]
+fn unique_create_preserves_complete_owned_twenty_hop_forwarding_source() {
+    for descending in [false, true] {
+        let source = raw::forwarded(descending);
+        let data = (source.target_definition as usize + 1) * 4096;
+        assert_eq!(
+            u16::from_le_bytes(source.before[data + 12..data + 14].try_into().unwrap()),
+            23
+        );
+        assert_eq!(
+            u32::from_le_bytes(
+                source.before[source.target_definition as usize * 4096 + 16
+                    ..source.target_definition as usize * 4096 + 20]
+                    .try_into()
+                    .unwrap()
+            ),
+            3
+        );
+        let candidate = image(&source.before)
+            .prepare_retained_unique_long_index_creation(
+                source.table,
+                &UniqueLongIndexCreate::new(source.index_name, source.column, descending),
+                &mut budget(),
+                &|| false,
+            )
+            .unwrap();
+        same(candidate.before_bytes(), &source.before);
+        same(candidate.candidate_bytes(), &source.expected);
+        assert_eq!(candidate.indexed_rows(), 3);
+        assert_eq!(candidate.root_page(), source.root);
+        assert_eq!(
+            &candidate.candidate_bytes()[data..data + 4096],
+            &source.before[data..data + 4096],
+            "every pointer, hidden terminal and historical byte stays unchanged"
+        );
+    }
+}
