@@ -269,4 +269,5 @@ fn malformed_policy_alignment_and_provider_cancellation_cannot_finish_a_batch() 
     assert_eq!(calls.get(), 0);
 }
 
+#[path = "comparison/like.rs"]
 mod like;

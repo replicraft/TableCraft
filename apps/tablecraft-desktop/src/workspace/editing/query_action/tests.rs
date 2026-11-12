@@ -125,7 +125,12 @@ fn reviewed(harness: &mut Harness<'_, Desktop>, sql: &str) -> u64 {
         .editing
         .query_action_review
         .as_ref()
-        .expect("runtime native review");
+        .unwrap_or_else(|| {
+            panic!(
+                "runtime native review for {sql}: {:?}",
+                harness.state().state.error
+            )
+        });
     *id
 }
 

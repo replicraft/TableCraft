@@ -264,7 +264,7 @@ fn conflicting_stored_text_policies_refuse_joined_like_without_source_effects() 
     assert!(matches!(
         result,
         Err(Error::QueryUpdate(RecoverableError::Plan(
-            UpdateError::Query(QueryError::Evaluation(EvalError::CollationConflict))
+            UpdateError::Query(QueryError::CollationConflict)
         )))
     ));
     assert_image(&std::fs::read(&path).unwrap(), &before);
