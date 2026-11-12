@@ -4,6 +4,8 @@ mod comparison;
 #[cfg(feature = "journal")]
 mod joined;
 #[cfg(feature = "journal")]
+mod joined_target;
+#[cfg(feature = "journal")]
 pub use joined::{JoinedUpdateTarget, local_joined_update_target, prepare_native_joined_update};
 #[cfg(feature = "ace16-create")]
 mod make_table;
@@ -19,8 +21,9 @@ mod deleting;
 mod inserting;
 #[cfg(feature = "journal")]
 pub use deleting::{
-    RecoverableDeleteError, delete_uses_read_source, local_delete_table, plan_recoverable_delete,
-    plan_recoverable_delete_with_options, prepare_native_read_source_delete,
+    JoinedDeleteTarget, RecoverableDeleteError, delete_uses_read_source, local_delete_table,
+    local_joined_delete_target, plan_recoverable_delete, plan_recoverable_delete_with_options,
+    prepare_native_joined_delete, prepare_native_read_source_delete,
 };
 #[cfg(feature = "journal")]
 pub use inserting::{

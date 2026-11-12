@@ -1,5 +1,5 @@
 //! Qualified target syntax and staged joined UPDATE over an existing native editor.
-use super::{NativeMutationOptions, RecoverableError};
+use super::{NativeMutationOptions, RecoverableError, joined_target};
 use crate::editing::journal::NativeJournalEditor;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_db::EditableTable;
@@ -65,43 +65,16 @@ pub fn local_joined_update_target<'a>(
             return Err(QueryError::Unsupported);
         }
     }
-    let mut pending = Vec::new();
-    for source in update.sources.iter().rev() {
-        push(&mut pending, source, budget, cancelled)?;
-    }
-    let mut selected = None;
-    while let Some(source) = pending.pop() {
-        check(budget, cancelled)?;
-        match source {
-            TableSource::Table(table) => {
-                if table.database.is_some() {
-                    return Err(QueryError::Unsupported);
-                }
-                let alias = table.alias.as_ref().unwrap_or(&table.name).as_str();
-                budget.charge(Resource::Steps, alias.len().max(qualifier.len()) as u64)?;
-                if alias.eq_ignore_ascii_case(qualifier)
-                    && selected
-                        .replace(JoinedUpdateTarget {
-                            table: table.name.as_str(),
-                            qualifier: alias,
-                        })
-                        .is_some()
-                {
-                    return Err(QueryError::AmbiguousName);
-                }
-            }
-            TableSource::Join { left, right, .. } => {
-                push(&mut pending, right.as_ref(), budget, cancelled)?;
-                push(&mut pending, left.as_ref(), budget, cancelled)?;
-            }
-            TableSource::Group {
-                source,
-                alias: None,
-            } => push(&mut pending, source.as_ref(), budget, cancelled)?,
-            _ => return Err(QueryError::Unsupported),
-        }
-    }
-    selected.ok_or(QueryError::UnknownName)
+    let selected = joined_target::find(&update.sources, qualifier, budget, cancelled)?;
+    Ok(JoinedUpdateTarget {
+        table: selected.table.name.as_str(),
+        qualifier: selected
+            .table
+            .alias
+            .as_ref()
+            .unwrap_or(&selected.table.name)
+            .as_str(),
+    })
 }
 
 /// Stage all joined expressions after the caller released the native budget
@@ -150,25 +123,6 @@ fn check(budget: &mut ResourceBudget, cancelled: &dyn Fn() -> bool) -> Result<()
         return Err(QueryError::Cancelled);
     }
     budget.charge(Resource::Steps, 1)?;
-    Ok(())
-}
-
-fn push<'a>(
-    pending: &mut Vec<&'a TableSource>,
-    source: &'a TableSource,
-    budget: &mut ResourceBudget,
-    cancelled: &dyn Fn() -> bool,
-) -> Result<(), QueryError> {
-    check(budget, cancelled)?;
-    if pending.len() == pending.capacity() {
-        let added = pending.capacity().max(1);
-        budget.charge(Resource::Steps, pending.len() as u64)?;
-        budget.charge_allocation(added as u64, size_of::<&TableSource>() as u64)?;
-        pending
-            .try_reserve_exact(added)
-            .map_err(|_| QueryError::Allocation)?;
-    }
-    pending.push(source);
     Ok(())
 }
 

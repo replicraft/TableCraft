@@ -1,10 +1,12 @@
 //! Normal DELETE lowering consumes the existing shared predicate service.
+mod joined;
 mod read_source;
 use super::{NativeMutationOptions, comparison};
 use crate::editing::{
     NativeEditError,
     journal::{self, NativeJournalEditor},
 };
+pub use joined::{JoinedDeleteTarget, local_joined_delete_target, prepare_native_joined_delete};
 pub use read_source::{delete_uses_read_source, prepare_native_read_source_delete};
 use tablecraft_ace::{NativeImage, RecoverableNativeDeletePlan};
 use tablecraft_core::limits::ResourceBudget;
