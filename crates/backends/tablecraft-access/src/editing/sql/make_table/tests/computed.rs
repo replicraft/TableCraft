@@ -95,7 +95,6 @@ fn computed_text_dynamic_null_only_unaliased_and_parameter_shapes_are_not_guesse
     let seed = fields::source(fields::Case::FirstNumber).bytes;
     let before = populated::numbers(&seed, "Items", &[Some(23)]);
     for sql in [
-        "SELECT CStr(i.CopiedScore) AS Label INTO Archive FROM Items AS i",
         "SELECT 'a🦀' AS Label INTO Archive FROM Items AS i",
         "SELECT CDec(i.CopiedScore) AS Amount INTO Archive FROM Items AS i",
         "SELECT CLng(i.CopiedScore) INTO Archive FROM Items AS i",
@@ -124,6 +123,18 @@ fn computed_text_dynamic_null_only_unaliased_and_parameter_shapes_are_not_guesse
             "{sql}"
         );
     }
+    // Complete query evaluation precedes destination declaration lowering.
+    // CStr requires its actual formatting provider even though computed native
+    // Text publication is outside this profile; a type refusal cannot mask it.
+    assert!(matches!(
+        prepare(
+            &before,
+            "SELECT CStr(i.CopiedScore) AS Label INTO Archive FROM Items AS i"
+        ),
+        Err(NativeMakeTableError::Query(MakeTableError::Query(
+            QueryError::Evaluation(EvalError::NumberFormatRequired)
+        )))
+    ));
     assert!(matches!(
         prepare(
             &before,
@@ -138,7 +149,7 @@ fn a_late_computed_error_discards_the_complete_relation_instead_of_staging_a_pre
     let (before, _) = source();
     for sql in [
         "SELECT CLng(1/(i.CopiedScore-69)) AS CopiedScore INTO Archive FROM Items AS i",
-        "SELECT TOP 0 CLng(1/(i.CopiedScore-69)) AS CopiedScore INTO Archive FROM Items AS i",
+        "SELECT TOP 1 CLng(1/(i.CopiedScore-69)) AS CopiedScore INTO Archive FROM Items AS i",
     ] {
         let result = prepare(&before, sql);
         assert!(
