@@ -51,9 +51,12 @@ pub(super) fn apply(
         #[cfg(feature = "ace16-create")]
         CompletionFacts::DatabaseOptions(options) => (None, None, None, None, Some(options)),
     };
-    let explicit_intent_limit = plan.explicit_intent_limit();
     let intent = match plan.encode_intent(budget, cancelled) {
         Ok(intent) => intent,
+        Err(cause) => return Err(session.fail(Phase::Intent, cause)),
+    };
+    let explicit_intent_limit = match plan.explicit_intent_limit(intent.len()) {
+        Ok(limit) => limit,
         Err(cause) => return Err(session.fail(Phase::Intent, cause)),
     };
     let setup = (|| {
@@ -115,3 +118,10 @@ pub(super) fn apply(
         false,
     )
 }
+
+#[cfg(all(
+    test,
+    feature = "ace16-create",
+    any(target_os = "macos", target_os = "linux", windows)
+))]
+mod tests;

@@ -31,10 +31,11 @@ use tablecraft_ace::{
 use tablecraft_ace::{
     NativeClockInsertIntent, NativeCompleteInsertIntent, NativeCurrentFieldAdditionIntent,
     NativeDeleteIntent, NativeEofInsertIntent, NativeFieldDropIntent, NativeFieldRenameIntent,
-    NativeInsertIntent, NativeOmittedInsertIntent, NativeQueryExpressionEditsIntent,
-    NativeQueryExpressionIntent, NativeTableDropIntent, NativeTableRenameIntent,
-    NativeUpdateIntent, NativeUpdateProfile, PreparedNativeUpdate, RecoverableNativeDeletePlan,
-    RecoverableNativeEditPlan, RecoverableNativeTableRenamePlan, RecoverableTableDropPlan,
+    NativeInsertIntent, NativeIntentError, NativeOmittedInsertIntent,
+    NativeQueryExpressionEditsIntent, NativeQueryExpressionIntent, NativeTableDropIntent,
+    NativeTableRenameIntent, NativeUpdateIntent, NativeUpdateProfile, PreparedNativeUpdate,
+    RecoverableNativeDeletePlan, RecoverableNativeEditPlan, RecoverableNativeTableRenamePlan,
+    RecoverableTableDropPlan,
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::{DurableStorage, ResizableDurableStorage};
@@ -102,13 +103,39 @@ pub(super) enum MutationPlan {
 }
 
 impl MutationPlan {
-    pub(super) fn explicit_intent_limit(&self) -> Option<u64> {
+    pub(super) fn explicit_intent_limit(
+        &self,
+        encoded_length: usize,
+    ) -> Result<Option<u64>, Cause> {
         match self {
-            #[cfg(feature = "ace16-create")]
-            Self::PopulatedTable(_) => {
-                Some(NativePopulatedAddTableIntent::MAX_ENCODED_BYTES as u64)
+            Self::Update(plan)
+                if matches!(
+                    plan.intent().profile(),
+                    NativeUpdateProfile::Ace16RetainedRows
+                        | NativeUpdateProfile::Ace16RetainedOpaqueRows
+                        | NativeUpdateProfile::Ace16RetainedCurrencyRows
+                        | NativeUpdateProfile::Ace16RetainedBooleanRows
+                        | NativeUpdateProfile::Ace16RetainedFixedScalarRows
+                        | NativeUpdateProfile::Ace16RetainedWideValueRows
+                        | NativeUpdateProfile::Ace16RetainedBooleanMaterialization
+                        | NativeUpdateProfile::Ace16RetainedEmptyRows
+                        | NativeUpdateProfile::Ace16RetainedLongColumnBatch
+                        | NativeUpdateProfile::Ace16RetainedIndexedLongRows
+                        | NativeUpdateProfile::Ace16RetainedCurrencyColumnBatch
+                ) =>
+            {
+                // The selected native encoder has validated and paid this
+                // complete u32-framed original. Namespace allowance follows
+                // the actual encoded length.
+                let length = u32::try_from(encoded_length)
+                    .map_err(|_| Cause::Intent(NativeIntentError::InvalidRecord))?;
+                Ok(Some(u64::from(length)))
             }
-            _ => None,
+            #[cfg(feature = "ace16-create")]
+            Self::PopulatedTable(_) => Ok(Some(
+                NativePopulatedAddTableIntent::MAX_ENCODED_BYTES as u64,
+            )),
+            _ => Ok(None),
         }
     }
 
