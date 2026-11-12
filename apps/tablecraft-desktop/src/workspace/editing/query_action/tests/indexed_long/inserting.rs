@@ -1,4 +1,6 @@
 //! Normal SQL Run reaches manual indexed INSERT after actual CREATE and UPDATE.
+mod select;
+
 use super::{assert_image, create, finish_reads, finish_save, journal_path, opened, reviewed, run};
 use crate::workspace::Desktop;
 use egui::accesskit::Role;

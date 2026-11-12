@@ -1,4 +1,6 @@
 //! INSERT consumes the actual saved CREATE and indexed UPDATE images.
+mod select;
+
 use super::{
     assert_image, create, create_definition, inspect, open, opened, request, save_and_acknowledge,
     terminal,
