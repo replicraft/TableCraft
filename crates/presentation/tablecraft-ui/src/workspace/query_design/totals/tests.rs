@@ -9,9 +9,11 @@ use egui_kittest::{
 };
 use tablecraft_builders::query::{DesignColumn, DesignExpression};
 
-fn harness() -> Harness<'static, (State, Vec<Action>)> {
+fn harness(mock: bool) -> Harness<'static, (State, Vec<Action>)> {
     let mut preview = Preview::new(Scene::QueryDesign);
-    let state = std::mem::take(preview.state_mut());
+    let mut state = std::mem::take(preview.state_mut());
+    state.mock_preview = mock;
+
     let mut harness = Harness::builder()
         .with_size(egui::vec2(1600.0, 900.0))
         .build_ui_state(
@@ -25,50 +27,52 @@ fn harness() -> Harness<'static, (State, Vec<Action>)> {
 
 #[test]
 fn actual_totals_command_adds_and_removes_the_row_without_build_or_run() {
-    let mut harness = harness();
-    // NO_CLONE: The expected draft must survive mutable Ribbon interactions so
-    // the test detects lost choices after toggling; a live borrow cannot span them.
-    let before = harness.state().0.query_design_draft().unwrap().clone();
-    let revision = harness
-        .state()
-        .0
-        .query_design_request()
-        .unwrap()
-        .draft_revision;
-    harness
-        .get_by_role_and_label(Role::Button, "Totals")
-        .click_accesskit();
-    harness.run_steps(2);
-    assert!(harness.state().0.query_design_draft().unwrap().totals);
-    harness.get_by_role_and_label(Role::ComboBox, "Total: 1");
-    assert_eq!(
-        harness
+    for mock in [true, false] {
+        let mut harness = harness(mock);
+        // NO_CLONE: The expected draft must survive mutable Ribbon interactions so
+        // the test detects lost choices after toggling; a live borrow cannot span them.
+        let before = harness.state().0.query_design_draft().unwrap().clone();
+        let revision = harness
             .state()
             .0
             .query_design_request()
             .unwrap()
-            .draft_revision,
-        revision + 1,
-    );
-    assert!(harness.state().1.is_empty());
-    assert!(harness.state().0.query_design_request_id().is_none());
-
-    harness
-        .get_by_role_and_label(Role::Button, "Totals")
-        .click_accesskit();
-    harness.run_steps(2);
-    assert_eq!(harness.state().0.query_design_draft(), Some(&before));
-    assert!(
+            .draft_revision;
         harness
-            .query_by_role_and_label(Role::ComboBox, "Total: 1")
-            .is_none()
-    );
-    assert!(harness.state().1.is_empty());
+            .get_by_role_and_label(Role::Button, "Totals")
+            .click_accesskit();
+        harness.run_steps(2);
+        assert!(harness.state().0.query_design_draft().unwrap().totals);
+        harness.get_by_role_and_label(Role::ComboBox, "Total: 1");
+        assert_eq!(
+            harness
+                .state()
+                .0
+                .query_design_request()
+                .unwrap()
+                .draft_revision,
+            revision + 1,
+        );
+        assert!(harness.state().1.is_empty());
+        assert!(harness.state().0.query_design_request_id().is_none());
+
+        harness
+            .get_by_role_and_label(Role::Button, "Totals")
+            .click_accesskit();
+        harness.run_steps(2);
+        assert_eq!(harness.state().0.query_design_draft(), Some(&before));
+        assert!(
+            harness
+                .query_by_role_and_label(Role::ComboBox, "Total: 1")
+                .is_none()
+        );
+        assert!(harness.state().1.is_empty());
+    }
 }
 
 #[test]
 fn unavailable_toggle_off_is_disabled_and_preserves_draft_revision_and_results() {
-    let mut harness = harness();
+    let mut harness = harness(true);
     assert!(harness.state_mut().0.set_query_data(
         None,
         crate::Data {

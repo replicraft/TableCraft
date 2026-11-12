@@ -229,7 +229,7 @@ fn query_design_unavailable_commands_are_visible_in_both_hosts_and_cannot_dispat
     let (_, output) = render(Vec::new());
     let tree = output.platform_output.accesskit_update.unwrap();
     let mut forced = Vec::new();
-    for label in ["Builder", "Totals", "Parameters", "Property Sheet"] {
+    for label in ["Builder", "Parameters", "Property Sheet"] {
         let (id, node) = tree
             .nodes
             .iter()
@@ -258,7 +258,6 @@ fn query_design_unavailable_commands_are_visible_in_both_hosts_and_cannot_dispat
     let mut forced = Vec::new();
     for label in [
         "Builder",
-        "Totals",
         "Parameters",
         "Property Sheet",
         "Select",
