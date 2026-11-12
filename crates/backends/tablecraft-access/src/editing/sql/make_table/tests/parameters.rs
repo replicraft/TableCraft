@@ -21,6 +21,7 @@ fn prepare(
         &RefCell::new(budget()),
         &mut budget(),
         NativeMakeTableOptions {
+            absent_like_mode: None,
             parameters,
             execution: ExecutionOptions::default(),
             snapshot_limits: TableSnapshotLimits::default(),

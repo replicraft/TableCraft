@@ -136,6 +136,8 @@ mod native {
                 &source,
                 &mut budget(),
                 NativeMutationOptions {
+                    number_format: None,
+                    date_format: None,
                     like_mode: None,
                     parameters: &[],
                     collation: resolver.default_collation(),

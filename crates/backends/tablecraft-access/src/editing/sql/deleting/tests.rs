@@ -44,6 +44,8 @@ fn typed_delete_context_selects_original_rows_and_legacy_api_still_refuses_decla
         &mut budget(),
         &mut budget(),
         NativeMutationOptions {
+            number_format: None,
+            date_format: None,
             like_mode: None,
             parameters: &parameters,
             collation: resolver.default_collation(),

@@ -67,6 +67,8 @@ pub fn prepare_native_read_source_update(
         ReadSourceUpdateOptions {
             target_snapshot,
             mutation: MutationOptions {
+                number_format: options.number_format,
+                date_format: options.date_format,
                 parameters: Some(options.parameters),
                 collation: Some(options.collation),
                 collation_resolver: Some(options.resolver),

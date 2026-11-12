@@ -138,6 +138,8 @@ where
     };
     let omitted = !insert.fields.is_empty() && insert.fields.len() < inserter.columns().len();
     let options = tablecraft_query::MutationOptions {
+        number_format: options.number_format,
+        date_format: options.date_format,
         parameters: Some(options.parameters),
         collation: Some(options.collation),
         collation_resolver: Some(options.resolver),

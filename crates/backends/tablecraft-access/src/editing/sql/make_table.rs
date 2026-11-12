@@ -122,6 +122,7 @@ pub fn prepare_native_make_table(
             options,
             snapshot_limits,
             native_comparison: None,
+            absent_like_mode: None,
             declared_parameters: false,
         },
     )
@@ -153,6 +154,7 @@ pub fn prepare_native_make_table_with_native_comparison(
             options,
             snapshot_limits,
             native_comparison: Some(comparison),
+            absent_like_mode: None,
             declared_parameters: false,
         },
     )
@@ -165,6 +167,10 @@ pub struct NativeMakeTableOptions<'a> {
     pub parameters: &'a [(&'a str, Value)],
     /// Query evaluation providers and cumulative cancellation policy.
     pub execution: ExecutionOptions<'a>,
+    /// Caller-selected application default, used only for absent native mode.
+    /// Known native modes override it; Unknown never uses this fallback.
+    /// None retains the adapter's explicit unsupplied-mode contract.
+    pub absent_like_mode: Option<LikeMode>,
     /// Native consumer limits, independent from query execution allowances.
     pub snapshot_limits: TableSnapshotLimits,
 }
@@ -172,6 +178,8 @@ pub struct NativeMakeTableOptions<'a> {
 /// Prepare a declared-parameter SELECT INTO using the same captured image for
 /// native fields, comparison policies and complete row evaluation. Parameter
 /// values are consumed only during preparation; finish never reruns the query.
+/// An explicit absent_like_mode supplies a host application default only when
+/// native mode is absent; Unknown still refuses mode-dependent evaluation.
 /// Direct projections retain their actual native declarations. Computed output
 /// qualification remains unchanged and does not infer sizes from supplied values.
 ///
@@ -196,6 +204,7 @@ pub fn prepare_parameterized_native_make_table_with_native_comparison(
             options: options.execution,
             snapshot_limits: options.snapshot_limits,
             native_comparison: Some(comparison),
+            absent_like_mode: options.absent_like_mode,
             declared_parameters: true,
         },
     )
@@ -206,6 +215,7 @@ struct Preparation<'a> {
     options: ExecutionOptions<'a>,
     snapshot_limits: TableSnapshotLimits,
     native_comparison: Option<&'a RefCell<ResourceBudget>>,
+    absent_like_mode: Option<LikeMode>,
     declared_parameters: bool,
 }
 
@@ -221,6 +231,7 @@ fn prepare_with_policy(
         options,
         snapshot_limits,
         native_comparison: comparison,
+        absent_like_mode,
         declared_parameters,
     } = preparation;
     let _span = tracing::debug_span!("access.prepare_native_make_table").entered();
@@ -293,7 +304,8 @@ fn prepare_with_policy(
                 let like_mode = match source.database_query_mode()? {
                     DatabaseQueryMode::Ansi89 => Some(LikeMode::Ansi89),
                     DatabaseQueryMode::Ansi92 => Some(LikeMode::Ansi92),
-                    DatabaseQueryMode::Absent | DatabaseQueryMode::Unknown => None,
+                    DatabaseQueryMode::Absent => absent_like_mode,
+                    DatabaseQueryMode::Unknown => None,
                 };
                 let (source, resolver) =
                     source.with_deferred_database_collation_resolver(comparison)?;

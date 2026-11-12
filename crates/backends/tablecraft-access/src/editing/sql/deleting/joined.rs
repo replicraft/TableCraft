@@ -96,6 +96,8 @@ pub fn prepare_native_joined_delete(
             target_snapshot,
             target_qualifier: target.qualifier,
             mutation: MutationOptions {
+                number_format: options.number_format,
+                date_format: options.date_format,
                 parameters: Some(options.parameters),
                 collation: Some(options.collation),
                 collation_resolver: Some(options.resolver),

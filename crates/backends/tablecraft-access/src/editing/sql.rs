@@ -4,7 +4,7 @@ mod comparison;
 #[cfg(feature = "journal")]
 mod like_mode;
 #[cfg(feature = "journal")]
-pub use like_mode::native_mutation_like_mode;
+pub use like_mode::native_mutation_query_mode;
 #[cfg(feature = "journal")]
 mod joined;
 #[cfg(feature = "journal")]
@@ -205,7 +205,11 @@ pub fn plan_recoverable_batch_update_with_budgets(
 /// Explicit evaluation inputs for one native original-snapshot mutation.
 #[cfg(feature = "journal")]
 pub struct NativeMutationOptions<'a> {
-    /// Source-bound database wildcard syntax; absent or unknown remains None.
+    /// Host-captured numeric Text conversion/output profile, separate from collation.
+    pub number_format: Option<tablecraft_expressions::functions::conversions::text::NumberFormat>,
+    /// Host-captured Gregorian date/time Text conversion/output profile.
+    pub date_format: Option<tablecraft_expressions::functions::dates::parsing::DateTextFormat>,
+    /// Explicit wildcard evaluation policy; the caller owns application defaults.
     pub like_mode: Option<tablecraft_expressions::predicates::LikeMode>,
     /// Complete typed literal inputs, validated against the SQL declarations.
     pub parameters: &'a [(&'a str, Value)],
@@ -233,6 +237,8 @@ pub fn plan_recoverable_batch_update_with_options(
     let editor = NativeJournalEditor::new(image, table, native, cancelled)?;
     let policies = comparison::align(&schema, editor.snapshot().columns(), native, cancelled)?;
     let comparison = MutationOptions {
+        number_format: options.number_format,
+        date_format: options.date_format,
         parameters: Some(options.parameters),
         collation: Some(options.collation),
         collation_resolver: Some(options.resolver),

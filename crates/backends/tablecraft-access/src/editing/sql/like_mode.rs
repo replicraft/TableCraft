@@ -1,7 +1,6 @@
 //! Capture criteria wildcard syntax from the same immutable mutation source.
 use tablecraft_ace::{DatabaseQueryMode, InspectError, NativeImage, inspect_database_properties};
 use tablecraft_core::limits::{Resource, ResourceBudget};
-use tablecraft_expressions::predicates::LikeMode;
 use tablecraft_sql::{
     query::{Query, ReadBody, ReadQuery, Statement},
     select::{Expression, FunctionArgument, TableSource},
@@ -13,21 +12,22 @@ enum Visit<'a> {
     Read(&'a ReadQuery),
 }
 
-/// Observe native wildcard syntax only when written mutation criteria use LIKE.
+/// Observe raw native query-mode metadata only for written criteria LIKE.
 /// The image must be the immutable source subsequently moved into the editor.
 /// Assignments and projected expressions retain their separate closed admission.
-/// Missing and unknown settings remain None; no application default is invented.
+/// None means no criteria LIKE. Some retains Absent separately from Unknown;
+/// the caller owns any explicit application default. No default is invented here.
 ///
 /// # Errors
 /// Returns native metadata errors, cancellation, allocation failure or exhaustion
 /// of either the syntax-work or native-inspection allowance. No file is opened.
-pub fn native_mutation_like_mode(
+pub fn native_mutation_query_mode(
     image: &NativeImage,
     query: &Query,
     native: &mut ResourceBudget,
     syntax: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<Option<LikeMode>, InspectError> {
+) -> Result<Option<DatabaseQueryMode>, InspectError> {
     let _span = tracing::debug_span!("access.mutation.like_mode").entered();
     if !uses_like(query, syntax, cancelled)? {
         return Ok(None);
@@ -42,11 +42,7 @@ pub fn native_mutation_like_mode(
         Some(properties) => properties.query_mode(native, cancelled)?,
         None => DatabaseQueryMode::Absent,
     };
-    Ok(match mode {
-        DatabaseQueryMode::Ansi89 => Some(LikeMode::Ansi89),
-        DatabaseQueryMode::Ansi92 => Some(LikeMode::Ansi92),
-        DatabaseQueryMode::Absent | DatabaseQueryMode::Unknown => None,
-    })
+    Ok(Some(mode))
 }
 
 fn uses_like(

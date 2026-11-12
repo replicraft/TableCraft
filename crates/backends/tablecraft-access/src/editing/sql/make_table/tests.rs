@@ -464,3 +464,5 @@ fn native_comparison_preparation_uses_actual_field_order_and_never_binary_fallba
         )))
     ));
 }
+
+mod like_default;

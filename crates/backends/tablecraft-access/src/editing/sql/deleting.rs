@@ -89,6 +89,8 @@ pub fn plan_recoverable_delete_with_options(
         query_budget,
         native,
         MutationOptions {
+            number_format: options.number_format,
+            date_format: options.date_format,
             parameters: Some(options.parameters),
             collation: Some(options.collation),
             collation_resolver: Some(options.resolver),

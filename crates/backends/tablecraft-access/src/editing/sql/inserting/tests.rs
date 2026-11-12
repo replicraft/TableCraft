@@ -51,6 +51,8 @@ fn native_typed_values_preserve_omitted_default_and_explicit_null_whole_images()
             &mut budget(),
             &mut budget(),
             NativeMutationOptions {
+                number_format: None,
+                date_format: None,
                 like_mode: None,
                 parameters: &parameters,
                 collation: resolver.default_collation(),
