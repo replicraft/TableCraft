@@ -317,3 +317,5 @@ fn declared_add_checks_cancel_and_issued_source_before_parsing_or_native_plannin
 }
 
 mod unadorned;
+
+mod multiword;

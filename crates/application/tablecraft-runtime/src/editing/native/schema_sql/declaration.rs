@@ -33,10 +33,21 @@ pub(super) fn capture<'a>(
         }
         ("GUID" | "UNIQUEIDENTIFIER", []) => (CreateColumn::new(name, ScalarType::Guid), false),
         (
-            "CHAR" | "CHARACTER" | "TEXT" | "VARCHAR" | "ALPHANUMERIC" | "STRING" | "NCHAR",
+            "CHAR"
+            | "CHARACTER"
+            | "TEXT"
+            | "VARCHAR"
+            | "ALPHANUMERIC"
+            | "STRING"
+            | "NCHAR"
+            | "CHARACTER VARYING"
+            | "NATIONAL CHARACTER"
+            | "NATIONAL CHAR"
+            | "NATIONAL CHARACTER VARYING"
+            | "NATIONAL CHAR VARYING",
             [units],
         ) => (CreateColumn::short_text(name, *units as usize)?, false),
-        ("BINARY" | "VARBINARY", [bytes]) => {
+        ("BINARY" | "VARBINARY" | "BINARY VARYING" | "BIT VARYING", [bytes]) => {
             (CreateColumn::short_binary(name, *bytes as usize)?, false)
         }
         ("DECIMAL" | "NUMERIC" | "DEC", [precision, scale]) => {

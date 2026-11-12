@@ -1,4 +1,5 @@
 //! Exact SQL declaration images and the existing consuming table-creation service.
+mod multiword;
 use super::{inspect, review};
 use crate::tests::{request, stored::opened, terminal};
 use crate::{Command, Error, QueryOperation, Response, SaveOutcome, SaveWorker};
