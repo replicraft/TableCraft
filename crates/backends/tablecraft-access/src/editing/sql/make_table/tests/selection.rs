@@ -208,3 +208,32 @@ fn native_like_mode_comes_from_the_captured_database_instead_of_caller_options()
         ));
     }
 }
+
+#[cfg(feature = "journal")]
+#[test]
+fn closed_computed_order_keys_keep_direct_native_declarations_and_complete_rows() {
+    let seed = fields::source(fields::Case::FirstNumber).bytes;
+    let before = raw::populated::text_decimals(
+        &seed,
+        "Items",
+        &[(Some("long"), Some(20_000)), (Some("x"), Some(10_000))],
+    );
+    let prepared = prepare_native_make_table_with_native_comparison(
+        image(&before),
+        syntax("SELECT Label,Amount INTO Archive FROM Items ORDER BY Len(Label)"),
+        &RefCell::new(budget()),
+        &RefCell::new(budget()),
+        &mut budget(),
+        ExecutionOptions::default(),
+        TableSnapshotLimits::default(),
+    )
+    .unwrap();
+    let expected = raw::populated::text_decimals(
+        &before,
+        "Archive",
+        &[(Some("x"), Some(10_000)), (Some("long"), Some(20_000))],
+    );
+    let plan = prepared.finish(&mut budget(), &|| false).unwrap();
+    assert_eq!(plan.before_bytes(), before);
+    assert_eq!(plan.after_bytes(), expected);
+}

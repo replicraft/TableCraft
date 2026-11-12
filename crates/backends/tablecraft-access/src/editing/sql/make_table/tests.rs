@@ -267,12 +267,12 @@ fn closed_shapes_and_actual_qualifiers_cannot_route_to_external_or_computed_sour
         "SELECT x.Name INTO Archive FROM Items AS i",
         "SELECT Name INTO Archive IN 'unopened.accdb' FROM Items",
         "SELECT Name INTO Archive FROM Items IN 'unopened.accdb'",
-        "SELECT Name INTO Archive FROM Items ORDER BY Len(Name)",
+        "SELECT Name INTO Archive FROM Items ORDER BY (SELECT 1)",
         "SELECT i.Name INTO Archive FROM Items AS i, Table1",
     ] {
         assert!(
             matches!(prepare(&bytes, sql), Err(NativeMakeTableError::Shape)),
-            "unexpected admission for a refused shape"
+            "unexpected admission for a refused shape: {sql}"
         );
     }
     assert!(

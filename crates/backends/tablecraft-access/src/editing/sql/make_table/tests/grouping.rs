@@ -204,7 +204,7 @@ fn group_errors_late_having_and_top_omitted_errors_never_create_preparation() {
     let before = source();
     for sql in [
         "SELECT TOP 1 CLng(Count(*)) AS CopiedScore INTO Archive FROM Items GROUP BY CopiedScore HAVING 1/(Count(*)-2)>0 ORDER BY CopiedScore",
-        "SELECT CLng(Sum(1/(CopiedScore-2))) AS CopiedScore INTO Archive FROM Items GROUP BY CopiedScore",
+        "SELECT CLng(Nz(Sum(1/(CopiedScore-2)),0)) AS CopiedScore INTO Archive FROM Items GROUP BY CopiedScore",
     ] {
         assert!(
             matches!(
