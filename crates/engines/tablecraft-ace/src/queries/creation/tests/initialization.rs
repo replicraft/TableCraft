@@ -1,4 +1,5 @@
 //! Complete independent resize oracles and actual cold semantic recovery.
+mod map_boundary;
 use super::{at, budget, definition, image, retained_image};
 use crate::{
     InspectError, NativeImage, NativeQueryCreationIntent, NativeQueryStorageChange,

@@ -1,4 +1,5 @@
 //! Independent first-query storage and complete resize images.
+pub mod map_boundary;
 use super::{QueryStorage, Source, after_at};
 use crate::fixtures::access::{
     canonical_blank_creation, canonical_creation as canonical,
@@ -32,9 +33,20 @@ pub fn source(case: Case, name: &str, alias: &str, value: i32, at: LegacyDateTim
         }
         Case::RequiredText => properties::source(properties::Case::RequiredText).bytes,
     };
+    finish(before, MAP_PAGE, name, alias, value, at)
+}
+
+fn finish(
+    before: Vec<u8>,
+    map_page: usize,
+    name: &str,
+    alias: &str,
+    value: i32,
+    at: LegacyDateTime,
+) -> Source {
     let definition = before.len() / PAGE;
     let data = definition + 1;
-    let initialized = initialize(&before, definition, data, at);
+    let initialized = initialize(&before, map_page, definition, data, at);
     // All authored original identities are positive. The new system table uses
     // its positive TDEF identity; the first query's signed ID is independent.
     let native_query_id = i32::MIN + 1;
@@ -60,7 +72,7 @@ pub fn partial_query_storage(at: LegacyDateTime) -> Vec<u8> {
     let before = canonical_blank_creation::source();
     let definition = before.len() / PAGE;
     let data = definition + 1;
-    let mut partial = initialize(&before, definition, data, at);
+    let mut partial = initialize(&before, MAP_PAGE, definition, data, at);
     assert_eq!(
         u32::from_le_bytes(
             partial[data * PAGE + 4..data * PAGE + 8]
@@ -75,6 +87,7 @@ pub fn partial_query_storage(at: LegacyDateTime) -> Vec<u8> {
 
 fn initialize(
     before: &[u8],
+    map_page: usize,
     definition_page: usize,
     data_page: usize,
     at: LegacyDateTime,
@@ -84,7 +97,7 @@ fn initialize(
     // immutable BEFORE bytes for whole-image preservation and recovery checks.
     let mut bytes = before.to_vec();
     let maps = usize::from(u16::from_le_bytes(
-        bytes[MAP_PAGE * PAGE + 12..MAP_PAGE * PAGE + 14]
+        bytes[map_page * PAGE + 12..map_page * PAGE + 14]
             .try_into()
             .unwrap(),
     ));
@@ -96,14 +109,15 @@ fn initialize(
             map[1..5].copy_from_slice(&(base as u32).to_le_bytes());
             map[5 + (data_page - base) / 8] = 1 << ((data_page - base) % 8);
         }
-        append_record(&mut bytes[MAP_PAGE * PAGE..(MAP_PAGE + 1) * PAGE], &map);
+        append_record(&mut bytes[map_page * PAGE..(map_page + 1) * PAGE], &map);
     }
 
     let mut definition = canonical::definition(&QUERY_FIELDS, 0, maps as u8);
+    put32(&mut definition, 55, (map_page as u32) << 8 | maps as u32);
     put32(
         &mut definition,
         59,
-        (MAP_PAGE as u32) << 8 | (maps + 1) as u32,
+        (map_page as u32) << 8 | (maps + 1) as u32,
     );
     let length = u32::from_le_bytes(definition[8..12].try_into().unwrap()) as usize;
     let tail = length - 2;
@@ -112,12 +126,12 @@ fn initialize(
     put32(
         &mut definition,
         tail + 2,
-        (MAP_PAGE as u32) << 8 | (maps + 2) as u32,
+        (map_page as u32) << 8 | (maps + 2) as u32,
     );
     put32(
         &mut definition,
         tail + 6,
-        (MAP_PAGE as u32) << 8 | (maps + 3) as u32,
+        (map_page as u32) << 8 | (maps + 3) as u32,
     );
     put16(&mut definition, tail + 10, 0xffff);
     put32(&mut definition, 8, (length + 10) as u32);

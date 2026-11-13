@@ -2,7 +2,10 @@
 use super::{self as source, allocator, catalog, schema};
 use crate::{
     CreateDatabaseError, NativeImage, NativeSortOrder, QueryCreationError, TableSchema,
-    format::{data_append::Page, row::reference},
+    format::{
+        data_append::Page,
+        row::{MAX_SLOTS, reference},
+    },
     header::check,
     table::{
         mutation::{lval_ownership, ordinary_content::schema_dependencies, schema_source},
@@ -16,7 +19,6 @@ use tablecraft_core::limits::ResourceBudget;
 
 const MAP_RECORD_BYTES: usize = 13;
 const ADDED_MAP_ROWS: usize = 4;
-const MAX_MAP_ROWS: usize = u8::MAX as usize + 1;
 
 pub(in crate::table::mutation::query_creation) struct Source<'image> {
     pub catalog: TableSchema,
@@ -87,10 +89,13 @@ pub(in crate::table::mutation::query_creation) fn capture<'image>(
         check(budget, cancelled)?;
         let page = super::super::append::page(image.as_bytes(), number)?;
         let frame = Page::capture_retained(page, 0, budget, cancelled)?;
+        // The new AFTER must remain readable by the complete native qualifier.
+        // An eight-bit reference alone does not qualify another row beyond its
+        // admitted count; this is not a claim about Access usage-map capacity.
         let count = frame
             .count
             .checked_add(ADDED_MAP_ROWS)
-            .filter(|count| *count <= MAX_MAP_ROWS);
+            .filter(|count| *count <= MAX_SLOTS);
         if count.is_some_and(|count| {
             frame.start
                 >= crate::format::row::slot_offset(count) + ADDED_MAP_ROWS * MAP_RECORD_BYTES
