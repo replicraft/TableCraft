@@ -1,4 +1,5 @@
 //! Independent complete-image QueryDef creation and original-source refusals.
+mod initialization;
 mod local_tables;
 use super::{QueryCreationDefinition, QueryCreationError};
 use crate::{InspectError, NativeImage, QueryAttribute, read_saved_query_definition};

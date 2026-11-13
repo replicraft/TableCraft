@@ -17,7 +17,7 @@ const MAP_PAGE: usize = 3;
 const CATALOG_DEFINITION: usize = 2;
 const CATALOG_DATA: usize = 4;
 const ORDER: [u8; 4] = [0, 0, 0, 1];
-const QUERY_FIELDS: [Field<'static>; 8] = [
+pub(super) const QUERY_FIELDS: [Field<'static>; 8] = [
     Field::fixed("ObjectId", 4, 4, 0, 0),
     Field::fixed("Attribute", 2, 1, 4, 0),
     Field::variable("Order", 9, 4, 0),

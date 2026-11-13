@@ -1,4 +1,5 @@
 //! Independent QueryDef creation bytes, never using a production mutation codec.
+pub mod initialization;
 pub mod local_tables;
 use super::{Fragment, QUERY_ID, fragment_records};
 use crate::fixtures::access::{
