@@ -1,4 +1,6 @@
 //! Real actor failures and witnessed read retry, without injected outcomes.
+mod return_to_draft;
+
 use super::{name, opened, run_saved, saved, scratch, sql};
 use crate::workspace::{Desktop, test_support::finish_save};
 use egui::accesskit::Role;
