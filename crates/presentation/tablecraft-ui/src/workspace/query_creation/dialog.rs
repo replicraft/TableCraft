@@ -2,10 +2,22 @@
 use super::save::{Phase, QueryCreationSaveCommand as Command};
 use crate::localization::tr;
 use crate::workspace::{Action, State, diagnostics, query::parameters::copy_text, save_display};
-use egui::{Context, Id, Modal, TextEdit};
+use egui::{Context, Id, Modal, TextEdit, Ui};
 use tablecraft_builders::query::MAX_DESIGN_TEXT_BYTES;
 
 impl State {
+    pub(in crate::workspace) fn query_creation_save_as_button(&mut self, ui: &mut Ui) {
+        if ui
+            .add_enabled(
+                self.can_begin_query_creation_save_as(),
+                egui::Button::new(tr(ui, "query-save-as")),
+            )
+            .clicked()
+        {
+            self.queue_query_creation_save_as();
+        }
+    }
+
     pub(in crate::workspace) fn query_creation_dialog(
         &mut self,
         context: &Context,

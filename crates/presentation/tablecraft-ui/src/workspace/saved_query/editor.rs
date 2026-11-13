@@ -59,6 +59,7 @@ impl State {
                 });
             }
             self.query_run_limits_button(ui);
+            self.query_creation_save_as_button(ui);
         });
         if self.saved_query.data.is_some()
             && (self.saved_query.pending.is_some()

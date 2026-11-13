@@ -40,15 +40,6 @@ impl State {
 
     fn query_editor_contents(&mut self, ui: &mut Ui, actions: &mut Vec<Action>) {
         if self.view == DocumentView::Query {
-            if ui
-                .add_enabled(
-                    self.can_begin_query_creation_save_as(),
-                    egui::Button::new(tr(ui, "query-save-as")),
-                )
-                .clicked()
-            {
-                self.queue_query_creation_save_as();
-            }
             if self.saved_query.active
                 && !self.query_design_visible()
                 && !self.query_design_results_visible()
@@ -58,7 +49,10 @@ impl State {
             }
             self.query_design_report(ui);
             if self.query_design_visible() || self.query_design_results_visible() {
-                self.query_run_limits_button(ui);
+                ui.horizontal_wrapped(|ui| {
+                    self.query_run_limits_button(ui);
+                    self.query_creation_save_as_button(ui);
+                });
             }
             if self.query_design_results_visible() {
                 let designed = matches!(self.query_result, ResultOrigin::Design(_));
@@ -140,6 +134,7 @@ impl State {
                     actions.push(Action::Query);
                 }
                 self.query_run_limits_button(ui);
+                self.query_creation_save_as_button(ui);
             });
             ui.separator();
         }
