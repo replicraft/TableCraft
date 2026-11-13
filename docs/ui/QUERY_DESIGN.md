@@ -25,8 +25,11 @@ The grid exposes Field, Table, Sort, Show, Criteria and OR rows, with a Total ro
 when query-design Totals is enabled. Field expressions
 and criteria are query syntax, independent of regional display settings. Entries
 on one criteria row combine with AND; populated rows combine with OR. Hiding a
-projection does not remove its criteria. Output aliases and column removal are
-available from the field cell's context menu. Explicit source-field joins retain
+projection does not remove its criteria. The Field row displays an output alias
+as `Alias: operand`; names requiring quoting use the SQL owner's bracketed spelling.
+The same cell edits that prefix and operand. Column removal and the separate alias
+control remain in its context menu; the separate alias control is disabled while
+a raw Field edit owns the input. Explicit source-field joins retain
 their two source identities, join kind and field names.
 
 SQL View explicitly builds the current draft. Run explicitly builds and then
@@ -119,9 +122,32 @@ records executed owner/Runtime/Desktop/MCP checks, translation validation and
 directly viewed offscreen frames. This is local qualification; code or a
 synthetic preview is not native Access interaction or Windows parity evidence.
 
-The Field row currently shows the operand without its retained output alias;
-column aliases remain available through the existing context controls. Making
-that prefix visible and editable in the grid is the next presentation correction.
+## Retained Field edits
+
+Incomplete Field text remains authored data even when it cannot yet replace the
+parsed column. Blur, editing another column and switching objects retain the exact
+text. Source refresh retains that text and its explicit-Cancel baseline while
+removing focus hints, metadata and execution rights. A current typed Field keeps
+its logical source identity and is rechecked by the builder; the Cancel baseline
+cannot supply a source binding.
+
+Each raw edit advances the draft revision. Build, SQL publication, import and Run
+refuse unresolved text; a previously queued action or result cannot execute the
+older parsed model behind a newer input buffer. Hard parser, allocation and input
+limits reject the complete candidate rather than retaining a truncated prefix.
+
+Escape in the Field editor, or **Cancel field edit** in its context menu, restores
+that field's original operand and alias. Other columns, criteria and roles stay
+as edited. A blocked close reveals the affected Field so this cancellation remains
+reachable after blur. While an edit is unresolved, closing that SQL tab or taking
+a destructive document/window transition requires finishing or explicitly
+cancelling it. Parked edits also block application restart. This is a temporary
+editor restriction; native dirty-query, Save and Save As workflows remain
+unfinished. It is not a claim about Access's close behavior.
+
+The alias/raw-input implementation is integrated. Its new headless checks and
+updated offscreen frames are pending qualification; the earlier Totals receipt
+above does not qualify these changes.
 
 ## Keyboard flow
 
@@ -138,8 +164,9 @@ operations retain aliases, criteria and unrelated projections. Duplicate matches
 are handled one at a time rather than bulk-deleted. Enter does not add a query
 field; pointer double-click retains its existing append behavior.
 
-The Field editor's Shift+F10 opens its existing alias/remove context menu. Escape
-from a keyboard-opened menu returns focus to that editor. Tab and Shift+Tab use
+The Field editor's Shift+F10 opens its alias/remove context menu, including explicit
+Cancel while an edit is retained. Escape from a keyboard-opened menu returns focus
+to that editor; Escape in the editor cancels its retained Field edit. Tab and Shift+Tab use
 the actual input controls; text-editing arrows remain text-editing keys.
 
 A focused source field also accepts Shift+F10 for its existing Join to menu.
@@ -168,7 +195,11 @@ There are no native edit rights on design results.
 The builder profile permits eight sources, seven explicit joins, 32 output-grid
 columns, eight criteria rows and 64 KiB of combined editable UTF-8 text. Metadata
 has separate owner-defined limits. The UI rejects an oversized insertion whole
-before text layout; it does not keep a truncated prefix. Runtime still validates
+before text layout; it does not keep a truncated prefix. A retained Field edit
+reserves the greatest of its raw text, Cancel baseline and current parsed payload
+in that editable allowance, so another edit cannot consume the bytes needed for
+Cancel. Workspace retained-memory accounting separately charges the actual raw,
+baseline and model storage, including shared immutable owner handles. Runtime still validates
 the complete draft and fresh metadata on Build and Import.
 
 Drafts and view choice follow the scratch object across object switches. Workspace
@@ -205,7 +236,8 @@ names for their kind and removal controls. Identical field names in different
 sources therefore remain distinguishable; these labels are presentation text,
 never SQL input. Missing source metadata remains visible rather than renamed.
 The Add Tables surface exposes the implemented native-table source profile;
-Queries/Both tabs remain visible but disabled. Field aliases use a context editor.
+Queries/Both tabs remain visible but disabled. Field aliases use the visible prefix
+or the separate context control when no retained Field input owns the edit.
 These distinctions remain visual and interaction approximations, not verified
 Access behavior.
 

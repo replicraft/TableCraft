@@ -87,6 +87,13 @@ desktop. Build/import do not run SQL, change a saved QueryDef or acquire a nativ
 save capability. Execute the resulting SQL through the separate inspected read
 workflow with its actual document revision and typed inputs.
 
+Column `alias` remains separate output-name data in the returned/supplied draft.
+Import → change that field → Build → explicit inspected Run uses the same checked
+builder and native metadata as the desktop Field row. The protocol does not parse
+`Alias: operand` itself, infer a source from the alias or acquire write authority.
+Typed field expressions retain their actual `source_id` and field name; changing
+an alias does not replace those facts or discard other draft declarations.
+
 The returned draft includes `totals`, per-column `total` and `parameters_sql`.
 Total roles use `group_by`, `sum`, `avg`, `min`, `max`, `count`, `first`, `last`,
 `expression` and `where`. Omitted `totals` retains false; an omitted/null column

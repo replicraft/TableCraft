@@ -21,7 +21,7 @@ infrastructure or VBA execution.
 - [Blank Access database creation](DATABASE_CREATION.md)
 - [Datasheet display preferences and window chrome](DISPLAY_PREFERENCES.md)
 - [Complete native-view datasheet totals](DATASHEET_TOTALS.md)
-- [Source-bound visual query design and grouped Totals](QUERY_DESIGN.md)
+- [Visual query design, grouped Totals and retained Field edits](QUERY_DESIGN.md)
 - [Scratch SQL drafts and result ownership](SQL_WORKSPACE.md)
 - [Native Find and reviewed replacement](FIND_REPLACE.md)
 - [Reviewed saved-field names](FIELD_RENAME.md)

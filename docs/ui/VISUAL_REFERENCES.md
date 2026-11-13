@@ -14,6 +14,14 @@ These local frames show readable role cells and a missing retained alias prefix
 in the Field row, now a tracked correction. Windows input emulation and rendered
 widgets do not establish native Windows or Access interaction parity.
 
+The later alias-editor correction uses the Field-prefix spelling visible in the
+same retained `city-dob.gif` image (`Name: expression`). The parser/builders own
+prefix quoting and operand syntax. Raw-input retention, explicit Cancel and the
+temporary finish-or-Cancel close restriction are current editor behavior, not
+observations supplied by those reference images. Updated alias-editor offscreen
+frames and headless qualification are pending; the earlier missing-prefix frame
+remains historical evidence.
+
 The initial shared desktop presentation is being corrected against three retained
 screenshots under private `docs/temp/Access Sample/`. They are local reference
 material, not copied assets or a public fixture requirement:

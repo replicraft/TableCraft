@@ -1714,6 +1714,28 @@ orientation and Inner/Left/Right kinds are explicit, never guessed
 from names. Cyclic and compound-edge join graphs remain outside this initial
 profile.
 
+The Field row renders and edits an explicit `Alias: operand` through the shared
+builders/SQL owner. The alias is output-name data; the operand retains its typed
+source instance independently of focus, including repeated aliases of the same
+native table and fields with spaces or quoted punctuation. Committing an arbitrary
+expression revokes that field anchor rather than inferring a source when the text
+later resembles a local name. Normal Build still checks the actual metadata and
+query semantics; the editor does not implement another SQL grammar.
+
+Incomplete Field text remains owned data through blur, another-column edits,
+parking and fresh-source preference restoration. It blocks Build/Run and stale
+queued replies cannot replace it. Escape in the focused cell or its explicit
+Cancel command restores that cell's captured baseline. Until it is finished or
+cancelled, tab close and destructive document Open/Create/Exit requests retain and
+reveal the affected draft. This temporary editor boundary does not add native
+saved-query creation or Save As support.
+
+An acknowledged native save follows its existing receipt-owned synchronization
+path rather than a destructive user Open. A fresh guarded reopen preserves raw
+Field text and tab identity as preferences, drops old query results/native handles
+and clears source hints. A saved receipt or restored draft does not revive an old
+document revision or execution capability.
+
 The draft retains an explicit Totals mode, a role for each column and complete
 owned SQL parameter declarations. The ten roles are Group By, Sum, Avg, Min,
 Max, Count, First, Last, Expression and Where. Group By retains grouping keys,
