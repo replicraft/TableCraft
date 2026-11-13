@@ -1,10 +1,7 @@
 use crate::preview::{Preview, Scene};
 use crate::{Action, ObjectKind, ObjectTarget, State};
 use egui::{Key, accesskit::Role};
-use egui_kittest::{
-    Harness,
-    kittest::{NodeT, Queryable},
-};
+use egui_kittest::{Harness, kittest::Queryable};
 use std::sync::Arc;
 
 fn state() -> State {
@@ -12,7 +9,7 @@ fn state() -> State {
     std::mem::take(preview.state_mut())
 }
 
-fn harness(state: State) -> Harness<'static, (State, Vec<Action>)> {
+fn make_harness(state: State) -> Harness<'static, (State, Vec<Action>)> {
     let mut harness = Harness::builder()
         .with_size(egui::vec2(1000.0, 700.0))
         .build_ui_state(
@@ -28,7 +25,7 @@ fn harness(state: State) -> Harness<'static, (State, Vec<Action>)> {
 
 #[test]
 fn name_dialog_requests_initial_focus_once_and_tab_keeps_the_ok_button_focused() {
-    let mut harness = harness(state());
+    let mut harness = make_harness(state());
     assert!(
         harness
             .get_by_role_and_label(Role::TextInput, "Query Name")
@@ -47,7 +44,7 @@ fn name_dialog_requests_initial_focus_once_and_tab_keeps_the_ok_button_focused()
 
 #[test]
 fn enter_submits_current_typed_name_once_and_escape_emits_no_backend_action() {
-    let mut harness = harness(state());
+    let mut harness = make_harness(state());
     harness
         .get_by_role_and_label(Role::TextInput, "Query Name")
         .focus();
@@ -65,7 +62,7 @@ fn enter_submits_current_typed_name_once_and_escape_emits_no_backend_action() {
     assert!(request.source.is_none());
     assert!(!harness.state().0.query_creation_name_open());
 
-    let mut harness = harness(state());
+    let mut harness = make_harness(state());
     let sql = harness.state().0.sql.as_ptr();
     harness.key_press(Key::Escape);
     harness.run_steps(2);
