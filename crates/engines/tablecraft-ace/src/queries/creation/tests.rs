@@ -180,7 +180,11 @@ fn destination_collisions_orphan_owners_and_exhausted_id_space_refuse_at_real_bo
             Err(QueryCreationError::Definition)
         ));
     }
-    for before in [raw::orphaned_fragment(), raw::with_query_identity(-1)] {
+    for before in [
+        raw::orphaned_fragment(),
+        raw::with_query_identity(-1),
+        raw::overlapping_catalog_dates(),
+    ] {
         assert!(matches!(
             image(&before).prepare_query_creation(
                 definition("New", "Answer", 43),

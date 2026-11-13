@@ -1,7 +1,9 @@
 //! Exact complete system declarations for the first append-only QueryDef profile.
 use crate::{
-    NativeImage, NativeTableStorage, QueryCreationError, TableSchema, format::data_type,
-    header::check, inspect_table_schema,
+    NativeImage, NativeTableStorage, QueryCreationError, TableSchema,
+    format::{data_type, row::COLUMN_COUNT_BYTES},
+    header::check,
+    inspect_table_schema,
 };
 use tablecraft_core::limits::ResourceBudget;
 
@@ -118,5 +120,45 @@ pub(super) fn capture(
     if variable != schema.layout.variable_slots {
         return Err(QueryCreationError::Source);
     }
+    fixed_spans(&schema, budget, cancelled)?;
     Ok(schema)
+}
+
+/// Layout decoding supplies each span and its maximum end, but it does not
+/// prove that simultaneously active fixed fields occupy distinct bytes.
+fn fixed_spans(
+    schema: &TableSchema,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), QueryCreationError> {
+    for (position, column) in schema.columns().iter().enumerate() {
+        check(budget, cancelled)?;
+        if !column.fixed() {
+            continue;
+        }
+        let start = COLUMN_COUNT_BYTES
+            .checked_add(column.field.offset)
+            .ok_or(QueryCreationError::Source)?;
+        let end = start
+            .checked_add(column.storage_length())
+            .filter(|end| *end <= schema.layout.fixed_end)
+            .ok_or(QueryCreationError::Source)?;
+        for previous in &schema.columns()[..position] {
+            check(budget, cancelled)?;
+            if !previous.fixed() {
+                continue;
+            }
+            let previous_start = COLUMN_COUNT_BYTES
+                .checked_add(previous.field.offset)
+                .ok_or(QueryCreationError::Source)?;
+            let previous_end = previous_start
+                .checked_add(previous.storage_length())
+                .filter(|end| *end <= schema.layout.fixed_end)
+                .ok_or(QueryCreationError::Source)?;
+            if start < previous_end && previous_start < end {
+                return Err(QueryCreationError::Source);
+            }
+        }
+    }
+    Ok(())
 }

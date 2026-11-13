@@ -1,7 +1,7 @@
 //! Independent QueryDef creation bytes, never using a production mutation codec.
 use super::{Fragment, QUERY_ID, fragment_records};
 use crate::fixtures::access::{
-    canonical_creation, canonical_native17_creation, packed_record::append_record, put32,
+    canonical_creation, canonical_native17_creation, packed_record::append_record, put16, put32,
     query_expression_edits,
 };
 use tablecraft_core::values::LegacyDateTime;
@@ -168,6 +168,15 @@ pub fn orphaned_fragment() -> Vec<u8> {
         &row,
     );
     increase_rows(&mut before, QUERY_DEFINITION, 1);
+    before
+}
+
+/// Keep the source readable while aliasing its two present-zero DATE spans.
+/// A new writer must reject declaration overlap before serializing either field.
+pub fn overlapping_catalog_dates() -> Vec<u8> {
+    let mut before = query_expression_edits::source();
+    let date_update_offset = CATALOG_DEFINITION * PAGE + 63 + 5 * 25 + 21;
+    put16(&mut before, date_update_offset, 10);
     before
 }
 
