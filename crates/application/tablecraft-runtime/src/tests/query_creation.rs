@@ -1,4 +1,6 @@
 //! New QueryDef creation uses the actual read worker, save actor and guarded reopen.
+mod lifecycle;
+
 use super::{request, terminal};
 use crate::{
     Command, Error, QueryCreationOrigin, QueryCreationTarget, Response, SaveOutcome,
