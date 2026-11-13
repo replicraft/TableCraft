@@ -1,4 +1,6 @@
 //! Real close choices consume only the original Design owner's completed save.
+mod refusal;
+
 use super::super::{accept_name, name, opened, run_saved, saved, scratch, sql};
 use super::design;
 use crate::workspace::{Desktop, test_support::finish_schema_save};
