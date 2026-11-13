@@ -99,10 +99,10 @@ pub(in crate::table::mutation) fn encode_for_span(
         return encode_text_for_span(column, value, span, budget, cancelled);
     }
     let Value::Binary(value) = value else {
-        return Err(EditError::Unsupported(WriteBlocker::Column));
+        return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     };
     if value.len() != span {
-        return Err(EditError::Unsupported(WriteBlocker::Column));
+        return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }
     budget
         .charge_allocation(span as u64, 1)
