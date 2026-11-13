@@ -1,6 +1,7 @@
 //! Parser limits reject real Field input without replacing current authoring data.
 use super::*;
 use crate::{Cell, Data};
+use egui_kittest::kittest::NodeT;
 
 #[test]
 fn real_field_paste_limits_preserve_complete_and_unresolved_edits_without_actions() {

@@ -29,7 +29,7 @@ fn assert_field_text(harness: &Harness<'_, Desktop>, index: usize, text: &str) {
         .get_all_by_role_and_label(Role::TextInput, "Field expression")
         .nth(index)
         .unwrap();
-    assert_eq!(input.accesskit_node().value(), Some(text));
+    assert_eq!(input.accesskit_node().value().as_deref(), Some(text));
 }
 
 fn show_items(harness: &mut Harness<'_, Desktop>) {
