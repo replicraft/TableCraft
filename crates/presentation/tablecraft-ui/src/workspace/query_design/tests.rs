@@ -456,11 +456,20 @@ fn shared_submitted_draft_keeps_complete_logical_retention_charge() {
     else {
         panic!("the current Design must issue its bounded build action");
     };
-    let mut payload = crate::workspace::objects::memory::Counter::new(
-        size_of::<QueryDesignDraft>() + retention::SHARED_DRAFT_CONTROL_BYTES,
-    );
-    retention::count_draft(&mut payload, &draft);
-    let expected_charge = payload.finish().unwrap();
+    let baseline = state
+        .query_design
+        .session
+        .as_ref()
+        .unwrap()
+        .baseline
+        .snapshot()
+        .unwrap();
+    assert!(Arc::ptr_eq(baseline, &draft));
+    let baseline_charge = retention::shared_draft_bytes(&draft).unwrap();
+    assert!(before >= baseline_charge);
+
+    // NO_CLONE: The observer retains the real submitted immutable handle across
+    // cancellation; the State independently holds its baseline/pending owner.
     let submitted = Arc::clone(&draft);
     assert!(state.begin_query_design_build(request, draft, completion, 77));
     let pending = &state.query_design.session.as_ref().unwrap().pending;
@@ -468,12 +477,31 @@ fn shared_submitted_draft_keeps_complete_logical_retention_charge() {
         panic!("the pending state must own the submitted draft");
     };
     assert!(Arc::ptr_eq(draft, &submitted));
-    let retained = state.query_design.retained_bytes().unwrap();
-    assert!(
-        retained >= before + expected_charge,
-        "sharing must not discount logical vectors/text or shared ownership overhead"
+    assert_eq!(
+        state.query_design.retained_bytes(),
+        Some(before),
+        "a baseline allocation already charged in full is not charged twice"
     );
     assert!(state.cancel_query_design(77));
     assert_eq!(state.query_design.retained_bytes(), Some(before));
     assert_eq!(state.query_design_draft(), Some(submitted.as_ref()));
+
+    // NO_CLONE: This control deliberately supplies a genuinely distinct equal
+    // worker snapshot, proving all of its retained storage is additionally paid.
+    let independent = Arc::new(submitted.as_ref().clone());
+    assert!(!Arc::ptr_eq(&submitted, &independent));
+    let mut payload = crate::workspace::objects::memory::Counter::new(
+        size_of::<QueryDesignDraft>() + retention::SHARED_DRAFT_CONTROL_BYTES,
+    );
+    retention::count_draft(&mut payload, &independent);
+    let expected_charge = payload.finish().unwrap();
+    let request = state.query_design_request().unwrap();
+    assert!(state.begin_query_design_build(request, independent, completion, 78));
+    assert_eq!(
+        state.query_design.retained_bytes(),
+        before.checked_add(expected_charge),
+        "distinct storage retains its complete vectors, text and sharing overhead"
+    );
+    assert!(state.cancel_query_design(78));
+    assert_eq!(state.query_design.retained_bytes(), Some(before));
 }
