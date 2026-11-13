@@ -1,5 +1,6 @@
 //! Native QueryDef creation candidate; no journal or application permission.
 mod definition;
+pub(crate) mod effect;
 #[cfg(test)]
 mod tests;
 

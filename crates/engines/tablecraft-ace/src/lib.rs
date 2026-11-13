@@ -465,6 +465,13 @@ pub use transaction::{
 };
 
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use transaction::RecoverableNativeQueryCreationPlan;
+#[cfg(feature = "journal")]
+pub use transaction::{
+    NativeQueryCreationIntent, QualifiedNativeQueryCreationRecovery, QueryCreationIntentError,
+};
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub use transaction::RecoverableNativeNumericIndexCreatePlan;
 #[cfg(feature = "journal")]
 pub use transaction::{

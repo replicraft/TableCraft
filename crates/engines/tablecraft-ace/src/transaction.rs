@@ -1,11 +1,17 @@
 //! Offline snapshots and optional journaled native writes.
 #[cfg(feature = "journal")]
 mod intent;
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use intent::RecoverableNativeQueryCreationPlan;
 #[cfg(feature = "journal")]
 pub use intent::{
     NativeFittedEditIntent, NativeFittedIntentGroup, NativeFittedUpdates, NativeFixedEditIntent,
     NativeFixedIntentGroup, NativeInt32EditIntent, NativeIntentError, NativeUpdateBody,
     NativeUpdateIntent, NativeUpdateProfile, RecoverableEditError, RecoverableNativeEditPlan,
+};
+#[cfg(feature = "journal")]
+pub use intent::{
+    NativeQueryCreationIntent, QualifiedNativeQueryCreationRecovery, QueryCreationIntentError,
 };
 #[cfg(feature = "journal")]
 pub use intent::{

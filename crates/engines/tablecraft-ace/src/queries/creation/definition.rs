@@ -33,12 +33,7 @@ impl QueryCreationDefinition {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, QueryCreationError> {
-        check(budget, cancelled)?;
-        if !identifier::valid_name(destination, budget, cancelled)?
-            || !identifier::valid_name(alias, budget, cancelled)?
-        {
-            return Err(QueryCreationError::Definition);
-        }
+        validate_names(destination, alias, budget, cancelled)?;
 
         let name = copy_text(destination, budget, cancelled)?;
         let alias = copy_text(alias, budget, cancelled)?;
@@ -48,6 +43,28 @@ impl QueryCreationDefinition {
             value,
             captured_at,
         })
+    }
+
+    pub(crate) fn from_owned(
+        name: String,
+        alias: String,
+        value: i32,
+        captured_at: LegacyDateTime,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, QueryCreationError> {
+        validate_names(&name, &alias, budget, cancelled)?;
+
+        Ok(Self {
+            name,
+            alias,
+            value,
+            captured_at,
+        })
+    }
+
+    pub(crate) fn into_parts(self) -> (String, String, i32, LegacyDateTime) {
+        (self.name, self.alias, self.value, self.captured_at)
     }
 
     /// Exact destination object spelling.
@@ -69,6 +86,21 @@ impl QueryCreationDefinition {
     pub const fn captured_at(&self) -> LegacyDateTime {
         self.captured_at
     }
+}
+
+fn validate_names(
+    name: &str,
+    alias: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), QueryCreationError> {
+    check(budget, cancelled)?;
+    if !identifier::valid_name(name, budget, cancelled)?
+        || !identifier::valid_name(alias, budget, cancelled)?
+    {
+        return Err(QueryCreationError::Definition);
+    }
+    Ok(())
 }
 
 fn copy_text(

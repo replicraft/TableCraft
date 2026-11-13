@@ -137,6 +137,13 @@ pub use repeated_default_zero_add_column::{
     qualify_native_repeated_default_zero_add_column_recovery,
 };
 
+mod query_creation;
+#[cfg(feature = "ace16-create")]
+pub use query_creation::RecoverableNativeQueryCreationPlan;
+pub use query_creation::{
+    NativeQueryCreationIntent, QualifiedNativeQueryCreationRecovery, QueryCreationIntentError,
+};
+
 mod query_expression_v2;
 pub use query_expression_v2::{
     NativeQueryExpressionEditsIntent, PreparedQueryExpressionEdits,
