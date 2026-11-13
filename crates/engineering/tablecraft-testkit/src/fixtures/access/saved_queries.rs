@@ -1,6 +1,9 @@
 /// Saved SELECT fragments composed onto an independent attachment table.
 pub mod attachments;
 
+/// Independent new QueryDef catalog/fragment append oracles.
+pub mod creation;
+
 /// Independent fitting SELECT expression BEFORE/AFTER byte oracles.
 pub mod fitting_select;
 
