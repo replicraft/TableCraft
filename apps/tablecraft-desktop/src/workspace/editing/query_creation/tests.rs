@@ -1,6 +1,7 @@
 //! Real Name entry, authored owner and consuming native save/reopen journeys.
 mod design;
 mod failures;
+mod initialization;
 mod unsupported;
 
 use crate::workspace::{
@@ -34,6 +35,18 @@ fn opened() -> (
 ) {
     let date = LegacyDateTime::from_ole_days(45000.5).unwrap();
     let case = raw::source("Created", "Answer", 99, date);
+    opened_source(case)
+}
+
+fn opened_source(
+    case: raw::Source,
+) -> (
+    tempfile::TempDir,
+    PathBuf,
+    raw::Source,
+    Arc<CountingClock>,
+    Harness<'static, Desktop>,
+) {
     let directory = tempfile::tempdir().unwrap();
     let path = directory.path().join("queries.accdb");
     std::fs::write(&path, &case.before).unwrap();
