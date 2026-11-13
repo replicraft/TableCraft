@@ -1,7 +1,7 @@
 //! Shared complete ordinary-record serialization; callers own admission.
 use super::{fixed as field, payload};
 use crate::{
-    EditError, InspectError, TableSchema, WriteBlocker,
+    EditError, InspectError, NativeColumn, TableSchema, WriteBlocker,
     format::{
         page::PAGE_BYTES,
         row::{
@@ -56,7 +56,38 @@ pub(in crate::table::mutation) fn assemble(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, EditError> {
     check(budget, cancelled)?;
-    if values.len() != schema.columns().len() || payloads.len() != variables.len() {
+    if values.len() != schema.columns().len() {
+        return Err(EditError::Preservation);
+    }
+    assemble_with(
+        schema,
+        variables,
+        payloads,
+        |position, column, target| {
+            if column.fixed() {
+                field::write(column, &values[position], target)
+            } else {
+                Ok(!matches!(values[position], Value::Null))
+            }
+        },
+        budget,
+        cancelled,
+    )
+}
+
+/// Assemble already-qualified fields while borrowing each caller's real cells.
+/// The callback writes fixed bytes and returns the native presence/value bit;
+/// variable payloads are supplied separately. No field/source policy is inferred.
+pub(in crate::table::mutation) fn assemble_with(
+    schema: &TableSchema,
+    variables: &[usize],
+    payloads: Vec<Vec<u8>>,
+    mut write_field: impl FnMut(usize, &NativeColumn, &mut [u8]) -> Result<bool, EditError>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, EditError> {
+    check(budget, cancelled)?;
+    if payloads.len() != variables.len() {
         return Err(EditError::Preservation);
     }
     let mut payload_end = schema.layout.fixed_end;
@@ -109,9 +140,13 @@ pub(in crate::table::mutation) fn assemble(
             } else {
                 COLUMN_COUNT_BYTES + column.field.offset
             };
-            field::write(column, &values[position], &mut row[start..start + width])?
+            let stop = start
+                .checked_add(width)
+                .ok_or(InspectError::StructureLimit)?;
+            let target = row.get_mut(start..stop).ok_or(EditError::Preservation)?;
+            write_field(position, column, target)?
         } else {
-            !matches!(values[position], Value::Null)
+            write_field(position, column, &mut [])?
         };
         if present {
             row[mask + column.number() / MASK_BITS] |= 1 << (column.number() % MASK_BITS);

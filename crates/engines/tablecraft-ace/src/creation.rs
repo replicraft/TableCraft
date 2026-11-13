@@ -4,8 +4,6 @@ mod add_column;
 mod add_table;
 mod autonumber;
 mod build;
-#[cfg(feature = "journal")]
-mod catalog_page;
 mod column;
 mod database;
 #[cfg(feature = "journal")]

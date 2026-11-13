@@ -1,11 +1,9 @@
 //! Independent new-role decoding and exact preservation of every original span.
 use super::source::Source;
+use crate::format::data_append::Page;
 use crate::{
     FirstTableDefinition, InspectError, NativeImage, NativeImageSource, check_table,
-    creation::{
-        add_table::{AddTableError, audit},
-        catalog_page::Page,
-    },
+    creation::add_table::{AddTableError, audit},
     format::{bytes::u32_at, layout::RECORD_COUNT_OFFSET, page::PAGE_BYTES, row::reference},
     header::check,
     table::table_append::Inventory,

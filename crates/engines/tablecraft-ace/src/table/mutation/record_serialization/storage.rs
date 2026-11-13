@@ -95,24 +95,15 @@ pub(in crate::table::mutation) fn encode_for_span(
     validate(column, value)?;
     check(budget, cancelled)?;
 
-    let compressed = match value {
-        Value::Binary(bytes) if bytes.len() == span => false,
-        Value::Text(text) => {
-            let count = text.encode_utf16().count();
-            let raw_fits = raw_text_length(text, count)? == span;
-            // The marker alone is an observed empty native representation.
-            let compressed_fits = COMPRESSED_MARKER.len() + count == span
-                && text
-                    .encode_utf16()
-                    .all(|unit| unit > 0 && unit <= u16::from(u8::MAX));
-            if !raw_fits && !compressed_fits {
-                return Err(EditError::Unsupported(WriteBlocker::RowLayout));
-            }
-            compressed_fits
-                && (!raw_fits || column.field.extended_flags & UNICODE_COMPRESSION_FLAG != 0)
-        }
-        _ => return Err(EditError::Unsupported(WriteBlocker::RowLayout)),
+    if let Value::Text(value) = value {
+        return encode_text_for_span(column, value, span, budget, cancelled);
+    }
+    let Value::Binary(value) = value else {
+        return Err(EditError::Unsupported(WriteBlocker::Column));
     };
+    if value.len() != span {
+        return Err(EditError::Unsupported(WriteBlocker::Column));
+    }
     budget
         .charge_allocation(span as u64, 1)
         .map_err(InspectError::from)?;
@@ -123,39 +114,62 @@ pub(in crate::table::mutation) fn encode_for_span(
     bytes
         .try_reserve_exact(span)
         .map_err(|_| InspectError::Allocation)?;
+    bytes.extend_from_slice(value);
+    check(budget, cancelled)?;
+    Ok(bytes)
+}
 
-    match value {
-        Value::Binary(value) => bytes.extend_from_slice(value),
-        Value::Text(value) => {
-            if compressed {
-                bytes.extend_from_slice(&COMPRESSED_MARKER);
-                for unit in value.encode_utf16() {
-                    check(budget, cancelled)?;
-                    bytes.push(unit as u8);
-                }
-            } else {
-                let escaped = value.starts_with('\u{feff}');
-                if escaped {
-                    bytes.extend_from_slice(&ESCAPE_PREFIX);
-                }
-                for unit in value.encode_utf16() {
-                    check(budget, cancelled)?;
-                    // In the marked wide mode, a zero low byte is a mode
-                    // switch. Refuse values outside this qualified escape form.
-                    if escaped && unit.to_le_bytes()[0] == WIDE_SWITCH {
-                        return Err(EditError::Unsupported(WriteBlocker::RowLayout));
-                    }
-                    bytes.extend_from_slice(&unit.to_le_bytes());
-                }
-            }
-            // A leading U+FEFF in plain UTF-16 aliases the compression marker.
-            // Prove the selected representation with the existing decoder;
-            // never qualify a payload whose visible value changes on reopen.
-            if text::decode(&bytes, true, budget)? != *value {
+fn encode_text_for_span(
+    column: &NativeColumn,
+    value: &str,
+    span: usize,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, EditError> {
+    let count = value.encode_utf16().count();
+    let raw_fits = raw_text_length(value, count)? == span;
+    let compressed_fits = COMPRESSED_MARKER.len() + count == span
+        && value
+            .encode_utf16()
+            .all(|unit| unit > 0 && unit <= u16::from(u8::MAX));
+    if !raw_fits && !compressed_fits {
+        return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+    }
+    let compressed = compressed_fits
+        && (!raw_fits || column.field.extended_flags & UNICODE_COMPRESSION_FLAG != 0);
+    budget
+        .charge_allocation(span as u64, 1)
+        .map_err(InspectError::from)?;
+    budget
+        .charge(Resource::Steps, span as u64)
+        .map_err(InspectError::from)?;
+    let mut bytes = Vec::new();
+    bytes
+        .try_reserve_exact(span)
+        .map_err(|_| InspectError::Allocation)?;
+    if compressed {
+        bytes.extend_from_slice(&COMPRESSED_MARKER);
+        for unit in value.encode_utf16() {
+            check(budget, cancelled)?;
+            bytes.push(unit as u8);
+        }
+    } else {
+        let escaped = value.starts_with('\u{feff}');
+        if escaped {
+            bytes.extend_from_slice(&ESCAPE_PREFIX);
+        }
+        for unit in value.encode_utf16() {
+            check(budget, cancelled)?;
+            if escaped && unit.to_le_bytes()[0] == WIDE_SWITCH {
                 return Err(EditError::Unsupported(WriteBlocker::RowLayout));
             }
+            bytes.extend_from_slice(&unit.to_le_bytes());
         }
-        _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
+    }
+    // A leading U+FEFF aliases the compression marker. Reopen must retain the
+    // exact borrowed input under the same native decoder as existing callers.
+    if text::decode(&bytes, true, budget)? != value {
+        return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }
     if bytes.len() != span {
         return Err(EditError::Preservation);
@@ -227,32 +241,39 @@ pub(in crate::table::mutation) fn encode_preferred(
 ) -> Result<Vec<u8>, EditError> {
     validate(field, value)?;
     check(budget, cancelled)?;
-    let length = match value {
-        Value::Null => return Ok(Vec::new()),
-        Value::Binary(bytes) => bytes.len(),
-        Value::Text(value) => {
-            let count = value.encode_utf16().count();
-            let compact = field.extended_flags() & UNICODE_COMPRESSION_FLAG != 0
-                && count > COMPRESSED_MARKER.len()
-                && value
-                    .encode_utf16()
-                    .all(|unit| unit > 0 && unit <= u16::from(u8::MAX));
-            if compact {
-                COMPRESSED_MARKER.len() + count
-            } else {
-                raw_text_length(value, count)?
-            }
-        }
-        _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
+    match value {
+        Value::Null => Ok(Vec::new()),
+        Value::Binary(bytes) => encode_for_span(field, value, bytes.len(), budget, cancelled),
+        Value::Text(text) => encode_text_preferred(field, text, budget, cancelled),
+        _ => Err(EditError::Unsupported(WriteBlocker::Column)),
+    }
+}
+
+/// Borrowed Short Text representation below each caller's declaration admission.
+pub(in crate::table::mutation) fn encode_text_preferred(
+    field: &NativeColumn,
+    value: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, EditError> {
+    check(budget, cancelled)?;
+    let count = value.encode_utf16().count();
+    if field.native_type() != SHORT_TEXT || count > field.storage_length() / UTF16_BYTES {
+        return Err(EditError::Unsupported(WriteBlocker::Column));
+    }
+    let compact = field.extended_flags() & UNICODE_COMPRESSION_FLAG != 0
+        && count > COMPRESSED_MARKER.len()
+        && value
+            .encode_utf16()
+            .all(|unit| unit > 0 && unit <= u16::from(u8::MAX));
+    let length = if compact {
+        COMPRESSED_MARKER.len() + count
+    } else {
+        raw_text_length(value, count)?
     };
-    // The exact-span chooser permits either valid form on equal size. Preferred
-    // row serialization uses raw UTF16 for the two-unit compression tie, as the
-    // independent public update observations establish. Never mask metadata to
-    // borrow a different encoder profile.
-    if field.native_type() == SHORT_TEXT
-        && field.extended_flags() & UNICODE_COMPRESSION_FLAG != 0
-        && let Value::Text(value) = value
-        && value.encode_utf16().count() == COMPRESSED_MARKER.len()
+    // Preserve the complete-row raw UTF16 choice for the two-unit tie.
+    if field.extended_flags() & UNICODE_COMPRESSION_FLAG != 0
+        && count == COMPRESSED_MARKER.len()
         && !value.starts_with('\u{feff}')
     {
         budget
@@ -268,10 +289,10 @@ pub(in crate::table::mutation) fn encode_preferred(
         for unit in value.encode_utf16() {
             bytes.extend_from_slice(&unit.to_le_bytes());
         }
-        if text::decode(&bytes, true, budget)? != *value {
+        if text::decode(&bytes, true, budget)? != value {
             return Err(EditError::Unsupported(WriteBlocker::RowLayout));
         }
         return Ok(bytes);
     }
-    encode_for_span(field, value, length, budget, cancelled)
+    encode_text_for_span(field, value, length, budget, cancelled)
 }

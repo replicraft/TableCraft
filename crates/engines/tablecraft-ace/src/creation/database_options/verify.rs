@@ -4,9 +4,10 @@ use super::{
     LVAL_OWNER, MAP_HEADER_BYTES, MAP_PAGE, ORIGINAL_OBJECTS, PROPERTY_CANDIDATE, PROPERTY_OWNED,
     properties,
 };
+use crate::format::data_append::Page;
 use crate::{
     EditError, InspectError, NativeImage, PropertyGroupKind,
-    creation::{catalog_page::Page, record::DATABASE_SYSTEM_FLAGS},
+    creation::record::DATABASE_SYSTEM_FLAGS,
     format::{
         bytes::u16_at,
         data_type,

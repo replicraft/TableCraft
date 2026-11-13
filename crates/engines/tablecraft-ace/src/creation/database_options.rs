@@ -12,11 +12,11 @@ mod verify;
 
 use super::{
     AddTableError, CreateDatabaseError,
-    catalog_page::{Page, PageError},
     definition::put32,
     record::{self, DataPage},
     stored_text,
 };
+use crate::format::data_append::{Page, PageError};
 use crate::{
     InspectError, NativeImage,
     format::{layout::RECORD_COUNT_OFFSET, page::PAGE_BYTES, row::reference},

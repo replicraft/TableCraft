@@ -10,3 +10,6 @@ pub(crate) mod profiles;
 pub(crate) mod reader;
 pub(crate) mod row;
 pub(crate) mod text;
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(crate) mod data_append;

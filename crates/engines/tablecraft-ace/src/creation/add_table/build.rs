@@ -10,7 +10,7 @@ use super::{
     AddTableError,
     source::{self, Source},
 };
-use crate::creation::catalog_page::Page;
+use crate::format::data_append::Page;
 use crate::{
     InspectError, NativeImage,
     format::{layout::RECORD_COUNT_OFFSET, page::PAGE_BYTES, row::reference},

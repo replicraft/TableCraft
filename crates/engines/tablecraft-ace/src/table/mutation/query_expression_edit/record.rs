@@ -4,10 +4,11 @@ use super::super::{
     record_serialization::{
         long_value::{Encoded, StorageChoice},
         record::replace_payload,
+        utf16,
     },
 };
 use crate::{InspectError, TableSchema, header::check, table::record_layout};
-use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_core::limits::ResourceBudget;
 
 pub(super) fn replace(
     schema: &TableSchema,
@@ -28,27 +29,7 @@ pub(super) fn replace(
     }
     let start = layout.offsets[variable];
     let end = layout.offsets[variable + 1];
-    let mut length = 0_usize;
-    for _ in replacement.encode_utf16() {
-        check(budget, cancelled)?;
-        budget
-            .charge(Resource::Steps, 1)
-            .map_err(InspectError::from)?;
-        length = length
-            .checked_add(size_of::<u16>())
-            .ok_or(InspectError::StructureLimit)?;
-    }
-    budget
-        .charge_allocation(length as u64, 1)
-        .map_err(InspectError::from)?;
-    let mut bytes = Vec::new();
-    bytes
-        .try_reserve_exact(length)
-        .map_err(|_| InspectError::Allocation)?;
-    for unit in replacement.encode_utf16() {
-        check(budget, cancelled)?;
-        bytes.extend_from_slice(&unit.to_le_bytes());
-    }
+    let bytes = utf16::encode(replacement, budget, cancelled)?;
     let encoded = Encoded::Present(bytes);
     if encoded.preferred() != StorageChoice::Inline {
         return Err(InspectError::Unsupported.into());

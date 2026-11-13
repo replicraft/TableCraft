@@ -15,12 +15,12 @@ use thiserror::Error;
 
 pub use populated::{PopulatedAddTableError, PopulatedAddTablePlan};
 
-impl From<super::catalog_page::PageError> for AddTableError {
-    fn from(error: super::catalog_page::PageError) -> Self {
+impl From<crate::format::data_append::PageError> for AddTableError {
+    fn from(error: crate::format::data_append::PageError) -> Self {
         match error {
-            super::catalog_page::PageError::Inspect(error) => Self::Inspect(error),
-            super::catalog_page::PageError::Source => Self::Source,
-            super::catalog_page::PageError::Capacity => Self::Capacity,
+            crate::format::data_append::PageError::Inspect(error) => Self::Inspect(error),
+            crate::format::data_append::PageError::Source => Self::Source,
+            crate::format::data_append::PageError::Capacity => Self::Capacity,
         }
     }
 }

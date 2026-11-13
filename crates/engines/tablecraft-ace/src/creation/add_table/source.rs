@@ -3,7 +3,7 @@ use super::{
     AddTableError,
     geometry::{Geometry, MAX_TABLES, Role, SYSTEM_OBJECTS, SYSTEM_PAGES},
 };
-use crate::creation::catalog_page::Page;
+use crate::format::data_append::Page;
 use crate::{
     IndexCheckStatus, InspectError, NativeImage, PayloadPresence, check_table,
     create_blank_ace16_database,

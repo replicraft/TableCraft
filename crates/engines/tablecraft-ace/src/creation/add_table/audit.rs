@@ -1,5 +1,5 @@
 //! Independent original-byte envelope and decoded appended native role checks.
-use crate::creation::{catalog_page::Page, profile};
+use crate::{creation::profile, format::data_append::Page};
 pub(in crate::creation::add_table) mod catalog;
 pub(in crate::creation::add_table) mod columns;
 pub(in crate::creation::add_table) mod definition;

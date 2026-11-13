@@ -1,10 +1,10 @@
 //! Construct only fresh EOF roles and actual physical catalog/map append spans.
 use super::source::Source;
+use crate::format::data_append::Page;
 use crate::{
     FirstTableDefinition, InspectError, NativeImage,
     creation::{
         add_table::AddTableError,
-        catalog_page::Page,
         definition,
         input::{Columns, Rows},
         profile,

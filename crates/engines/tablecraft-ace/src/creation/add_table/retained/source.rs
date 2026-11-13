@@ -3,11 +3,11 @@ use super::super::{
     AddTableError, AddTableSourceCapabilities,
     geometry::{PrimaryRole, Role},
 };
+use crate::format::data_append::Page;
 use crate::{
     FileFormat, FirstTableDefinition, InspectError, NativeImage, NativeTableStorage,
     compare_general_text,
     creation::{
-        catalog_page::Page,
         input::{Columns, Rows},
         record, request, stored_text,
     },

@@ -12,7 +12,7 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 use thiserror::Error;
 
 #[derive(Debug, Error)]
-pub(super) enum PageError {
+pub(crate) enum PageError {
     #[error(transparent)]
     Inspect(#[from] InspectError),
     #[error("dense native page source is unsupported")]
@@ -27,13 +27,13 @@ const MAX_SLOTS: usize = u8::MAX as usize + 1;
 const UNKNOWN_SLOT_FLAG: usize = 0x2000;
 const RECORD_OFFSET_MASK: usize = 0x1fff;
 
-pub(super) struct Page {
+pub(crate) struct Page {
     pub count: usize,
     pub start: usize,
     pub records: Vec<Range<usize>>,
 }
 
-pub(super) fn word(raw: &[u8], at: usize) -> usize {
+pub(crate) fn word(raw: &[u8], at: usize) -> usize {
     usize::from(u16::from_le_bytes(
         raw[at..at + SLOT_BYTES].try_into().unwrap(),
     ))

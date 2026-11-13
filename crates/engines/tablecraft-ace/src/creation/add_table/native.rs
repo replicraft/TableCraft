@@ -1,4 +1,5 @@
 //! Native-count append reuses actual packed or retained physical ownership.
+use crate::format::data_append::Page;
 mod maps;
 mod text_order;
 
@@ -10,7 +11,6 @@ use crate::{
     CreateDatabaseError, FirstTableDefinition, InspectError, NativeImage, NativeImageSource,
     compare_general_text,
     creation::{
-        catalog_page::Page,
         definition,
         input::{Columns, Rows},
         native::{self, MapReferences, topology::Topology},
