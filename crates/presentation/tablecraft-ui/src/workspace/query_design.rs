@@ -385,7 +385,7 @@ impl State {
         !self.query_design.has_unresolved_field_inputs()
             && self.query_design_ready()
             && self.query_design_request().as_ref() == Some(request)
-            && self.query_design_sql() == Some(sql.as_str())
+            && self.query_design_sql() == Some(sql)
             && sql.len() <= MAX_DESIGN_TEXT_BYTES
     }
 
@@ -516,16 +516,15 @@ impl State {
         let Some(request) = self.query_design_request() else {
             return false;
         };
-        self.begin_design_pending(
-            request,
-            request_id,
-            PendingKind::Run {
-                // NO_CLONE: Preserve the submitted SQL after the editable buffer changes so old
-                // results retain their true provenance. A borrow would alias that buffer;
-                // sharing requires one immutable SQL contract across all result owners.
-                sql: super::query::parameters::copy_text(self.query_design_sql()?)?,
-            },
-        );
+        // NO_CLONE: Pending results retain the submitted SQL after the editor
+        // changes. Capture the owned provenance before installing pending state.
+        let Some(sql) = self
+            .query_design_sql()
+            .and_then(super::query::parameters::copy_text)
+        else {
+            return false;
+        };
+        self.begin_design_pending(request, request_id, PendingKind::Run { sql });
         true
     }
 
