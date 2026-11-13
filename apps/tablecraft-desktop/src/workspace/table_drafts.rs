@@ -24,13 +24,13 @@ impl Desktop {
             drop(action);
             return None;
         }
-        if matches!(
+        let document_transition = matches!(
             &action,
             DeferredDraftAction::Open(_)
                 | DeferredDraftAction::Create(_)
                 | DeferredDraftAction::CloseWindow
-        ) && self.state.has_unresolved_query_design_edits()
-        {
+        );
+        if document_transition && self.state.has_unresolved_query_design_edits() {
             self.state.reveal_unresolved_query_design_edits();
             return None;
         }
@@ -49,6 +49,12 @@ impl Desktop {
         let action = self.defer_field_addition_transition(action)?;
         let action = self.defer_field_rename_transition(action)?;
         let action = self.defer_field_drop_transition(action)?;
+        // Closing or activating one tab preserves unrelated parked drafts. Its
+        // own close/field owner already controls that exact transition above.
+        // Only document-wide disposal needs every draft's explicit decision.
+        if !document_transition {
+            return Some(action);
+        }
         let confirmation = if self.state.has_modified_query_design() {
             self.state.request_query_design_close_all()
         } else if self.state.has_unsaved_scratch_query() {

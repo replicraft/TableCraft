@@ -1,6 +1,7 @@
 //! Actual SQL decisions and schema publication retain index history and prior results.
 use super::{assert_image, close_target, finish_reads, finish_save, journey, opened, reviewed};
 use crate::workspace::Desktop;
+use crate::workspace::test_support::objects::discard_query_close_for_open;
 use egui::accesskit::Role;
 use egui_kittest::{Harness, kittest::Queryable};
 use tablecraft_runtime::{Command, SaveOutcome, SaveSchemaChange, journal_path};
@@ -107,11 +108,52 @@ fn changed_sql_or_reopened_revision_cannot_apply_an_old_drop_confirmation() {
         let sql = format!("DROP INDEX [{}] ON [{}]", source.index_name, source.table);
         let id = reviewed(&mut harness, &sql);
         if reopen {
+            let revision = harness
+                .state()
+                .state
+                .database
+                .as_ref()
+                .unwrap()
+                .document_revision;
+            let generation = harness.state().generation;
+            // NO_CLONE: This attempted Open and the later confirmed Open each
+            // own a path while the independent file observer remains available.
             harness.state_mut().open_request(Command::Open {
                 path: path.clone(),
                 password: String::new(),
             });
+            assert_eq!(harness.state().generation, generation);
+            assert!(harness.state().state.query_action_dialog_open());
+            assert!(harness.state().deferred_draft_action.is_none());
+            assert!(!harness.state().editing.has_save());
+            assert_eq!(std::fs::read(&path).unwrap(), original);
+            // A modal action decision must be resolved before a global Open can
+            // ask to discard the still-unsaved SQL. Retain the old issued ID.
+            harness
+                .get_by_role_and_label(Role::Button, "No")
+                .click_accesskit();
+            harness.run_steps(2);
+            assert!(!harness.state().state.query_action_dialog_open());
+            // NO_CLONE: The accepted global Open owns its selected path; the
+            // test keeps the same file to verify that no stale action can write.
+            harness.state_mut().open_request(Command::Open {
+                path: path.clone(),
+                password: String::new(),
+            });
+            assert_eq!(harness.state().generation, generation);
+            discard_query_close_for_open(&mut harness);
             finish_reads(&mut harness);
+            assert!(harness.state().generation > generation);
+            assert!(
+                harness
+                    .state()
+                    .state
+                    .database
+                    .as_ref()
+                    .unwrap()
+                    .document_revision
+                    > revision
+            );
         } else {
             assert!(
                 harness

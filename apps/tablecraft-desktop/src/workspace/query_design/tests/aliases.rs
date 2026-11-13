@@ -2,7 +2,11 @@
 use super::{design, opened, run, scratch, sql};
 #[cfg(any(target_os = "macos", target_os = "linux", windows))]
 use crate::workspace::test_support::cell_edit;
-use crate::workspace::{Desktop, table_drafts::DeferredDraftAction, test_support::finish_reads};
+use crate::workspace::{
+    Desktop,
+    table_drafts::DeferredDraftAction,
+    test_support::{finish_reads, objects::discard_query_close_for_open},
+};
 use egui::{Key, ViewportCommand, accesskit::Role};
 use egui_kittest::{
     Harness,
@@ -194,8 +198,29 @@ fn parked_incomplete_alias_blocks_destructive_open_queue_and_close_until_explici
     assert!(!harness.state().state.has_unresolved_query_design_edits());
 
     harness.state_mut().file_selected(Some(next));
+    assert_eq!(harness.state().generation, generation);
+    assert_eq!(
+        harness
+            .state()
+            .state
+            .database
+            .as_ref()
+            .unwrap()
+            .title_path
+            .as_deref(),
+        Some(path.to_string_lossy().as_ref())
+    );
+    assert!(!harness.state().state.has_unresolved_query_design_edits());
+    assert_eq!(std::fs::read(&path).unwrap(), original);
+    // Cancelling the raw Field edit does not discard its nonempty scratch SQL.
+    // Global Open still requires the actual owner's explicit Discard decision.
+    discard_query_close_for_open(&mut harness);
     finish_reads(&mut harness);
     assert!(harness.state().generation > generation);
+    assert_eq!(
+        harness.state().state.path,
+        directory.path().join("other.accdb").to_string_lossy()
+    );
     assert_eq!(std::fs::read(path).unwrap(), original);
 }
 

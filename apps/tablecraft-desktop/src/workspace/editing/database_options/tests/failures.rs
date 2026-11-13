@@ -1,5 +1,6 @@
 //! Real native ACK and read publication boundaries, with no invented outcomes.
 use super::*;
+use crate::workspace::test_support::objects::discard_query_close_for_open;
 use egui::Key;
 use egui_kittest::{Harness, kittest::NodeT};
 use std::path::PathBuf;
@@ -317,11 +318,19 @@ fn acknowledged_after_witness_drift_return_preserves_saved_warning_until_fresh_o
     click(&mut harness, "backstage-close");
     assert!(!harness.state().state.options_dialog_open());
     assert!(harness.state().state.native_source_stale());
+    let generation = harness.state().generation;
+    // NO_CLONE: Open owns the path while the observer retains the actual file
+    // through explicit scratch disposal and subsequent fresh source inspection.
     harness.state_mut().open_request(Command::Open {
         path: path.clone(),
         password: String::new(),
     });
+    assert_eq!(harness.state().generation, generation);
+    assert!(harness.state().state.native_source_stale());
+    assert_eq!(std::fs::read(&path).unwrap(), changed);
+    discard_query_close_for_open(&mut harness);
     finish_reads(&mut harness);
+    assert!(harness.state().generation > generation);
     assert!(!harness.state().state.native_source_stale());
     assert!(
         harness
