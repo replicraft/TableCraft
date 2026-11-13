@@ -54,8 +54,10 @@ ALLOWED = {
 }
 
 
-# Typed acceptance assertions may import values without adding production host edges.
-DEVELOPMENT_ONLY = {"tablecraft-desktop": {"tablecraft-core"}}
+# Acceptance assertions and injected clocks do not add production host edges.
+DEVELOPMENT_ONLY = {
+    "tablecraft-desktop": {"tablecraft-core", "tablecraft-expressions"},
+}
 
 
 DISPLAY_GUI_DEPENDENCIES = {"egui", "egui_extras", "eframe", "winit", "rfd", "wgpu"}
