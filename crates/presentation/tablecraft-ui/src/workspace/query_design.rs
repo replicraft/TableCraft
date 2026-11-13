@@ -621,7 +621,8 @@ impl State {
                 .get_or_insert_with(Default::default);
             session.mode = Mode::Design;
             self.ribbon_tab = super::ribbon::Tab::QueryDesign;
-            session.add_tables = session.draft.sources.is_empty();
+            session.add_tables =
+                session.draft.sources.is_empty() && session.draft.columns.is_empty();
             None
         } else if !self.query_design_visible() {
             Some(Action::ImportQueryDesign {
