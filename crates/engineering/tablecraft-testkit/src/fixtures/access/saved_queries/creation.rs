@@ -56,6 +56,9 @@ pub fn after(
     let mut catalog = canonical_native17_creation::catalog_row(
         &canonical_creation::catalog_record(native_query_id as u32, TABLES_ID, destination, 5, 0),
     );
+    if destination.starts_with('\u{feff}') {
+        escape_short_text(&mut catalog, 0, 11, 3);
+    }
     // Native17 fixed DATE fields are independently framed at these literal
     // offsets; both are present and carry the same explicitly captured bits.
     let timestamp = captured_at.to_bits().to_le_bytes();
@@ -105,7 +108,10 @@ pub fn after(
             ..Default::default()
         },
     ];
-    for (_, row) in fragment_records(&fragments) {
+    for (ordinal, (_, mut row)) in fragment_records(&fragments).into_iter().enumerate() {
+        if ordinal == 3 && alias.starts_with('\u{feff}') {
+            escape_short_text(&mut row, 1, 4, 1);
+        }
         append_record(
             &mut expected[QUERY_DATA * PAGE..(QUERY_DATA + 1) * PAGE],
             &row,
@@ -191,4 +197,27 @@ fn increase_rows(bytes: &mut [u8], definition: usize, added: u32) {
     let at = definition * PAGE + 16;
     let count = u32::from_le_bytes(bytes[at..at + 4].try_into().unwrap());
     put32(bytes, at, count.checked_add(added).unwrap());
+}
+
+/// A leading U+FEFF aliases the native compressed marker in Short Text. Insert
+/// the literal marked-wide escape into this new raw record, preserving all
+/// other payloads. Memo expression bytes use their separate inline framing.
+fn escape_short_text(row: &mut Vec<u8>, variable: usize, variables: usize, mask_bytes: usize) {
+    let count_start = row.len() - mask_bytes - 2;
+    assert_eq!(
+        u16::from_le_bytes(row[count_start..count_start + 2].try_into().unwrap()) as usize,
+        variables
+    );
+    let start_at = count_start - 2 * (variable + 1);
+    let start = usize::from(u16::from_le_bytes(
+        row[start_at..start_at + 2].try_into().unwrap(),
+    ));
+    assert_eq!(&row[start..start + 2], &[0xff, 0xfe]);
+    row.splice(start..start, [0xff, 0xfe, 0]);
+    let count_start = count_start + 3;
+    for ordinal in variable + 1..=variables {
+        let at = count_start - 2 * (ordinal + 1);
+        let offset = u16::from_le_bytes(row[at..at + 2].try_into().unwrap());
+        put16(row, at, offset.checked_add(3).unwrap());
+    }
 }

@@ -6,7 +6,7 @@ use crate::{
     format::{
         bytes::u32_at,
         data_append::Page,
-        data_type::LONG_TEXT,
+        data_type::{LONG_TEXT, SHORT_TEXT},
         layout::RECORD_COUNT_OFFSET,
         page::PAGE_BYTES,
         reader::Reader,
@@ -34,6 +34,7 @@ const ATTRIBUTES: [QueryAttribute; 5] = [
 const INLINE_TAG: u32 = 0x8000_0000;
 const MEMO_DESCRIPTOR_BYTES: usize = 3 * size_of::<u32>();
 const ORDER: [u8; size_of::<u32>()] = [0, 0, 0, 1];
+const SHORT_TEXT_ESCAPE: [u8; 3] = [0xff, 0xfe, 0];
 
 pub(super) fn verify(
     before: &NativeImage,
@@ -333,6 +334,11 @@ fn verify_record(
             if matches!(value, Value::Null) && !payload.is_empty() {
                 return Err(QueryCreationError::Preservation);
             }
+            if field.native_type() == SHORT_TEXT
+                && let Value::Text(text) = value
+            {
+                verify_short_text(payload, text, budget, cancelled)?;
+            }
             if field.native_type() == LONG_TEXT && !matches!(value, Value::Null) {
                 let Value::Text(text) = value else {
                     return Err(QueryCreationError::Preservation);
@@ -386,6 +392,41 @@ fn verify_record(
     }
     for number in schema.layout.max_columns..(actual.len() - frame.mask_start) * MASK_BITS {
         if actual[frame.mask_start + number / MASK_BITS] & (1 << (number % MASK_BITS)) != 0 {
+            return Err(QueryCreationError::Preservation);
+        }
+    }
+    Ok(())
+}
+
+/// Source qualification requires uncompressed Short Text declarations. Check
+/// exact preferred bytes independently, including the leading-marker escape.
+fn verify_short_text(
+    payload: &[u8],
+    text: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), QueryCreationError> {
+    check(budget, cancelled)?;
+    budget.charge(Resource::Steps, text.len() as u64)?;
+    let escaped = text.starts_with('\u{feff}');
+    let prefix = if escaped { SHORT_TEXT_ESCAPE.len() } else { 0 };
+    let length = text
+        .encode_utf16()
+        .count()
+        .checked_mul(size_of::<u16>())
+        .and_then(|bytes| bytes.checked_add(prefix))
+        .ok_or(InspectError::StructureLimit)?;
+    if payload.len() != length || escaped && !payload.starts_with(&SHORT_TEXT_ESCAPE) {
+        return Err(QueryCreationError::Preservation);
+    }
+    for (bytes, unit) in payload[prefix..]
+        .chunks_exact(size_of::<u16>())
+        .zip(text.encode_utf16())
+    {
+        check(budget, cancelled)?;
+        budget.charge(Resource::Steps, size_of::<u16>() as u64)?;
+        let encoded = unit.to_le_bytes();
+        if bytes != encoded || escaped && encoded[0] == 0 {
             return Err(QueryCreationError::Preservation);
         }
     }

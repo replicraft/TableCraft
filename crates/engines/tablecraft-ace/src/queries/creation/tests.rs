@@ -251,3 +251,54 @@ fn invalid_names_cancellation_and_resource_exhaustion_do_not_yield_candidates() 
         Err(QueryCreationError::Inspect(InspectError::Limit(_)))
     ));
 }
+
+#[test]
+fn leading_bom_short_text_names_match_literal_escape_bytes_and_preserve_plain_memo() {
+    let name = "\u{feff}Created";
+    let alias = "\u{feff}Heading";
+    let source = raw::source(name, alias, -7, at());
+    for capture in [
+        image as fn(&[u8]) -> NativeImage,
+        retained_image as fn(&[u8]) -> NativeImage,
+    ] {
+        let candidate = capture(&source.before)
+            .prepare_query_creation(definition(name, alias, -7), &mut budget(), &|| false)
+            .unwrap();
+        assert_eq!(candidate.before_bytes(), source.before);
+        assert_eq!(candidate.candidate_bytes(), source.expected);
+        assert_eq!(candidate.native_query_id(), source.native_query_id);
+        let actual = candidate.candidate_bytes();
+        // Independent literal offsets identify the newly appended catalog row
+        // and the Column fragment; no production layout/encoder supplies them.
+        let row_start = |page: usize, slot: usize| {
+            let at = page * 4096 + 14 + 2 * slot;
+            page * 4096 + usize::from(u16::from_le_bytes(actual[at..at + 2].try_into().unwrap()))
+        };
+        let catalog = row_start(4, 9);
+        assert_eq!(
+            &actual[catalog + 32..catalog + 37],
+            &[0xff, 0xfe, 0, 0xff, 0xfe]
+        );
+        let column = row_start(8, 8);
+        assert_eq!(
+            &actual[column + 17..column + 22],
+            &[0xff, 0xfe, 0, 0xff, 0xfe]
+        );
+        let expression = column + 17 + 3 + 2 * 8;
+        assert_eq!(
+            &actual[expression..expression + 16],
+            &[4, 0, 0, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, b'-', 0, b'7', 0]
+        );
+        let reopened = read_saved_query_definition(
+            &mut Cursor::new(actual),
+            CatalogScope::new(95),
+            name,
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        assert_eq!(reopened.object().name().as_str(), name);
+        assert_eq!(reopened.rows()[3].name1(), Some(alias));
+        assert_eq!(reopened.rows()[3].expression(), Some("-7"));
+    }
+}
