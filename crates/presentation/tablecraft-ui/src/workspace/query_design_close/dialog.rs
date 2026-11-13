@@ -3,6 +3,7 @@ use super::QueryDesignCloseDecision as Decision;
 use crate::localization::{message, tr};
 use crate::{Action, State};
 use egui::{Context, Id, Modal};
+use std::borrow::Cow;
 
 impl State {
     pub(in crate::workspace) fn query_design_close_dialog(
@@ -19,8 +20,9 @@ impl State {
         let current = self.modified_query_design_for(&intent.request.tab)
             == Some((intent.text_revision, intent.draft_revision));
         let title = match &intent.request.tab.target.kind {
-            crate::ObjectKind::SavedQuery { name, .. } => name.as_str(),
-            _ => "SQL",
+            crate::ObjectKind::SavedQuery { name, .. } => Cow::Borrowed(name.as_str()),
+            crate::ObjectKind::Sql => Cow::Owned(self.localizer.text("shell-query")),
+            _ => return,
         };
         let mut decision = None;
         let response = Modal::new(Id::new("query_design_close")).show(context, |ui| {
@@ -29,7 +31,7 @@ impl State {
             ui.label(message(
                 ui,
                 "saved-query-close-question",
-                &[("name", title)],
+                &[("name", title.as_ref())],
             ));
             if !current {
                 ui.label(tr(ui, "saved-query-close-stale"));
