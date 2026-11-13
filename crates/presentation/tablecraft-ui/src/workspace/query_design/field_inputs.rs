@@ -215,6 +215,10 @@ impl FieldInputs {
         }
     }
 
+    pub(super) fn count_cleared(&self, count: &mut Counter) {
+        count.vector(&self.entries);
+    }
+
     pub(super) fn count(&self, count: &mut Counter) {
         count.vector(&self.entries);
         for entry in &self.entries {

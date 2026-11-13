@@ -91,6 +91,10 @@ impl Draft {
         }
     }
 
+    pub(in crate::workspace) fn text_capacity(&self) -> usize {
+        self.proposed.capacity()
+    }
+
     pub(in crate::workspace) fn text(&self) -> &str {
         &self.proposed
     }

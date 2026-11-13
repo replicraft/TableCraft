@@ -1,12 +1,16 @@
 //! Reopening retains only source-free design choices, never metadata or execution rights.
-use super::{Mode, QueryDesign, Session};
+use super::{
+    Mode, QueryDesign, Session,
+    baseline::{Baseline, Submission},
+};
 use tablecraft_builders::query::QueryDesignDraft;
 
 pub(in crate::workspace) struct Preferences {
     draft: QueryDesignDraft,
     mode: Mode,
     revision: u64,
-    saved_revision: u64,
+    baseline: Baseline,
+    submitted: Option<Submission>,
     field_inputs: super::field_inputs::FieldInputs,
 }
 
@@ -20,7 +24,10 @@ impl QueryDesign {
             draft: session.draft.clone(),
             mode: session.mode,
             revision: session.revision,
-            saved_revision: session.saved_revision,
+            baseline: session.baseline.share(),
+            // NO_CLONE: Fresh-source preferences retain the accepted immutable
+            // submission while the live editor/pending worker keep other handles.
+            submitted: session.submitted.as_ref().map(Submission::share),
             field_inputs: session.field_inputs.snapshot(),
         })
     }
@@ -36,7 +43,8 @@ impl QueryDesign {
                 draft: preferences.draft,
                 mode,
                 revision: preferences.revision,
-                saved_revision: preferences.saved_revision,
+                baseline: preferences.baseline,
+                submitted: preferences.submitted,
                 field_inputs: preferences.field_inputs,
                 ..Session::default()
             })),

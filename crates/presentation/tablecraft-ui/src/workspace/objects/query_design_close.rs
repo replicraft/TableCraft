@@ -82,26 +82,21 @@ impl State {
         self.request_query_design_close(&tab)
     }
 
-    pub(in crate::workspace) fn mark_query_design_saved_for(&mut self, tab: &ObjectTab) -> bool {
+    pub(in crate::workspace) fn query_design_baseline_current_for(&self, tab: &ObjectTab) -> bool {
         if self.active_object().as_ref() == Some(tab) {
-            self.query_design.mark_saved();
-            return true;
+            return self.query_design.saved_baseline_current();
         }
-        let Some(entry) = self
+        match self
             .objects
             .entries
-            .iter_mut()
+            .iter()
             .find(|entry| entry.tab == *tab)
-        else {
-            return false;
-        };
-        match &mut entry.session {
-            Some(Session::Sql { design, .. }) => design.mark_saved(),
-            Some(Session::Saved { state, .. }) => state.design.mark_saved(),
-            _ => return false,
+            .and_then(|entry| entry.session.as_ref())
+        {
+            Some(Session::Sql { design, .. }) => design.saved_baseline_current(),
+            Some(Session::Saved { state, .. }) => state.design.saved_baseline_current(),
+            _ => false,
         }
-        entry.retained_bytes = entry.session.as_ref().and_then(Session::retained_bytes);
-        true
     }
 
     pub(in crate::workspace) fn discard_query_design_close(
@@ -121,8 +116,7 @@ impl State {
         {
             return false;
         }
-        self.query_design = Default::default();
-        self.close_object_confirmed(&request.tab)
+        self.close_object_after_design_check(&request.tab)
     }
 }
 

@@ -1,4 +1,5 @@
 //! Local QBE drafts require explicit source-bound canonicalization before execution.
+mod baseline;
 mod context_menu;
 mod dialog;
 mod field_inputs;
@@ -52,7 +53,8 @@ struct Session {
     mode: Mode,
     draft: QueryDesignDraft,
     revision: u64,
-    saved_revision: u64,
+    baseline: baseline::Baseline,
+    submitted: Option<baseline::Submission>,
     field_inputs: field_inputs::FieldInputs,
     result_revision: Option<u64>,
     totals_off_qualification: Option<(u64, bool)>,
@@ -116,9 +118,8 @@ impl State {
             if self.query_design_sql() == Some(sql.as_str()) {
                 return true;
             }
-            if !self.admit_object_bytes(Some(sql.capacity())) {
-                return false;
-            }
+            // set_query_design_built admits the complete replacement graph and
+            // SQL allocation together before reaching this private source setter.
             let Some(draft) = &mut self.saved_query.sql else {
                 return false;
             };
@@ -374,6 +375,26 @@ impl State {
         if request_id == 0 || !self.can_build_query_design(&request, &draft, completion) {
             return false;
         }
+
+        let already_retained = self
+            .query_design
+            .session
+            .as_ref()
+            .is_some_and(|session| session.owns_snapshot(&draft));
+        let snapshot_bytes = if already_retained {
+            Some(0)
+        } else {
+            retention::shared_draft_bytes(&draft)
+        };
+        let request_bytes = match &request.tab.target.kind {
+            ObjectKind::SavedQuery { name, .. } => name.capacity(),
+            _ => 0,
+        };
+        if !self
+            .admit_object_bytes(snapshot_bytes.and_then(|bytes| bytes.checked_add(request_bytes)))
+        {
+            return false;
+        }
         self.begin_design_pending(
             request,
             request_id,
@@ -435,19 +456,78 @@ impl State {
             .pending
             .as_ref()
             .map(|pending| (pending.request.tab.id, pending.request.draft_revision));
+
+        let clean_import = completion.is_none()
+            && (!self.saved_query.active
+                || self
+                    .saved_query_sql()
+                    .is_some_and(|(original, proposed, _, _)| original == proposed));
+        let previous_baseline = session.baseline.share();
+        let existing_baseline = clean_import
+            .then(|| session.shared_snapshot(&built.draft))
+            .flatten();
+        let submitted = match &session.pending.as_ref()?.kind {
+            PendingKind::Build { draft, .. } => {
+                // NO_CLONE: Retain the actual accepted immutable submission after
+                // pending request retirement; its model payload is not copied.
+                Some(Arc::clone(draft))
+            }
+            _ => None,
+        };
+
+        let baseline = if clean_import {
+            match existing_baseline {
+                Some(snapshot) => Some(snapshot),
+                None => Some(self.capture_query_design_baseline(&built.draft)?),
+            }
+        } else {
+            None
+        };
+        let next_baseline = if let Some(baseline) = baseline {
+            baseline::Baseline::Known(baseline)
+        } else if completion.is_none() && matches!(previous_baseline, baseline::Baseline::Empty) {
+            baseline::Baseline::Unknown
+        } else {
+            previous_baseline
+        };
+
+        if !self.admit_query_design_completion(
+            &built,
+            &metadata,
+            &next_baseline,
+            submitted.as_ref(),
+            completion.is_none(),
+        ) {
+            return None;
+        }
+
         if !self.replace_query_design_sql(built.sql) {
             return None;
         }
+        let accepted_text_revision = if self.saved_query.active {
+            self.saved_query_sql().map(|(_, _, revision, _)| revision)?
+        } else {
+            self.query_sql_revision()?
+        };
+
         let session = self.query_design.session.as_mut()?;
         session.pending = None;
         session.error = None;
         session.field_inputs.clear_committed();
-        session.draft = built.draft;
+        if completion.is_none() {
+            session.draft = built.draft;
+            session.submitted = None;
+        } else {
+            // The worker's returned draft was already compared with the exact
+            // submitted model. Keep the existing mutable owner and its capacity.
+            session.submitted = submitted.map(|draft| baseline::Submission {
+                draft,
+                text_revision: accepted_text_revision,
+            });
+        }
+        session.baseline = next_baseline;
         session.metadata = metadata;
         session.revision = session.revision.wrapping_add(1);
-        if completion.is_none() {
-            session.saved_revision = session.revision;
-        }
         session.mode = match completion {
             None => Mode::Design,
             Some(QueryDesignCompletion::ShowSql) => Mode::Sql,
@@ -664,13 +744,12 @@ impl State {
         }
         let request = self.query_design_request()?;
         let session = self.query_design.session.as_ref()?;
-        (session.mode == Mode::Design).then(|| Action::BuildQueryDesign {
+        if session.mode != Mode::Design {
+            return None;
+        }
+        Some(Action::BuildQueryDesign {
             request,
-            // NO_CLONE: Capture a stable submitted snapshot while the editor keeps its mutable
-            // draft. Arc then shares this one immutable payload with UI pending and the
-            // worker; Rc cannot cross the worker thread and Cow cannot borrow mutable
-            // editor state.
-            draft: Arc::new(session.draft.clone()),
+            draft: self.query_design_snapshot()?,
             completion: QueryDesignCompletion::ShowSql,
         })
     }
@@ -690,29 +769,27 @@ impl State {
         } else {
             QueryDesignCompletion::Save
         };
-        self.can_build_query_design(&request, &session.draft, completion)
-            .then(|| Action::BuildQueryDesign {
-                request,
-                // NO_CLONE: The worker and live editable Design need independent snapshots;
-                // this one paid immutable Arc is shared by the pending request and worker.
-                draft: Arc::new(session.draft.clone()),
-                completion,
-            })
+        if !self.can_build_query_design(&request, &session.draft, completion) {
+            return None;
+        }
+        Some(Action::BuildQueryDesign {
+            request,
+            draft: self.query_design_snapshot()?,
+            completion,
+        })
     }
 
     pub(super) fn query_design_run_action(&self) -> Option<Action> {
         let request = self.query_design_request()?;
         let session = self.query_design.session.as_ref()?;
-        self.can_build_query_design(&request, &session.draft, QueryDesignCompletion::Run)
-            .then(|| Action::BuildQueryDesign {
-                request,
-                // NO_CLONE: Capture a stable submitted snapshot while the editor keeps its mutable
-                // draft. Arc then shares this one immutable payload with UI pending and
-                // the worker; Rc cannot cross the worker thread and Cow cannot borrow
-                // mutable editor state.
-                draft: Arc::new(session.draft.clone()),
-                completion: QueryDesignCompletion::Run,
-            })
+        if !self.can_build_query_design(&request, &session.draft, QueryDesignCompletion::Run) {
+            return None;
+        }
+        Some(Action::BuildQueryDesign {
+            request,
+            draft: self.query_design_snapshot()?,
+            completion: QueryDesignCompletion::Run,
+        })
     }
 }
 
@@ -723,23 +800,6 @@ impl QueryDesign {
     pub(in crate::workspace) fn save_revision(&self) -> Option<u64> {
         let session = self.session.as_ref()?;
         (session.mode == Mode::Design).then_some(session.revision)
-    }
-}
-
-impl QueryDesign {
-    pub(in crate::workspace) fn dirty_revision(&self) -> Option<u64> {
-        let session = self.session.as_ref()?;
-        (session.revision != session.saved_revision).then_some(session.revision)
-    }
-
-    pub(in crate::workspace) fn is_dirty(&self) -> bool {
-        self.dirty_revision().is_some()
-    }
-
-    pub(in crate::workspace) fn mark_saved(&mut self) {
-        if let Some(session) = &mut self.session {
-            session.saved_revision = session.revision;
-        }
     }
 }
 

@@ -292,7 +292,14 @@ fn prepare(
     let mut saved =
         SavedQueryState::created(created, &request.sql, request.text_revision.checked_add(1)?)?;
     saved.design = std::mem::take(&mut restored.design);
-    saved.design.mark_saved();
+    if !saved.design.resolve_saved_text(request.text_revision) {
+        if request.design_revision.is_some() {
+            return None;
+        }
+        // SQL-origin persistence certifies its submitted text, not a dormant
+        // unassociated Design model. The source owner remains independently intact.
+        saved.design = QueryDesign::default();
+    }
     **restored = saved;
     let active = entry.session.take()?;
     entry.retained_bytes = Some(0);

@@ -80,6 +80,9 @@ impl SavedQueryState {
         document_revision: u64,
         resolution: Option<SqlResolution>,
     ) {
+        let accepted_text_revision = resolution
+            .as_ref()
+            .and_then(|resolution| resolution.revision.checked_sub(1));
         let resolved = resolution.is_some();
         target.sql = self.sql.take();
         if let Some(sql) = &mut target.sql {
@@ -92,8 +95,8 @@ impl SavedQueryState {
             }
         }
         target.error = if resolved { None } else { self.error.take() };
-        if resolved {
-            target.design.mark_saved();
+        if let Some(revision) = accepted_text_revision {
+            target.design.resolve_saved_text(revision);
         }
     }
 

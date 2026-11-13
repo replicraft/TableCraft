@@ -355,7 +355,9 @@ impl State {
         {
             return None;
         }
-        self.query_design.mark_saved();
+        if !self.query_design.saved_baseline_current() {
+            return None;
+        }
         self.query_design_close.intent = None;
         Some(tab)
     }
@@ -395,7 +397,7 @@ impl State {
                     intent.draft_revision,
                 ))
             || self.query_design_close_text_for(&tab) != Some(request.proposed_sql.as_str())
-            || !self.mark_query_design_saved_for(&tab)
+            || !self.query_design_baseline_current_for(&tab)
         {
             return None;
         }

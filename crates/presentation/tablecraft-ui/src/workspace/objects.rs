@@ -432,6 +432,10 @@ impl State {
         if self.modified_query_design_for(tab).is_some() {
             return false;
         }
+        self.close_object_after_design_check(tab)
+    }
+
+    fn close_object_after_design_check(&mut self, tab: &ObjectTab) -> bool {
         if self.unresolved_query_design_edits_for(tab) {
             self.reveal_unresolved_query_design_edits_for(tab);
             return false;
