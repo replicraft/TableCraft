@@ -61,3 +61,7 @@ saved-query-save-retry-reopen = Reintentar apertura
 saved-query-save-return-draft = Volver al borrador SQL
 saved-query-read-cancellation-requested = Cancelación solicitada. Esperando a que termine la lectura de la base de datos.
 saved-query-sql-read-only = Definición SQL de solo lectura. Puede seleccionar y copiar el texto SQL.
+
+query-save-as = Guardar como
+query-save-name = Nombre de consulta
+query-save-ok = Aceptar

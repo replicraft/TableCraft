@@ -61,3 +61,7 @@ saved-query-save-retry-reopen = 重试重新打开
 saved-query-save-return-draft = 返回 SQL 草稿
 saved-query-read-cancellation-requested = 已请求取消。正在等待数据库读取停止。
 saved-query-sql-read-only = SQL 定义为只读。您可以选择并复制 SQL。
+
+query-save-as = 另存为
+query-save-name = 查询名称
+query-save-ok = 确定

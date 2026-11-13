@@ -61,3 +61,7 @@ saved-query-save-retry-reopen = 再度開く
 saved-query-save-return-draft = SQL の下書きに戻る
 saved-query-read-cancellation-requested = キャンセルを要求しました。データベースの読み取りが停止するまでお待ちください。
 saved-query-sql-read-only = SQL 定義は読み取り専用です。SQL を選択してコピーできます。
+
+query-save-as = 名前を付けて保存
+query-save-name = クエリ名
+query-save-ok = OK

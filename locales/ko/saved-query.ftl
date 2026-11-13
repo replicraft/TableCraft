@@ -61,3 +61,7 @@ saved-query-save-retry-reopen = 다시 열기
 saved-query-save-return-draft = SQL 초안으로 돌아가기
 saved-query-read-cancellation-requested = 취소를 요청했습니다. 데이터베이스 읽기가 중지될 때까지 기다리는 중입니다.
 saved-query-sql-read-only = 읽기 전용 SQL 정의입니다. SQL을 선택하고 복사할 수 있습니다.
+
+query-save-as = 다른 이름으로 저장
+query-save-name = 쿼리 이름
+query-save-ok = 확인

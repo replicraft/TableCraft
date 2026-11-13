@@ -61,3 +61,7 @@ saved-query-save-retry-reopen = Повторить открытие
 saved-query-save-return-draft = Вернуться к черновику SQL
 saved-query-read-cancellation-requested = Запрошена отмена. Ожидание завершения чтения базы данных.
 saved-query-sql-read-only = Определение SQL доступно только для чтения. Текст SQL можно выделить и скопировать.
+
+query-save-as = Сохранить как
+query-save-name = Имя запроса
+query-save-ok = ОК
