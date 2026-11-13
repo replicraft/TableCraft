@@ -5188,6 +5188,7 @@ dependencies = [
  "tablecraft-builders",
  "tablecraft-core",
  "tablecraft-display",
+ "tablecraft-expressions",
  "tablecraft-runtime",
  "tablecraft-testkit",
  "tablecraft-ui",

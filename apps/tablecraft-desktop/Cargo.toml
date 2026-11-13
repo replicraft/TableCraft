@@ -37,8 +37,9 @@ tracing-subscriber.workspace = true
 
 [dev-dependencies]
 tablecraft-core.workspace = true
+tablecraft-expressions.workspace = true
 egui_kittest.workspace = true
-tablecraft-testkit = { workspace = true, features = ["access-support", "ace16-create-support"] }
+tablecraft-testkit = { workspace = true, features = ["access-support", "ace16-create-support", "expression-support"] }
 tempfile.workspace = true
 
 [target.'cfg(target_os = "macos")'.dependencies]
