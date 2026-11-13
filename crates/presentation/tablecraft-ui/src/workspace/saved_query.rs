@@ -235,6 +235,9 @@ impl State {
                 request_id,
                 parameters: None,
             });
+            if self.query_design_visible() || self.query_design_results_visible() {
+                self.ribbon_tab = super::ribbon::Tab::QueryDesign;
+            }
         }
     }
 

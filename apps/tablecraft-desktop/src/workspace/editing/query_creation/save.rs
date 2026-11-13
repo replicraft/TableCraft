@@ -236,15 +236,7 @@ impl Desktop {
         host.cleanup = facts.completed.and_then(cleanup_notice);
         if facts.replacement {
             self.reopen_query_creation();
-        } else if self.state.release_query_creation_review(
-            host.request_id,
-            &host.request,
-            review_id,
-            None,
-        ) {
-            if let Some(status) = host.status {
-                self.state.clear_query_creation_save(status);
-            }
+        } else if self.state.clear_query_creation_save(status) {
             self.editing.query_creation = None;
             self.state.busy = false;
             self.pending = PendingOperation::Read;

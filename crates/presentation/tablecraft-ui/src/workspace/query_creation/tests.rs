@@ -105,7 +105,7 @@ fn saved_design_parks_under_its_real_owner_without_overwriting_global_scratch_sq
     let saved = state.active_object().unwrap();
     assert!(matches!(saved.target.kind, ObjectKind::SavedQuery { .. }));
     assert!(state.query_design_visible());
-    assert_eq!(state.query_design_sql(), Some("SELECT 99 AS [Answer]"));
+    assert_eq!(state.query_design_sql(), Some("SELECT 99 AS [Answer];"));
     assert!(state.replace_query_sql("SELECT 7 AS [Scratch]".into()));
     let scratch = state
         .prepare_object_open(ObjectTarget {
@@ -118,7 +118,7 @@ fn saved_design_parks_under_its_real_owner_without_overwriting_global_scratch_sq
     assert!(state.activate_object(&saved));
     assert!(state.query_design_visible());
     assert_eq!(state.query_design_request().unwrap().tab, saved);
-    assert_eq!(state.query_design_sql(), Some("SELECT 99 AS [Answer]"));
+    assert_eq!(state.query_design_sql(), Some("SELECT 99 AS [Answer];"));
     assert!(state.activate_object(&scratch));
     assert_eq!(state.query_design_sql(), Some("SELECT 7 AS [Scratch]"));
 }

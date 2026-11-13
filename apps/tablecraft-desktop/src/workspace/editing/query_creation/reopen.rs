@@ -149,12 +149,10 @@ impl Desktop {
         {
             return false;
         }
-        if !self.state.release_query_creation_review(
-            host.request_id,
-            &host.request,
-            review_id,
-            None,
-        ) {
+        if !self
+            .state
+            .matches_query_creation_review(host.request_id, &host.request, review_id)
+        {
             return false;
         }
         // NO_CLONE: Releasing the retained status below destroys its error owner;
