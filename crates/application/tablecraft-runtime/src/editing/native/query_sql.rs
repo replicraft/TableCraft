@@ -54,12 +54,11 @@ fn parsed(
     Ok(parsed)
 }
 
-fn capture(
+fn preflight(
     document: &Document,
     target: &SavedQueryTarget,
-    work: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<NativeImage, Error> {
+) -> Result<(), Error> {
     check(cancelled)?;
     if target.document_revision != document.revision {
         return Err(Error::StaleSavedQuery);
@@ -67,6 +66,16 @@ fn capture(
     if !document.source.editable_native() {
         return Err(EditError::ReadOnlySource.into());
     }
+    Ok(())
+}
+
+fn capture(
+    document: &Document,
+    target: &SavedQueryTarget,
+    work: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<NativeImage, Error> {
+    preflight(document, target, cancelled)?;
     // NO_CLONE: NativeImage owns the checked source while Document keeps using it; this shares
     // immutable bytes instead of copying the database image.
     let image =
@@ -94,6 +103,7 @@ pub(in crate::editing) fn review(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Response, Error> {
     let _span = tracing::debug_span!("application.review_query_sql").entered();
+    preflight(document, target, cancelled)?;
     let mut native = action_review_budget(document.edits.original.len())?;
     let mut syntax = syntax_budget();
     let original = parsed(original_sql, &mut syntax, cancelled)?;

@@ -55,6 +55,10 @@ original SQL is not fabricated. Runtime review returns a separate native
 capability and complete `QueryExpressionReopen` witness. Review holds no exclusive
 file lease, creates no journal and executes no saved query.
 
+Cancellation, a stale document revision and read-only source eligibility are
+checked before parsing submitted SQL. Native object identity and complete source
+qualification are still checked from the actual captured image.
+
 The desktop retains that exact request, runtime review ID and witness through
 one nonreplaceable save owner. UI prepares and budgets its complete status
 before the actor starts, then binds the actual accepted save ID without another

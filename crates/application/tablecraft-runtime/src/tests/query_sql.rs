@@ -1,4 +1,5 @@
 //! Full SQL review uses distinct TCQE2 capabilities; literal TCQE1 stays separate.
+mod preconditions;
 mod workflow;
 use super::{request, saved::opened};
 use crate::{
