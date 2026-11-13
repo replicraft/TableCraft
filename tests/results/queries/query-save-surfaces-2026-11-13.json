@@ -1,0 +1,389 @@
+{
+  "date": "2026-11-13",
+  "qualification_status": "visual_review_only",
+  "scope": "Query naming, actual saved Design presentation, and exact close-decision surfaces. No functional or release-completion claim.",
+  "platform": "macOS-14.7.2-arm64-arm-64bit-Mach-O",
+  "logical_size": [
+    1280,
+    820
+  ],
+  "scale": 1,
+  "host": "normal presentation over inert preview facts",
+  "input_emulation": "Windows (renderer harness setting, not Windows execution)",
+  "native_windows": false,
+  "adapter_metadata": {
+    "requested_backend": "metal",
+    "observed_adapter": null,
+    "status": "render_preview does not export adapter/device metadata"
+  },
+  "reference": {
+    "path": ".cache/access-public-references/city-dob.gif",
+    "bytes": 10238,
+    "sha256": "951ed0bb5e231485cce3c4df43073ae2c50617d3769070c7342b0e6188f24712"
+  },
+  "reference_scope": "The retained Microsoft source-card/splitter/Field-grid capture was directly viewed. No native Save-name, close-dialog, dark-mode or German capture supplies parity evidence.",
+  "remaining": [
+    "German Home Ribbon needs horizontal scrolling at this size.",
+    "Design footer is still generic Query view.",
+    "Functional dirty-state classification and broader UI/Desktop regression remain under repair.",
+    "General native QueryDef persistence and requested older profiles are not qualified by these previews."
+  ],
+  "reports": [
+    {
+      "path": ".cache/ui-previews/query-save-name/metal-headless-15d64dbf8/render-results.json",
+      "bytes": 12226,
+      "sha256": "d50c5e9873edf0b983efeb16419d7b02c4d151550d68b554bef054baae95780b"
+    },
+    {
+      "path": ".cache/ui-previews/saved-query-design/metal-headless-15d64dbf8/render-results.json",
+      "bytes": 12551,
+      "sha256": "dc0fac4522680d13d7f5c240da792131b0d4bd08e8c2c7be670642790e03e16f"
+    },
+    {
+      "path": ".cache/ui-previews/query-design-close/metal-headless-15d64dbf8/render-results.json",
+      "bytes": 12750,
+      "sha256": "3d04247ffd74c7a962eb6fd60b6388aa98c0fc4a14f254d4b59646340425c8f6"
+    },
+    {
+      "path": ".cache/ui-previews/query-design-close/metal-headless-c50823e0e/render-results.json",
+      "bytes": 12348,
+      "sha256": "b5c9d633d4d005e09bed8113c0423674d2783d97405294ca1649e4b85a8ce50c"
+    }
+  ],
+  "frames": [
+    {
+      "scene": "query-save-name",
+      "source_revision": "15d64dbf8bba1d37131811e4c0cff37c774e2237",
+      "locale": "en-US",
+      "theme": "light",
+      "pixel_size": [
+        1280,
+        820
+      ],
+      "artifact": {
+        "path": ".cache/ui-previews/query-save-name/metal-headless-15d64dbf8/en-US-light-query-save-name.png",
+        "bytes": 123114,
+        "sha256": "77a492e182bb5e2ed64457c166a990125f6914122eba70a9b1846afdce511191"
+      },
+      "directly_viewed": true,
+      "observations": [
+        "Modal/grid and translated labels inspected within 1280x820 at 1x; light/dark styling directly viewed.",
+        "Name field and OK/Cancel fit the modal; native Save-name capture is unavailable."
+      ]
+    },
+    {
+      "scene": "query-save-name",
+      "source_revision": "15d64dbf8bba1d37131811e4c0cff37c774e2237",
+      "locale": "en-US",
+      "theme": "dark",
+      "pixel_size": [
+        1280,
+        820
+      ],
+      "artifact": {
+        "path": ".cache/ui-previews/query-save-name/metal-headless-15d64dbf8/en-US-dark-query-save-name.png",
+        "bytes": 140964,
+        "sha256": "47b77908891b23f274bd8a3a83db4e5182c2a7e2d91a6a484f5767fcadcbf671"
+      },
+      "directly_viewed": true,
+      "observations": [
+        "Modal/grid and translated labels inspected within 1280x820 at 1x; light/dark styling directly viewed.",
+        "Name field and OK/Cancel fit the modal; native Save-name capture is unavailable."
+      ]
+    },
+    {
+      "scene": "query-save-name",
+      "source_revision": "15d64dbf8bba1d37131811e4c0cff37c774e2237",
+      "locale": "de",
+      "theme": "light",
+      "pixel_size": [
+        1280,
+        820
+      ],
+      "artifact": {
+        "path": ".cache/ui-previews/query-save-name/metal-headless-15d64dbf8/de-light-query-save-name.png",
+        "bytes": 136290,
+        "sha256": "b8545299e7b46d59a1ecae79aa576a83bc91662ec4da2714f0435b93d4c2c61c"
+      },
+      "directly_viewed": true,
+      "observations": [
+        "Modal/grid and translated labels inspected within 1280x820 at 1x; light/dark styling directly viewed.",
+        "Name field and OK/Cancel fit the modal; native Save-name capture is unavailable.",
+        "Underlying Home Ribbon retains horizontal scrolling; not all groups fit at once in German."
+      ]
+    },
+    {
+      "scene": "query-save-name",
+      "source_revision": "15d64dbf8bba1d37131811e4c0cff37c774e2237",
+      "locale": "de",
+      "theme": "dark",
+      "pixel_size": [
+        1280,
+        820
+      ],
+      "artifact": {
+        "path": ".cache/ui-previews/query-save-name/metal-headless-15d64dbf8/de-dark-query-save-name.png",
+        "bytes": 155559,
+        "sha256": "0973ec4aa31ebb0cff26ad1229a59b9300e25e79d87db06d864ddb0495d67083"
+      },
+      "directly_viewed": true,
+      "observations": [
+        "Modal/grid and translated labels inspected within 1280x820 at 1x; light/dark styling directly viewed.",
+        "Name field and OK/Cancel fit the modal; native Save-name capture is unavailable.",
+        "Underlying Home Ribbon retains horizontal scrolling; not all groups fit at once in German."
+      ]
+    },
+    {
+      "scene": "saved-query-design",
+      "source_revision": "15d64dbf8bba1d37131811e4c0cff37c774e2237",
+      "locale": "en-US",
+      "theme": "light",
+      "pixel_size": [
+        1280,
+        820
+      ],
+      "artifact": {
+        "path": ".cache/ui-previews/saved-query-design/metal-headless-15d64dbf8/en-US-light-saved-query-design.png",
+        "bytes": 119015,
+        "sha256": "0f6088897f193fedeed3b4fdc66635a2d9554e352980e556c7c9e716ab58ddaf"
+      },
+      "directly_viewed": true,
+      "observations": [
+        "Modal/grid and translated labels inspected within 1280x820 at 1x; light/dark styling directly viewed.",
+        "Source-free Answer:99 appears in the Field row, with an empty source canvas and complete contextual Ribbon.",
+        "Footer remains generic Query view; native Design footer parity is not claimed."
+      ]
+    },
+    {
+      "scene": "saved-query-design",
+      "source_revision": "15d64dbf8bba1d37131811e4c0cff37c774e2237",
+      "locale": "en-US",
+      "theme": "dark",
+      "pixel_size": [
+        1280,
+        820
+      ],
+      "artifact": {
+        "path": ".cache/ui-previews/saved-query-design/metal-headless-15d64dbf8/en-US-dark-saved-query-design.png",
+        "bytes": 118459,
+        "sha256": "1fcf38394da247addb4479fd11f83240affdbeb3462a6136652b69ea3d2e8b61"
+      },
+      "directly_viewed": true,
+      "observations": [
+        "Modal/grid and translated labels inspected within 1280x820 at 1x; light/dark styling directly viewed.",
+        "Source-free Answer:99 appears in the Field row, with an empty source canvas and complete contextual Ribbon.",
+        "Footer remains generic Query view; native Design footer parity is not claimed."
+      ]
+    },
+    {
+      "scene": "saved-query-design",
+      "source_revision": "15d64dbf8bba1d37131811e4c0cff37c774e2237",
+      "locale": "de",
+      "theme": "light",
+      "pixel_size": [
+        1280,
+        820
+      ],
+      "artifact": {
+        "path": ".cache/ui-previews/saved-query-design/metal-headless-15d64dbf8/de-light-saved-query-design.png",
+        "bytes": 134006,
+        "sha256": "0ef351594e761ae13211b942703d0421b6fd0c86288675444a623b8eb01f8c6d"
+      },
+      "directly_viewed": true,
+      "observations": [
+        "Modal/grid and translated labels inspected within 1280x820 at 1x; light/dark styling directly viewed.",
+        "Source-free Answer:99 appears in the Field row, with an empty source canvas and complete contextual Ribbon.",
+        "Footer remains generic Query view; native Design footer parity is not claimed."
+      ]
+    },
+    {
+      "scene": "saved-query-design",
+      "source_revision": "15d64dbf8bba1d37131811e4c0cff37c774e2237",
+      "locale": "de",
+      "theme": "dark",
+      "pixel_size": [
+        1280,
+        820
+      ],
+      "artifact": {
+        "path": ".cache/ui-previews/saved-query-design/metal-headless-15d64dbf8/de-dark-saved-query-design.png",
+        "bytes": 132962,
+        "sha256": "42a47f82d504c840d485a25e18cffd9315cfb3dd982afc4f767cef25d3971868"
+      },
+      "directly_viewed": true,
+      "observations": [
+        "Modal/grid and translated labels inspected within 1280x820 at 1x; light/dark styling directly viewed.",
+        "Source-free Answer:99 appears in the Field row, with an empty source canvas and complete contextual Ribbon.",
+        "Footer remains generic Query view; native Design footer parity is not claimed."
+      ]
+    },
+    {
+      "scene": "query-design-close",
+      "source_revision": "15d64dbf8bba1d37131811e4c0cff37c774e2237",
+      "locale": "en-US",
+      "theme": "light",
+      "pixel_size": [
+        1280,
+        820
+      ],
+      "artifact": {
+        "path": ".cache/ui-previews/query-design-close/metal-headless-15d64dbf8/en-US-light-query-design-close.png",
+        "bytes": 136094,
+        "sha256": "2ee68be0f35233f744abc1a8d8b2f40750228a1e7ff12a8e83e315606e92f3fd"
+      },
+      "directly_viewed": true,
+      "observations": [
+        "Modal/grid and translated labels inspected within 1280x820 at 1x; light/dark styling directly viewed.",
+        "Save/Discard/Cancel fit and are translated; source cards and Field/Table/criteria rows remain visible beneath the modal.",
+        "Generic SQL caption identified and corrected in c50823e0e; that correction is not shown in these historical frames."
+      ]
+    },
+    {
+      "scene": "query-design-close",
+      "source_revision": "15d64dbf8bba1d37131811e4c0cff37c774e2237",
+      "locale": "en-US",
+      "theme": "dark",
+      "pixel_size": [
+        1280,
+        820
+      ],
+      "artifact": {
+        "path": ".cache/ui-previews/query-design-close/metal-headless-15d64dbf8/en-US-dark-query-design-close.png",
+        "bytes": 149567,
+        "sha256": "537fc62f819d3f1e30c03979b7a756807c80b5e53de3a604b72eebb899f1bc25"
+      },
+      "directly_viewed": true,
+      "observations": [
+        "Modal/grid and translated labels inspected within 1280x820 at 1x; light/dark styling directly viewed.",
+        "Save/Discard/Cancel fit and are translated; source cards and Field/Table/criteria rows remain visible beneath the modal.",
+        "Generic SQL caption identified and corrected in c50823e0e; that correction is not shown in these historical frames."
+      ]
+    },
+    {
+      "scene": "query-design-close",
+      "source_revision": "15d64dbf8bba1d37131811e4c0cff37c774e2237",
+      "locale": "de",
+      "theme": "light",
+      "pixel_size": [
+        1280,
+        820
+      ],
+      "artifact": {
+        "path": ".cache/ui-previews/query-design-close/metal-headless-15d64dbf8/de-light-query-design-close.png",
+        "bytes": 154300,
+        "sha256": "ce71aeb22c7d87ac0c672c46e085230036eba1644f1715b7a9e3dc0f6610c6e1"
+      },
+      "directly_viewed": true,
+      "observations": [
+        "Modal/grid and translated labels inspected within 1280x820 at 1x; light/dark styling directly viewed.",
+        "Save/Discard/Cancel fit and are translated; source cards and Field/Table/criteria rows remain visible beneath the modal.",
+        "Generic SQL caption identified and corrected in c50823e0e; that correction is not shown in these historical frames."
+      ]
+    },
+    {
+      "scene": "query-design-close",
+      "source_revision": "15d64dbf8bba1d37131811e4c0cff37c774e2237",
+      "locale": "de",
+      "theme": "dark",
+      "pixel_size": [
+        1280,
+        820
+      ],
+      "artifact": {
+        "path": ".cache/ui-previews/query-design-close/metal-headless-15d64dbf8/de-dark-query-design-close.png",
+        "bytes": 168233,
+        "sha256": "d8b9c1753c989e62bfd422ab06d49983655a2d28ac49403686b88be6c7ef40db"
+      },
+      "directly_viewed": true,
+      "observations": [
+        "Modal/grid and translated labels inspected within 1280x820 at 1x; light/dark styling directly viewed.",
+        "Save/Discard/Cancel fit and are translated; source cards and Field/Table/criteria rows remain visible beneath the modal.",
+        "Generic SQL caption identified and corrected in c50823e0e; that correction is not shown in these historical frames."
+      ]
+    },
+    {
+      "scene": "query-design-close",
+      "source_revision": "c50823e0e7d0cabbbaa60838a008308f09e45a46",
+      "locale": "en-US",
+      "theme": "light",
+      "pixel_size": [
+        1280,
+        820
+      ],
+      "artifact": {
+        "path": ".cache/ui-previews/query-design-close/metal-headless-c50823e0e/en-US-light-query-design-close.png",
+        "bytes": 136359,
+        "sha256": "f0e36d066d12844ef7cb9bedf6ffa3e435bd3e43f2b5b69ef3e6e9b2c85a836a"
+      },
+      "directly_viewed": true,
+      "observations": [
+        "Close subject matches the localized Query/Abfrage tab caption.",
+        "Translated Save/Discard/Cancel remain readable and within the modal at 1280x820/1x.",
+        "No native close-dialog capture is available; this is an approximation, not native interaction evidence."
+      ]
+    },
+    {
+      "scene": "query-design-close",
+      "source_revision": "c50823e0e7d0cabbbaa60838a008308f09e45a46",
+      "locale": "en-US",
+      "theme": "dark",
+      "pixel_size": [
+        1280,
+        820
+      ],
+      "artifact": {
+        "path": ".cache/ui-previews/query-design-close/metal-headless-c50823e0e/en-US-dark-query-design-close.png",
+        "bytes": 149814,
+        "sha256": "2d22fdb36a85a9390dbeaeea5e080790b08292db4e303c4b267b26e27d3af0c9"
+      },
+      "directly_viewed": true,
+      "observations": [
+        "Close subject matches the localized Query/Abfrage tab caption.",
+        "Translated Save/Discard/Cancel remain readable and within the modal at 1280x820/1x.",
+        "No native close-dialog capture is available; this is an approximation, not native interaction evidence."
+      ]
+    },
+    {
+      "scene": "query-design-close",
+      "source_revision": "c50823e0e7d0cabbbaa60838a008308f09e45a46",
+      "locale": "de",
+      "theme": "light",
+      "pixel_size": [
+        1280,
+        820
+      ],
+      "artifact": {
+        "path": ".cache/ui-previews/query-design-close/metal-headless-c50823e0e/de-light-query-design-close.png",
+        "bytes": 154681,
+        "sha256": "1b4c018d93086176b0da5f56046e8066457b3d37474a18ce104bc681a79e42bb"
+      },
+      "directly_viewed": true,
+      "observations": [
+        "Close subject matches the localized Query/Abfrage tab caption.",
+        "Translated Save/Discard/Cancel remain readable and within the modal at 1280x820/1x.",
+        "No native close-dialog capture is available; this is an approximation, not native interaction evidence."
+      ]
+    },
+    {
+      "scene": "query-design-close",
+      "source_revision": "c50823e0e7d0cabbbaa60838a008308f09e45a46",
+      "locale": "de",
+      "theme": "dark",
+      "pixel_size": [
+        1280,
+        820
+      ],
+      "artifact": {
+        "path": ".cache/ui-previews/query-design-close/metal-headless-c50823e0e/de-dark-query-design-close.png",
+        "bytes": 168675,
+        "sha256": "3ed4f7f9b2a5b56bca34eff6f5e864226c4c93b526850bcef7e63dec45484d57"
+      },
+      "directly_viewed": true,
+      "observations": [
+        "Close subject matches the localized Query/Abfrage tab caption.",
+        "Translated Save/Discard/Cancel remain readable and within the modal at 1280x820/1x.",
+        "No native close-dialog capture is available; this is an approximation, not native interaction evidence."
+      ]
+    }
+  ]
+}

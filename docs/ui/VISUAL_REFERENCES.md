@@ -1,5 +1,22 @@
 # Access visual references
 
+## Query naming and close decisions — 13 November 2026
+
+The [visual record](../../tests/results/queries/query-save-surfaces-2026-11-13.json)
+captures sixteen directly inspected offscreen frames: naming, source-free saved
+Design and close confirmation in English/German, light/dark, including a corrected
+localized close caption. They use the normal presentation host at 1280 × 820/1×
+on macOS ARM64, with Metal requested and Windows input emulation. No native
+application window was opened; the renderer does not export adapter metadata.
+
+The actual retained city-dob image was reopened for the source-card, splitter and
+Field-grid composition. No retained native capture covers these naming/close
+dialogs, source-free saved Design, dark themes or German presentation. Those
+surfaces remain visual approximations. German Home Ribbon overflow and the
+generic Design footer remain visible follow-ups. Functional dirty-state
+classification and broad UI/Desktop regression are still under repair; these
+frames do not establish native interaction, Windows parity or release readiness.
+
 ## Query-design Totals inspection — 12 November 2026
 
 The actual retained public city-dob/city-or-dob images were reopened when adding
