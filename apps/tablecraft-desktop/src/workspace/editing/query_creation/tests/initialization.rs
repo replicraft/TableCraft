@@ -1,4 +1,5 @@
 //! First native QueryDef save through the actual Name, actor and guarded reopen.
+mod editing;
 use super::{accept_name, name, opened_source, run_saved, scratch, sql};
 use crate::workspace::test_support::{finish_reads, finish_schema_save};
 use egui::accesskit::Role;

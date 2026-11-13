@@ -21,8 +21,21 @@ pub fn replace(before: &[u8], expression: &str) -> Vec<u8> {
 
 /// Independently replace one specified logical slot on the synthetic DATA page.
 pub fn replace_at(before: &[u8], slot: usize, expression: &str) -> Vec<u8> {
+    replace_on_page(before, 8, slot, expression)
+}
+
+/// Apply the same independent same-page forwarding law to an explicit DATA
+/// page. Existing fixed-nine-page helpers retain their original page8 behavior.
+pub fn replace_on_page(before: &[u8], data_page: usize, slot: usize, expression: &str) -> Vec<u8> {
+    let native_page = u32::try_from(data_page).unwrap();
+    assert!(
+        native_page < 1 << 24,
+        "native ROW page must fit its encoded width"
+    );
+    // NO_CLONE: The independent expected image is mutable while callers retain
+    // the complete immutable source for actual-save/preservation comparisons.
     let mut after = before.to_vec();
-    let page = &before[8 * PAGE..9 * PAGE];
+    let page = &before[data_page * PAGE..(data_page + 1) * PAGE];
     let root_word = word(page, 14 + 2 * slot);
     let root_start = root_word & 0x1fff;
     let root_end = if slot == 0 {
@@ -34,7 +47,7 @@ pub fn replace_at(before: &[u8], slot: usize, expression: &str) -> Vec<u8> {
         (root_start, root_end)
     } else {
         let pointer = u32::from_le_bytes(page[root_start..root_start + 4].try_into().unwrap());
-        assert_eq!(pointer >> 8, 8);
+        assert_eq!(pointer >> 8, native_page);
         let slot = (pointer & 255) as usize;
         (
             word(page, 14 + 2 * slot) & 0x1fff,
@@ -55,7 +68,7 @@ pub fn replace_at(before: &[u8], slot: usize, expression: &str) -> Vec<u8> {
     record[start + 12..data_end].copy_from_slice(&utf16);
     record[length - 13..].copy_from_slice(&old[old.len() - 13..]);
     put16(&mut record, length - 13, data_end as u16);
-    let page = &mut after[8 * PAGE..9 * PAGE];
+    let page = &mut after[data_page * PAGE..(data_page + 1) * PAGE];
     if length == old.len() {
         page[physical_start..physical_end].copy_from_slice(&record);
     } else {
@@ -66,7 +79,7 @@ pub fn replace_at(before: &[u8], slot: usize, expression: &str) -> Vec<u8> {
         if root_word & 0x4000 == 0 {
             page[root_start..root_end].fill(0);
         }
-        put32(page, root_start, (8 << 8) | count as u32);
+        put32(page, root_start, (native_page << 8) | count as u32);
         put16(page, 14 + 2 * slot, root_word as u16 | 0x4000);
         put16(page, 14 + 2 * count, target as u16 | 0x8000);
         let free = word(page, 2);
