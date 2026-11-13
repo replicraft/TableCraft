@@ -126,11 +126,15 @@ impl Desktop {
                     nullable: parameter.nullable,
                 })
                 .collect(),
-        ) && self.state.saved_query_sql().is_none()
+        ) && (self.state.saved_query_sql().is_none()
+            || self
+                .state
+                .saved_query_sql_needs_created_eligibility_inspection())
         {
-            // A same-revision retained SQL draft already has its source binding.
-            // In particular, witnessed own-save publication retains submitted
-            // spelling rather than replacing it with canonical inspection SQL.
+            // Created text is already source-bound by its full witness, but
+            // ordinary edit eligibility is a separate native observation. Its
+            // explicit refresh purpose retains authored spelling and epochs.
+            // Other retained same-source drafts keep their existing path.
             self.inspect_saved_query_sql(target);
         }
     }

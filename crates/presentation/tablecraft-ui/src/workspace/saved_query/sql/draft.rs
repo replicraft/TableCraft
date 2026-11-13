@@ -29,8 +29,20 @@ pub enum SavedQuerySqlError {
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub(super) enum Phase {
     Inspection,
+    CreatedEligibilityInspection,
     Review,
     Reviewed(u64),
+}
+
+/// Created publication owns its authored text but has not observed whether
+/// the separate ordinary expression editor admits this exact new source.
+#[derive(PartialEq, Eq)]
+pub(super) enum EligibilityObservation {
+    Initial,
+    CreatedUnobserved,
+    CreatedObservedOriginal,
+    CreatedObserved(Option<String>),
+    Observed,
 }
 
 pub(super) struct Pending {
@@ -45,6 +57,7 @@ pub(in crate::workspace) struct Draft {
     pub(super) proposed: String,
     pub(super) revision: u64,
     pub(super) eligibility: SavedQuerySqlEligibility,
+    pub(super) eligibility_observation: EligibilityObservation,
     pub(super) pending: Option<Pending>,
     pub(super) error: Option<SavedQuerySqlError>,
 }
@@ -74,6 +87,7 @@ impl Draft {
             proposed: copy_text(sql)?,
             revision,
             eligibility: SavedQuerySqlEligibility::Unavailable,
+            eligibility_observation: EligibilityObservation::CreatedUnobserved,
             pending: None,
             error: None,
         })
@@ -86,6 +100,7 @@ impl Draft {
             proposed: String::new(),
             revision: 0,
             eligibility: SavedQuerySqlEligibility::Unavailable,
+            eligibility_observation: EligibilityObservation::Initial,
             pending: None,
             error: None,
         }
@@ -118,6 +133,9 @@ impl Draft {
         count.string(&self.target.name);
         count.optional(&self.original);
         count.string(&self.proposed);
+        if let EligibilityObservation::CreatedObserved(sql) = &self.eligibility_observation {
+            count.optional(sql);
+        }
         if let Some(pending) = &self.pending {
             count.add(pending.snapshot.retained_bytes()?);
         }
@@ -176,6 +194,18 @@ impl Draft {
         self.pending = None;
         self.error = None;
         true
+    }
+
+    pub(super) fn saved_baseline_replaced(&mut self) {
+        if matches!(
+            self.eligibility_observation,
+            EligibilityObservation::CreatedUnobserved
+                | EligibilityObservation::CreatedObservedOriginal
+                | EligibilityObservation::CreatedObserved(_)
+        ) {
+            self.eligibility_observation = EligibilityObservation::CreatedUnobserved;
+            self.eligibility = SavedQuerySqlEligibility::Unavailable;
+        }
     }
 
     pub(in crate::workspace) fn interrupt(&mut self) {

@@ -45,10 +45,17 @@ impl Desktop {
             self.read_request_rejected();
             return;
         };
-        let Some(request) = self
+        let request = if self
             .state
-            .begin_saved_query_sql_inspection(target, request_id)
-        else {
+            .saved_query_sql_needs_created_eligibility_inspection()
+        {
+            self.state
+                .begin_created_query_eligibility_inspection(target, request_id)
+        } else {
+            self.state
+                .begin_saved_query_sql_inspection(target, request_id)
+        };
+        let Some(request) = request else {
             self.worker.cancel();
             return;
         };

@@ -16,12 +16,27 @@ fn ordinary_save(case: Case) {
     let expected = query_expression_edits::replace_on_page(&source.expected, data_page, 3, "101");
     let (_directory, path, source, clock, mut harness) = opened_source(source);
     scratch(&mut harness);
-    sql(&mut harness, "SELECT 99 AS [Answer]");
+    let created_sql = " select  99 AS Answer;\n";
+    sql(&mut harness, created_sql);
+    let created_epoch = harness
+        .state()
+        .state
+        .query_sql_revision()
+        .unwrap()
+        .checked_add(1)
+        .unwrap();
     name(&mut harness, false);
     accept_name(&mut harness);
     finish_schema_save(&mut harness);
     assert_eq!(std::fs::read(&path).unwrap(), source.expected);
     assert_eq!(clock.calls(), 1);
+    let (original, proposed, epoch, _) = harness.state().state.saved_query_sql().unwrap();
+    assert_eq!(original, created_sql);
+    assert_eq!(proposed, created_sql);
+    assert_eq!(
+        epoch, created_epoch,
+        "real eligibility inspection cannot rewrite the authored text epoch"
+    );
     let created = harness.state().state.active_object().unwrap();
     assert!(
         matches!(&created.target.kind, ObjectKind::SavedQuery { name, .. } if name == "Created")

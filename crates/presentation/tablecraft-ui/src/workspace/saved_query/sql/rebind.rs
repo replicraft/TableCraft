@@ -90,6 +90,7 @@ impl SavedQueryState {
             sql.pending = None;
             if let Some(resolution) = resolution {
                 sql.original = Some(resolution.baseline);
+                sql.saved_baseline_replaced();
                 sql.revision = resolution.revision;
                 sql.error = None;
             }
@@ -115,6 +116,12 @@ impl SavedQueryState {
                 if let Some(super::SavedQuerySqlError::Host(error)) = &sql.error {
                     count.string(error);
                 }
+            }
+            if baseline.is_none()
+                && let super::draft::EligibilityObservation::CreatedObserved(observed) =
+                    &sql.eligibility_observation
+            {
+                count.optional(observed);
             }
             count.string(&sql.proposed);
         } else if baseline.is_some() {

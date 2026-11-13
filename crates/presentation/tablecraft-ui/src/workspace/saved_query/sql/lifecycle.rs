@@ -82,6 +82,7 @@ impl State {
             return false;
         };
         draft.original = Some(original);
+        draft.saved_baseline_replaced();
         draft.revision = revision;
         draft.pending = None;
         draft.error = None;
