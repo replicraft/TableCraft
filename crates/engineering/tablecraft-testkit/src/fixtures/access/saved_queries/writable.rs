@@ -13,7 +13,6 @@ const TABLES: u32 = 0x0f00_0001;
 const USER_DEFINITION: usize = 7;
 const USER_DATA: usize = 8;
 const QUERY_DEFINITION: usize = 9;
-const QUERY_DATA: usize = 10;
 const MAP_PAGE: usize = 3;
 const CATALOG_DEFINITION: usize = 2;
 const CATALOG_DATA: usize = 4;
@@ -111,13 +110,22 @@ fn database(values: &[(i32, i32)]) -> Vec<u8> {
         .copy_from_slice(&native17::packed(USER_DEFINITION as u32, records));
     put32(&mut bytes, USER_DEFINITION * PAGE + 16, values.len() as u32);
 
+    append_to(bytes).0
+}
+
+/// Independent saved-query storage appended to an authored native17 source.
+/// Actual EOF and map directory select roles; no production codec is consulted.
+pub(super) fn append_to(mut bytes: Vec<u8>) -> (Vec<u8>, usize, usize) {
+    assert_eq!(bytes.len() % PAGE, 0);
+    let query_definition = bytes.len() / PAGE;
+    let query_data = query_definition + 1;
     let maps = usize::from(u16::from_le_bytes(
         bytes[MAP_PAGE * PAGE + 12..MAP_PAGE * PAGE + 14]
             .try_into()
             .unwrap(),
     ));
     assert!(maps + 4 <= 256);
-    for member in [Some(QUERY_DATA), Some(QUERY_DATA), None, None] {
+    for member in [Some(query_data), Some(query_data), None, None] {
         let mut map = [0; 13];
         if let Some(member) = member {
             map[5 + member / 8] = 1 << (member % 8);
@@ -153,7 +161,7 @@ fn database(values: &[(i32, i32)]) -> Vec<u8> {
     put16(&mut definition, 2, (PAGE - length - 18) as u16);
     bytes.extend(definition);
     bytes.extend(native17::packed(
-        QUERY_DEFINITION as u32,
+        query_definition as u32,
         fragment_records(&fragments)
             .into_iter()
             .map(|(_, row)| row)
@@ -161,7 +169,7 @@ fn database(values: &[(i32, i32)]) -> Vec<u8> {
     ));
 
     for (name, id, kind, flags) in [
-        ("MSysQueries", QUERY_DEFINITION as u32, 1, 0x8000_0002),
+        ("MSysQueries", query_definition as u32, 1, 0x8000_0002),
         ("Saved", QUERY_ID as u32, 5, 0),
         ("Empty", EMPTY_ID as u32, 5, 0),
     ] {
@@ -175,9 +183,9 @@ fn database(values: &[(i32, i32)]) -> Vec<u8> {
     let count_at = CATALOG_DEFINITION * PAGE + 16;
     let count = u32::from_le_bytes(bytes[count_at..count_at + 4].try_into().unwrap());
     put32(&mut bytes, count_at, count + 3);
-    extend_global_map(&mut bytes, QUERY_DEFINITION);
+    extend_global_map(&mut bytes, query_definition);
 
-    bytes
+    (bytes, query_definition, query_data)
 }
 
 #[cfg(test)]

@@ -3,11 +3,11 @@
 mod tests;
 use super::refused;
 use crate::{
-    DatabaseQueryMode, EditError, FileFormat, InspectError, NativeImage, NativeSortOrder,
-    NativeTableStorage, PayloadPresence, PropertyGroupKind, TableSchema,
-    format::data_type,
+    EditError, FileFormat, InspectError, NativeImage, NativeSortOrder, NativeTableStorage,
+    TableSchema,
     header::check,
-    inspect_database_properties, inspect_table_schema,
+    inspect_table_schema,
+    table::catalog_protection,
     table::mutation::{
         catalog_property::ledger, lval_ownership, ordinary_content::schema_dependencies,
         schema_source,
@@ -27,7 +27,6 @@ const ROLES: [&str; 8] = [
     "MSysACEs",
     "MSysDb",
 ];
-const NAME_OPTIONS: [&str; 2] = ["Track Name AutoCorrect Info", "Perform Name AutoCorrect"];
 
 #[derive(Clone, Copy)]
 enum PropertyObservation {
@@ -154,70 +153,10 @@ fn capture_with(
         {
             return Err(refused());
         }
-        let payload = image.inspect_object_payloads(object.id(), budget, cancelled)?;
-        if [payload.body(), payload.module(), payload.extra()]
-            .into_iter()
-            .any(|value| value != PayloadPresence::Absent)
-            || (object.kind() == ObjectKind::Table
-                && !image
-                    .inspect_object_children(object.id(), budget, cancelled)?
-                    .is_empty())
-        {
-            return Err(refused());
-        }
+        catalog_protection::require_object(image, object, budget, cancelled)?;
     }
     let scope = image.catalog().catalog().scope();
-    if let Some(db) = db {
-        let properties =
-            inspect_database_properties(&mut image.reader(), scope, budget, cancelled)?
-                .ok_or_else(refused)?;
-        if properties.object_id() != db.object_id() || properties.groups().len() != 1 {
-            return Err(refused());
-        }
-        let group = &properties.groups()[0];
-        if group.kind() != PropertyGroupKind::Table
-            || !group.name().is_empty()
-            || ![NAME_OPTIONS.len(), NAME_OPTIONS.len() + 1].contains(&group.properties().len())
-        {
-            return Err(refused());
-        }
-        for name in NAME_OPTIONS {
-            let mut found = None;
-            for property in group.properties() {
-                check(budget, cancelled)?;
-                budget
-                    .charge(
-                        Resource::Steps,
-                        property.name().len().max(name.len()) as u64,
-                    )
-                    .map_err(InspectError::from)?;
-                if property.name().eq_ignore_ascii_case(name) && found.replace(property).is_some() {
-                    return Err(refused());
-                }
-            }
-            let property = found.ok_or_else(refused)?;
-            if property.native_type() != data_type::INT32
-                || property.flags() != 1
-                || property.raw_value() != 0_i32.to_le_bytes()
-            {
-                return Err(refused());
-            }
-        }
-        // With both required names uniquely accounted for, the sole optional
-        // entry must be the existing owner's exact qualified query-mode property.
-        // Unknown settings and other properties grant no inert-source authority.
-        if group.properties().len() > NAME_OPTIONS.len()
-            && !matches!(
-                properties.query_mode(budget, cancelled)?,
-                DatabaseQueryMode::Ansi89 | DatabaseQueryMode::Ansi92
-            )
-        {
-            return Err(refused());
-        }
-    } else if inspect_database_properties(&mut image.reader(), scope, budget, cancelled)?.is_some()
-    {
-        return Err(refused());
-    }
+    catalog_protection::require_database_properties(image, db, budget, cancelled)?;
     schema_dependencies::require_empty(image, budget, cancelled)?;
     let schema =
         inspect_table_schema(&mut image.reader(), scope, "MSysObjects", budget, cancelled)?;

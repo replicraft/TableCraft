@@ -1,3 +1,5 @@
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(in crate::table) mod catalog_protection;
 #[cfg(any(feature = "journal", feature = "ace16-create"))]
 mod field_addition;
 #[cfg(any(feature = "journal", feature = "ace16-create"))]

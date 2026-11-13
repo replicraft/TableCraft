@@ -1,4 +1,5 @@
 //! Independent QueryDef creation bytes, never using a production mutation codec.
+pub mod local_tables;
 use super::{Fragment, QUERY_ID, fragment_records};
 use crate::fixtures::access::{
     canonical_creation, canonical_native17_creation, packed_record::append_record, put16, put32,
@@ -52,6 +53,41 @@ pub fn after(
     captured_at: LegacyDateTime,
 ) -> Vec<u8> {
     assert_eq!(before.len(), 9 * PAGE);
+    after_at(
+        before,
+        native_query_id,
+        destination,
+        alias,
+        value,
+        captured_at,
+        QueryStorage {
+            definition: QUERY_DEFINITION,
+            data: QUERY_DATA,
+        },
+    )
+}
+
+#[derive(Clone, Copy)]
+struct QueryStorage {
+    definition: usize,
+    data: usize,
+}
+
+fn after_at(
+    before: &[u8],
+    native_query_id: i32,
+    destination: &str,
+    alias: &str,
+    value: i32,
+    captured_at: LegacyDateTime,
+    storage: QueryStorage,
+) -> Vec<u8> {
+    let QueryStorage {
+        definition: query_definition,
+        data: query_data,
+    } = storage;
+    // NO_CLONE: The raw AFTER is independently mutable while callers retain the
+    // complete immutable BEFORE oracle for protected-byte/source comparisons.
     let mut expected = before.to_vec();
     let mut catalog = canonical_native17_creation::catalog_row(
         &canonical_creation::catalog_record(native_query_id as u32, TABLES_ID, destination, 5, 0),
@@ -113,11 +149,11 @@ pub fn after(
             escape_short_text(&mut row, 1, 4, 1);
         }
         append_record(
-            &mut expected[QUERY_DATA * PAGE..(QUERY_DATA + 1) * PAGE],
+            &mut expected[query_data * PAGE..(query_data + 1) * PAGE],
             &row,
         );
     }
-    increase_rows(&mut expected, QUERY_DEFINITION, 5);
+    increase_rows(&mut expected, query_definition, 5);
     expected
 }
 
