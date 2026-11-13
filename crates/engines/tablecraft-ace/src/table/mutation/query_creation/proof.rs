@@ -359,13 +359,12 @@ fn verify_record(
                 {
                     return Err(QueryCreationError::Preservation);
                 }
-                for (bytes, unit) in payload[MEMO_DESCRIPTOR_BYTES..]
-                    .chunks_exact(size_of::<u16>())
-                    .zip(text.encode_utf16())
-                {
+                let (encoded_units, _) =
+                    payload[MEMO_DESCRIPTOR_BYTES..].as_chunks::<{ size_of::<u16>() }>();
+                for (bytes, unit) in encoded_units.iter().zip(text.encode_utf16()) {
                     check(budget, cancelled)?;
                     budget.charge(Resource::Steps, size_of::<u16>() as u64)?;
-                    if bytes != unit.to_le_bytes() {
+                    if *bytes != unit.to_le_bytes() {
                         return Err(QueryCreationError::Preservation);
                     }
                 }
@@ -419,14 +418,12 @@ fn verify_short_text(
     if payload.len() != length || escaped && !payload.starts_with(&SHORT_TEXT_ESCAPE) {
         return Err(QueryCreationError::Preservation);
     }
-    for (bytes, unit) in payload[prefix..]
-        .chunks_exact(size_of::<u16>())
-        .zip(text.encode_utf16())
-    {
+    let (encoded_units, _) = payload[prefix..].as_chunks::<{ size_of::<u16>() }>();
+    for (bytes, unit) in encoded_units.iter().zip(text.encode_utf16()) {
         check(budget, cancelled)?;
         budget.charge(Resource::Steps, size_of::<u16>() as u64)?;
         let encoded = unit.to_le_bytes();
-        if bytes != encoded || escaped && encoded[0] == 0 {
+        if *bytes != encoded || escaped && encoded[0] == 0 {
             return Err(QueryCreationError::Preservation);
         }
     }

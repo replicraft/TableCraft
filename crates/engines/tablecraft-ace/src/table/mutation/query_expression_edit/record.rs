@@ -7,7 +7,7 @@ use super::super::{
         utf16,
     },
 };
-use crate::{InspectError, TableSchema, header::check, table::record_layout};
+use crate::{InspectError, TableSchema, table::record_layout};
 use tablecraft_core::limits::ResourceBudget;
 
 pub(super) fn replace(

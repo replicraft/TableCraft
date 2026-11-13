@@ -16,7 +16,7 @@ use crate::{
 use arrayvec::ArrayString;
 use std::fmt::Write;
 use tablecraft_core::{
-    limits::{Resource, ResourceBudget},
+    limits::ResourceBudget,
     values::{LegacyDateTime, Value},
 };
 
