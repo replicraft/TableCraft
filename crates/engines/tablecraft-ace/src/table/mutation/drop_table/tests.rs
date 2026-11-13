@@ -95,8 +95,15 @@ fn empty_creator_sources_keep_all_allocated_definitions_data_indexes_and_propert
             assert_pair(pair, SourceProfile::CreatorExternal);
             empty_sources += 1;
         } else {
+            // The original catalog-only language stays empty-only. The public
+            // selector may choose a distinct populated row/index deletion profile.
             assert!(matches!(
-                capture(&pair.before).plan_table_drop("Items", &mut budget(), &|| false),
+                capture(&pair.before).plan_table_drop_for_profile(
+                    "Items",
+                    SourceProfile::CreatorExternal,
+                    &mut budget(),
+                    &|| false,
+                ),
                 Err(TableDropError::Source)
             ));
         }
