@@ -2,33 +2,54 @@
 
 The engine can construct and independently check a new native constant SELECT.
 The Access adapter and Runtime now compose that constructor with a distinct
-recoverable original and reviewed save service. GUI Save/Save As remains in
-development. Existing TCQE expression replacement keeps its own admission.
+recoverable original and reviewed save service. The desktop now connects
+[authored Save/Save As and genuine saved Design](../../application/SAVED_QUERY_EDITING.md)
+to that service. The source-pinned
+[GUI lifecycle record](../../../tests/results/queries/querydef-gui-lifecycle-2026-11-13.json)
+records local qualification and explicit reuse of earlier unchanged-owner checks.
+Existing TCQE expression replacement keeps its own admission.
 
 ## Declaration and source
 
 With `journal` and `ace16-create`, `QueryCreationDefinition::capture` accepts a
 destination name, explicit output alias, signed Int32 constant and caller-captured
 `LegacyDateTime`. `NativeImage::prepare_query_creation` consumes that declaration
-and a qualified immutable image. The candidate exposes only its original and
-candidate bytes, captured declaration and signed native query identity.
+and a qualified immutable image. The candidate exposes its original and candidate bytes, captured declaration,
+signed native query identity and nominal existing/initialized storage effect.
+These inert observations grant no save or publication authority.
 
 Both new catalog date fields contain the supplied exact DATE bits. Construction
 does not read a clock, execute SQL, infer result types or run database content.
 The constant declaration is the first serializer profile, not an Access SQL limit.
 
 The current source requires unencoded ACE 16/subversion-zero storage, a complete
-17-column MSysObjects catalog and eight-column MSysQueries table, known system
-ancestry, empty permissions/relationships and no opaque catalog bodies. Live
-non-system catalog objects must be queries. Each appended system table has one
-directly owned DATA page and no indexes. Fixed fields must occupy disjoint checked
-spans. Full physical/map/LVAL ownership is checked independently of those pages.
+17-column MSysObjects catalog, known system ancestry, empty permissions/relationships
+and no active or opaque catalog bodies. Protected ordinary local tables may coexist
+with saved queries. Their records, indexes, generated state and declarations remain
+unchanged; retained LvProp storage passes the existing property/LVAL ledger. Known
+database settings retain explicit Name AutoCorrect OFF checks and qualified optional
+query mode; unknown settings and payloads grant no source authority.
 
-Consequently this profile does not cover ordinary creator files without
-MSysQueries, live user-table catalogs, indexed system tables or general query
-definitions. It uses actual schema, ownership and available page geometry rather
-than matching fixture file lengths or page numbers. Standard and Retained image
-capture are admitted; fixed-update-purpose capture grants no such permission.
+An existing eight-column MSysQueries role is reused. If that role is absent, a
+separately qualified source branch constructs its actual TDEF and DATA pages at
+checked EOF, four ownership-map records and one exact local/system catalog entry.
+Its native ID and parent come from the real allocation and Tables role. Both catalog
+DATE fields use the same caller-captured value as the new QueryDef. Independent
+proof checks this initialization before the ordinary fragment append completes.
+
+Each appended system table must have one directly owned DATA page and no indexes.
+Fixed fields occupy disjoint checked spans. Initialization additionally needs actual
+catalog/map append room and a representable complete allocation plan. Full physical,
+map and LVAL ownership is checked independently of those target pages. Insufficient
+page geometry refuses; it is an implementation profile rather than an Access row
+or value limit. Standard and Retained image capture are admitted; fixed-update-purpose
+capture grants no such permission.
+
+Indexed or unsupported system storage, foreign/active/opaque objects, broader query
+serializers and other Jet/ACE write profiles remain outside this creation route.
+The separate local-table field/wildcard serializer is not active and is not qualified
+by the constant-query checkpoint. Admission uses actual schema, ancestry, ownership
+and available geometry, without matching fixture lengths or page numbers.
 
 The allocator scans all live signed catalog identities across every kind and
 parent, rejects duplicates and checks fragment ownership in both directions.
@@ -40,7 +61,8 @@ Name field's actual native sort declaration and comparison service.
 
 ## Construction and proof
 
-The producer appends one type-5 catalog record and five native query fragments:
+Once query storage is qualified, the producer appends one type-5 catalog record
+and five native query fragments:
 Start, Type, Flags, Column and End. It updates actual DATA directory/free-space
 framing and both live counts without relocating existing records. Unsupported
 capacity refuses; it is not treated as an Access database limit.
@@ -54,7 +76,8 @@ bytes use their separate inline uncompressed UTF16 representation.
 Fresh native capture repeats source qualification, then independently decodes
 every new cell, checks complete offsets, NULL spans, fixed padding, unused mask
 bits, preferred Short Text and exact inline Memo scope. It rereads the new query
-and checks every old byte outside the precise append/count changes. Independent
+and checks old bytes outside the authorized append/count/map/allocation spans.
+Initialization's added EOF pages are independently checked as well. Independent
 raw builders separately supply complete BEFORE/AFTER images.
 
 ## Recovery and application services
@@ -64,7 +87,11 @@ the complete image pair and a `TCQC0001` semantic original. The original retains
 the destination, alias, literal, captured DATE, allocated identity and complete
 source binding. Its decoder validates the entire frame before allocating names.
 Fresh recovery reconstructs the candidate from the original source and compares
-the complete AFTER; it does not replay SQL or consult a clock.
+the complete AFTER; it does not replay SQL or consult a clock. TCQC0001 framing is
+unchanged: complete BEFORE and its persisted semantic fields deterministically
+select existing versus missing storage and rederive the nominal effect. Older
+implementations refuse missing-role sources. A new nonreconstructible fact would
+require a new version; there is no failed-plan retry or decoder fallback.
 
 This operation selects the checked V3 image protocol. The existing host journal
 bundle durably pairs the encoded original with that image journal; a raw V3
@@ -85,7 +112,21 @@ requests may bind an exact saved-query source identity and draft revision; dirty
 Save As must use that route. Review captures the injected clock once. The save
 worker consumes the nominal capability, and `OpenQueryCreated` checks the complete
 saved image and actual new query identity before publishing a fresh catalog.
-Save, recovery and reopen do not resample the clock or execute the query.
+For initialized storage, the private witness also binds exact prior table membership
+and the actual system-role identity/TDEF. Guarded reopen checks all of those facts.
+Desktop forwards only this nominal verified effect to the renderer-neutral catalog
+comparator, which allows exactly the technical local/system addition while retaining
+prior table fields/order and query identities. The user receipt remains Created,
+without a schema or affected-row claim. Save, recovery and reopen do not resample
+the clock or execute the query.
+
+The [current qualification record](../../../tests/results/queries/querydef-gui-lifecycle-2026-11-13.json)
+records source-extension and GUI lifecycle checks with exact source/input pins,
+failed attempts and explicit scope reuse. See the
+[verification summary](../../application/SAVED_QUERY_EDITING.md#verification-status)
+for current UI/Desktop counts and separately reused native/adapter/Runtime checks.
+The historical service/construction checkpoints below retain their earlier scope;
+they do not independently qualify these later source branches or GUI workflows.
 
 The [service checkpoint](../../../tests/results/queries/querydef-persistence-services-2026-11-13.json)
 records 671 native, 5 saved-reader, 343 adapter, 493 Runtime, 17 selected Desktop

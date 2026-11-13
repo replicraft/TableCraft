@@ -1,7 +1,41 @@
 # Visual query design
 
-The scratch SQL object has a bounded visual SELECT designer. It shares the same
-object tab and SQL buffer with SQL View; saved-query definitions are not changed.
+## Saving and closing Design
+
+Saved Design belongs to its actual saved object, including while parked. Build
+and Run use that editor's authored SQL rather than the global scratch buffer or
+old stored definition. Run of the stored object cannot bypass the current Design
+owner; executing that Design goes through checked Build and the existing issued
+parameter flow. SQL View instead owns its current raw SQL, even if an older typed
+model or historical Design datasheet remains. Such cached rows cannot select that
+old model for saving newer SQL.
+
+Save builds first and retains Design mode. Scratch Save then requests a name;
+ordinary saved Design Save uses the existing qualified expression-edit review.
+Save As creates from current authored SQL. Successful scratch creation rebinds
+the same tab to the actual saved identity; saved Save As keeps the original dirty
+source and opens a distinct created tab. Build alone never marks a changed query
+natively saved; accepted full-witness publication resolves only its affected owner.
+Exact typed equality, not request revision equality, detects Design edits. Unchanged
+Build/Run and explicit Field Cancel back to baseline remain clean; Run of changed
+input remains dirty. Already-dirty saved SQL import cannot become the stored baseline.
+
+Changed parsed Design and nonempty scratch SQL close through exact
+Save/Discard/Cancel. Raw SQL Close-Save names the actual text without building a
+hidden Design; Design Close-Save first builds its current model. Explicit Discard
+drops the exact owner without treating an unbuilt model as saved. Stale choices
+cannot discard newer edits. Cancelled naming, unsupported admission or a failed
+save cannot arm a later unrelated Save to close the tab or resume deferred Open/Exit.
+See [saved-query editing](../application/SAVED_QUERY_EDITING.md) for current native
+source/serializer restrictions and the source-pinned GUI lifecycle record.
+Native saved-SQL review diagnostics are visible in Design and Results as well as
+SQL View, without changing that writer's alias/model eligibility. Created queries
+obtain ordinary edit eligibility from real Runtime inspection. Its canonical stored
+comparison text never replaces authored SQL, advances its epoch or changes Design.
+
+Scratch and saved-query objects have a bounded visual SELECT designer. Each
+retains its own authoring SQL, Design draft and revision; changing views or
+building SQL does not itself change a stored definition.
 The headless `tablecraft-builders::query` module owns the design model, expression
 parsing, criteria composition, SQL import and canonical SQL generation. The
 shared UI renders that model directly. Runtime services qualify native table
@@ -34,22 +68,28 @@ their two source identities, join kind and field names.
 
 SQL View explicitly builds the current draft. Run explicitly builds and then
 executes the returned canonical SQL through the existing read-only query service.
-Run displays Datasheet results for the scratch object. A pending or failed run
+Run displays Datasheet results for the owning scratch or saved Design object. A pending or failed run
 retains previous results with a qualification message; it never treats those
 rows as the new draft's completed result.
 
 Submitted build drafts use immutable `Arc` ownership across the action, pending
 UI witness and runtime command. The editable session remains separate, so later
 changes cannot mutate submitted work. Full content/revision matching is retained;
-shared allocation does not discount logical retained text/vector limits. The
+every distinct model allocation retains its complete logical text/vector/control
+charge. Pointer-identical baseline/submitted/pending snapshots are charged once;
+independently mutable editor storage remains separate. A complete incoming import
+model, metadata, snapshots and SQL is admitted together before publication. The
 [ownership audit](../development/CLONE_AUDIT.md) records pointer-sharing and
 retention checks. QBE text-edit candidates borrow with `Cow` until actual input;
 rejection preserves the original text and the existing input budgets.
 
-Results retain an explicit design origin and the validated submitted SQL, separate
-from scratch SQL results and their mutable editor draft. Switching views cannot
-reuse one origin's freshness witness for another. See the
-[SQL workspace contract](SQL_WORKSPACE.md) for shared retention and result labels.
+The current Results view explicitly owns either Design or SQL authoring state.
+An accepted Design Build/Run establishes that owner before result rows arrive;
+selecting a historical Datasheet retains the current editor owner instead of
+reviving the model that produced those rows. Result provenance and validated
+submitted SQL still qualify displayed rows separately. Save, close, parameters
+and Run follow current authoring ownership, with unchanged freshness checks.
+See the [SQL workspace contract](SQL_WORKSPACE.md) for retention and result labels.
 
 Switching existing SQL to Design explicitly imports it. Unsupported or
 nonrepresentable clauses refuse with a visible diagnosis while preserving the
@@ -142,15 +182,16 @@ as edited. A blocked close reveals the affected Field so this cancellation remai
 reachable after blur. While an edit is unresolved, closing that SQL tab or taking
 a destructive document/window transition requires finishing or explicitly
 cancelling it. Parked edits also block application restart. This is a temporary
-editor restriction; native dirty-query, Save and Save As workflows remain
-unfinished. It is not a claim about Access's close behavior.
+editor restriction alongside the exact Design close workflow above. Native
+Access close interaction has not been observed.
 
 The [field-authoring checkpoint](../../tests/results/queries/qbe-field-authoring-workflows-2026-11-13.json)
 records real Field typing, parser-limit refusal, focus/Cancel ownership, stale
 action rejection, parked input and acknowledged native-save/fresh-reopen
 preservation. It also pins four directly viewed English/German light/dark
 normal-host frames. These local observations are separate from native
-Windows/Access behavior and do not complete saved-query creation or Save As.
+Windows/Access behavior; that earlier checkpoint does not qualify the later
+Save/Save As integration described above.
 
 ## Keyboard flow
 
@@ -188,10 +229,10 @@ No Windows/Access interaction comparison has qualified this implementation.
 
 ## Source and resource rules
 
-Each operation captures the database revision, exact scratch object instance,
+Each operation captures the database revision, actual scratch or saved object instance,
 UI publication and draft revision. Canonical execution additionally captures the
 exact generated SQL and its own request ID. Cancelled or superseded replies
-cannot populate a reopened scratch object. A successful result must be a complete
+cannot populate another or reopened object. A successful result must be a complete
 zero-offset query result with matching row widths and no native row identities.
 There are no native edit rights on design results.
 
@@ -205,10 +246,11 @@ Cancel. Workspace retained-memory accounting separately charges the actual raw,
 baseline and model storage, including shared immutable owner handles. Runtime still validates
 the complete draft and fresh metadata on Build and Import.
 
-Drafts and view choice follow the scratch object across object switches. Workspace
-restoration retains only source-free draft choices and SQL. It discards metadata,
-requests, completed result receipts and rows. A previously displayed Results view
-returns to Design after restoration and requires fresh service qualification.
+Drafts and view choice follow their scratch or saved object across object switches.
+Workspace restoration retains only source-free draft choices and SQL. It discards
+metadata, requests, completed result receipts and rows. Restored Design-owned
+Results returns to Design; SQL-owned Results returns to SQL. Both require fresh
+service qualification before execution.
 Upper cards may show that field metadata is not loaded until an explicit Build
 or Add Tables request obtains fresh descriptors. Schema loading is not claimed
 to happen automatically during restoration.

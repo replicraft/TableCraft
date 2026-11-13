@@ -45,7 +45,7 @@ compatibility. The owning documents describe the exact admitted shapes.
 | SQL DDL | Issued [runtime schema reviews](../application/RUNTIME.md#reviewed-sql-schema-statements) route qualified CREATE TABLE, DROP TABLE, ALTER TABLE DROP COLUMN, qualified unadorned scalar ADD COLUMN and one-field ordinary nonunique numeric CREATE INDEX, separately qualified manual-LONG UNIQUE creation/drop and qualified ordinary LONG DROP INDEX through existing native planning/save services. The [UNIQUE/context checkpoint](../../tests/results/queries/unique-like-context-workflows-2026-11-12.json) records native original/recovery, actual host save/reopen and explicit expression-context qualification without broadening other constrained keys. The [scalar ADD original checkpoint](../../tests/results/queries/unadorned-scalar-add-originals-2026-11-11.json) retains native declaration parameters, full-source binding and recovery evidence; application acceptance is checked separately. | [GUI SQL Run](../ui/SQL_WORKSPACE.md#reviewed-schema-sql) now confirms these qualified operations and publishes only their actual guarded AFTER reopen; destructive targets must have closed tabs. The [numeric index checkpoint](../../tests/results/indexes/numeric-index-workflows-2026-11-12.json) covers native originals/recovery and normal headless GUI Run for the qualified numeric categories. General ALTER/type changes, Text/Binary/Decimal/GUID, broader typed UNIQUE and PRIMARY/foreign/compound index creation, saved-definition DDL and broader source/declaration coverage remain unfinished. See [parser scope](SQL_PARSER.md). |
 | DDL grammar details | CHECK expressions, DEFAULT annotations and ALTER COLUMN nullability/default/inline constraints now parse into owned fields, alongside primary/unique/not-null/foreign-key declarations. Same-limit normalization covers deep CHECK/default expressions, including nested retrievals and precedence. | Provider expression validity, native constraint enforcement and GUI execution remain separate. Parser tests do not qualify any native mutation. |
 | OWNERACCESS | The clause is parsed. | Retrieval binding refuses it. Implement the actual applicable security policy rather than ignoring the clause. |
-| Saved definitions | Qualified native retrieval, restricted saved SELECT expression edits and a [constant-query creation service](../access/queries/NATIVE_QUERY_CREATION.md) with distinct recovery and guarded reopen work. | GUI Save/Save As integration, general QueryDef creation, rename, deletion and other definition bodies remain unfinished. See [saved query editing](../application/SAVED_QUERY_EDITING.md). |
+| Saved definitions | Qualified native retrieval, restricted saved SELECT expression edits and a [constant-query creation service](../access/queries/NATIVE_QUERY_CREATION.md) with distinct recovery and guarded reopen work. | GUI Save/Save As, genuine saved Design and exact scratch/Design close ownership connect to the bounded creation service. Protected local tables and independently initialized missing system storage have explicit native/host effects; the [GUI lifecycle record](../../tests/results/queries/querydef-gui-lifecycle-2026-11-13.json) keeps current UI/Desktop and reused earlier owner scopes separate. Local-table SELECT serialization is not active; alias/model replacement, broader serializers/source coverage, rename, deletion and other bodies remain unfinished. See [saved query editing](../application/SAVED_QUERY_EDITING.md). |
 | External/application contexts | Explicit host-bound external sources and named definitions have working read profiles. | No stored path opens a provider implicitly. Forms/Reports/TempVars and user-defined calls need supplied host contracts; deferred VBA execution is not activated by parsing. |
 
 This list intentionally excludes foreign SQL features such as window functions,
@@ -86,8 +86,15 @@ QBE colon-prefix editing does not expand executable SELECT grammar.
 
 The [native construction candidate](../access/queries/NATIVE_QUERY_CREATION.md)
 now creates and checks a constant SELECT's catalog/fragments under its explicit
-source profile. It does not yet supply normal new-query Save/Save As or widen the
-existing complete-SQL replacement route.
+source profile. Authored GUI Save/Save As connects that service to genuine saved
+Design ownership and exact scratch/Design close. The source now admits protected
+local tables and can initialize missing MSysQueries through independent native
+allocation/proof, with nominal full-witness catalog publication. The
+[GUI lifecycle record](../../tests/results/queries/querydef-gui-lifecycle-2026-11-13.json)
+separates current presentation checks and reused earlier source-pinned owner scopes.
+The separate local-table SELECT serializer is not active. This does not widen
+complete-SQL replacement, serializer coverage or other native profiles; see the
+[current persistence contract](../application/SAVED_QUERY_EDITING.md).
 
 ## Evidence required for a completed row
 

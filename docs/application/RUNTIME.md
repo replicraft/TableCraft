@@ -1,5 +1,55 @@
 # Application sessions and tasks
 
+## Reviewed QueryDef creation and authored Save As
+
+`ReviewQueryCreation` accepts the exact document/text revision, optional actual
+saved-query source identity and authored SQL. `ReviewStoredQueryCopy` instead
+reconstructs the stored definition; a dirty editor must never use it as Save As.
+The authored SQL is an immutable `Arc<String>` shared with the command/response,
+while the mutable UI draft remains separately owned. Review checks document
+revision, readable-source eligibility and any saved source identity before supplied
+syntax. Native construction performs its own complete admission and retains the
+once-captured clock value for creation metadata. Save, recovery and reopen neither resample it nor execute SQL.
+
+A separate `ReviewedQueryCreation` capability and `QueryCreatedReopen` witness
+retain the native original and complete AFTER. `SaveWorker::start_query_creation`
+acquires the actual offline source and stages the same checked TCQC/V3 operation.
+Created receipts have no row/schema effects. `OpenQueryCreated` verifies complete
+expected bytes and the actual new query identity before publishing a fresh catalog.
+When native construction initializes missing MSysQueries, the witness additionally
+retains its nominal storage effect and compact prior-table facts, without copying
+or retaining another full BEFORE image. Reopen checks actual system identity/TDEF,
+flags/parent/storage and complete ordered prior membership. Desktop forwards only
+that verified technical delta; it does not reinterpret it as a user schema receipt.
+Source changes, cancellation and retained-resource outcomes stay explicit.
+
+Desktop maps scratch SQL, current checked QBE Build and dirty saved SQL Save As
+onto this one authored service. Shared UI keeps exact editor/close associations;
+Runtime contains no egui or dialog state. Existing TCQE saved-expression reviews
+retain their separate original/journal languages. The
+[native creation contract](../access/queries/NATIVE_QUERY_CREATION.md) limits the
+current serializer to one aliased signed Int32 SELECT constant in qualified
+unencoded ACE 16 sources. Protected local tables may coexist; missing MSysQueries
+may be initialized only by the native source/allocation/proof branch. General query
+bodies, other storage topologies and other native profiles are not implied.
+
+Shared UI compares exact typed models for Design changes independently of request
+freshness, and distinguishes current SQL/results ownership from an older hidden
+model. Nonempty scratch SQL closes through actual naming/creation; saved SQL View
+keeps its original/proposed TCQE route. Exact close cancellation cannot authorize a
+later unrelated save. The Results view carries current SQL/Design ownership
+separately from the provenance of cached rows. After Created publication, Desktop
+requests real ordinary SQL-edit eligibility through `InspectQuerySqlDraft`. Shared
+UI retains its canonical stored observation for source comparison while preserving
+authored original/proposed text, epoch and Design; it does not infer native write
+eligibility from formatting or the receipt. Successful ordinary replacement retires
+the observation and obtains a fresh one for the persisted definition.
+
+The [GUI lifecycle record](../../tests/results/queries/querydef-gui-lifecycle-2026-11-13.json)
+separates current UI/Desktop checks from explicitly reused native/adapter/Runtime
+and feature scopes at their captured sources. Historical service results remain
+separate evidence; broader serializers and per-profile qualification remain open.
+
 `tablecraft-runtime` owns the desktop's working native read session, command
 execution and background worker. It has no egui/eframe dependency. The desktop
 owns native windows and dialogs, forwards commands and moves owned results into

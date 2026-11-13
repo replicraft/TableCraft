@@ -153,10 +153,12 @@ contexts and DDL remain unsupported. [Existing saved-query SQL edits](../applica
 now persist qualified local SELECT projection/WHERE expression changes through
 consuming runtime review, original-intent recovery and complete-image checked
 reopening. Target identity, sources, aliases, fragment membership/order and other
-native fields remain protected. This does not create, Save As, rename or delete
-QueryDefs, admit broader query shapes/compiled payloads, or qualify older native
-write profiles. Query results buffer under the caller-selected work, row and byte
-allowances; table-browser paging does not provide paged query results.
+native fields remain protected. [New-query Save and authored Save As](../application/SAVED_QUERY_EDITING.md#new-query-save-and-save-as--13-november-2026)
+now persist the qualified ACE 16 constant SELECT profile, including checked
+initialization of missing query storage. General creation/Save As, QueryDef
+rename/delete, broader query shapes/compiled payloads and older native write
+profiles remain unfinished. Query results buffer under caller-selected work,
+row and byte allowances; table-browser paging does not provide paged query results.
 
 Qualified bare attachment/history projections now retain one typed child-recordset
 cell per parent, including matching wildcards. Query-owned read-only contents bind
@@ -180,7 +182,7 @@ See [parser scope](../query/SQL_PARSER.md),
 | Retrieval semantics | Full supported joins/subqueries, grouping/HAVING/TOP, UNION and pivot behavior, declared types, Variant/coercion/NULL/Error semantics, sort orders/LCIDs and database policy precedence. Finish the documented partial profiles rather than adding unrelated modern SQL. |
 | Action queries | [Fresh native UPDATE requalification and retained-session staging](../access/writes/REVIEWED_UPDATES.md) now exist, with independent query/native review-planning and native/proof requalification APIs. The runtime consumes qualified local UPDATE reviews through its save worker with explicit persistence allowances and stored field comparison policies; GUI declared-parameter prompts, Yes/No warning, confirmed save and fresh SQL-tab reopen now consume that route. [Sealed DELETE qualification](../access/writes/REVIEWED_DELETES.md) now supplies typed/policy-aware selection, runtime review/save and shared GUI confirmation through fresh offline staging. [Reviewed INSERT VALUES and SELECT append](../access/writes/REVIEWED_INSERTS.md) now use typed prompts, an Append confirmation with the actual inserted count (including zero or multiple records) and a distinct runtime/save capability. SELECT stages the complete original read before one native batch finish under shared allowances; native source gates remain unchanged. UPDATE, DELETE and INSERT retain distinct consuming native capabilities and original intents; accepted saves never replay SQL, parameters or captured clock providers. Complete broader reviewed UPDATE, append/INSERT and DELETE, their remaining parameter/expression contexts, assignments, qualified join/subquery targets, affected counts, warnings, validation, atomicity and recovery. Reuse the same native services as datasheet edits. |
 | Make-table and DDL | SELECT INTO/make-table and CREATE/ALTER/DROP TABLE/INDEX through real native schema/index owners, including dependencies and source-preserving failure. |
-| Query definitions | Broaden the implemented existing local SELECT projection/WHERE expression Save beyond its closed native fragment/source profile. Implement create/Save As/rename/delete, property/parameter/dependency changes, CREATE/DROP VIEW and supported PROCEDURE/parameterized saved-action/retrieval persistence. Readable or editable scratch SQL alone is not a saved QueryDef. |
+| Query definitions | [New-query Save/Save As and ordinary expression Save](../application/SAVED_QUERY_EDITING.md) now have checked native/Runtime/GUI routes within their explicit constant-creation and expression-replacement profiles. Broaden both source/fragment languages; finish general creation/Save As, rename/delete, property/parameter/dependency changes, CREATE/DROP VIEW and supported PROCEDURE/parameterized saved-action/retrieval persistence. Readable or editable scratch SQL alone is not a saved QueryDef. |
 | Visual query work | Grouping/totals, crosstabs and action-query modes, parameter/property sheets and bounded faithful SQL/Design round trips. SQL-only query kinds must remain SQL-only where Access requires it. |
 | Result usability | Cancellable execution, progress, controlled budgets, complete materialization/paging or qualified progressive results, and Access-compatible query updatability/record identity where valid. Never give aggregate/UNION results invented native row handles. |
 | Pass-through | Explicit provider connections, credentials/trust and remote execution/result/error contracts. This is part of the full query target, not functionality supplied by the native parser or a mock button. |

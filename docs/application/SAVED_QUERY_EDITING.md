@@ -1,4 +1,110 @@
-# Guarded existing saved-query SQL edits
+# Saved-query authoring and guarded persistence
+
+## New query Save and Save As — 13 November 2026
+
+For [admitted native sources and declarations](../access/queries/NATIVE_QUERY_CREATION.md),
+the desktop connects scratch SQL Save, checked Design Build-to-Save and authored
+saved-query Save As to the shared creation review, consuming save worker and
+guarded reopen. Save As uses the current authored SQL, including a dirty saved
+editor; copying the stored definition remains a separate Runtime request.
+Ordinary existing-query Save retains the TCQE expression-replacement route below.
+
+A new query first asks for its name. OK starts the source-bound review and save;
+there is no additional mutation confirmation. Cancel issues no native request.
+The UI retains exact tab, document, text and Design revisions. Submitted SQL is
+shared immutably between the issued request and worker. Unsupported input/source,
+failed review and failed reopen preserve authoring text; stale replies cannot
+attach to a newer editor. Native resources remain owned through actual recovery,
+release and acknowledgement outcomes.
+
+Only a Created-only receipt followed by the same complete-image/native-identity
+witness can publish the new query. Scratch Save rebinds the same UI tab to the
+fresh saved identity. Saved Save As retains the original dirty source tab and
+opens a distinct created tab. This is the current safe ownership rule; native
+Access tab-handoff behavior has not been observed.
+
+Saved Design is a genuine object-owned editor, with its own SQL, draft, raw input
+and preferences. It survives parking and fresh publication in Design mode. Run
+builds current authored SQL rather than executing the stored definition behind
+unsaved grid changes. Native saved-SQL review failures remain visible in Design
+and its Results view.
+
+Exact typed-draft equality determines Design changes; request revisions still
+advance independently for freshness. Unchanged Build/Run and explicit Field Cancel
+back to the baseline stay clean. Running an edited draft does not mark it saved.
+Importing already-dirty saved SQL does not substitute that proposed text for the
+stored baseline, and successful Save As resolves only its actual destination.
+
+Changed Design and nonempty scratch SQL close through exact Save/Discard/Cancel.
+Unfinished Field text must first be completed or explicitly cancelled. Discard
+drops its exact checked owner without pretending an unbuilt model was saved.
+Scratch SQL has no stored definition: Close-Save goes directly to naming, while
+Design Close-Save first builds its current model. Name cancellation, refused
+admission, failed review and nonreplacement cleanup cancel the original deferred
+Open/Exit; a later unrelated Save cannot complete that close.
+
+SQL View owns its current authored text even when an older typed model or cached
+Design result remains. The current Results view carries an explicit Design or SQL
+owner, established by the accepted Build/Run or selected Datasheet transition;
+historical row provenance cannot choose the current authoring model. Design Run
+owns its pending Results view before rows arrive. SQL-owned Results keeps current
+raw SQL for Save/Close-Save, while Design-owned Results keeps its typed draft.
+Saved SQL View uses its existing original/proposed close and TCQE save route.
+
+Created publication preserves exact authored original/proposed strings and their
+text epoch. Ordinary edit eligibility comes from a separate real Runtime inspection,
+not from the Created receipt or display/canonical formatting. That observation may
+retain canonical stored SQL for later source comparison without rewriting authored
+text or Design. A later inspection compares against the actual stored observation;
+a changed source still refuses. Successful TCQE replacement retires that observation
+and reacquires the new stored fact. Stale or failed replies cannot publish it.
+
+**Native scope:** creation currently admits one source-free SELECT ALL signed
+Int32 literal with an explicit output alias, without parameters or other clauses.
+Qualified unencoded ACE 16 sources may retain protected local tables and known
+property storage. When MSysQueries is absent, native construction can initialize
+that exact system role under complete source, allocation and byte-preservation
+checks. Existing system DATA/index topology, append capacity, active/opaque
+payloads and the other [source restrictions](../access/queries/NATIVE_QUERY_CREATION.md)
+still govern admission. General SELECT persistence, alias/model changes through
+existing-query replacement, QueryDef rename/delete, broader indexed/system storage
+and other Jet/ACE write profiles remain unfinished. The separate local-table field/
+wildcard serializer is not active. UI Design/read-query coverage does not widen
+either native writer.
+
+Initialized system storage is an explicit native-plan effect carried by the
+immutable reopen witness. Runtime verifies its actual identity/TDEF and complete
+prior table membership against the same full AFTER. UI publication permits only
+that exact local system-table addition and the actual new query; the receipt
+remains query-only Created, with no user schema or row-count effect.
+
+## Verification status
+
+The [GUI lifecycle record](../../tests/results/queries/querydef-gui-lifecycle-2026-11-13.json)
+keeps source/input pins, failed attempts, explicit ignores and reused scopes. At
+`93ccf3e6e`, UI/Desktop strict checks pass, the full UI suite passes 797 tests with
+no ignores, and the full Desktop suite passes 466 tests with two explicit ignores.
+The latter includes actual Created-to-ordinary-TCQE saving of the edited value 101.
+
+Reused checks at `9b63442ce` include strict lint across eleven packages, 2,237
+native passes with 263 explicit ignores, six Runtime creation passes, 80 MCP
+passes and the renderer build. Earlier unchanged-owner scopes at `5f3b34840` retain
+343 Access passes with one ignore, 497 Runtime passes with one ignore, the feature
+matrix and Rustdoc. These are explicitly reused checks at their captured sources,
+not a single current full suite or a combined passing total across versions.
+The latest UI/Desktop checks qualify their current presentation owners; earlier
+UI results remain superseded evidence.
+
+These are local release/headless persistence and regression checks for the stated
+constant-query profile. The local-table SELECT serializer remains unactivated;
+this record does not qualify it, broader query authoring, other native profiles
+or Windows/Access behavior.
+
+The retained [visual-only record](../../tests/results/queries/query-save-surfaces-2026-11-13.json)
+covers English/German light/dark Name, saved Design and close presentations on
+macOS at scale 1 using headless normal-host rendering. It remains separate from
+functional checks and native Windows/Access behavior. No corresponding native
+Save-name or close capture is available; these dialogs remain visual adaptations.
 
 The runtime owns SQL qualification and native save authority. Shared UI owns
 exact text, revisions, parked sessions and save presentation; the desktop binds
@@ -39,8 +145,9 @@ SELECT/UNION/crosstab can remain read-only. Even semantic no-op review performs
 the complete native qualification; AST equality alone grants no write authority.
 The host neither slices SQL nor encodes native fragments.
 
-This does not create a QueryDef, implement Save As, add MSysQueries to ordinary
-creator databases, qualify broader query shapes or establish Access 97–2019
+The existing-expression replacement route does not create a QueryDef, implement
+Save As or initialize MSysQueries; those belong to the separate creation service
+above. Neither route qualifies broader query shapes or establishes Access 97–2019
 write parity. Independent SDK observations, TableCraft byte preservation and
 Microsoft Access behavior remain separate evidence. Native Microsoft Access
 save/reopen, DateUpdate/events and Windows execution comparisons remain unrun.

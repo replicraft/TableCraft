@@ -1,5 +1,43 @@
 # Implementation status
 
+## Query Save/Save As and genuine saved Design — 13 November 2026
+
+The desktop now connects authored new-query Save/Save As and checked QBE Build
+to the distinct creation service. Saved Design owns its draft, SQL and preferences,
+keeps Design mode after publication and runs current Build results. Exact typed
+baselines keep unchanged Build/Run and Cancel-to-baseline clean while freshness
+revisions still advance. Changed Design and nonempty scratch SQL close through
+exact Save/Discard/Cancel; current raw SQL/historical results cannot select an older
+hidden model for saving. Cancellation or failure cannot carry an old close intention
+into a later save. Existing saved SQL Save retains its separate TCQE route.
+
+This is bounded persistence: new creation admits only one aliased signed Int32
+SELECT constant in qualified unencoded ACE 16 sources. Protected local tables may
+coexist, and a complete native allocation/proof branch can initialize missing
+MSysQueries. Guarded reopen verifies the actual system role and prior table
+membership; shared UI admits only its nominal technical delta plus the new query.
+System storage/append/payload restrictions, alias/model replacement, QueryDef
+rename/delete and other native profiles remain unfinished. The separate local-table
+field/wildcard serializer is not active. See
+[saved-query ownership](application/SAVED_QUERY_EDITING.md) and
+[native source limits](access/queries/NATIVE_QUERY_CREATION.md).
+
+The [GUI lifecycle record](../tests/results/queries/querydef-gui-lifecycle-2026-11-13.json)
+records current UI/Desktop strict checks and full suites at `93ccf3e6e`: 797 UI
+passes with no ignores and 466 Desktop passes with two explicit ignores. Actual
+Created-to-ordinary-TCQE saving retains authored text and obtains eligibility
+from a separate native inspection; canonical stored observations never replace
+that text. Results views retain explicit current Design/SQL ownership independently
+of historical rows. Earlier unchanged-owner native/adapter/Runtime and feature
+checks remain source-pinned reused scopes, not one combined current passing total.
+See the [exact verification scope](application/SAVED_QUERY_EDITING.md#verification-status).
+The existing [visual-only render record](../tests/results/queries/query-save-surfaces-2026-11-13.json)
+remains separate historical headless evidence; no native Access/Windows Save-name,
+close or tab-handoff behavior is claimed.
+
+The dated checkpoints below retain their captured source scope and results.
+Their next-step descriptions belong to those historical checkpoints.
+
 ## QueryDef recovery and shared save service — 13 November 2026
 
 Native constant-query creation now has a distinct source-bound semantic original,

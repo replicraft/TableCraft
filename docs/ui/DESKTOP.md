@@ -1,5 +1,45 @@
 # Native desktop preview
 
+## Query Save, Save As and Design ownership — 13 November 2026
+
+Save now names a new scratch SQL query or builds the current Design before naming
+it. Save As uses authored current SQL, including a dirty saved editor. For sources
+admitted by the [native creation profile](../access/queries/NATIVE_QUERY_CREATION.md),
+OK proceeds through real review/save/acknowledgement and full-image guarded reopen,
+without an extra Yes confirmation. Ordinary saved-query Save retains its existing
+expression-edit route. Unsupported sources or SQL keep the draft and report refusal.
+
+Scratch Save keeps the tab instance and binds its actual created saved identity.
+Saved Save As keeps the original dirty tab and opens a distinct created tab.
+Saved Design remains in Design with its source-owned draft and preferences;
+Build/Run uses current authored SQL. Stored Run cannot bypass current dirty Design.
+Exact typed comparison keeps unchanged Build/Run and explicit Cancel-to-baseline
+clean without weakening stale-reply revision checks. Changed Design and nonempty
+scratch SQL close through exact Save/Discard/Cancel; raw SQL Close-Save names that
+text directly. A historical datasheet cannot save an older hidden model over newer
+SQL. Cancelled naming or failed admission retires that close intention and its
+deferred Open/Exit.
+
+This UI wiring does not make general query persistence available. New creation
+currently supports a single aliased signed Int32 SELECT constant in qualified
+unencoded ACE 16 sources with protected local tables and either existing or
+independently initialized MSysQueries storage. The guarded publication admits only
+the actual new query and its nominal technical system-table effect. System storage,
+append capacity and payload restrictions remain explicit. See the
+[editing contract](../application/SAVED_QUERY_EDITING.md) for receipt, revision,
+recovery and source distinctions.
+
+The [GUI lifecycle record](../../tests/results/queries/querydef-gui-lifecycle-2026-11-13.json)
+records the current full UI/Desktop and strict checks, with earlier unchanged-owner
+checks retained at their own source pins. Its scopes are not one combined test run.
+Created queries acquire ordinary edit eligibility from a real Runtime observation,
+preserving authored SQL and Design; canonical stored text serves only source checks.
+Current Results views explicitly retain their SQL/Design authoring owner.
+The existing [English/German light/dark render record](../../tests/results/queries/query-save-surfaces-2026-11-13.json)
+is visual-only headless evidence on macOS at scale 1. The retained Access Query
+Design image supplies source/grid layout, not Save-name or close interactions.
+Those dialog visuals remain adaptations, without a native Windows/Access claim.
+
 The [Open-time recovery flow](RECOVERY.md) handles an explicitly selected
 reserved active journal through the shared runtime owner. Opening and rendering
 its prompt make no changes; recovery requires an explicit action.

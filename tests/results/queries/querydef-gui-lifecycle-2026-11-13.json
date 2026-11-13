@@ -1,0 +1,1248 @@
+{
+  "date": "2026-11-13",
+  "source_commit": "93ccf3e6e8edd4c77914f81aa7ef2ee478d33769",
+  "scope": "ACE16 constant QueryDef Save/Save As and exact close ownership through shared UI and actual Desktop Worker, protected local tables, first-query MSysQueries initialization, TCQC1 resized recovery, real ordinary TCQE editing after creation, and guarded complete-image publication.",
+  "platform": "Darwin arm64",
+  "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)",
+  "qualification_status": "selected_acceptance_passed_with_explicit_ignored_qualification_cases",
+  "boundaries": [
+    "Native construction is the documented closed ACE2016/header5 source and constant SELECT profile; general local SELECT serialization, clauses, native rename/delete, broader system layouts and older profiles are unfinished.",
+    "Only actual Native/Adapter/Runtime observations supply eligibility and save/recovery authority; presentation-only tests never synthesize QualifiedExpressionSelect.",
+    "Normal inspection follows actual Created publication. Its canonical observation preserves authored original/proposed text and epoch; later source changes remain distinct from formatting differences.",
+    "Headless GUI acceptance and independent first-party complete images do not establish Windows or Microsoft Access application parity.",
+    "Checks retain their actual source commits. Older full Adapter/Runtime and feature-check results are historical/reused scopes, not rerun current-suite claims. No pass-count total combines different revisions.",
+    "263 native, one Adapter, one Runtime and two Desktop ignored cases belong to their explicitly recorded check scopes; ignored fixtures or qualification cases are not counted as passes.",
+    "Visual-only evidence is separate and source-pinned; it does not qualify interaction, native writes or release completion."
+  ],
+  "current_checks": [
+    {
+      "source_revision": "93ccf3e6e8edd4c77914f81aa7ef2ee478d33769",
+      "job": "strict",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ui",
+        "-p",
+        "tablecraft-desktop",
+        "--all-targets",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "seconds": 24.29,
+      "log": ".cache/ace-sql-created-eligibility-strict-20261113.log",
+      "artifact": {
+        "path": ".cache/ace-sql-created-eligibility-strict-20261113.log",
+        "bytes": 3752,
+        "sha256": "86604b42e161fa3ecdcf709293e537f002882419a33cc7eef7aff90c20bd99fa"
+      },
+      "test_summaries": []
+    },
+    {
+      "source_revision": "93ccf3e6e8edd4c77914f81aa7ef2ee478d33769",
+      "job": "ui",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ui",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 33.09,
+      "log": ".cache/ace-sql-created-eligibility-ui-20261113.log",
+      "artifact": {
+        "path": ".cache/ace-sql-created-eligibility-ui-20261113.log",
+        "bytes": 97832,
+        "sha256": "e89a4e95edcb914cc835cf19e2f6e512d195b230f86a8f2cafa2dcc77beb4f12"
+      },
+      "test_summaries": [
+        "test result: ok. 797 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 9.62s"
+      ]
+    },
+    {
+      "source_revision": "93ccf3e6e8edd4c77914f81aa7ef2ee478d33769",
+      "job": "desktop",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-desktop",
+        "--bin",
+        "tablecraft-desktop",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 57.37,
+      "log": ".cache/ace-sql-created-eligibility-desktop-20261113.log",
+      "artifact": {
+        "path": ".cache/ace-sql-created-eligibility-desktop-20261113.log",
+        "bytes": 61923,
+        "sha256": "56586692516025fee4d98147310ea19bc1203b5ce44b48967f510c59cef0b0bb"
+      },
+      "test_summaries": [
+        "test result: ok. 466 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 30.10s"
+      ]
+    }
+  ],
+  "reused_passing_checks": [
+    {
+      "source_revision": "9b63442ce0d71e9e9dbbc94c2f8886e50648dd28",
+      "job": "strict",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-sql",
+        "-p",
+        "tablecraft-builders",
+        "-p",
+        "tablecraft-query",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-testkit",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-runtime",
+        "-p",
+        "tablecraft-ui",
+        "-p",
+        "tablecraft-desktop",
+        "-p",
+        "tablecraft-cli",
+        "-p",
+        "tablecraft-mcp",
+        "--all-targets",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "seconds": 65.31,
+      "log": ".cache/ace-sql-query-lifecycle-followup-strict-20261113.log",
+      "artifact": {
+        "path": ".cache/ace-sql-query-lifecycle-followup-strict-20261113.log",
+        "bytes": 1076,
+        "sha256": "df16fd81676c86faf74937c226098d9cd1784978a4d713db2dd7a8f7ff772ee0"
+      },
+      "test_summaries": [],
+      "evidence_scope": "Passing scope from 9b63442ce; later production changes are confined to UI/Desktop ordinary SQL inspection. The current UI/Desktop suites are recorded separately."
+    },
+    {
+      "source_revision": "9b63442ce0d71e9e9dbbc94c2f8886e50648dd28",
+      "job": "native",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 184.84,
+      "log": ".cache/ace-sql-query-lifecycle-followup-native-20261113.log",
+      "artifact": {
+        "path": ".cache/ace-sql-query-lifecycle-followup-native-20261113.log",
+        "bytes": 356218,
+        "sha256": "e6757da9220733272114362be25241b4b847acd058424eb4ce896c12a1c2188a"
+      },
+      "test_summaries": [
+        "test result: ok. 2237 passed; 0 failed; 263 ignored; 0 measured; 0 filtered out; finished in 13.82s"
+      ],
+      "evidence_scope": "Passing scope from 9b63442ce; later production changes are confined to UI/Desktop ordinary SQL inspection. The current UI/Desktop suites are recorded separately."
+    },
+    {
+      "source_revision": "9b63442ce0d71e9e9dbbc94c2f8886e50648dd28",
+      "job": "runtime",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-runtime",
+        "--lib",
+        "--all-features",
+        "tests::query_creation",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 70.55,
+      "log": ".cache/ace-sql-query-lifecycle-followup-runtime-20261113.log",
+      "artifact": {
+        "path": ".cache/ace-sql-query-lifecycle-followup-runtime-20261113.log",
+        "bytes": 1466,
+        "sha256": "8f9f999c107d9e706ba5602347a112a012f69a337cf3937e810a2f1c9ee4a964"
+      },
+      "test_summaries": [
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 492 filtered out; finished in 0.24s"
+      ],
+      "evidence_scope": "Passing scope from 9b63442ce; later production changes are confined to UI/Desktop ordinary SQL inspection. The current UI/Desktop suites are recorded separately."
+    },
+    {
+      "source_revision": "9b63442ce0d71e9e9dbbc94c2f8886e50648dd28",
+      "job": "mcp",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-mcp",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 49.29,
+      "log": ".cache/ace-sql-query-lifecycle-followup-mcp-20261113.log",
+      "artifact": {
+        "path": ".cache/ace-sql-query-lifecycle-followup-mcp-20261113.log",
+        "bytes": 10396,
+        "sha256": "1ee5e5dda528d9130de2c3129760ae431b946f99beb3a3138a01510c79bc7387"
+      },
+      "test_summaries": [
+        "test result: ok. 78 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.49s",
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.35s"
+      ],
+      "evidence_scope": "Passing scope from 9b63442ce; later production changes are confined to UI/Desktop ordinary SQL inspection. The current UI/Desktop suites are recorded separately."
+    },
+    {
+      "source_revision": "9b63442ce0d71e9e9dbbc94c2f8886e50648dd28",
+      "job": "renderer",
+      "command": [
+        "cargo",
+        "build",
+        "-p",
+        "tablecraft-ui",
+        "--example",
+        "render_preview",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 16.74,
+      "log": ".cache/ace-sql-query-lifecycle-followup-renderer-20261113.log",
+      "artifact": {
+        "path": ".cache/ace-sql-query-lifecycle-followup-renderer-20261113.log",
+        "bytes": 177,
+        "sha256": "c1cfc7ed7199e447aa46e40950bbdf6516b2d97072bd273dcc1b0d0f324320a8"
+      },
+      "test_summaries": [],
+      "evidence_scope": "Passing scope from 9b63442ce; later production changes are confined to UI/Desktop ordinary SQL inspection. The current UI/Desktop suites are recorded separately."
+    }
+  ],
+  "earlier_broad_regression_and_features": [
+    {
+      "source_revision": "5f3b34840c076b44c97ffb69b3e0a25bee252a30",
+      "job": "access",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 103.88,
+      "log": ".cache/ace-sql-first-query-close-qualified-access-20261113.log",
+      "artifact": {
+        "path": ".cache/ace-sql-first-query-close-qualified-access-20261113.log",
+        "bytes": 44914,
+        "sha256": "9b5a3ea1353fbc7e0be3230ff0f00fd4b7e245976013f74ef9582a4d8a1d58d1"
+      },
+      "test_summaries": [
+        "test result: ok. 343 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 14.52s"
+      ],
+      "evidence_scope": "Earlier broad regression and feature-build evidence at 5f3b34840; not rerun as current full-suite evidence. Later map-host source selection has its own full native and actual Runtime/GUI acceptance."
+    },
+    {
+      "source_revision": "5f3b34840c076b44c97ffb69b3e0a25bee252a30",
+      "job": "runtime",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-runtime",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 117.92,
+      "log": ".cache/ace-sql-first-query-close-qualified-runtime-20261113.log",
+      "artifact": {
+        "path": ".cache/ace-sql-first-query-close-qualified-runtime-20261113.log",
+        "bytes": 57802,
+        "sha256": "9c72f16d1dbb49c2d5ad3275860836c8f6f6e5023f91036f628cf66e8ab16702"
+      },
+      "test_summaries": [
+        "test result: ok. 497 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 19.93s"
+      ],
+      "evidence_scope": "Earlier broad regression and feature-build evidence at 5f3b34840; not rerun as current full-suite evidence. Later map-host source selection has its own full native and actual Runtime/GUI acceptance."
+    },
+    {
+      "source_revision": "5f3b34840c076b44c97ffb69b3e0a25bee252a30",
+      "job": "runtime-minimal",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-runtime",
+        "--no-default-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 4.94,
+      "log": ".cache/ace-sql-first-query-close-qualified-runtime-minimal-20261113.log",
+      "artifact": {
+        "path": ".cache/ace-sql-first-query-close-qualified-runtime-minimal-20261113.log",
+        "bytes": 414,
+        "sha256": "b05ea817a8955d85714ad11eb169dabae5968f597f092c616f0c39715bf9cd9a"
+      },
+      "test_summaries": [],
+      "evidence_scope": "Earlier broad regression and feature-build evidence at 5f3b34840; not rerun as current full-suite evidence. Later map-host source selection has its own full native and actual Runtime/GUI acceptance."
+    },
+    {
+      "source_revision": "5f3b34840c076b44c97ffb69b3e0a25bee252a30",
+      "job": "runtime-offline",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-runtime",
+        "--no-default-features",
+        "--features",
+        "offline-edit",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 10.74,
+      "log": ".cache/ace-sql-first-query-close-qualified-runtime-offline-20261113.log",
+      "artifact": {
+        "path": ".cache/ace-sql-first-query-close-qualified-runtime-offline-20261113.log",
+        "bytes": 415,
+        "sha256": "3a98a043920450e5085e8d80e0097279cc9126332d94c09cd8be3519197eb6bc"
+      },
+      "test_summaries": [],
+      "evidence_scope": "Earlier broad regression and feature-build evidence at 5f3b34840; not rerun as current full-suite evidence. Later map-host source selection has its own full native and actual Runtime/GUI acceptance."
+    },
+    {
+      "source_revision": "5f3b34840c076b44c97ffb69b3e0a25bee252a30",
+      "job": "rustdoc",
+      "command": [
+        "cargo",
+        "doc",
+        "-p",
+        "tablecraft-runtime",
+        "-p",
+        "tablecraft-ui",
+        "--all-features",
+        "--no-deps",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 15.69,
+      "log": ".cache/ace-sql-first-query-close-qualified-rustdoc-20261113.log",
+      "artifact": {
+        "path": ".cache/ace-sql-first-query-close-qualified-rustdoc-20261113.log",
+        "bytes": 644,
+        "sha256": "f5c3cd885557aecb0d8eaa38c03fd5b7113e5020235efeaed37ba709771b2fb9"
+      },
+      "test_summaries": [],
+      "evidence_scope": "Earlier broad regression and feature-build evidence at 5f3b34840; not rerun as current full-suite evidence. Later map-host source selection has its own full native and actual Runtime/GUI acceptance."
+    },
+    {
+      "source_revision": "5f3b34840c076b44c97ffb69b3e0a25bee252a30",
+      "job": "engine-minimal",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--no-default-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 3.06,
+      "log": ".cache/ace-sql-first-query-close-qualified-engine-minimal-20261113.log",
+      "artifact": {
+        "path": ".cache/ace-sql-first-query-close-qualified-engine-minimal-20261113.log",
+        "bytes": 173,
+        "sha256": "2a53e554edec902018f0ca0fb9476ce3808bf348947506efea73abb623a8f4f7"
+      },
+      "test_summaries": [],
+      "evidence_scope": "Earlier broad regression and feature-build evidence at 5f3b34840; not rerun as current full-suite evidence. Later map-host source selection has its own full native and actual Runtime/GUI acceptance."
+    },
+    {
+      "source_revision": "5f3b34840c076b44c97ffb69b3e0a25bee252a30",
+      "job": "engine-create",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "ace16-create",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 3.2,
+      "log": ".cache/ace-sql-first-query-close-qualified-engine-create-20261113.log",
+      "artifact": {
+        "path": ".cache/ace-sql-first-query-close-qualified-engine-create-20261113.log",
+        "bytes": 173,
+        "sha256": "dfa5232d0f11930e2e8db055208a1467e787480c99484456f152c3aeb2b4f145"
+      },
+      "test_summaries": [],
+      "evidence_scope": "Earlier broad regression and feature-build evidence at 5f3b34840; not rerun as current full-suite evidence. Later map-host source selection has its own full native and actual Runtime/GUI acceptance."
+    },
+    {
+      "source_revision": "5f3b34840c076b44c97ffb69b3e0a25bee252a30",
+      "job": "engine-journal",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "journal",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 8.71,
+      "log": ".cache/ace-sql-first-query-close-qualified-engine-journal-20261113.log",
+      "artifact": {
+        "path": ".cache/ace-sql-first-query-close-qualified-engine-journal-20261113.log",
+        "bytes": 173,
+        "sha256": "ac2b230175412d66c5502f10ae43eb18ae880a4ebfa8d22233f76e3541ec7981"
+      },
+      "test_summaries": [],
+      "evidence_scope": "Earlier broad regression and feature-build evidence at 5f3b34840; not rerun as current full-suite evidence. Later map-host source selection has its own full native and actual Runtime/GUI acceptance."
+    },
+    {
+      "source_revision": "5f3b34840c076b44c97ffb69b3e0a25bee252a30",
+      "job": "engine-create-journal",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "ace16-create,journal",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 12.91,
+      "log": ".cache/ace-sql-first-query-close-qualified-engine-create-journal-20261113.log",
+      "artifact": {
+        "path": ".cache/ace-sql-first-query-close-qualified-engine-create-journal-20261113.log",
+        "bytes": 174,
+        "sha256": "3d8f40743d11aa342773aef6efefe53381932bbff0977b80e9b8305af7fba7e0"
+      },
+      "test_summaries": [],
+      "evidence_scope": "Earlier broad regression and feature-build evidence at 5f3b34840; not rerun as current full-suite evidence. Later map-host source selection has its own full native and actual Runtime/GUI acceptance."
+    }
+  ],
+  "failed_and_superseded_attempts": [
+    {
+      "source_commit": "c9fb7e34c136d3258981958149e966a508ab420a",
+      "result_manifest": {
+        "path": ".cache/ace-sql-semantic-baseline-local-tables-results-20261113.json",
+        "bytes": 6869,
+        "sha256": "a3f3fe728797c0934e0e6984c3099797558ef3f5ef03c545281dc69decf935f5"
+      },
+      "failed_checks": [
+        {
+          "source_revision": "c9fb7e34c136d3258981958149e966a508ab420a",
+          "job": "native",
+          "command": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ace",
+            "--lib",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--release"
+          ],
+          "returncode": 101,
+          "seconds": 227.7,
+          "log": ".cache/ace-sql-semantic-baseline-local-tables-native-20261113.log",
+          "artifact": {
+            "path": ".cache/ace-sql-semantic-baseline-local-tables-native-20261113.log",
+            "bytes": 360022,
+            "sha256": "538917f52725e3ba5c8de620c02a4a78322c7582a377e952f04f08ffc54d8923"
+          },
+          "test_summaries": [
+            "test result: FAILED. 2225 passed; 2 failed; 263 ignored; 0 measured; 0 filtered out; finished in 13.23s"
+          ]
+        },
+        {
+          "source_revision": "c9fb7e34c136d3258981958149e966a508ab420a",
+          "job": "ui",
+          "command": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ui",
+            "--lib",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--release"
+          ],
+          "returncode": 101,
+          "seconds": 152.31,
+          "log": ".cache/ace-sql-semantic-baseline-local-tables-ui-20261113.log",
+          "artifact": {
+            "path": ".cache/ace-sql-semantic-baseline-local-tables-ui-20261113.log",
+            "bytes": 102763,
+            "sha256": "798d9ff0d406d8b0c89dd56d236b5b61c13535431cae0a28787ba8bb4683d22d"
+          },
+          "test_summaries": [
+            "test result: FAILED. 780 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 13.95s"
+          ]
+        }
+      ]
+    },
+    {
+      "source_commit": "296cb8d7c755a0fffdc3c26b97a815c038de2d4a",
+      "result_manifest": {
+        "path": ".cache/ace-sql-first-query-close-connected-results-20261113.json",
+        "bytes": 837,
+        "sha256": "6af21f21d0aa7508c7ce497930bbd7c7971fece01c59957e67f2d4a942a2f13b"
+      },
+      "failed_checks": [
+        {
+          "source_revision": "296cb8d7c755a0fffdc3c26b97a815c038de2d4a",
+          "job": "strict",
+          "command": [
+            "cargo",
+            "clippy",
+            "-p",
+            "tablecraft-sql",
+            "-p",
+            "tablecraft-builders",
+            "-p",
+            "tablecraft-query",
+            "-p",
+            "tablecraft-ace",
+            "-p",
+            "tablecraft-testkit",
+            "-p",
+            "tablecraft-access",
+            "-p",
+            "tablecraft-runtime",
+            "-p",
+            "tablecraft-ui",
+            "-p",
+            "tablecraft-desktop",
+            "-p",
+            "tablecraft-cli",
+            "-p",
+            "tablecraft-mcp",
+            "--all-targets",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--release",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "returncode": 101,
+          "seconds": 18.82,
+          "log": ".cache/ace-sql-first-query-close-connected-strict-20261113.log",
+          "artifact": {
+            "path": ".cache/ace-sql-first-query-close-connected-strict-20261113.log",
+            "bytes": 2144,
+            "sha256": "6f89880d28d91aa1c52aa4c24ca6abf0a5f8918d5eaa604914246032101f755f"
+          },
+          "test_summaries": []
+        }
+      ]
+    },
+    {
+      "source_commit": "3595412826162c635bb9cebe40d2a3c2029c177b",
+      "result_manifest": {
+        "path": ".cache/ace-sql-first-query-close-repaired-results-20261113.json",
+        "bytes": 836,
+        "sha256": "89eeed748257fff260b280a8083cdc632e7b95cbc4beb6d3ac2d608f4e78ddbb"
+      },
+      "failed_checks": [
+        {
+          "source_revision": "3595412826162c635bb9cebe40d2a3c2029c177b",
+          "job": "strict",
+          "command": [
+            "cargo",
+            "clippy",
+            "-p",
+            "tablecraft-sql",
+            "-p",
+            "tablecraft-builders",
+            "-p",
+            "tablecraft-query",
+            "-p",
+            "tablecraft-ace",
+            "-p",
+            "tablecraft-testkit",
+            "-p",
+            "tablecraft-access",
+            "-p",
+            "tablecraft-runtime",
+            "-p",
+            "tablecraft-ui",
+            "-p",
+            "tablecraft-desktop",
+            "-p",
+            "tablecraft-cli",
+            "-p",
+            "tablecraft-mcp",
+            "--all-targets",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--release",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "returncode": 101,
+          "seconds": 91.61,
+          "log": ".cache/ace-sql-first-query-close-repaired-strict-20261113.log",
+          "artifact": {
+            "path": ".cache/ace-sql-first-query-close-repaired-strict-20261113.log",
+            "bytes": 2293,
+            "sha256": "f70a7a85d8fe288cd0f2e4080f38d254bff73a6f430a63c62fc524dca41106a0"
+          },
+          "test_summaries": []
+        }
+      ]
+    },
+    {
+      "source_commit": "5f3b34840c076b44c97ffb69b3e0a25bee252a30",
+      "result_manifest": {
+        "path": ".cache/ace-sql-first-query-close-qualified-results-20261113.json",
+        "bytes": 6819,
+        "sha256": "25783673ec08b9b3c56ae89e5c7728691316b132af462482a271f92aa8347766"
+      },
+      "failed_checks": [
+        {
+          "source_revision": "5f3b34840c076b44c97ffb69b3e0a25bee252a30",
+          "job": "ui",
+          "command": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-ui",
+            "--lib",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--release"
+          ],
+          "returncode": 101,
+          "seconds": 52.26,
+          "log": ".cache/ace-sql-first-query-close-qualified-ui-20261113.log",
+          "artifact": {
+            "path": ".cache/ace-sql-first-query-close-qualified-ui-20261113.log",
+            "bytes": 97745,
+            "sha256": "af255de2d96fc39b676826f64b7cfffa2a948125f99a976812e0dc99b02a16c2"
+          },
+          "test_summaries": [
+            "test result: FAILED. 785 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 14.17s"
+          ]
+        },
+        {
+          "source_revision": "5f3b34840c076b44c97ffb69b3e0a25bee252a30",
+          "job": "desktop",
+          "command": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-desktop",
+            "--bin",
+            "tablecraft-desktop",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--release"
+          ],
+          "returncode": 101,
+          "seconds": 122.15,
+          "log": ".cache/ace-sql-first-query-close-qualified-desktop-20261113.log",
+          "artifact": {
+            "path": ".cache/ace-sql-first-query-close-qualified-desktop-20261113.log",
+            "bytes": 730352,
+            "sha256": "02203e10a0b1871dc61356b7a569af22d34b2a275164f2f8572294dc24942347"
+          },
+          "test_summaries": [
+            "test result: FAILED. 454 passed; 9 failed; 2 ignored; 0 measured; 0 filtered out; finished in 37.89s"
+          ]
+        }
+      ]
+    },
+    {
+      "source_commit": "9b63442ce0d71e9e9dbbc94c2f8886e50648dd28",
+      "result_manifest": {
+        "path": ".cache/ace-sql-query-lifecycle-followup-results-20261113.json",
+        "bytes": 3284,
+        "sha256": "4e0e62df8ad9857e13cb49d1a25ea12c1d6e9048eeb256b32e700584670888d9"
+      },
+      "failed_checks": [
+        {
+          "source_revision": "9b63442ce0d71e9e9dbbc94c2f8886e50648dd28",
+          "job": "desktop",
+          "command": [
+            "cargo",
+            "test",
+            "-p",
+            "tablecraft-desktop",
+            "--bin",
+            "tablecraft-desktop",
+            "--all-features",
+            "--offline",
+            "--locked",
+            "--release"
+          ],
+          "returncode": 101,
+          "seconds": 81.04,
+          "log": ".cache/ace-sql-query-lifecycle-followup-desktop-20261113.log",
+          "artifact": {
+            "path": ".cache/ace-sql-query-lifecycle-followup-desktop-20261113.log",
+            "bytes": 64036,
+            "sha256": "2213ef9fe4ffc7344be380e76a46f8e0372d6f57e962bc0e73f00e50d22e255f"
+          },
+          "test_summaries": [
+            "test result: FAILED. 464 passed; 2 failed; 2 ignored; 0 measured; 0 filtered out; finished in 29.68s"
+          ]
+        }
+      ]
+    }
+  ],
+  "visual_record": {
+    "path": "tests/results/queries/query-save-surfaces-2026-11-13.json",
+    "bytes": 20199,
+    "sha256": "ac6882eb198a4d33adf644b8c61ab7f22d8bd27e067f1bfc25947a4ea53b0d3d"
+  },
+  "source_inputs": [
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/editing/database_options/tests/failures.rs",
+      "bytes": 12497,
+      "sha256": "7dafb43fb8202cd244e3f57412c05be5f9e40912e2cfa73445b2c781637d3a43"
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/editing/query_action/tests/joined_delete.rs",
+      "bytes": 9090,
+      "sha256": "e00aba2aa48046d31cb586b382ed455d3884fa5a316145ce6043a969bd64da5b"
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/editing/query_action/tests/schema/index_drop.rs",
+      "bytes": 6972,
+      "sha256": "38a26310beb49115d22c062a8c9eef6d6a0827dac8c689ea1ad462781fc00a8c"
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/editing/query_creation/reopen.rs",
+      "bytes": 8378,
+      "sha256": "0cd7b9de930f51106ca2296b9b8bfdcc689bfe46066edb3e64a4d6569e46689f"
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/editing/query_creation/tests.rs",
+      "bytes": 10236,
+      "sha256": "47fea4ebeb0f69ee23f7866b27e3a4682830f2ad496676a52fdd85fd97ebecca"
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/editing/query_creation/tests/design/close.rs",
+      "bytes": 9056,
+      "sha256": "31b23774761e68f22cb21e82029bb997d8b4f8a44646d988b54b19890fa330dd"
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/editing/query_creation/tests/design/close/results.rs",
+      "bytes": 2770,
+      "sha256": "24eaa41fd10673911a003f3a2df0e712e701742f8ac37140e5e2af1a7fc06e4a"
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/editing/query_creation/tests/design/close/scratch_sql.rs",
+      "bytes": 5614,
+      "sha256": "dcda558fa024d23a32985a3b4f4ae0caf44ed5858c25cef03d543b35bc7b59f1"
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/editing/query_creation/tests/initialization.rs",
+      "bytes": 5724,
+      "sha256": "0b781b376d271f45b13a1e21d20712a487faeb19cc5038dbf647368b38d7ae7c"
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/editing/query_creation/tests/initialization/editing.rs",
+      "bytes": 4821,
+      "sha256": "8c9f18666459c40df4452b226f461496aba20433641ee982ffee07869e0135d5"
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/objects/tests.rs",
+      "bytes": 28899,
+      "sha256": "9f8c1a94f4ef343d68842f23d77b2da1380d1e6decf8a486e27fe917a8483b24"
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/query_design/tests.rs",
+      "bytes": 13813,
+      "sha256": "c612b517d7fd66e514633a60ffd7db64d972571075601e39e22f831b8e90fab7"
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/query_design/tests/aliases.rs",
+      "bytes": 9665,
+      "sha256": "669abd54127101a0e2e01c67daf4f74fde37b2de980d60ca34fca208cf13f611"
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/query_design_close.rs",
+      "bytes": 1498,
+      "sha256": "31e481742db1c245a581b19e14bbcb40de1a657d3b72ce3ae47ecde477df2153"
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/saved.rs",
+      "bytes": 5693,
+      "sha256": "4b767dc8cf26424bdeec34cbe2ce3e7168b33990cc91708b66d32e0caa2beb84"
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/saved/sql.rs",
+      "bytes": 3151,
+      "sha256": "5fa32bf60eaaf39031f7a5724a92026f1dbc1ff14f35982714296ef92fa4e4c3"
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/table_drafts.rs",
+      "bytes": 6365,
+      "sha256": "097aeeba3b1ee4ca376f6d2f095bfaf9a6cd5fbdc47e72830687a1a86ec931b2"
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/test_support/objects.rs",
+      "bytes": 2263,
+      "sha256": "d5d7f8f2ee09dd93723c8b585a7bb686f39ae3c6e190334224f4bce66ba97293"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/document/query_creation.rs",
+      "bytes": 2077,
+      "sha256": "9902f51646107bfb46be812a0d3507717a88af1de53f122ebe923e31f033fae6"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/editing.rs",
+      "bytes": 6951,
+      "sha256": "65994d73f8ba2f4bb6630bcf91806bc98f51e1a9c0b9a0702db31c179929dce4"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/editing/native/query_creation.rs",
+      "bytes": 9104,
+      "sha256": "66a67c4b1e16f59054724a9f48008121a37cef653bfec3628e86faeb8b1ef383"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/editing/query_creation.rs",
+      "bytes": 4172,
+      "sha256": "0bc9e4df8bdf8d54cb7c7062f3433f8345250057abd7d8c4296caa8b83f4493b"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/editing/query_creation/storage.rs",
+      "bytes": 11362,
+      "sha256": "b81564881bf68fb515c0554f79f8dc717e4e8536e423a1b15065fd9fd46f18a0"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/lib.rs",
+      "bytes": 5053,
+      "sha256": "12ed773c1bf71712480b4b0efb3becdc3f8825108e107f50b2cc739f0c4cdc5b"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/tests/query_creation.rs",
+      "bytes": 10479,
+      "sha256": "a8558b9539991ad693b259c98f4c2fd3524294da15a7d4e59f3d068ff4997810"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/tests/query_creation/storage.rs",
+      "bytes": 5057,
+      "sha256": "3769b723af360f9d3c1397fd395f5e47125a61ec19393e5e10bb9d7217fbc254"
+    },
+    {
+      "path": "crates/engineering/tablecraft-testkit/src/fixtures/access/query_expression_edits.rs",
+      "bytes": 5688,
+      "sha256": "a591d5075e6393cf1947d719a3c9b0b2fcb22e5067a25c89a14092873a3e95b5"
+    },
+    {
+      "path": "crates/engineering/tablecraft-testkit/src/fixtures/access/saved_queries/creation.rs",
+      "bytes": 8800,
+      "sha256": "e2258c4f8254e155cfabec67983522a146a5dbfc9b9f85b854a7b8f7debd996f"
+    },
+    {
+      "path": "crates/engineering/tablecraft-testkit/src/fixtures/access/saved_queries/creation/initialization.rs",
+      "bytes": 5484,
+      "sha256": "b34de40c9ff2d13842fe4f4f8ef3b23430fc7d1a11110d81ff6f087c0b229165"
+    },
+    {
+      "path": "crates/engineering/tablecraft-testkit/src/fixtures/access/saved_queries/creation/initialization/map_boundary.rs",
+      "bytes": 2095,
+      "sha256": "92dca2c277c4b331c2bf4d938aaf17529430bd290140c1ce5961533c69745f7b"
+    },
+    {
+      "path": "crates/engineering/tablecraft-testkit/src/fixtures/access/saved_queries/creation/local_tables.rs",
+      "bytes": 4749,
+      "sha256": "91c01ab2c5961625ea02f4a1f93b9b75289076fb4af5271843575ae9afef6c3a"
+    },
+    {
+      "path": "crates/engineering/tablecraft-testkit/src/fixtures/access/saved_queries/writable.rs",
+      "bytes": 7319,
+      "sha256": "6d4fd8fc118fead1bebd3c892d08b91ba6c667ae0e40fa41507b63e0d54cb068"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation.rs",
+      "bytes": 3045,
+      "sha256": "14484ce1c4e2d4c1ef4770ae72d638a21a0ced9049aaa533a9ab1fc77c4700db"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/add_table/native.rs",
+      "bytes": 28510,
+      "sha256": "e093a8911b46f082fc6da3644f356fc440fad3b647a60814ed73cb7f97e7936c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/add_table/retained/source.rs",
+      "bytes": 10124,
+      "sha256": "2d2e6ff75e67840353a7b8faf779b79f1631eecfd98c95ea5a8de77a636cd6d7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/definition.rs",
+      "bytes": 13219,
+      "sha256": "f78ffd66f127bbcafb887a059bd9cbe7e877ce9dff223f8d18ba3e8b9422f861"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/profile.rs",
+      "bytes": 9845,
+      "sha256": "d1a977e1423cca7b1b0d521a26c688b0bdf10d5bd1580a7295dfbf741edd79b5"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/record.rs",
+      "bytes": 13533,
+      "sha256": "b047c2fe7e836ef718575ef882cf10d32d0c2912da5b838b807d4c516b92b5cb"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/lib.rs",
+      "bytes": 22224,
+      "sha256": "77726722c4dcfbd16bcf3df51e71abd4545bc7dcbc9e7952aa7e2cdcabd782cb"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/queries.rs",
+      "bytes": 851,
+      "sha256": "03f06831a6eb5fb890413ffcd47ad49988479a6f46cb992c99d9b9b05e2e68c1"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/queries/creation.rs",
+      "bytes": 5422,
+      "sha256": "bbd43490ac2ae400a9626201a43b103aecfedeb91ac90af8932f352a167b177f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/queries/creation/effect.rs",
+      "bytes": 1678,
+      "sha256": "53f96cc27bcf12db48efef0d6c03c8798b3d55530c7bbc26ae5258fcc0bfd621"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/queries/creation/tests.rs",
+      "bytes": 11253,
+      "sha256": "6800a8337b01f6231fa1bb82e8f33c4d2dc04d14b463e579a1e57d5592bb5a87"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/queries/creation/tests/initialization.rs",
+      "bytes": 13112,
+      "sha256": "720e95a447250934a4dead65d0202cc69ea8d6e6ff3f1134c3446a079424b15c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/queries/creation/tests/initialization/map_boundary.rs",
+      "bytes": 4848,
+      "sha256": "0d0c432f17a45df6df76ba5e67888dacc58908ab6bb2f278d0a352ddeb0f67a3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/drop_table/tests.rs",
+      "bytes": 8868,
+      "sha256": "2c2c8e28d1409626c849126c1befdbde2f78f0cb86486c0008bf256d78f35700"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/index_population.rs",
+      "bytes": 7393,
+      "sha256": "37181473af09b6458f415b7bcba853bd44fdd7979e18f3eee9ace537c84fb6f6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/index_population_audit.rs",
+      "bytes": 10987,
+      "sha256": "9d400cad4738b8e5a1497ac36ef292d4ea26edaf368ded2c4215397aef2e9287"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/query_creation.rs",
+      "bytes": 2877,
+      "sha256": "01083e1f6d465af73a86cca6d608924b75383a05542b3a386011c4de5e34984c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/query_creation/append.rs",
+      "bytes": 3438,
+      "sha256": "410e4ed174b0973c7068a30f2cadccf0e0b918e7d0b56185d6e0444e6baffe58"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/query_creation/initialize.rs",
+      "bytes": 3784,
+      "sha256": "fd30a966991e0e702b87c3e657f134c55f674c5fc45f85d1cbcc7773ce408bfc"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/query_creation/initialize/fields.rs",
+      "bytes": 1249,
+      "sha256": "d67675d699401cd230e80391752867004edad33293cd2e259d0ee964e2a74b77"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/query_creation/initialize/proof.rs",
+      "bytes": 10282,
+      "sha256": "030e6b525db6a04605bae0eb03b878326c02e9aee6917d813f0169e1893ae120"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/query_creation/proof.rs",
+      "bytes": 19289,
+      "sha256": "b7224faac803bd5c4a629bac7fc6f473f5ff384c76b5dbe55643c64cb05de5b1"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/query_creation/record.rs",
+      "bytes": 7498,
+      "sha256": "d34c05332b73483b8ca46340557dfbbf6c39e3dab7f3ee0dd1fffaaf6b9ae4cd"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/query_creation/source.rs",
+      "bytes": 7502,
+      "sha256": "054bff1a7b7c6a0f67f8a1333100fdb984156e7c5003db4075b0f214e4892d87"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/query_creation/source/catalog.rs",
+      "bytes": 7445,
+      "sha256": "60339e1b2eb58dce678cb437fd4dba83b83216fc46c17943522af54726f645b3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/query_creation/source/initialization.rs",
+      "bytes": 5626,
+      "sha256": "9a50b5ba3df104b73d698de6ec6b0e744cd1aed3dd0a3a17b96a909e60cf9356"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/table_append.rs",
+      "bytes": 4609,
+      "sha256": "6166802f2380e64dccc8e0c3184539705129ccdd19c2b1611d45b663b5d76bc8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/table_append/allocation.rs",
+      "bytes": 10267,
+      "sha256": "fd8e0a03fcb6ff102fdadd55231cab7efa0fcb31b6c09e6b8291746a8f51f78f"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/table_append/allocation/tests.rs",
+      "bytes": 5271,
+      "sha256": "c26d7e535e8619e81f7e36f49aad072d745cdd45c5ae0953155607fec6b08845"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/table_append/storage.rs",
+      "bytes": 11843,
+      "sha256": "1ba3c09eec46037768ca5244fa138d895bfbe0103ae663a20bad31143197bda3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/transaction/intent/query_creation/planning.rs",
+      "bytes": 5219,
+      "sha256": "f5077079d54805e4aa651d34b020c5ff3313c1d45a12bd99ae9d24c4197ce6b7"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/lib.rs",
+      "bytes": 3757,
+      "sha256": "2ba58755ccce4a24a87cfe0bdd0abc044cc87e86c24e509b70947e34f6589e87"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace.rs",
+      "bytes": 44558,
+      "sha256": "8698e4e34916947cfb9b9b7b66c946ca15478ace5fcbabdf7f21234f4aebc182"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/active_save.rs",
+      "bytes": 7781,
+      "sha256": "e699988e9862384c3b241fc85005585d8827f53204bd90b97339571e06f0f7d9"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/chrome/tests.rs",
+      "bytes": 22845,
+      "sha256": "1de8cbe5c5c546a1fd6f5c3566a09182f98d7ec42d3fe10d2bef5f4cd39d3443"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/objects.rs",
+      "bytes": 36255,
+      "sha256": "5e9975f3c39f4f2b5dbc7848ee245fe75bfaa2f549b9edc0437e653fe16c06a9"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/objects/layout/catalog.rs",
+      "bytes": 6071,
+      "sha256": "ae27eda583085ad53bcb796d10ca6f56857865895a80fa61feef637329fa52e6"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/objects/layout/catalog/tests.rs",
+      "bytes": 3765,
+      "sha256": "21536ad94371b3237920aeee401c32845dd0cb85135f0fb626c41b16ec226ade"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/objects/layout/query_creation_reopen.rs",
+      "bytes": 16211,
+      "sha256": "c6c54237690c4148aadaa046ede6dbfd514473a35e4603ad8b8a5b0daf3a3052"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/objects/query_design_close.rs",
+      "bytes": 7063,
+      "sha256": "6fc71717faad06d3dc8cbec3e45a0fb10a13f6761fe52e3af1788c7a03813411"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/objects/tests.rs",
+      "bytes": 15016,
+      "sha256": "d538800f5e922da1db8933dcfd52f0086227d5e4fea65c8e76240a70c5c7ee52"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_creation.rs",
+      "bytes": 3188,
+      "sha256": "61b206e2cd0a07dd6b5cac38e4df1868ed110ea7270a20784aceefb34dd03d02"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_design.rs",
+      "bytes": 29198,
+      "sha256": "a91fff2a3495834eb042ec1e01e547d6837cdd5aa9c900a4db9e768b6773b8a9"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_design/baseline.rs",
+      "bytes": 8568,
+      "sha256": "98da922410d9da12bd55f67918b2825403e88a09c184d07ad4cc3f639f29f2f5"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_design/baseline/tests.rs",
+      "bytes": 13344,
+      "sha256": "5c60f229c0413fdab501b0844e05c4150a988657cda8d638ff1fcb596b69376a"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_design/parameters.rs",
+      "bytes": 1943,
+      "sha256": "8cf7daaef3b5cdc82553123163918f53cbf32adbe13d76e1ccc8497e70aa010a"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_design/preferences.rs",
+      "bytes": 2128,
+      "sha256": "2142c36fd417b77eeed0d350651c4dbbdc2347e877a75b1e72289fe41afbbef0"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_design/ribbon.rs",
+      "bytes": 11812,
+      "sha256": "0bc665b006588f8cb1ddc6852f6301c96c86ee50a620e63c7c6c16e98e4de9e9"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_design/tests.rs",
+      "bytes": 18037,
+      "sha256": "95e86a2984f05f422cfe12278a458a56fa4fdf7659a7eb53ceb172966bb5516e"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_design_close.rs",
+      "bytes": 16244,
+      "sha256": "daca6929e187bac1663cfed8c3d9eb4df8b603a3182042fb7b5d5cc76c5392a7"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_design_close/dialog.rs",
+      "bytes": 2538,
+      "sha256": "6bde9dcfda97e47fbc2066b3f95eec4432debe232f7ae45f8bd52dae05fc7b6e"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_design_close/tests.rs",
+      "bytes": 6366,
+      "sha256": "b74c16d4b99b41f5b938bf7e8559feaa3f314dae2a1f60ae42a8d559fc877b7d"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_design_close/tests/scratch.rs",
+      "bytes": 4540,
+      "sha256": "fe1668e10ecf68b78503b420147411f40226b52269a236ed08d80b04fc343952"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/saved_query/sql/draft.rs",
+      "bytes": 6705,
+      "sha256": "af87db22eab43a9625e0b1a8c8b3e39c4b2b1a71240ca2fe9d11d25f409e4ac3"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/saved_query/sql/inspection.rs",
+      "bytes": 7096,
+      "sha256": "ace5732d80097891ad1bdade175efe9955758ecaaeda4195d97bb0df3ddba4d2"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/saved_query/sql/lifecycle.rs",
+      "bytes": 3511,
+      "sha256": "54664e93b3a8faf964f18348ea8790c40392dbca68d58b03c1a625266070786f"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/saved_query/sql/rebind.rs",
+      "bytes": 5587,
+      "sha256": "9d5373568842736bbcb1df996f7c21a5ee39174bcc745fdf6cfc782716aff9e1"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/saved_query/sql/tests.rs",
+      "bytes": 9279,
+      "sha256": "c61413a033368667b3ba6c59927c2e0c6f512d886b54a6bd3cbc4911b2b8a6be"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/saved_query/sql/tests/created_inspection.rs",
+      "bytes": 11394,
+      "sha256": "143d8f8ae31262816201b1c692f94b55b0974754b9fb461a6807209a5b3bd9a6"
+    },
+    {
+      "path": "docs/ui/VISUAL_REFERENCES.md",
+      "bytes": 45483,
+      "sha256": "abb4ca24c50c7065ab969be6dcc07aa5eb0d6aa4eff6a412080da4522d98e100"
+    },
+    {
+      "path": "tests/results/queries/query-save-surfaces-2026-11-13.json",
+      "bytes": 20199,
+      "sha256": "ac6882eb198a4d33adf644b8c61ab7f22d8bd27e067f1bfc25947a4ea53b0d3d"
+    }
+  ]
+}
