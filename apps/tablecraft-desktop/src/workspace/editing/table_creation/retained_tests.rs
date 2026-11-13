@@ -113,15 +113,15 @@ fn journey(case: Case, history: History, target: Target, name: &str) {
         .state()
         .state
         .object_tabs()
-        .iter()
+        .into_iter()
         .find(|tab| tab.target.kind == first_tab.target.kind)
-        .unwrap()
-        .clone();
-    // Schema reopen restores source-free presentation preferences with fresh
-    // object identities; the old tab must not retain revision authority.
-    assert_ne!(refreshed_first.id, first_tab.id);
+        .unwrap();
+    // Same-document schema saves preserve the presentation ID. The fresh
+    // revision rejects the complete old target despite that stable ID.
+    assert_eq!(refreshed_first.id, first_tab.id);
     assert!(refreshed_first.target.document_revision > first_tab.target.document_revision);
     assert!(!harness.state().state.can_activate_object(&first_tab));
+    assert!(!harness.state_mut().state.activate_object(&first_tab));
     let retained_layout = harness
         .state()
         .state

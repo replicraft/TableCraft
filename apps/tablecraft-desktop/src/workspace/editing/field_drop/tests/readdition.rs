@@ -128,9 +128,9 @@ fn journey(case: raw::Case, target: Target) {
         assert_eq!(fresh_tabs.len(), old_tabs.len());
         for (old, fresh) in old_tabs.iter().zip(&fresh_tabs) {
             assert_eq!(fresh.target.kind, old.target.kind);
-            // Ordinary cell saves reopen through source-free preferences. They
-            // retain visible tab order/content, never the old tab authority.
-            assert_ne!(fresh.id, old.id);
+            // Same-document saves retain presentation IDs and tab order. The
+            // fresh document revision revokes every complete old tab target.
+            assert_eq!(fresh.id, old.id);
             assert!(fresh.target.document_revision > old.target.document_revision);
             assert!(!harness.state_mut().state.activate_object(old));
         }

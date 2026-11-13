@@ -54,9 +54,10 @@ fn click(harness: &mut Harness<'_, Desktop>, key: &str) {
     // querying its controls rather than using the previous frame's tree.
     harness.run_steps(2);
     if !harness.state().state.busy {
-        // A different Modal becomes the top modal on the following frame.
-        // Settle that transition before checking whether its controls are enabled.
-        harness.run();
+        // egui promotes the newly painted modal on the next pass. Advance
+        // that one transition; background font polling need not become idle.
+        // Native review/read/save completion has its own bounded waits below.
+        harness.run_steps(1);
     }
 }
 
