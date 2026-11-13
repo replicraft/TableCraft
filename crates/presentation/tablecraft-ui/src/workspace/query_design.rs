@@ -804,12 +804,6 @@ impl QueryDesign {
 }
 
 impl QueryDesign {
-    pub(in crate::workspace) fn revision(&self) -> Option<u64> {
-        Some(self.session.as_ref()?.revision)
-    }
-}
-
-impl QueryDesign {
     pub(in crate::workspace) fn close_revision(
         &self,
         result: &ResultOrigin,

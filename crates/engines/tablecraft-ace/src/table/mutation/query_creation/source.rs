@@ -208,14 +208,15 @@ pub(super) fn missing_queries(
             tablecraft_core::limits::Resource::Steps,
             object.name().as_str().len() as u64,
         )?;
-        if object.name().as_str().eq_ignore_ascii_case("MSysQueries") {
-            if found.replace(origin).is_some()
-                || !origin.is_system()
-                || origin.type_code() != LOCAL_TABLE_TYPE
-                || origin.table_storage() != Some(crate::NativeTableStorage::Local)
-            {
-                return Err(QueryCreationError::Source);
-            }
+        if !object.name().as_str().eq_ignore_ascii_case("MSysQueries") {
+            continue;
+        }
+        if found.replace(origin).is_some()
+            || !origin.is_system()
+            || origin.type_code() != LOCAL_TABLE_TYPE
+            || origin.table_storage() != Some(crate::NativeTableStorage::Local)
+        {
+            return Err(QueryCreationError::Source);
         }
     }
     Ok(found.is_none())
