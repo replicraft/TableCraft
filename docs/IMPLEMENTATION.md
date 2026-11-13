@@ -1,5 +1,20 @@
 # Implementation status
 
+## Query Field authoring and retained edits — 13 November 2026
+
+The visual Field row now shows and edits `Alias: operand` through the shared
+SQL/builders owners. Unfinished input survives focus changes, object parking and
+acknowledged native-save refresh; it cannot execute an older parsed model.
+Explicit Cancel retains exact field ownership, including repeated focus requests.
+
+The [field-authoring checkpoint](../tests/results/queries/qbe-field-authoring-workflows-2026-11-13.json)
+records 58 builder, 93 selected UI, 488 Runtime, 106 selected Desktop, 78 MCP and
+100 SQL passes, with one explicit fixture-dependent Runtime ignore. Strict lint
+across eleven packages, minimal Runtime and Rustdoc pass. Four English/German
+light/dark normal-host frames were rendered and directly viewed headlessly.
+Native saved-query creation and the wider CRUD/query roadmap remain unfinished;
+these checks do not establish Windows/Access parity.
+
 ## Visual query Totals and Design Run — 12 November 2026
 
 The shared query builder and grid now represent Group By, seven aggregate roles,
@@ -17,9 +32,10 @@ were rendered and directly viewed headlessly at 1280 × 820/1×.
 
 Mixed-phase alternatives, incomplete Totals-off transitions, remaining default
 heading rules and native saved-query lifecycle remain incomplete. The frames
-also expose retained aliases missing from the Field row; that is the next UI
-correction. These are scoped local checks, not finished QBE, native Access
-interaction or Windows compatibility evidence.
+also recorded retained aliases missing from the Field row; the later
+field-authoring checkpoint above covers that correction. These are scoped local
+checks, not finished QBE, native Access interaction or Windows compatibility
+evidence.
 
 ## Fixed scalar batches and grouped make-table — 12 November 2026
 

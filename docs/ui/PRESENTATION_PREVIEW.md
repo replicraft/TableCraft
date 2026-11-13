@@ -1,5 +1,26 @@
 # Presentation preview
 
+## Query Field aliases — 13 November 2026
+
+The existing `query-design-totals` scene now displays the actual retained
+`CustomerCount: CustomerID` Field prefix. Four English/German light/dark frames
+were rendered and directly viewed in normal presentation at 1280 × 820 logical
+and pixel dimensions, scale 1×, on macOS 14.7.2 ARM64. The release offscreen WGPU
+renderer requested Metal; actual adapter metadata is not exported. No native
+application window was opened.
+
+The alias, separate Table identity, complete contextual Ribbon, source/grid split
+and role/criteria controls remain readable. The source card intentionally scrolls
+and partially clips its last field. Menus are closed. The retained city-dob image
+supplies the Field-prefix/source/grid reference; it supplies neither native
+dark/German styling nor the current Ribbon or cancellation behavior.
+
+The [field-authoring checkpoint](../../tests/results/queries/qbe-field-authoring-workflows-2026-11-13.json)
+pins all four frames under `.cache/ui-previews/query-design-aliases/metal-headless/`,
+their logs, source hashes and direct-view observations. Headless interaction
+checks separately cover Cancel, resource refusal and native-save refresh. These
+frames do not establish those behaviors or native Windows/Access parity.
+
 ## Query-design Totals — 12 November 2026
 
 The source-free `query-design-totals` scene was rendered and directly viewed

@@ -1,0 +1,1293 @@
+{
+  "date": "2026-11-13",
+  "platform": "macOS 14.7.2 arm64",
+  "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)",
+  "qualification_status": "passed_with_explicit_fixture_ignore_and_scoped_visual_observations",
+  "scope": "Visible QBE Field aliases, retained incomplete authoring text, exact revision/execution/close ownership and acknowledged native-save refresh across shared UI and real Runtime/Desktop/MCP consumers.",
+  "source_commit": "ca20e122dbe7860865449d7d2ec7a8b5ed6be1fb",
+  "renderer_build_source_commit": "ca20e122dbe7860865449d7d2ec7a8b5ed6be1fb",
+  "qualification": "Local owner, source-preservation, execution and headless interaction checks, plus four directly viewed offscreen normal-host frames. No native Access/Windows interaction, complete QueryDef lifecycle or full Access SQL conformance claim.",
+  "observations": [
+    "SQL tokenizer/name rules own QBE Alias: operand prefixes; colons inside quoted names, strings and dates are not split. Executable SELECT grammar is unchanged. Builder field editing retains explicit source identity and treats arbitrary expressions separately.",
+    "Every accepted raw edit advances the draft revision. Incomplete syntax survives blur, another-column editing, object parking and fresh-source preferences; Build, Run, SQL publication, import and stale consuming actions cannot execute the older parsed model.",
+    "Hard byte, parser nesting/token and allocation refusals preserve the whole previous candidate. Real Field Paste tests exercise independent nesting/token limits below the text-byte allowance and observe unchanged draft/request/raw text/prior rows with no emitted action.",
+    "Raw text, immutable Cancel baseline and current parsed payload share the explicit editable reservation; retained-memory accounting includes immutable owners and actual capacities. Cancel restores only that field and adjusts available authoring bytes.",
+    "Focused Field Escape uses the actual TextEdit filter plus exact previous-frame ownership to survive repeated accessibility focus requests. Popup Escape is separate; a subsequent Escape without retained input releases focus normally.",
+    "Tab close, Ctrl+W, destructive user Open/Create/Exit and updater restart preserve unresolved active or parked text. This is a temporary finish-or-explicit-Cancel editor restriction, not native dirty-query Save/Save As parity. Current scratch SQL is singleton per document; no unreachable two-scratch-tab test was fabricated.",
+    "Actual native cell save, consuming acknowledgment and guarded fresh reopen preserve parked raw text/tab identity while dropping stale result/native capabilities. User file-dialog/queued opens remain guarded before selected-path/password consumption.",
+    "Actual Runtime and MCP Build/Run retain aliases and typed source identities without changing native source bytes. All eight sectioned Fluent catalogs pass their current key/variable/format checks in the selected UI run."
+  ],
+  "checks": [
+    {
+      "job": "builders",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-builders",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 32.37,
+      "log": ".cache/ace-sql-qbe-alias-repaired-builders-20261112.log",
+      "artifact": {
+        "path": ".cache/ace-sql-qbe-alias-repaired-builders-20261112.log",
+        "sha256": "caf2f3c75c6a44d4eff6832112222414147c679e568db8c51e45123f527bc6bd",
+        "bytes": 7261
+      },
+      "tests": {
+        "passed": 58,
+        "failed": 0,
+        "ignored": 0
+      },
+      "ignored_entries": []
+    },
+    {
+      "job": "runtime",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-runtime",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 109.79,
+      "log": ".cache/ace-sql-qbe-alias-repaired-runtime-20261112.log",
+      "artifact": {
+        "path": ".cache/ace-sql-qbe-alias-repaired-runtime-20261112.log",
+        "sha256": "7aed077ab634f626e98a6579525d3ade01df20b8362b8587ade8a511f83b3b0f",
+        "bytes": 60695
+      },
+      "tests": {
+        "passed": 488,
+        "failed": 0,
+        "ignored": 1
+      },
+      "ignored_entries": [
+        "test tests::editing::genuine_jet4::genuine_jet4_reviewed_cell_save_matches_independent_whole_image ... ignored, requires explicit hash-pinned TABLECRAFT_JET4_SCALAR_SOURCE"
+      ]
+    },
+    {
+      "job": "mcp",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-mcp",
+        "--bin",
+        "tablecraft-mcp",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 73.67,
+      "log": ".cache/ace-sql-qbe-alias-repaired-mcp-20261112.log",
+      "artifact": {
+        "path": ".cache/ace-sql-qbe-alias-repaired-mcp-20261112.log",
+        "sha256": "9c9ac4f3e520b151c13ed4abd825179fed77f48b5406e28b716df5e3aafdff56",
+        "bytes": 12191
+      },
+      "tests": {
+        "passed": 78,
+        "failed": 0,
+        "ignored": 0
+      },
+      "ignored_entries": []
+    },
+    {
+      "job": "sql",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-sql",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 7.03,
+      "log": ".cache/ace-sql-qbe-alias-repaired-sql-20261112.log",
+      "artifact": {
+        "path": ".cache/ace-sql-qbe-alias-repaired-sql-20261112.log",
+        "sha256": "6fdc3b26b5cb688fe06bd4a269e8db320a824737a5ff59a69da49bb57003c1e0",
+        "bytes": 11048
+      },
+      "tests": {
+        "passed": 100,
+        "failed": 0,
+        "ignored": 0
+      },
+      "ignored_entries": []
+    },
+    {
+      "job": "runtime-minimal",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-runtime",
+        "--no-default-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 11.11,
+      "log": ".cache/ace-sql-qbe-alias-repaired-runtime-minimal-20261112.log",
+      "artifact": {
+        "path": ".cache/ace-sql-qbe-alias-repaired-runtime-minimal-20261112.log",
+        "sha256": "34e00f6b82e13f0876546e6814fb15bb030eaed175704ed4053fd0130e357240",
+        "bytes": 3962
+      },
+      "ignored_entries": []
+    },
+    {
+      "job": "strict",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-sql",
+        "-p",
+        "tablecraft-builders",
+        "-p",
+        "tablecraft-query",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-testkit",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-runtime",
+        "-p",
+        "tablecraft-ui",
+        "-p",
+        "tablecraft-desktop",
+        "-p",
+        "tablecraft-cli",
+        "-p",
+        "tablecraft-mcp",
+        "--all-targets",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "seconds": 11.88,
+      "log": ".cache/ace-sql-qbe-alias-qualified-strict-20261112.log",
+      "artifact": {
+        "path": ".cache/ace-sql-qbe-alias-qualified-strict-20261112.log",
+        "sha256": "65cafa1083d2b695b844d1ce06c597d45cbcd41a100b5e9b4fdc2c9307e38d8a",
+        "bytes": 285
+      },
+      "ignored_entries": []
+    },
+    {
+      "job": "ui",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ui",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "workspace::query_design",
+        "workspace::query::parameters",
+        "workspace::query::provenance",
+        "workspace::objects",
+        "workspace::updates",
+        "localization::tests"
+      ],
+      "returncode": 0,
+      "seconds": 23.22,
+      "log": ".cache/ace-sql-qbe-alias-qualified-ui-20261112.log",
+      "artifact": {
+        "path": ".cache/ace-sql-qbe-alias-qualified-ui-20261112.log",
+        "sha256": "cd493eb80edf995d107aa3a419b053e4e106a864911f25bd7500835844ae58d0",
+        "bytes": 12328
+      },
+      "tests": {
+        "passed": 93,
+        "failed": 0,
+        "ignored": 0
+      },
+      "ignored_entries": []
+    },
+    {
+      "job": "desktop",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-desktop",
+        "--bin",
+        "tablecraft-desktop",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "query_design::tests",
+        "query_parameters::tests",
+        "query_action::tests",
+        "query_formats",
+        "workspace::objects::tests",
+        "workspace::table_drafts::tests",
+        "workspace::updating::tests",
+        "workspace::editing::tests::acknowledged_noop_save_refreshes_the_original_table_and_blocks_conflicting_actions",
+        "workspace::editing::tests::refresh_binding_does_not_follow_an_unrelated_open_generation",
+        "workspace::editing::tests::close_is_vetoed_until_the_real_terminal_save_is_acknowledged"
+      ],
+      "returncode": 0,
+      "seconds": 30.63,
+      "log": ".cache/ace-sql-qbe-alias-qualified-desktop-20261112.log",
+      "artifact": {
+        "path": ".cache/ace-sql-qbe-alias-qualified-desktop-20261112.log",
+        "sha256": "4144495b80607dd9758c3987a3943730db0f08157146746086aff188710c7838",
+        "bytes": 14856
+      },
+      "tests": {
+        "passed": 106,
+        "failed": 0,
+        "ignored": 0
+      },
+      "ignored_entries": []
+    },
+    {
+      "job": "rustdoc",
+      "command": [
+        "cargo",
+        "doc",
+        "-p",
+        "tablecraft-sql",
+        "-p",
+        "tablecraft-builders",
+        "-p",
+        "tablecraft-ui",
+        "-p",
+        "tablecraft-runtime",
+        "--all-features",
+        "--no-deps",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 2.36,
+      "log": ".cache/ace-sql-qbe-alias-qualified-rustdoc-20261112.log",
+      "artifact": {
+        "path": ".cache/ace-sql-qbe-alias-qualified-rustdoc-20261112.log",
+        "sha256": "8cf4110254546419875f5b2f2c6ef62b1d6a81202145a45b766b5e572a4bbd4e",
+        "bytes": 293
+      },
+      "ignored_entries": []
+    },
+    {
+      "job": "renderer",
+      "command": [
+        "cargo",
+        "build",
+        "-p",
+        "tablecraft-ui",
+        "--example",
+        "render_preview",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 14.63,
+      "log": ".cache/ace-sql-qbe-alias-qualified-renderer-20261112.log",
+      "artifact": {
+        "path": ".cache/ace-sql-qbe-alias-qualified-renderer-20261112.log",
+        "sha256": "7d58ca6a537711031cf0570e0c5290251e7625c879fa7f8846f5c82faf752533",
+        "bytes": 177
+      },
+      "ignored_entries": []
+    }
+  ],
+  "unchanged_check_reuse": "Builders, SQL, Runtime and MCP results are from the repaired batch. git diff --quiet confirms those four package trees unchanged through the final source commit; later changes are shared UI, Desktop tests and documentation. Final strict all-target/all-feature lint covers eleven packages.",
+  "attempts": [
+    {
+      "attempt": "connected",
+      "source_commit": "d3e6377883080a3133fccb4a4a108573f2582e16",
+      "results": {
+        "path": ".cache/ace-sql-qbe-alias-connected-results-20261112.json",
+        "sha256": "8d8bfa8c58aeb0ebedf4622997b3a1cf4822c169a6221600593652fa8d6bc42a",
+        "bytes": 762
+      },
+      "checks": [
+        {
+          "job": "strict",
+          "returncode": 101,
+          "log": {
+            "path": ".cache/ace-sql-qbe-alias-connected-strict-20261112.log",
+            "sha256": "3006de1ad50a1958f4cc125498457021959ed23c6c58d93027a6bd9cf3c73e12",
+            "bytes": 14344
+          }
+        }
+      ]
+    },
+    {
+      "attempt": "repaired",
+      "source_commit": "9c99affddcea2687131d88f9243443be1b0de569",
+      "results": {
+        "path": ".cache/ace-sql-qbe-alias-repaired-results-20261112.json",
+        "sha256": "6e8fe2408b293c8668a924252846c654c9a9ab5823da4f12ead18cf4cebfe354",
+        "bytes": 4648
+      },
+      "checks": [
+        {
+          "job": "strict",
+          "returncode": 0,
+          "log": {
+            "path": ".cache/ace-sql-qbe-alias-repaired-strict-20261112.log",
+            "sha256": "65911c81512d1ee045e228d81c1ed0eb37d52099589e495481c9b28648620b74",
+            "bytes": 1715
+          }
+        },
+        {
+          "job": "builders",
+          "returncode": 0,
+          "log": {
+            "path": ".cache/ace-sql-qbe-alias-repaired-builders-20261112.log",
+            "sha256": "caf2f3c75c6a44d4eff6832112222414147c679e568db8c51e45123f527bc6bd",
+            "bytes": 7261
+          }
+        },
+        {
+          "job": "ui",
+          "returncode": 101,
+          "log": {
+            "path": ".cache/ace-sql-qbe-alias-repaired-ui-20261112.log",
+            "sha256": "b1e951e4603ef6b97d080df1edd5ecddc2bdb0c1a170c0e261eb47205197992e",
+            "bytes": 19781
+          }
+        },
+        {
+          "job": "runtime",
+          "returncode": 0,
+          "log": {
+            "path": ".cache/ace-sql-qbe-alias-repaired-runtime-20261112.log",
+            "sha256": "7aed077ab634f626e98a6579525d3ade01df20b8362b8587ade8a511f83b3b0f",
+            "bytes": 60695
+          }
+        },
+        {
+          "job": "desktop",
+          "returncode": 101,
+          "log": {
+            "path": ".cache/ace-sql-qbe-alias-repaired-desktop-20261112.log",
+            "sha256": "8dfbfef0b537ea0d3d8e647c30d3f7d91efdc4041fbf455fb27d0db1c8d0a3d3",
+            "bytes": 25987
+          }
+        },
+        {
+          "job": "mcp",
+          "returncode": 0,
+          "log": {
+            "path": ".cache/ace-sql-qbe-alias-repaired-mcp-20261112.log",
+            "sha256": "9c9ac4f3e520b151c13ed4abd825179fed77f48b5406e28b716df5e3aafdff56",
+            "bytes": 12191
+          }
+        },
+        {
+          "job": "sql",
+          "returncode": 0,
+          "log": {
+            "path": ".cache/ace-sql-qbe-alias-repaired-sql-20261112.log",
+            "sha256": "6fdc3b26b5cb688fe06bd4a269e8db320a824737a5ff59a69da49bb57003c1e0",
+            "bytes": 11048
+          }
+        },
+        {
+          "job": "runtime-minimal",
+          "returncode": 0,
+          "log": {
+            "path": ".cache/ace-sql-qbe-alias-repaired-runtime-minimal-20261112.log",
+            "sha256": "34e00f6b82e13f0876546e6814fb15bb030eaed175704ed4053fd0130e357240",
+            "bytes": 3962
+          }
+        },
+        {
+          "job": "rustdoc",
+          "returncode": 0,
+          "log": {
+            "path": ".cache/ace-sql-qbe-alias-repaired-rustdoc-20261112.log",
+            "sha256": "01a3dca1d9d064efe2bad6b01269f39a275519fea05656d35b2c71fd31b6a31d",
+            "bytes": 3365
+          }
+        },
+        {
+          "job": "renderer",
+          "returncode": 0,
+          "log": {
+            "path": ".cache/ace-sql-qbe-alias-repaired-renderer-20261112.log",
+            "sha256": "2d5481c24e3578f87dca866f6fd7ff6c53d47dfde62da5ffdb68c6efd42ae249",
+            "bytes": 177
+          }
+        }
+      ]
+    },
+    {
+      "attempt": "final",
+      "source_commit": "0b7a8509b8efd02365e7916d150adb212293ddbd",
+      "results": {
+        "path": ".cache/ace-sql-qbe-alias-final-results-20261112.json",
+        "sha256": "b4fdd7b94dc9ee702d830b0c1a7c4fe663a594ae4dbd9e69b736cc00e1447087",
+        "bytes": 756
+      },
+      "checks": [
+        {
+          "job": "strict",
+          "returncode": 101,
+          "log": {
+            "path": ".cache/ace-sql-qbe-alias-final-strict-20261112.log",
+            "sha256": "a05c0a737e51b28966c8d11823c71f4de58b8c729fd52eee425f416c961898d6",
+            "bytes": 2056
+          }
+        }
+      ]
+    },
+    {
+      "attempt": "verified",
+      "source_commit": "49f6fed64d614ea0d727c65be343a26c7e56a116",
+      "results": {
+        "path": ".cache/ace-sql-qbe-alias-verified-results-20261112.json",
+        "sha256": "23d4ca6f882905cd76a357172c57494e01300e78dc1f18c67c9995a800d89299",
+        "bytes": 2985
+      },
+      "checks": [
+        {
+          "job": "strict",
+          "returncode": 0,
+          "log": {
+            "path": ".cache/ace-sql-qbe-alias-verified-strict-20261112.log",
+            "sha256": "a2e80cf8b009c7b648a312ae8fb1e268316ee6afb478220ce57fc552caeb31e1",
+            "bytes": 285
+          }
+        },
+        {
+          "job": "ui",
+          "returncode": 0,
+          "log": {
+            "path": ".cache/ace-sql-qbe-alias-verified-ui-20261112.log",
+            "sha256": "ce76d52bafc06f82321fda1edfa63360a81f96ad5ac40147d3d308dbb3b61cef",
+            "bytes": 12328
+          }
+        },
+        {
+          "job": "desktop",
+          "returncode": 101,
+          "log": {
+            "path": ".cache/ace-sql-qbe-alias-verified-desktop-20261112.log",
+            "sha256": "3589fa9138e74185ffe0c34dec2eefb006220f1662273f7e9ba1f6a26e511ad7",
+            "bytes": 15636
+          }
+        },
+        {
+          "job": "rustdoc",
+          "returncode": 0,
+          "log": {
+            "path": ".cache/ace-sql-qbe-alias-verified-rustdoc-20261112.log",
+            "sha256": "fac6e649379942caf89fb3790c4e1aaa2b44e7334f60c66d749a937cc9ea1b9f",
+            "bytes": 293
+          }
+        },
+        {
+          "job": "renderer",
+          "returncode": 0,
+          "log": {
+            "path": ".cache/ace-sql-qbe-alias-verified-renderer-20261112.log",
+            "sha256": "86d0d7b77b77b1122412edfd63bab026e950e9f212810da9e34e59a41d7393f1",
+            "bytes": 177
+          }
+        }
+      ]
+    },
+    {
+      "attempt": "qualified",
+      "source_commit": "ca20e122dbe7860865449d7d2ec7a8b5ed6be1fb",
+      "results": {
+        "path": ".cache/ace-sql-qbe-alias-qualified-results-20261112.json",
+        "sha256": "3cf14214595a3bd97bd2bdb3fe22e892f2a4b45fbbdb31b951e4f7b2794bba46",
+        "bytes": 2989
+      },
+      "checks": [
+        {
+          "job": "strict",
+          "returncode": 0,
+          "log": {
+            "path": ".cache/ace-sql-qbe-alias-qualified-strict-20261112.log",
+            "sha256": "65cafa1083d2b695b844d1ce06c597d45cbcd41a100b5e9b4fdc2c9307e38d8a",
+            "bytes": 285
+          }
+        },
+        {
+          "job": "ui",
+          "returncode": 0,
+          "log": {
+            "path": ".cache/ace-sql-qbe-alias-qualified-ui-20261112.log",
+            "sha256": "cd493eb80edf995d107aa3a419b053e4e106a864911f25bd7500835844ae58d0",
+            "bytes": 12328
+          }
+        },
+        {
+          "job": "desktop",
+          "returncode": 0,
+          "log": {
+            "path": ".cache/ace-sql-qbe-alias-qualified-desktop-20261112.log",
+            "sha256": "4144495b80607dd9758c3987a3943730db0f08157146746086aff188710c7838",
+            "bytes": 14856
+          }
+        },
+        {
+          "job": "rustdoc",
+          "returncode": 0,
+          "log": {
+            "path": ".cache/ace-sql-qbe-alias-qualified-rustdoc-20261112.log",
+            "sha256": "8cf4110254546419875f5b2f2c6ef62b1d6a81202145a45b766b5e572a4bbd4e",
+            "bytes": 293
+          }
+        },
+        {
+          "job": "renderer",
+          "returncode": 0,
+          "log": {
+            "path": ".cache/ace-sql-qbe-alias-qualified-renderer-20261112.log",
+            "sha256": "7d58ca6a537711031cf0570e0c5290251e7625c879fa7f8846f5c82faf752533",
+            "bytes": 177
+          }
+        }
+      ]
+    }
+  ],
+  "initial_owner_check": {
+    "command": [
+      "cargo",
+      "check",
+      "--release",
+      "--offline",
+      "--locked",
+      "-p",
+      "tablecraft-sql",
+      "-p",
+      "tablecraft-builders",
+      "--all-targets",
+      "--all-features"
+    ],
+    "returncode": 101,
+    "log": {
+      "path": ".cache/ace-sql-qbe-alias-owner-check-20261112.log",
+      "sha256": "76f27f326e0fccc1fe9e21d44818975be86e61ac666605c844e013a523eda9f3",
+      "bytes": 2737
+    },
+    "finding": "Missing public SQL identifier-classifier export; corrected before combined batches."
+  },
+  "visual_verification": {
+    "platform": "macOS-14.7.2-arm64-arm-64bit-Mach-O",
+    "host": "normal",
+    "logical_size": [
+      1280,
+      820
+    ],
+    "scale": 1,
+    "requested_backend": "metal",
+    "actual_adapter_metadata": "not exported by renderer",
+    "menus": "closed",
+    "reference": "Retained city-dob.gif supplies Field-prefix/source/grid layout only. No native current Ribbon, Totals-menu, dark-theme or German reference capture is supplied.",
+    "render_report": {
+      "path": ".cache/ui-previews/query-design-aliases/metal-headless/render-results.json",
+      "sha256": "3c359cbe33753f1644e20b3929e7b677a0161d7926cc43621eccda937a80a973",
+      "bytes": 11890
+    },
+    "binary_sha256": "2c57a108384474e1a8025816b4ae53260cc9dcf437a5d866d6d48bcecc751942",
+    "frames": [
+      {
+        "locale": "en-US",
+        "theme": "light",
+        "artifact": ".cache/ui-previews/query-design-aliases/metal-headless/en-US-light-query-design-totals.png",
+        "artifact_sha256": "41b75076c5bf38323bfecbbe98efbb1313147108bc5973fdd47b098218a4ae10",
+        "log": ".cache/ui-previews/query-design-aliases/metal-headless/en-US-light-render.log",
+        "log_sha256": "e8587c6d7d001b81c6b4cd2532a359c6c6ae1e10e51c363771742c3e1dd16e57",
+        "pixel_size": [
+          1280,
+          820
+        ],
+        "directly_viewed": true,
+        "observations": [
+          "Explicit CustomerCount: CustomerID prefix is visible in the Field row without changing the separate Customers Table identity.",
+          "Normal-host contextual Ribbon, source card, splitter, ruled grid and Group By/Count/Where rows fit the 1280 x 820 frame; the scrollable source card partially clips its last field.",
+          "Field, role and criteria text remain readable in this locale and theme; Where Show and sorting controls remain disabled.",
+          "Menus are closed in this frame; Escape, resource rejection and save-refresh behavior are covered by separate headless interaction tests, not this image."
+        ]
+      },
+      {
+        "locale": "en-US",
+        "theme": "dark",
+        "artifact": ".cache/ui-previews/query-design-aliases/metal-headless/en-US-dark-query-design-totals.png",
+        "artifact_sha256": "ab809b954a5afa4f1ac47a70876a52105d7f1c0608e8021ac7cda13f457f9373",
+        "log": ".cache/ui-previews/query-design-aliases/metal-headless/en-US-dark-render.log",
+        "log_sha256": "6a35582bb4f406e3ac87aa331c3fe3a337dffa2856ca76c78c475fdc4125a80a",
+        "pixel_size": [
+          1280,
+          820
+        ],
+        "directly_viewed": true,
+        "observations": [
+          "Explicit CustomerCount: CustomerID prefix is visible in the Field row without changing the separate Customers Table identity.",
+          "Normal-host contextual Ribbon, source card, splitter, ruled grid and Group By/Count/Where rows fit the 1280 x 820 frame; the scrollable source card partially clips its last field.",
+          "Field, role and criteria text remain readable in this locale and theme; Where Show and sorting controls remain disabled.",
+          "Menus are closed in this frame; Escape, resource rejection and save-refresh behavior are covered by separate headless interaction tests, not this image."
+        ]
+      },
+      {
+        "locale": "de",
+        "theme": "light",
+        "artifact": ".cache/ui-previews/query-design-aliases/metal-headless/de-light-query-design-totals.png",
+        "artifact_sha256": "b60c37bc246cb261c21309977001102a22bfd271ae8fa7308aef3c35a9459dd6",
+        "log": ".cache/ui-previews/query-design-aliases/metal-headless/de-light-render.log",
+        "log_sha256": "3d8f29f564dbaaef3b2a3852396fd270985c1f2bccd85740449dfe5d6e704b37",
+        "pixel_size": [
+          1280,
+          820
+        ],
+        "directly_viewed": true,
+        "observations": [
+          "Explicit CustomerCount: CustomerID prefix is visible in the Field row without changing the separate Customers Table identity.",
+          "Normal-host contextual Ribbon, source card, splitter, ruled grid and Group By/Count/Where rows fit the 1280 x 820 frame; the scrollable source card partially clips its last field.",
+          "Field, role and criteria text remain readable in this locale and theme; Where Show and sorting controls remain disabled.",
+          "Menus are closed in this frame; Escape, resource rejection and save-refresh behavior are covered by separate headless interaction tests, not this image."
+        ]
+      },
+      {
+        "locale": "de",
+        "theme": "dark",
+        "artifact": ".cache/ui-previews/query-design-aliases/metal-headless/de-dark-query-design-totals.png",
+        "artifact_sha256": "f492c68450be576f3625a840db2d2f6fe554db41b3c4e0f8ddf19de7c411c9da",
+        "log": ".cache/ui-previews/query-design-aliases/metal-headless/de-dark-render.log",
+        "log_sha256": "24727fd81b9efc4a3b2b52dbf8637ff10ef65be5ff5671afe398c296da09f9ec",
+        "pixel_size": [
+          1280,
+          820
+        ],
+        "directly_viewed": true,
+        "observations": [
+          "Explicit CustomerCount: CustomerID prefix is visible in the Field row without changing the separate Customers Table identity.",
+          "Normal-host contextual Ribbon, source card, splitter, ruled grid and Group By/Count/Where rows fit the 1280 x 820 frame; the scrollable source card partially clips its last field.",
+          "Field, role and criteria text remain readable in this locale and theme; Where Show and sorting controls remain disabled.",
+          "Menus are closed in this frame; Escape, resource rejection and save-refresh behavior are covered by separate headless interaction tests, not this image."
+        ]
+      }
+    ]
+  },
+  "remaining": [
+    "Native QueryDef creation, Save As, rename and drop lifecycle remain unfinished. Existing expression replacement does not grant new-object authority.",
+    "Full QBE conversion/default-heading and Totals-off behavior, full Access SQL semantics and first-class per-profile CRUD remain ongoing.",
+    "Native Windows/Access comparison is deferred; this checkpoint does not substitute for it."
+  ],
+  "artifact_pins": [
+    {
+      "path": ".cache/ace-sql-qbe-alias-boundaries-20261113.log",
+      "sha256": "0550e0f35860c6b24c4aa1e52b57bcd7b8a01555414ce715a2168995381230b0",
+      "bytes": 56
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-connected-batch-20261112.py",
+      "sha256": "938a1f4f121da39236c794acab42e361441d78e6aae3215c12b67a3da0acecbc",
+      "bytes": 3060
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-connected-results-20261112.json",
+      "sha256": "8d8bfa8c58aeb0ebedf4622997b3a1cf4822c169a6221600593652fa8d6bc42a",
+      "bytes": 762
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-connected-strict-20261112.log",
+      "sha256": "3006de1ad50a1958f4cc125498457021959ed23c6c58d93027a6bd9cf3c73e12",
+      "bytes": 14344
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-diff-20261113.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-final-batch-20261113.py",
+      "sha256": "e8c995ea846b85c87a8dd61226053ab2e90ab7c82b598604ab2a4f04a30d4bb3",
+      "bytes": 2651
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-final-results-20261112.json",
+      "sha256": "b4fdd7b94dc9ee702d830b0c1a7c4fe663a594ae4dbd9e69b736cc00e1447087",
+      "bytes": 756
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-final-strict-20261112.log",
+      "sha256": "a05c0a737e51b28966c8d11823c71f4de58b8c729fd52eee425f416c961898d6",
+      "bytes": 2056
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-format-20261113.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-layout-20261113.log",
+      "sha256": "e4495a784bb5b2430d358e84c0b08910bbade659dc50ff7df49d8a3236451954",
+      "bytes": 65
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-links-20261113.log",
+      "sha256": "0ca385a86dda6841ed886815bcb27eac8c0754422600dcd0ea0a727d14080554",
+      "bytes": 53
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-owner-check-20261112.log",
+      "sha256": "76f27f326e0fccc1fe9e21d44818975be86e61ac666605c844e013a523eda9f3",
+      "bytes": 2737
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-preview/metal-headless-runner.log",
+      "sha256": "b016f7a860416f1cc358d900c57665bad494ec258579a1f26300f21c2c66d013",
+      "bytes": 9290
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-preview/render.py",
+      "sha256": "ed7c43d872eff1bd73898837f6b1bb7c8b9e76fde9109e77a81fdbef193d4c18",
+      "bytes": 7683
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-qualified-batch-20261113.py",
+      "sha256": "f6fbd1f57f5c49516f61cad7e4ebd54778ba80bf1434df819c57457a9ed87cc2",
+      "bytes": 2659
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-qualified-desktop-20261112.log",
+      "sha256": "4144495b80607dd9758c3987a3943730db0f08157146746086aff188710c7838",
+      "bytes": 14856
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-qualified-renderer-20261112.log",
+      "sha256": "7d58ca6a537711031cf0570e0c5290251e7625c879fa7f8846f5c82faf752533",
+      "bytes": 177
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-qualified-results-20261112.json",
+      "sha256": "3cf14214595a3bd97bd2bdb3fe22e892f2a4b45fbbdb31b951e4f7b2794bba46",
+      "bytes": 2989
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-qualified-rustdoc-20261112.log",
+      "sha256": "8cf4110254546419875f5b2f2c6ef62b1d6a81202145a45b766b5e572a4bbd4e",
+      "bytes": 293
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-qualified-strict-20261112.log",
+      "sha256": "65cafa1083d2b695b844d1ce06c597d45cbcd41a100b5e9b4fdc2c9307e38d8a",
+      "bytes": 285
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-qualified-ui-20261112.log",
+      "sha256": "cd493eb80edf995d107aa3a419b053e4e106a864911f25bd7500835844ae58d0",
+      "bytes": 12328
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-repaired-batch-20261112.py",
+      "sha256": "8f5c68e047268dea619231e77b45988351b1595277060de57458d3af6c058ae8",
+      "bytes": 3058
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-repaired-builders-20261112.log",
+      "sha256": "caf2f3c75c6a44d4eff6832112222414147c679e568db8c51e45123f527bc6bd",
+      "bytes": 7261
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-repaired-desktop-20261112.log",
+      "sha256": "8dfbfef0b537ea0d3d8e647c30d3f7d91efdc4041fbf455fb27d0db1c8d0a3d3",
+      "bytes": 25987
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-repaired-mcp-20261112.log",
+      "sha256": "9c9ac4f3e520b151c13ed4abd825179fed77f48b5406e28b716df5e3aafdff56",
+      "bytes": 12191
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-repaired-renderer-20261112.log",
+      "sha256": "2d5481c24e3578f87dca866f6fd7ff6c53d47dfde62da5ffdb68c6efd42ae249",
+      "bytes": 177
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-repaired-results-20261112.json",
+      "sha256": "6e8fe2408b293c8668a924252846c654c9a9ab5823da4f12ead18cf4cebfe354",
+      "bytes": 4648
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-repaired-runtime-20261112.log",
+      "sha256": "7aed077ab634f626e98a6579525d3ade01df20b8362b8587ade8a511f83b3b0f",
+      "bytes": 60695
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-repaired-runtime-minimal-20261112.log",
+      "sha256": "34e00f6b82e13f0876546e6814fb15bb030eaed175704ed4053fd0130e357240",
+      "bytes": 3962
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-repaired-rustdoc-20261112.log",
+      "sha256": "01a3dca1d9d064efe2bad6b01269f39a275519fea05656d35b2c71fd31b6a31d",
+      "bytes": 3365
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-repaired-sql-20261112.log",
+      "sha256": "6fdc3b26b5cb688fe06bd4a269e8db320a824737a5ff59a69da49bb57003c1e0",
+      "bytes": 11048
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-repaired-strict-20261112.log",
+      "sha256": "65911c81512d1ee045e228d81c1ed0eb37d52099589e495481c9b28648620b74",
+      "bytes": 1715
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-repaired-ui-20261112.log",
+      "sha256": "b1e951e4603ef6b97d080df1edd5ecddc2bdb0c1a170c0e261eb47205197992e",
+      "bytes": 19781
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-repository-guards-20261113.json",
+      "sha256": "8d43023e14e809728992fefaa1ea51ee3d328ae480a0aa5c49bab4a4fbbcda03",
+      "bytes": 4326
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-verified-batch-20261113.py",
+      "sha256": "75c5675fec510385d0463462a3364196f47eb36b0e7fc22008bf5a0ec48b098d",
+      "bytes": 2657
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-verified-desktop-20261112.log",
+      "sha256": "3589fa9138e74185ffe0c34dec2eefb006220f1662273f7e9ba1f6a26e511ad7",
+      "bytes": 15636
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-verified-renderer-20261112.log",
+      "sha256": "86d0d7b77b77b1122412edfd63bab026e950e9f212810da9e34e59a41d7393f1",
+      "bytes": 177
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-verified-results-20261112.json",
+      "sha256": "23d4ca6f882905cd76a357172c57494e01300e78dc1f18c67c9995a800d89299",
+      "bytes": 2985
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-verified-rustdoc-20261112.log",
+      "sha256": "fac6e649379942caf89fb3790c4e1aaa2b44e7334f60c66d749a937cc9ea1b9f",
+      "bytes": 293
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-verified-strict-20261112.log",
+      "sha256": "a2e80cf8b009c7b648a312ae8fb1e268316ee6afb478220ce57fc552caeb31e1",
+      "bytes": 285
+    },
+    {
+      "path": ".cache/ace-sql-qbe-alias-verified-ui-20261112.log",
+      "sha256": "ce76d52bafc06f82321fda1edfa63360a81f96ad5ac40147d3d308dbb3b61cef",
+      "bytes": 12328
+    },
+    {
+      "path": ".cache/ui-previews/query-design-aliases/metal-headless/de-dark-query-design-totals.png",
+      "sha256": "f492c68450be576f3625a840db2d2f6fe554db41b3c4e0f8ddf19de7c411c9da",
+      "bytes": 156616
+    },
+    {
+      "path": ".cache/ui-previews/query-design-aliases/metal-headless/de-dark-render.log",
+      "sha256": "24727fd81b9efc4a3b2b52dbf8637ff10ef65be5ff5671afe398c296da09f9ec",
+      "bytes": 131
+    },
+    {
+      "path": ".cache/ui-previews/query-design-aliases/metal-headless/de-light-query-design-totals.png",
+      "sha256": "b60c37bc246cb261c21309977001102a22bfd271ae8fa7308aef3c35a9459dd6",
+      "bytes": 157937
+    },
+    {
+      "path": ".cache/ui-previews/query-design-aliases/metal-headless/de-light-render.log",
+      "sha256": "3d8f29f564dbaaef3b2a3852396fd270985c1f2bccd85740449dfe5d6e704b37",
+      "bytes": 132
+    },
+    {
+      "path": ".cache/ui-previews/query-design-aliases/metal-headless/en-US-dark-query-design-totals.png",
+      "sha256": "ab809b954a5afa4f1ac47a70876a52105d7f1c0608e8021ac7cda13f457f9373",
+      "bytes": 140828
+    },
+    {
+      "path": ".cache/ui-previews/query-design-aliases/metal-headless/en-US-dark-render.log",
+      "sha256": "6a35582bb4f406e3ac87aa331c3fe3a337dffa2856ca76c78c475fdc4125a80a",
+      "bytes": 134
+    },
+    {
+      "path": ".cache/ui-previews/query-design-aliases/metal-headless/en-US-light-query-design-totals.png",
+      "sha256": "41b75076c5bf38323bfecbbe98efbb1313147108bc5973fdd47b098218a4ae10",
+      "bytes": 141487
+    },
+    {
+      "path": ".cache/ui-previews/query-design-aliases/metal-headless/en-US-light-render.log",
+      "sha256": "e8587c6d7d001b81c6b4cd2532a359c6c6ae1e10e51c363771742c3e1dd16e57",
+      "bytes": 135
+    },
+    {
+      "path": ".cache/ui-previews/query-design-aliases/metal-headless/render-results.json",
+      "sha256": "3c359cbe33753f1644e20b3929e7b677a0161d7926cc43621eccda937a80a973",
+      "bytes": 11890
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace.rs",
+      "sha256": "cdb2c982d24ee57d3a536a7d7f5d0311c7c9269ea1655f8fae6de46a8679012f",
+      "bytes": 83743
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/editing.rs",
+      "sha256": "60e517750646739af324bb186239d02b0057c18bb3b4e1ef542d9da191d3e340",
+      "bytes": 36855
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/query_design/tests.rs",
+      "sha256": "2749c1999cb7612fdb8a0fb1174726002c285b1d421e1577166f7562bfafe6ce",
+      "bytes": 13613
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/query_design/tests/aliases.rs",
+      "sha256": "39fbda44752fcb84c2088dea75410f27ea60c8272172c573aa256ab2145d2adb",
+      "bytes": 8853
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/table_drafts.rs",
+      "sha256": "04065d07b1066c2ff5b8db2d69d00931ec54f355f040c75d928cf94f912f54b7",
+      "bytes": 5353
+    },
+    {
+      "path": "apps/tablecraft-mcp/src/session/query_design.rs",
+      "sha256": "56214cd6420d650865f9b3fe8396e2d25e2616dc5e998070937c82186c529e1e",
+      "bytes": 15428
+    },
+    {
+      "path": "apps/tablecraft-mcp/src/session/query_design/alias_tests.rs",
+      "sha256": "aeefd5af381ff2e455ed63cd736b0375595e6462b5b09f02dba4f074d6378fa6",
+      "bytes": 2005
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/tests/query_design.rs",
+      "sha256": "2798c27dfe7ea894ad15dd3362b839b56978fc98ad838767de3443303a15ef6b",
+      "bytes": 7333
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/tests/query_design/aliases.rs",
+      "sha256": "99415a5bad290284b480c163421ccf6f6f4297ce30fffbeaeca675c241445fae",
+      "bytes": 5422
+    },
+    {
+      "path": "crates/presentation/tablecraft-builders/src/query.rs",
+      "sha256": "6f43086a505ce06f05fba25039550d3a4580913db67b306413a095cbc4a374e2",
+      "bytes": 1689
+    },
+    {
+      "path": "crates/presentation/tablecraft-builders/src/query/field_cell.rs",
+      "sha256": "35beddbf96cea74d7e1f2208d5e58cdc6f71711976ecc90dfb28da7c9238130d",
+      "bytes": 7227
+    },
+    {
+      "path": "crates/presentation/tablecraft-builders/src/query/field_cell/tests.rs",
+      "sha256": "13572f8d4cedfe4fba13592ae58ff6c122613162b5a2a87b2ca356313d003294",
+      "bytes": 5126
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/content/tabs.rs",
+      "sha256": "e86f3bf0f95a68768566280dc534de14cc360f1d304001d34387df38f70bdf7c",
+      "bytes": 14438
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/objects.rs",
+      "sha256": "816a3ee4aaba4cbce0641e49ff704bbf528fb2cc3fb5ba64a4c0b0cf8b0d4376",
+      "bytes": 35696
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/objects/query_design_inputs.rs",
+      "sha256": "aa113f904e7079de7e849e73da58d352172312c36f4e378e736f15de53ae4c0f",
+      "bytes": 2738
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/objects/session.rs",
+      "sha256": "e274a989cf6ba2939bd0229faa249c53c2240f76fde5a3e56d590cd297dfdd0c",
+      "bytes": 5801
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/objects/shortcuts.rs",
+      "sha256": "998ae8391a01568a33e3557e272b81f82b711fc49100cd7560e5b873befe030b",
+      "bytes": 3933
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_design.rs",
+      "sha256": "5bee61a5987eb1726c7b8141954ecadab4646a059b1d2252e6c57976956a1dbf",
+      "bytes": 20398
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_design/field_inputs.rs",
+      "sha256": "24853a6339fff3cc9aa59ee4951cd6d087d666dceaf87856e7ec0485078f68c2",
+      "bytes": 9943
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_design/field_inputs/state.rs",
+      "sha256": "aebc738afa4ca86304d4a877d8a29c3b05b7338b280cedee3c1e4ac264882837",
+      "bytes": 957
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_design/field_inputs/tests.rs",
+      "sha256": "dcf1ca7d2ef82561d2b654cf445961ea1de8d38aea0dfc5c63de37ae37887078",
+      "bytes": 8626
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_design/field_inputs/tests/limits.rs",
+      "sha256": "a7cd6b237a2bb097df5f35c3e72bda96175eac047269f9ce6a9a18647bc2174e",
+      "bytes": 3767
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_design/grid.rs",
+      "sha256": "47f565525f64b449aa5999c77bf5e4fb1c14d9ab710f1fb679140334d6d13cc5",
+      "bytes": 17738
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_design/grid/field.rs",
+      "sha256": "13f2ce96abd8dd382639f843930016dc8b809f4bb77ac78fdfa6f4a15d6904e1",
+      "bytes": 9897
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_design/grid/tests.rs",
+      "sha256": "b9cfc3ab146ec3f0ca5090304b1a4181d81b4bfa40242ff06a9cfcc540dd0138",
+      "bytes": 12863
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_design/parameters.rs",
+      "sha256": "598780dcf77c88bd89fe461bfdb94d9a389fd92610b11dc89c13649eeccaf9dc",
+      "bytes": 1869
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_design/preferences.rs",
+      "sha256": "b930c7e949587ec7f40f7ae3d1005289655b8d57df17e7d0824fb5c55558dc0c",
+      "bytes": 1546
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_design/rebind_memory.rs",
+      "sha256": "3e1f109f989bcccd1187aad5493faf4f6bdc4d6b8fbc87cc9d418d4a9360dfd0",
+      "bytes": 564
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_design/render.rs",
+      "sha256": "99b7036f24994252b451431741a844f019e2266fca767c6f5fcd777bf5514840",
+      "bytes": 4152
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_design/retention.rs",
+      "sha256": "e8487ed65438c1e534ce97e2239f51affb19721c7690a9ad8b4c3f2fd71324a0",
+      "bytes": 3214
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/query_design/sources.rs",
+      "sha256": "ce312cf499718205c63291227c68518d6ffcd3d1f2abf4366f9185124068c574",
+      "bytes": 16124
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/updates/restart.rs",
+      "sha256": "f4c16baf4e5a049e96aa17e641dcd6d93d46ccde604eb5b862259fa6dee97d2f",
+      "bytes": 2408
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/lib.rs",
+      "sha256": "64380e8e0937d733342f8c6472d86aef35c2893e2c2efb00cf698188acd0d993",
+      "bytes": 873
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/parser.rs",
+      "sha256": "c7177514d3fd0747b8b9ed0076fc23b84d22e96e411230ef5955a8e3290ca35b",
+      "bytes": 5333
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/parser/qbe.rs",
+      "sha256": "1f2df5dd142568ff27174343cb73754a6dc465445aee15c13f6d361e441ac37c",
+      "bytes": 3778
+    },
+    {
+      "path": "crates/query/tablecraft-sql/src/parser/qbe/tests.rs",
+      "sha256": "14b5a90f5fdab8c62b2ddbac52abedecee7e45deab5dce34cbeb8ee17558ee7f",
+      "bytes": 1589
+    },
+    {
+      "path": "locales/de/query-design.ftl",
+      "sha256": "6aafb021a0ba780911f6925108e4732767ae16c3993bfe7e025ad6382afe274a",
+      "bytes": 2994
+    },
+    {
+      "path": "locales/en-US/query-design.ftl",
+      "sha256": "b790732c552aabe8e841e9ca354c7a3be27aa6b7f369856c851e98c80cacaea9",
+      "bytes": 2547
+    },
+    {
+      "path": "locales/es/query-design.ftl",
+      "sha256": "d5c1db7102f4313cd758478bc87310a0119339b74789ea25ebafdb8b42e23747",
+      "bytes": 2799
+    },
+    {
+      "path": "locales/ja/query-design.ftl",
+      "sha256": "f3d2e054d0fbdf7b09e882dae94503e0652259f4d2a75ee4165e9ae68597b1b1",
+      "bytes": 3106
+    },
+    {
+      "path": "locales/ko/query-design.ftl",
+      "sha256": "ccdd100e5d9d8279afb00c3bcee4ea1fec03d7db0644fc3fd6baaf7eebaff9e1",
+      "bytes": 2935
+    },
+    {
+      "path": "locales/pt-BR/query-design.ftl",
+      "sha256": "6b8297c9355b95be346aca7b675843cf38ca36bd25465f8eff07310b63709389",
+      "bytes": 2865
+    },
+    {
+      "path": "locales/ru/query-design.ftl",
+      "sha256": "d7c3ec4b55a49b3e3902a8d93b47b93b9aa7c2bff1091f3864e768eb59718db4",
+      "bytes": 4150
+    },
+    {
+      "path": "locales/zh-CN/query-design.ftl",
+      "sha256": "d729a27ef3851148aac5907232ec501df8f1181f8e4fec07fa15900772eae811",
+      "bytes": 2504
+    }
+  ],
+  "repository_guards": [
+    {
+      "job": "layout",
+      "command": [
+        "python3",
+        "scripts/check_rust_layout.py"
+      ],
+      "returncode": 0,
+      "artifact": {
+        "path": ".cache/ace-sql-qbe-alias-layout-20261113.log",
+        "sha256": "e4495a784bb5b2430d358e84c0b08910bbade659dc50ff7df49d8a3236451954",
+        "bytes": 65
+      }
+    },
+    {
+      "job": "boundaries",
+      "command": [
+        "python3",
+        "scripts/check_dependency_boundaries.py"
+      ],
+      "returncode": 0,
+      "artifact": {
+        "path": ".cache/ace-sql-qbe-alias-boundaries-20261113.log",
+        "sha256": "0550e0f35860c6b24c4aa1e52b57bcd7b8a01555414ce715a2168995381230b0",
+        "bytes": 56
+      }
+    },
+    {
+      "job": "links",
+      "command": [
+        "python3",
+        "scripts/check_documentation_links.py"
+      ],
+      "returncode": 0,
+      "artifact": {
+        "path": ".cache/ace-sql-qbe-alias-links-20261113.log",
+        "sha256": "0ca385a86dda6841ed886815bcb27eac8c0754422600dcd0ea0a727d14080554",
+        "bytes": 53
+      }
+    },
+    {
+      "job": "format",
+      "command": [
+        "rustfmt",
+        "--check",
+        "--edition",
+        "2024",
+        "--config",
+        "skip_children=true",
+        "apps/tablecraft-desktop/src/workspace.rs",
+        "apps/tablecraft-desktop/src/workspace/editing.rs",
+        "apps/tablecraft-desktop/src/workspace/query_design/tests.rs",
+        "apps/tablecraft-desktop/src/workspace/query_design/tests/aliases.rs",
+        "apps/tablecraft-desktop/src/workspace/table_drafts.rs",
+        "apps/tablecraft-mcp/src/session/query_design.rs",
+        "apps/tablecraft-mcp/src/session/query_design/alias_tests.rs",
+        "crates/application/tablecraft-runtime/src/tests/query_design.rs",
+        "crates/application/tablecraft-runtime/src/tests/query_design/aliases.rs",
+        "crates/presentation/tablecraft-builders/src/query.rs",
+        "crates/presentation/tablecraft-builders/src/query/field_cell.rs",
+        "crates/presentation/tablecraft-builders/src/query/field_cell/tests.rs",
+        "crates/presentation/tablecraft-ui/src/workspace/content/tabs.rs",
+        "crates/presentation/tablecraft-ui/src/workspace/objects.rs",
+        "crates/presentation/tablecraft-ui/src/workspace/objects/query_design_inputs.rs",
+        "crates/presentation/tablecraft-ui/src/workspace/objects/session.rs",
+        "crates/presentation/tablecraft-ui/src/workspace/objects/shortcuts.rs",
+        "crates/presentation/tablecraft-ui/src/workspace/query_design.rs",
+        "crates/presentation/tablecraft-ui/src/workspace/query_design/field_inputs.rs",
+        "crates/presentation/tablecraft-ui/src/workspace/query_design/field_inputs/state.rs",
+        "crates/presentation/tablecraft-ui/src/workspace/query_design/field_inputs/tests.rs",
+        "crates/presentation/tablecraft-ui/src/workspace/query_design/field_inputs/tests/limits.rs",
+        "crates/presentation/tablecraft-ui/src/workspace/query_design/grid.rs",
+        "crates/presentation/tablecraft-ui/src/workspace/query_design/grid/field.rs",
+        "crates/presentation/tablecraft-ui/src/workspace/query_design/grid/tests.rs",
+        "crates/presentation/tablecraft-ui/src/workspace/query_design/parameters.rs",
+        "crates/presentation/tablecraft-ui/src/workspace/query_design/preferences.rs",
+        "crates/presentation/tablecraft-ui/src/workspace/query_design/rebind_memory.rs",
+        "crates/presentation/tablecraft-ui/src/workspace/query_design/render.rs",
+        "crates/presentation/tablecraft-ui/src/workspace/query_design/retention.rs",
+        "crates/presentation/tablecraft-ui/src/workspace/query_design/sources.rs",
+        "crates/presentation/tablecraft-ui/src/workspace/updates/restart.rs",
+        "crates/query/tablecraft-sql/src/lib.rs",
+        "crates/query/tablecraft-sql/src/parser.rs",
+        "crates/query/tablecraft-sql/src/parser/qbe.rs",
+        "crates/query/tablecraft-sql/src/parser/qbe/tests.rs"
+      ],
+      "returncode": 0,
+      "artifact": {
+        "path": ".cache/ace-sql-qbe-alias-format-20261113.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "job": "diff",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "returncode": 0,
+      "artifact": {
+        "path": ".cache/ace-sql-qbe-alias-diff-20261113.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    }
+  ]
+}

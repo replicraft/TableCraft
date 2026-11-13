@@ -78,7 +78,11 @@ Import, inspected prompts and explicit Design Run. The
 records local Runtime/Desktop/MCP execution and headless presentation separately
 from native Access behavior. Unsafe cross-phase alternatives, some Totals-off
 transitions, general visual SQL authoring and native saved definitions remain
-incomplete. Field-row alias presentation also needs its recorded correction.
+incomplete. The later
+[Field-authoring checkpoint](../../tests/results/queries/qbe-field-authoring-workflows-2026-11-13.json)
+qualifies visible alias prefixes, retained unfinished input and consuming
+execution/save-refresh guards through local tests and offscreen inspection.
+QBE colon-prefix editing does not expand executable SELECT grammar.
 
 ## Evidence required for a completed row
 

@@ -18,9 +18,11 @@ The later alias-editor correction uses the Field-prefix spelling visible in the
 same retained `city-dob.gif` image (`Name: expression`). The parser/builders own
 prefix quoting and operand syntax. Raw-input retention, explicit Cancel and the
 temporary finish-or-Cancel close restriction are current editor behavior, not
-observations supplied by those reference images. Updated alias-editor offscreen
-frames and headless qualification are pending; the earlier missing-prefix frame
-remains historical evidence.
+observations supplied by those reference images. The
+[13 November field-authoring checkpoint](../../tests/results/queries/qbe-field-authoring-workflows-2026-11-13.json)
+records four directly viewed English/German light/dark normal-host frames at
+1280 × 820/1× on macOS 14.7.2 ARM64. The alias prefix is visible and readable;
+menus remain closed. The earlier missing-prefix frame remains historical evidence.
 
 The initial shared desktop presentation is being corrected against three retained
 screenshots under private `docs/temp/Access Sample/`. They are local reference

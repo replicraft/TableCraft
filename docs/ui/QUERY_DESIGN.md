@@ -145,9 +145,12 @@ cancelling it. Parked edits also block application restart. This is a temporary
 editor restriction; native dirty-query, Save and Save As workflows remain
 unfinished. It is not a claim about Access's close behavior.
 
-The alias/raw-input implementation is integrated. Its new headless checks and
-updated offscreen frames are pending qualification; the earlier Totals receipt
-above does not qualify these changes.
+The [field-authoring checkpoint](../../tests/results/queries/qbe-field-authoring-workflows-2026-11-13.json)
+records real Field typing, parser-limit refusal, focus/Cancel ownership, stale
+action rejection, parked input and acknowledged native-save/fresh-reopen
+preservation. It also pins four directly viewed English/German light/dark
+normal-host frames. These local observations are separate from native
+Windows/Access behavior and do not complete saved-query creation or Save As.
 
 ## Keyboard flow
 
