@@ -1,8 +1,8 @@
 # Native QueryDef construction
 
 The engine can construct and independently check a new native constant SELECT.
-This is a storage candidate, separate from normal query Save/Save As, recoverable
-originals and application write authority. Those integration layers remain in
+The Access adapter and Runtime now compose that constructor with a distinct
+recoverable original and reviewed save service. GUI Save/Save As remains in
 development. Existing TCQE expression replacement keeps its own admission.
 
 ## Declaration and source
@@ -56,6 +56,40 @@ every new cell, checks complete offsets, NULL spans, fixed padding, unused mask
 bits, preferred Short Text and exact inline Memo scope. It rereads the new query
 and checks every old byte outside the precise append/count changes. Independent
 raw builders separately supply complete BEFORE/AFTER images.
+
+## Recovery and application services
+
+`NativeImage::plan_recoverable_query_creation` returns a sealed plan containing
+the complete image pair and a `TCQC0001` semantic original. The original retains
+the destination, alias, literal, captured DATE, allocated identity and complete
+source binding. Its decoder validates the entire frame before allocating names.
+Fresh recovery reconstructs the candidate from the original source and compares
+the complete AFTER; it does not replay SQL or consult a clock.
+
+This operation selects the checked V3 image protocol. The existing host journal
+bundle durably pairs the encoded original with that image journal; a raw V3
+journal does not itself contain the semantic original. Journal-only builds
+recognize its data but refuse unavailable native construction. Other action
+families and versions are never fallback decoders.
+
+The adapter's `prepare_saved_query_creation` accepts the owned SQL model and
+explicit destination/date facts. It admits the constant declaration above,
+formats through the shared SQL owner and reconstructs the complete native model
+before returning a plan. Exclusive offline staging repeats source qualification
+and full-image proof. Successful publication reports `QueryChange::Created`,
+without schema changes or affected-row counts.
+
+Runtime separates `ReviewQueryCreation`, which saves supplied authored SQL, from
+`ReviewStoredQueryCopy`, which copies the actual stored definition. Authored
+requests may bind an exact saved-query source identity and draft revision; dirty
+Save As must use that route. Review captures the injected clock once. The save
+worker consumes the nominal capability, and `OpenQueryCreated` checks the complete
+saved image and actual new query identity before publishing a fresh catalog.
+Save, recovery and reopen do not resample the clock or execute the query.
+
+The service integration has focused recovery and real-worker acceptance tests;
+its combined release verification is pending. The construction checkpoint below
+predates these layers and does not qualify them or supply a GUI persistence claim.
 
 ## Local qualification
 
