@@ -6,7 +6,7 @@ impl State {
     pub(in crate::workspace) fn query_design_close_stamp(
         &self,
         tab: &ObjectTab,
-    ) -> Option<(u64, u64)> {
+    ) -> Option<(u64, Option<u64>)> {
         if self.database.as_ref()?.document_revision != tab.target.document_revision
             || !self.objects.entries.iter().any(|entry| entry.tab == *tab)
         {
@@ -18,7 +18,15 @@ impl State {
                 ObjectKind::SavedQuery { .. } => self.saved_query.sql.as_ref()?.revision(),
                 _ => return None,
             };
-            return Some((text, self.query_design.revision()?));
+            let (result, sql) = if self.saved_query.active {
+                (
+                    &self.saved_query.design_result,
+                    self.saved_query.sql.as_ref()?.text(),
+                )
+            } else {
+                (&self.query_result, self.sql.as_str())
+            };
+            return Some((text, self.query_design.close_revision(result, sql)));
         }
         match self
             .objects
@@ -28,10 +36,20 @@ impl State {
             .session
             .as_ref()?
         {
-            Session::Sql { design, .. } => Some((self.query_sql_revision()?, design.revision()?)),
-            Session::Saved { state, .. } => {
-                Some((state.sql.as_ref()?.revision(), state.design.revision()?))
-            }
+            Session::Sql {
+                design,
+                result_origin,
+                ..
+            } => Some((
+                self.query_sql_revision()?,
+                design.close_revision(result_origin, &self.sql),
+            )),
+            Session::Saved { state, .. } => Some((
+                state.sql.as_ref()?.revision(),
+                state
+                    .design
+                    .close_revision(&state.design_result, state.sql.as_ref()?.text()),
+            )),
             _ => None,
         }
     }
@@ -39,7 +57,7 @@ impl State {
     pub(in crate::workspace) fn modified_query_design_for(
         &self,
         tab: &ObjectTab,
-    ) -> Option<(u64, u64)> {
+    ) -> Option<(u64, Option<u64>)> {
         let stamp = self.query_design_close_stamp(tab)?;
         let dirty = if self.objects.active == Some(tab.id) {
             self.query_design.is_dirty()
@@ -57,7 +75,49 @@ impl State {
                 _ => false,
             }
         };
-        dirty.then_some(stamp)
+        (dirty && stamp.1.is_some()).then_some(stamp)
+    }
+
+    pub(in crate::workspace) fn modified_query_close_for(
+        &self,
+        tab: &ObjectTab,
+    ) -> Option<(u64, Option<u64>)> {
+        self.modified_query_design_for(tab).or_else(|| {
+            (tab.target.kind == ObjectKind::Sql && !self.sql.is_empty())
+                .then(|| self.query_design_close_stamp(tab))
+                .flatten()
+        })
+    }
+
+    /// A scratch query has no native persisted definition. Its exact empty
+    /// authoring baseline is independent of text/request freshness revisions.
+    pub fn has_unsaved_scratch_query(&self) -> bool {
+        self.objects.entries.iter().any(|entry| {
+            entry.tab.target.kind == ObjectKind::Sql
+                && self.modified_query_close_for(&entry.tab).is_some()
+        })
+    }
+
+    pub fn request_scratch_query_close(&mut self) -> bool {
+        let Some(tab) = self
+            .objects
+            .entries
+            .iter()
+            .find(|entry| {
+                entry.tab.target.kind == ObjectKind::Sql
+                    && self.modified_query_close_for(&entry.tab).is_some()
+            })
+            .map(|entry| ObjectTab {
+                id: entry.tab.id,
+                target: super::ObjectTarget {
+                    document_revision: entry.tab.target.document_revision,
+                    kind: ObjectKind::Sql,
+                },
+            })
+        else {
+            return false;
+        };
+        self.request_query_design_close(&tab)
     }
 
     pub fn has_modified_query_design(&self) -> bool {
@@ -104,7 +164,7 @@ impl State {
         request: &QueryDesignCloseRequest,
     ) -> bool {
         if self.active_object().as_ref() != Some(&request.tab)
-            || self.modified_query_design_for(&request.tab)
+            || self.modified_query_close_for(&request.tab)
                 != Some((request.text_revision, request.draft_revision))
             || self.unresolved_query_design_edits_for(&request.tab)
             || !self.object_switch_ready()

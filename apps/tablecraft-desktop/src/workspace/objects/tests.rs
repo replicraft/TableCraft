@@ -662,6 +662,13 @@ fn scratch_runs_keep_submitted_sql_with_results_across_edits_failure_cancel_and_
     );
     assert!(!harness.state().state.query_results_previous());
     harness.state_mut().close_object(sql_tab);
+    harness.run_steps(2);
+    assert!(harness.state().state.query_design_close_open());
+    assert_eq!(harness.state().state.sql, "SELECT 5 AS [Value]");
+    harness
+        .get_by_role_and_label(Role::Button, "Discard")
+        .click();
+    harness.run_steps(2);
     harness.state_mut().open_object(sql_target);
     assert!(harness.state().state.query_data.is_none());
     assert!(!harness.state().state.query_results_previous());

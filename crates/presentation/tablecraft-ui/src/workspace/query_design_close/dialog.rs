@@ -17,7 +17,7 @@ impl State {
         let Some(intent) = &self.query_design_close.intent else {
             return;
         };
-        let current = self.modified_query_design_for(&intent.request.tab)
+        let current = self.modified_query_close_for(&intent.request.tab)
             == Some((intent.text_revision, intent.draft_revision));
         let title = match &intent.request.tab.target.kind {
             crate::ObjectKind::SavedQuery { name, .. } => Cow::Borrowed(name.as_str()),

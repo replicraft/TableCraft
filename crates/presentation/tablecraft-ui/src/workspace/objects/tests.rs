@@ -199,7 +199,14 @@ fn sql_result_origin_parks_with_its_rows_and_never_restores_as_workspace_prefere
     assert_eq!(state.query_result.retained_bytes(), 0);
     let fresh = state.active_object().unwrap();
     assert_ne!(fresh.id, scratch.id);
-    assert!(state.close_object(&fresh));
+    assert!(!state.close_object(&fresh));
+    assert!(state.query_design_close_open());
+    assert_eq!(state.sql, "SELECT 2");
+    assert!(
+        state
+            .choose_query_design_close(crate::QueryDesignCloseDecision::Discard)
+            .is_some()
+    );
     let reopened = state.prepare_object_open(target).unwrap().tab;
     assert_ne!(reopened.id, fresh.id);
     assert!(state.query_data.is_none());

@@ -103,7 +103,7 @@ pub use query_creation::{
 };
 pub use query_design::{QueryDesignCompletion, QueryDesignRequest, QueryDesignTarget};
 pub use query_design_close::{
-    QueryDesignCloseDecision, QueryDesignCloseRequest, QueryDesignCloseResult,
+    QueryDesignCloseDecision, QueryDesignCloseRequest, QueryDesignCloseResult, QueryDesignCloseSave,
 };
 pub use records::RecordTarget;
 pub use recovery::RecoveryOutcome;

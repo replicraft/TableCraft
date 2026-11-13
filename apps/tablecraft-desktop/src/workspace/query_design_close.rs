@@ -1,6 +1,6 @@
 //! Exact shared Design close decisions orchestrate existing build/save services.
 use super::Desktop;
-use tablecraft_ui::{Action, QueryDesignCloseDecision, QueryDesignCloseResult};
+use tablecraft_ui::{QueryDesignCloseDecision, QueryDesignCloseResult, QueryDesignCloseSave};
 
 impl Desktop {
     pub(super) fn finish_query_design_close(
@@ -10,18 +10,19 @@ impl Desktop {
     ) {
         match result.decision {
             QueryDesignCloseDecision::Save => {
-                let Some(Action::BuildQueryDesign {
-                    request,
-                    draft,
-                    completion,
-                }) = self.state.begin_query_design_close_save(&result.request)
-                else {
-                    self.cancel_table_draft_action();
-                    return;
-                };
-                if !self.build_query_design(request, draft, completion) {
-                    self.state.cancel_query_design_close();
-                    self.cancel_table_draft_action();
+                match self.state.begin_query_design_close_save(&result.request) {
+                    Some(QueryDesignCloseSave::Build {
+                        request,
+                        draft,
+                        completion,
+                    }) => {
+                        if !self.build_query_design(request, draft, completion) {
+                            self.state.cancel_query_design_close();
+                            self.cancel_table_draft_action();
+                        }
+                    }
+                    Some(QueryDesignCloseSave::Naming) => {}
+                    None => self.cancel_table_draft_action(),
                 }
             }
             QueryDesignCloseDecision::Discard => {

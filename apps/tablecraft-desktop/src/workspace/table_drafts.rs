@@ -51,6 +51,8 @@ impl Desktop {
         let action = self.defer_field_drop_transition(action)?;
         let confirmation = if self.state.has_modified_query_design() {
             self.state.request_query_design_close_all()
+        } else if self.state.has_unsaved_scratch_query() {
+            self.state.request_scratch_query_close()
         } else if self.state.has_modified_saved_query_sql() {
             self.state.request_saved_query_sql_close_all()
         } else if self.state.has_modified_table_drafts() {
@@ -138,6 +140,7 @@ impl Desktop {
         }
         if self.state.has_modified_table_drafts()
             || self.state.has_modified_query_design()
+            || self.state.has_unsaved_scratch_query()
             || self.state.has_modified_saved_query_sql()
             || self.state.field_addition_open()
             || self.state.field_rename_open()

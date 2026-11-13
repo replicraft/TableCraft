@@ -808,3 +808,19 @@ impl QueryDesign {
         Some(self.session.as_ref()?.revision)
     }
 }
+
+impl QueryDesign {
+    pub(in crate::workspace) fn close_revision(
+        &self,
+        result: &ResultOrigin,
+        authored_sql: &str,
+    ) -> Option<u64> {
+        let session = self.session.as_ref()?;
+        // A SQL-origin datasheet can coexist with an older hidden typed draft.
+        // Only an actual Design result keeps that draft as the current close owner.
+        (session.mode == Mode::Design
+            || (session.mode == Mode::Results
+                && matches!(result, ResultOrigin::Design(sql) if sql == authored_sql)))
+        .then_some(session.revision)
+    }
+}

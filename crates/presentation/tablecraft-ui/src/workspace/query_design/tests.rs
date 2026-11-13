@@ -160,7 +160,13 @@ fn build_failure_preserves_draft_and_run_requires_exact_instance_receipt() {
     let retained_draft = state.query_design_draft().unwrap().clone();
     let layout = state.capture_workspace_layout();
     let tab = state.active_object().unwrap();
-    assert!(state.close_object(&tab));
+    assert!(!state.close_object(&tab));
+    assert!(state.query_design_close_open());
+    assert!(
+        state
+            .choose_query_design_close(crate::QueryDesignCloseDecision::Discard)
+            .is_some()
+    );
     state
         .prepare_object_open(ObjectTarget {
             document_revision: tab.target.document_revision,

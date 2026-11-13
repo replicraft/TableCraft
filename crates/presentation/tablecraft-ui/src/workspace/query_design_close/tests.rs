@@ -1,3 +1,5 @@
+mod scratch;
+
 use super::*;
 use crate::QueryDesignCompletion;
 use crate::preview::{Preview, Scene};
@@ -108,7 +110,7 @@ fn name_cancel_after_real_build_revokes_close_intent_before_a_later_ordinary_sav
     let result = state
         .choose_query_design_close(QueryDesignCloseDecision::Save)
         .unwrap();
-    let Action::BuildQueryDesign {
+    let QueryDesignCloseSave::Build {
         request,
         draft,
         completion,

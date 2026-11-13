@@ -332,6 +332,12 @@ fn cancelled_real_build_receipt_cannot_run_after_the_sql_object_is_closed_and_re
         previous_rows
     );
     harness.state_mut().close_object(old_tab.clone());
+    harness.run_steps(2);
+    assert!(harness.state().state.query_design_close_open());
+    harness
+        .get_by_role_and_label(Role::Button, "Discard")
+        .click();
+    harness.run_steps(2);
     scratch(&mut harness);
     assert_ne!(harness.state().state.active_object().unwrap(), old_tab);
     sql(&mut harness, "SELECT 77 AS [NewScratch]");

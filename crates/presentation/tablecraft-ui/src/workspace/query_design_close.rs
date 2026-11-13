@@ -3,15 +3,20 @@ mod dialog;
 #[cfg(test)]
 mod tests;
 
-use super::{Action, ObjectTab, QueryCreationSaveIdentity, SavedQuerySqlRequest, State};
+use super::{
+    Action, ObjectTab, QueryCreationSaveIdentity, QueryDesignCompletion, QueryDesignRequest,
+    SavedQuerySqlRequest, State,
+};
 use crate::workspace::objects::memory::Counter;
 use std::sync::{Arc, atomic::AtomicUsize};
+use tablecraft_builders::query::QueryDesignDraft;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct QueryDesignCloseRequest {
     pub tab: ObjectTab,
     pub text_revision: u64,
-    pub draft_revision: u64,
+    /// Some binds the current typed Design; None binds only current scratch SQL.
+    pub draft_revision: Option<u64>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -19,6 +24,16 @@ pub enum QueryDesignCloseDecision {
     Save,
     Discard,
     Cancel,
+}
+
+/// The exact next presentation step after a checked close Save choice.
+pub enum QueryDesignCloseSave {
+    Build {
+        request: QueryDesignRequest,
+        draft: Arc<QueryDesignDraft>,
+        completion: QueryDesignCompletion,
+    },
+    Naming,
 }
 
 #[derive(Debug)]
@@ -36,7 +51,7 @@ pub(super) struct Model {
 struct Intent {
     request: Arc<QueryDesignCloseRequest>,
     text_revision: u64,
-    draft_revision: u64,
+    draft_revision: Option<u64>,
     phase: Phase,
 }
 
@@ -104,7 +119,7 @@ impl State {
             self.reveal_unresolved_query_design_edits_for(tab);
             return false;
         }
-        let Some((text_revision, draft_revision)) = self.modified_query_design_for(tab) else {
+        let Some((text_revision, draft_revision)) = self.modified_query_close_for(tab) else {
             return false;
         };
         if !self.activate_object(tab) {
@@ -146,7 +161,7 @@ impl State {
             return None;
         }
         if decision != QueryDesignCloseDecision::Cancel
-            && self.modified_query_design_for(&intent.request.tab)
+            && self.modified_query_close_for(&intent.request.tab)
                 != Some((intent.text_revision, intent.draft_revision))
         {
             return None;
@@ -177,27 +192,44 @@ impl State {
     pub fn begin_query_design_close_save(
         &mut self,
         request: &QueryDesignCloseRequest,
-    ) -> Option<Action> {
+    ) -> Option<QueryDesignCloseSave> {
         let intent = self.query_design_close.intent.as_ref()?;
         if intent.phase != Phase::SaveReady
             || intent.request.as_ref() != request
-            || self.modified_query_design_for(&request.tab)
+            || self.modified_query_close_for(&request.tab)
                 != Some((intent.text_revision, intent.draft_revision))
             || self.active_object().as_ref() != Some(&request.tab)
         {
             self.cancel_query_design_close();
             return None;
         }
+        if intent.draft_revision.is_none() {
+            if !self.begin_query_creation_name() {
+                self.cancel_query_design_close();
+                return None;
+            }
+            self.query_design_close.intent.as_mut()?.phase = Phase::Naming;
+            return Some(QueryDesignCloseSave::Naming);
+        }
         let existing = matches!(
             request.tab.target.kind,
             super::ObjectKind::SavedQuery { .. }
         );
-        let Some(action) = self.query_design_save_action_for(existing) else {
+        let Some(Action::BuildQueryDesign {
+            request,
+            draft,
+            completion,
+        }) = self.query_design_save_action_for(existing)
+        else {
             self.cancel_query_design_close();
             return None;
         };
         self.query_design_close.intent.as_mut()?.phase = Phase::Building;
-        Some(action)
+        Some(QueryDesignCloseSave::Build {
+            request,
+            draft,
+            completion,
+        })
     }
 
     pub(in crate::workspace) fn query_design_close_built(
@@ -210,7 +242,7 @@ impl State {
         };
         if intent.phase != Phase::Building
             || intent.request.tab.id != tab_id
-            || intent.draft_revision != draft_revision
+            || intent.draft_revision != Some(draft_revision)
         {
             return;
         }
@@ -243,7 +275,7 @@ impl State {
         if intent.phase == Phase::Naming
             && intent.request.tab == request.tab
             && intent.text_revision == request.text_revision
-            && request.design_revision == Some(intent.draft_revision)
+            && request.design_revision == intent.draft_revision
         {
             intent.phase = Phase::Creation {
                 request_id,
@@ -337,7 +369,7 @@ impl State {
         let request = self.query_creation_save_request(identity)?;
         if request.tab != intent.request.tab
             || request.text_revision != intent.text_revision
-            || request.design_revision != Some(intent.draft_revision)
+            || request.design_revision != intent.draft_revision
         {
             return None;
         }

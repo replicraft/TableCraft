@@ -400,7 +400,7 @@ impl State {
             self.request_field_addition_close(tab);
             return false;
         }
-        if self.modified_query_design_for(tab).is_some() {
+        if self.modified_query_close_for(tab).is_some() {
             self.request_query_design_close(tab);
             return false;
         }
@@ -429,7 +429,7 @@ impl State {
     }
 
     pub(super) fn close_object_confirmed(&mut self, tab: &ObjectTab) -> bool {
-        if self.modified_query_design_for(tab).is_some() {
+        if self.modified_query_close_for(tab).is_some() {
             return false;
         }
         self.close_object_after_design_check(tab)
