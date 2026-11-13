@@ -84,6 +84,11 @@ qualifies visible alias prefixes, retained unfinished input and consuming
 execution/save-refresh guards through local tests and offscreen inspection.
 QBE colon-prefix editing does not expand executable SELECT grammar.
 
+The [native construction candidate](../access/queries/NATIVE_QUERY_CREATION.md)
+now creates and checks a constant SELECT's catalog/fragments under its explicit
+source profile. It does not yet supply normal new-query Save/Save As or widen the
+existing complete-SQL replacement route.
+
 ## Evidence required for a completed row
 
 1. Establish the Microsoft contract or recorded native behavior, including engine

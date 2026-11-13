@@ -1,0 +1,903 @@
+{
+  "date": "2026-11-13",
+  "source_commit": "581519ca3edc12a30188320dfa23ec5e577ef9f0",
+  "platform": "macOS 14.7.2 arm64",
+  "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)",
+  "qualification_status": "passed_with_explicit_fixture_and_qualification_ignores",
+  "scope": "Standalone native constant-SELECT QueryDef construction with complete independent raw images, protected-byte proof and shared framing/text regression checks; normal persistence services remain a later layer.",
+  "qualification": "Local engine, adapter, Runtime and selected headless Desktop regression evidence. No new GUI surface was changed in this checkpoint; no native window, Microsoft Access execution or Windows compatibility claim.",
+  "observations": [
+    "The source certificate qualifies actual native17/eight-column system metadata, known ancestry, empty permissions/relationships, query-only live non-system catalog objects, unindexed direct-owned selected DATA pages, all physical/map/LVAL roles and disjoint active fixed fields. It does not match fixture file lengths or page numbers.",
+    "All live catalog identities across every object kind/parent participate in duplicate checking and greatest-negative-plus-one allocation. Fragments resolve to actual catalog queries in both directions. Native Name sort metadata governs destination equality. Final -1 creation succeeds, while a fresh next creation from that actual produced image refuses.",
+    "Caller-owned destination/alias/i32 constant/LegacyDateTime facts produce one type5 catalog row and five query fragments. DateCreate and DateUpdate use the exact captured bits; no clock, SQL execution or result-type inference occurs.",
+    "A fresh AFTER capture repeats storage admission, independently decodes all new cells and validates complete framing, NULL spans, padding, mask bits, preferred Short Text and inline Memo ownership, actual saved-query metadata and every protected original byte.",
+    "Independent whole-image cases cover ASCII, accented/CJK/supplementary names, leading-FEFF escapes, signed scalar endpoints, Standard and Retained capture, repeated creation and actual non-query negative catalog identity. The raw builder calls no production encoders or allocator.",
+    "Source corruption controls include orphan fragments, duplicate identities, exhausted IDs and overlapping DateCreate/DateUpdate declarations whose old zero payloads remain readable. Input, cancellation and resource refusals yield no candidate.",
+    "Native row framing has an actual second borrowed-field consumer; existing Value callers retain fixed writer and presence semantics. Uncompressed Memo UTF16 and borrowed Short Text share representation owners without temporary request String copies. The DATA append owner moved with direct consumers and no compatibility re-export.",
+    "Two extraction-induced typed error categories were restored before qualification. Existing NULL/binary exact-span callers retain Unsupported(RowLayout); no old declaration or TCQE source language was widened.",
+    "Saved SQL review now checks cancellation, stale document revision and read-only eligibility before parsing untrusted editor text. Actual malformed/oversized stale and authenticated read-only cases preserve source bytes and create no journal.",
+    "Separate engine library builds prove the new candidate is absent without both journal and ace16-create; test-only feature unification is not used as evidence for minimal configurations."
+  ],
+  "checks": [
+    {
+      "job": "strict",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-sql",
+        "-p",
+        "tablecraft-builders",
+        "-p",
+        "tablecraft-query",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-testkit",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-runtime",
+        "-p",
+        "tablecraft-ui",
+        "-p",
+        "tablecraft-desktop",
+        "-p",
+        "tablecraft-cli",
+        "-p",
+        "tablecraft-mcp",
+        "--all-targets",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "seconds": 65.66,
+      "log": ".cache/ace-sql-query-create-repaired-strict-20261112.log",
+      "artifact": {
+        "path": ".cache/ace-sql-query-create-repaired-strict-20261112.log",
+        "sha256": "e7c1b80c7f3686e442b5bbe8c7372269b0eda78f0dbba25505d1316389f2c0fd",
+        "bytes": 962
+      },
+      "ignored_entries": []
+    },
+    {
+      "job": "native",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "creation::",
+        "queries::expression_edit",
+        "queries::fitting",
+        "table::mutation::record_insertion",
+        "table::mutation::record_serialization",
+        "table::mutation::normal_insert",
+        "table::mutation::insert",
+        "format::data_append",
+        "transaction::intent::query_expression"
+      ],
+      "returncode": 0,
+      "seconds": 145.44,
+      "log": ".cache/ace-sql-query-create-repaired-native-20261112.log",
+      "artifact": {
+        "path": ".cache/ace-sql-query-create-repaired-native-20261112.log",
+        "sha256": "016190ab2b7d0bff5d2c2f560163eca1cdd77dc114d5cc07d39352b42d9da87d",
+        "bytes": 103154
+      },
+      "tests": {
+        "passed": 664,
+        "failed": 0,
+        "ignored": 49
+      },
+      "ignored_entries": [
+        "test queries::expression_edit::tests::sdk_complete_images_qualify_projection_where_multiple_pages_and_repeated_roots ... ignored, private generated SDK full images; explicit separate gate only",
+        "test queries::fitting::tests::retained_sdk_constant_expression_matches_complete_independent_after ... ignored, requires explicit original Jackcess Constants BEFORE/AFTER fixture paths",
+        "test table::mutation::normal_insert::binary_proof_tests::binary_null_empty_and_batch_request_order_are_part_of_the_original_proof ... ignored, requires eighteen native/SDK-qualified Binary source views",
+        "test table::mutation::normal_insert::binary_proof_tests::literal_binary_plans_prove_without_producer_and_reject_raw_causal_forgeries ... ignored, requires eighteen native/SDK-qualified Binary source views",
+        "test table::mutation::normal_insert::clock::tests::literal_clock_and_no_read_outcomes_prove_and_causal_forgeries_refuse_without_stage ... ignored, requires independent clock source18 native/SDK qualification before manual proof",
+        "test table::mutation::normal_insert::complete::tests::complete_batch_exact_pools_and_recorded_cancellation_boundaries_precede_effects ... ignored, requires four literal source views with native and independent SDK qualifications",
+        "test table::mutation::normal_insert::complete::tests::fresh_direct_proof_rejects_extra_page_each_map_claim_visibility_and_protected_bytes ... ignored, requires four literal source views with native and independent SDK qualifications",
+        "test table::mutation::normal_insert::complete::tests::two_page_complete_rows_match_literal_images_and_original_tcna4_wires ... ignored, requires four literal source views with native and independent SDK qualifications",
+        "test table::mutation::normal_insert::eof::tests::direct_literal_eof_proof_rejects_map_visibility_count_null_and_protected_complement_forgeries ... ignored, requires both eight-view source native/SDK qualifications",
+        "test table::mutation::normal_insert::eof::tests::full_eof_insert_pays_exact_resource_pools_and_every_real_trace_cancellation_boundary ... ignored, requires both eight-view source native/SDK qualifications",
+        "test table::mutation::normal_insert::eof::tests::literal_batch_and_single_eof_insert_and_metadata_selection_match_independent_images ... ignored, requires both eight-view source native/SDK qualifications",
+        "test table::mutation::normal_insert::eof_sources::represented_eof_insert_sources_preserve_original_ole_and_exact_three_map_claims ... ignored, requires four pure-source represented-EOF INSERT images and SDK4 observations",
+        "test table::mutation::normal_insert::feff_tests::literal_escaped_images_pass_independent_proof_and_then_match_complete_plans ... ignored, requires six independently qualified FEFF source images",
+        "test table::mutation::normal_insert::feff_tests::readable_unescaped_alias_cannot_satisfy_the_original_feff_insert_request ... ignored, requires six independently qualified FEFF source images",
+        "test table::mutation::normal_insert::feff_tests::wide_boundary_zero_remains_a_precise_unsupported_representation ... ignored, requires six independently qualified FEFF source images",
+        "test table::mutation::normal_insert::incrementing::companion_after_sources::companion_after_sources_match_presence_counter_physical_rows_and_full_protected_complement ... ignored, requires independently modeled Increment AFTER20 and immutable qualified originals",
+        "test table::mutation::normal_insert::incrementing::companion_original_sources::existing_numbered_originals_bind_middle_generator_aliases_deleted_high_and_actual_counter_source ... ignored, requires pinned existing SDK Numbered originals; read-only Source before any new AFTER model",
+        "test table::mutation::normal_insert::incrementing::companion_sources::companion_originals_preserve_variable_fixed_and_inactive_carriers_before_generation ... ignored, requires pure authored companion BEFORE sources; no generated-row or mutation producer",
+        "test table::mutation::normal_insert::incrementing::companion_tests::literal_companion_images_prove_and_protected_bytes_counts_and_intent_refuse ... ignored, requires all independently qualified companion images; no planner or serializer",
+        "test table::mutation::normal_insert::incrementing::multi_index_sources::source_conversion_and_batch_preserve_full_source_and_all_physical_aliases ... ignored, requires four literal multi-index Increment source views; no matching producer",
+        "test table::mutation::normal_insert::incrementing::multi_index_tests::literal_batch_proof_binds_request_order_generated_ids_two_pages_and_every_alias ... ignored, requires four qualified source images; no planner/serializer/stage",
+        "test table::mutation::normal_insert::incrementing::tests::literal_increment_images_and_empty_requests_prove_from_original_presence ... ignored, requires14 independent source views; no producer/staging/serializer",
+        "test table::mutation::normal_insert::indexed::proof::optional::tests::direct_optional_proof_rejects_direction_null_history_rows_and_original_carrier_changes ... ignored, requires source native6 and SDK36 nullable/DESC INSERT qualification",
+        "test table::mutation::normal_insert::indexed::proof::optional::tests::four_literal_optional_directional_images_prove_without_insertion_stage_authority ... ignored, requires source native6 and SDK36 nullable/DESC INSERT qualification",
+        "test table::mutation::normal_insert::indexed::proof::text::azl_tests::explicit_azl_literal_proofs_preserve_property_payloads_rows_and_noop_origins ... ignored, requires14 independently qualified explicit-AZL source views",
+        "test table::mutation::normal_insert::indexed::proof::text::tests::text_insert_proof_accepts_only_literal_complete_images_and_protects_causal_bytes ... ignored, requires54 independently qualified Text cardinality source views",
+        "test table::mutation::normal_insert::indexed::proof::tree::tests::independent_node_proof_accepts_literal_growth_and_original_empty_images ... ignored, requires four source-first NODE INSERT images and native/SDK24 qualification",
+        "test table::mutation::normal_insert::indexed::proof::tree::tests::independent_node_proof_rejects_fence_row_partition_history_and_inactive_complement_changes ... ignored, requires four source-first NODE INSERT images and native/SDK24 qualification",
+        "test table::mutation::normal_insert::inline_tests::all_literal_inline_images_prove_without_a_writer_and_reject_causal_forgeries ... ignored, requires eighteen native/SDK-qualified inline LVAL views",
+        "test table::mutation::normal_insert::integral_tests::literal_integral_insert_images_prove_and_raw_carrier_history_and_count_forgeries_refuse ... ignored, requires 34 native/SDK-qualified integral source views",
+        "test table::mutation::normal_insert::multipage_sources::multipage_insert_sources_preserve_ole_and_coalesce_six_bits_in_three_map_bytes ... ignored, requires independently modeled two-page INSERT source views and full SDK qualification",
+        "test table::mutation::normal_insert::node_sources::node_insert_sources_preserve_owned_topology_and_explicit_population_partitions ... ignored, requires all four literal fitting NODE INSERT views after SDK24 closure",
+        "test table::mutation::normal_insert::omitted::date_tests::literal_date_after_images_pass_independent_proof_and_bit_mask_count_request_forgeries_fail ... ignored, requires all source36 native parser/bit/Source gates; calls no planner or serializer",
+        "test table::mutation::normal_insert::review_tests::explicit_empty_text_requires_its_real_insert_declaration ... ignored, requires all four qualified original-only INSERT source files",
+        "test table::mutation::normal_insert::review_tests::healthy_full_slot_directory_refuses_even_when_record_byte_capacity_remains ... ignored, requires all four qualified original-only INSERT source files",
+        "test table::mutation::normal_insert::review_tests::whole_batch_exhausts_original_byte_capacity_before_publishing_any_candidate ... ignored, requires all four qualified original-only INSERT source files",
+        "test table::mutation::normal_insert::root_promotions::tests::literal_wider_root_promotions_prove_without_stage_or_prepared_index_facts ... ignored, requires four independently qualified literal wider promotion AFTERs",
+        "test table::mutation::normal_insert::root_promotions::tests::manual_wider_proof_rejects_children_row_partition_history_masks_and_opaque_residuals ... ignored, requires literal wider promotion images for independent proof corruption checks",
+        "test table::mutation::normal_insert::root_split::compound::tests::literal_compound_direct_proof_rejects_data_index_map_history_and_cardinality_forgeries ... ignored, requires four full84 views through independent read/Source gates",
+        "test table::mutation::normal_insert::root_split::tests::complete_requests_match_both_literal_split_images_and_keep_original_tcna4_data ... ignored, requires four root-split source views qualified before normal producers",
+        "test table::mutation::normal_insert::root_split::tests::literal_direct_proof_rejects_wrong_children_maps_history_tails_records_and_geometry ... ignored, requires four independent root-split images; no planner supplies proof inputs",
+        "test table::mutation::normal_insert::single_eof_sources::single_eof_insert_sources_qualify_healthy_near_capacity_and_one_new_visible_row ... ignored, requires four pure-source near-capacity/single EOF INSERT views and SDK4 observations",
+        "test table::mutation::normal_insert::sparse_numeric_tests::literal_sparse_insert_images_prove_and_raw_carrier_history_and_count_forgeries_refuse ... ignored, requires source-qualified sparse, stored-ID and crossing-byte literal views",
+        "test table::mutation::normal_insert::tests::complete_original_requests_match_literal_after_and_empty_keeps_image ... ignored, requires four source-qualified genuine normal INSERT images",
+        "test table::mutation::normal_insert::tests::original_insert_exact_pools_and_cancellation_never_return_partial_plan ... ignored, requires four source-qualified genuine normal INSERT images",
+        "test table::mutation::normal_insert::tests::original_payload_metadata_null_and_count_forgeries_fail_fresh_proof ... ignored, requires four source-qualified genuine normal INSERT images",
+        "test table::mutation::normal_insert::tests::unsupported_new_lval_wide_switch_text_empty_text_and_wrong_carriers_refuse_without_plan ... ignored, requires four source-qualified genuine normal INSERT images",
+        "test table::mutation::normal_insert::wide_primary_tests::literal_wide_primary_images_use_exact_carriers_and_reject_wrong_key_or_history ... ignored, requires native and SDK-qualified fresh wide-primary literal source images",
+        "test table::mutation::normal_ordinary_sources::native17_creation::export_literal_native17_creation_sources ... ignored, explicit create-new SOURCE export; no creator or mutation producer"
+      ]
+    },
+    {
+      "job": "saved-read",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--test",
+        "saved_queries",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 1.61,
+      "log": ".cache/ace-sql-query-create-repaired-saved-read-20261112.log",
+      "artifact": {
+        "path": ".cache/ace-sql-query-create-repaired-saved-read-20261112.log",
+        "sha256": "b92aa902ba9ab49b67fc174102d76c81ff9ce6b60036140d545dc2613d9fb1f7",
+        "bytes": 820
+      },
+      "tests": {
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0
+      },
+      "ignored_entries": []
+    },
+    {
+      "job": "access",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 72.87,
+      "log": ".cache/ace-sql-query-create-repaired-access-20261112.log",
+      "artifact": {
+        "path": ".cache/ace-sql-query-create-repaired-access-20261112.log",
+        "sha256": "ff3433d16156908bfb8f3632eb025bf74304ab2e37b789243bea70f75bcc8325",
+        "bytes": 44464
+      },
+      "tests": {
+        "passed": 334,
+        "failed": 0,
+        "ignored": 1
+      },
+      "ignored_entries": [
+        "test editing::offline::apply::tests::large_retained_native_plan_applies_and_reopens_with_paid_limits_and_cancel_ownership ... ignored, explicit release boundary: a real 470000-row native plan and retained original"
+      ]
+    },
+    {
+      "job": "runtime",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-runtime",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 82.2,
+      "log": ".cache/ace-sql-query-create-repaired-runtime-20261112.log",
+      "artifact": {
+        "path": ".cache/ace-sql-query-create-repaired-runtime-20261112.log",
+        "sha256": "e97e874c9c6285f257c475eb97587011c00f3f2eb43dd6cb157b17bb6709e3f6",
+        "bytes": 56959
+      },
+      "tests": {
+        "passed": 490,
+        "failed": 0,
+        "ignored": 1
+      },
+      "ignored_entries": [
+        "test tests::editing::genuine_jet4::genuine_jet4_reviewed_cell_save_matches_independent_whole_image ... ignored, requires explicit hash-pinned TABLECRAFT_JET4_SCALAR_SOURCE"
+      ]
+    },
+    {
+      "job": "desktop",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-desktop",
+        "--bin",
+        "tablecraft-desktop",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "workspace::saved::sql::tests",
+        "workspace::query_design::tests",
+        "workspace::objects::tests::save_handoff"
+      ],
+      "returncode": 0,
+      "seconds": 46.07,
+      "log": ".cache/ace-sql-query-create-repaired-desktop-20261112.log",
+      "artifact": {
+        "path": ".cache/ace-sql-query-create-repaired-desktop-20261112.log",
+        "sha256": "82a4bf3fe1accf42e52824fc184fd2bb4aaa2936454a9ddcbfc905e7e2dbe314",
+        "bytes": 3124
+      },
+      "tests": {
+        "passed": 17,
+        "failed": 0,
+        "ignored": 0
+      },
+      "ignored_entries": []
+    },
+    {
+      "job": "engine-minimal",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--no-default-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 5.36,
+      "log": ".cache/ace-sql-query-create-repaired-engine-minimal-20261112.log",
+      "artifact": {
+        "path": ".cache/ace-sql-query-create-repaired-engine-minimal-20261112.log",
+        "sha256": "02c15781768f1621ecf0f227252c34248cac9a335465ccc312933a46a8bd25a4",
+        "bytes": 1447
+      },
+      "ignored_entries": []
+    },
+    {
+      "job": "engine-create-only",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "ace16-create",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 2.57,
+      "log": ".cache/ace-sql-query-create-repaired-engine-create-only-20261112.log",
+      "artifact": {
+        "path": ".cache/ace-sql-query-create-repaired-engine-create-only-20261112.log",
+        "sha256": "b43248ce1a0bdb908cd4797fe457f8f3d3fef09490244c82eb8299c17bfab763",
+        "bytes": 173
+      },
+      "ignored_entries": []
+    },
+    {
+      "job": "engine-journal-only",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "journal",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 6.87,
+      "log": ".cache/ace-sql-query-create-repaired-engine-journal-only-20261112.log",
+      "artifact": {
+        "path": ".cache/ace-sql-query-create-repaired-engine-journal-only-20261112.log",
+        "sha256": "63cb54e50077a28737aa68e0981bd57865f3fd4f587753c92ee1fea48cdc8011",
+        "bytes": 283
+      },
+      "ignored_entries": []
+    },
+    {
+      "job": "engine-query-create",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "journal,ace16-create",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 10.06,
+      "log": ".cache/ace-sql-query-create-repaired-engine-query-create-20261112.log",
+      "artifact": {
+        "path": ".cache/ace-sql-query-create-repaired-engine-query-create-20261112.log",
+        "sha256": "c3a91442eee615a80f4d97389bc28f6d1b256dd555021c8d02a180f790e1b865",
+        "bytes": 174
+      },
+      "ignored_entries": []
+    },
+    {
+      "job": "runtime-minimal",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-runtime",
+        "--no-default-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 3.85,
+      "log": ".cache/ace-sql-query-create-repaired-runtime-minimal-20261112.log",
+      "artifact": {
+        "path": ".cache/ace-sql-query-create-repaired-runtime-minimal-20261112.log",
+        "sha256": "d0572d10d0e28ebe69a58421161df7d8ad98c7c3416d4764f7cc03d6b75320cb",
+        "bytes": 414
+      },
+      "ignored_entries": []
+    },
+    {
+      "job": "rustdoc",
+      "command": [
+        "cargo",
+        "doc",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-runtime",
+        "--all-features",
+        "--no-deps",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 16.72,
+      "log": ".cache/ace-sql-query-create-repaired-rustdoc-20261112.log",
+      "artifact": {
+        "path": ".cache/ace-sql-query-create-repaired-rustdoc-20261112.log",
+        "sha256": "b9cfef6b6a551d594d76d670bae7c12016112d364bfebe4286f313c42d1bc504",
+        "bytes": 783
+      },
+      "ignored_entries": []
+    }
+  ],
+  "failed_attempts": [
+    {
+      "source_commit": "2f52c990f",
+      "results": {
+        "path": ".cache/ace-sql-query-create-connected-results-20261112.json",
+        "sha256": "44966ab075621e37bde838d2f399ed34e2884594bbf9d410c2ee251b098ba50b",
+        "bytes": 765
+      },
+      "log": {
+        "path": ".cache/ace-sql-query-create-connected-strict-20261112.log",
+        "sha256": "cd5c3308e86d366fb9438a660f9848d8b4f5f332a14a00b0a4802f0e3bb1b0bd",
+        "bytes": 1909
+      },
+      "returncode": 101,
+      "finding": "Two unused imports after extraction and two constant chunks_exact lint findings; fixed before the repaired batch. Remaining jobs were not run in this attempt."
+    }
+  ],
+  "reference_scope": "Retained Jackcess5.0.4 synthetic-ID writer policy is format/engineering evidence; it is not Microsoft automatic allocation chronology. The retained UCanAccess inspection did not establish a native QueryDef creator. No upstream freshness claim is made.",
+  "remaining": [
+    "Normal recoverable original, Access staging/receipt, Runtime review/save/reopen and real UI Save/Save As integration are not supplied by this candidate checkpoint.",
+    "Local-source/parameter/aggregate/UNION/crosstab/action definitions and broader system-index/catalog/property sources remain unqualified for new-object creation.",
+    "Ordinary creator images without MSysQueries, live user-table catalogs, other requested Jet/ACE profiles and native Access chronology/interoperability still require working implementation and evidence."
+  ],
+  "removed_source_paths": [],
+  "artifact_pins": [
+    {
+      "path": ".cache/ace-sql-query-create-boundaries-20261113.log",
+      "sha256": "0550e0f35860c6b24c4aa1e52b57bcd7b8a01555414ce715a2168995381230b0",
+      "bytes": 56
+    },
+    {
+      "path": ".cache/ace-sql-query-create-connected-batch-20261113.py",
+      "sha256": "1aeb955f51255c04efdbb8bf9b99c5f8edc9f0c83653f102361175696d3b0c08",
+      "bytes": 3056
+    },
+    {
+      "path": ".cache/ace-sql-query-create-connected-results-20261112.json",
+      "sha256": "44966ab075621e37bde838d2f399ed34e2884594bbf9d410c2ee251b098ba50b",
+      "bytes": 765
+    },
+    {
+      "path": ".cache/ace-sql-query-create-connected-strict-20261112.log",
+      "sha256": "cd5c3308e86d366fb9438a660f9848d8b4f5f332a14a00b0a4802f0e3bb1b0bd",
+      "bytes": 1909
+    },
+    {
+      "path": ".cache/ace-sql-query-create-diff-20261113.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".cache/ace-sql-query-create-format-20261113.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": ".cache/ace-sql-query-create-layout-20261113.log",
+      "sha256": "e4495a784bb5b2430d358e84c0b08910bbade659dc50ff7df49d8a3236451954",
+      "bytes": 65
+    },
+    {
+      "path": ".cache/ace-sql-query-create-links-20261113.log",
+      "sha256": "88bbd99ce83a907095ae81b35d4adcb933b0269609f7e2d4b98a5c523bc72cf6",
+      "bytes": 53
+    },
+    {
+      "path": ".cache/ace-sql-query-create-repaired-access-20261112.log",
+      "sha256": "ff3433d16156908bfb8f3632eb025bf74304ab2e37b789243bea70f75bcc8325",
+      "bytes": 44464
+    },
+    {
+      "path": ".cache/ace-sql-query-create-repaired-batch-20261113.py",
+      "sha256": "38a78c0fda01d473ac3ebf691af91147e4fea036c6935901f0cccf8f47689a92",
+      "bytes": 3054
+    },
+    {
+      "path": ".cache/ace-sql-query-create-repaired-desktop-20261112.log",
+      "sha256": "82a4bf3fe1accf42e52824fc184fd2bb4aaa2936454a9ddcbfc905e7e2dbe314",
+      "bytes": 3124
+    },
+    {
+      "path": ".cache/ace-sql-query-create-repaired-engine-create-only-20261112.log",
+      "sha256": "b43248ce1a0bdb908cd4797fe457f8f3d3fef09490244c82eb8299c17bfab763",
+      "bytes": 173
+    },
+    {
+      "path": ".cache/ace-sql-query-create-repaired-engine-journal-only-20261112.log",
+      "sha256": "63cb54e50077a28737aa68e0981bd57865f3fd4f587753c92ee1fea48cdc8011",
+      "bytes": 283
+    },
+    {
+      "path": ".cache/ace-sql-query-create-repaired-engine-minimal-20261112.log",
+      "sha256": "02c15781768f1621ecf0f227252c34248cac9a335465ccc312933a46a8bd25a4",
+      "bytes": 1447
+    },
+    {
+      "path": ".cache/ace-sql-query-create-repaired-engine-query-create-20261112.log",
+      "sha256": "c3a91442eee615a80f4d97389bc28f6d1b256dd555021c8d02a180f790e1b865",
+      "bytes": 174
+    },
+    {
+      "path": ".cache/ace-sql-query-create-repaired-native-20261112.log",
+      "sha256": "016190ab2b7d0bff5d2c2f560163eca1cdd77dc114d5cc07d39352b42d9da87d",
+      "bytes": 103154
+    },
+    {
+      "path": ".cache/ace-sql-query-create-repaired-results-20261112.json",
+      "sha256": "0b3d1a73c9ab8cc620b72d403951a6ad1167bfeed93e0eccb57fd5922aa67b3e",
+      "bytes": 5201
+    },
+    {
+      "path": ".cache/ace-sql-query-create-repaired-runtime-20261112.log",
+      "sha256": "e97e874c9c6285f257c475eb97587011c00f3f2eb43dd6cb157b17bb6709e3f6",
+      "bytes": 56959
+    },
+    {
+      "path": ".cache/ace-sql-query-create-repaired-runtime-minimal-20261112.log",
+      "sha256": "d0572d10d0e28ebe69a58421161df7d8ad98c7c3416d4764f7cc03d6b75320cb",
+      "bytes": 414
+    },
+    {
+      "path": ".cache/ace-sql-query-create-repaired-rustdoc-20261112.log",
+      "sha256": "b9cfef6b6a551d594d76d670bae7c12016112d364bfebe4286f313c42d1bc504",
+      "bytes": 783
+    },
+    {
+      "path": ".cache/ace-sql-query-create-repaired-saved-read-20261112.log",
+      "sha256": "b92aa902ba9ab49b67fc174102d76c81ff9ce6b60036140d545dc2613d9fb1f7",
+      "bytes": 820
+    },
+    {
+      "path": ".cache/ace-sql-query-create-repaired-strict-20261112.log",
+      "sha256": "e7c1b80c7f3686e442b5bbe8c7372269b0eda78f0dbba25505d1316389f2c0fd",
+      "bytes": 962
+    },
+    {
+      "path": ".cache/ace-sql-query-create-repository-guards-20261113.json",
+      "sha256": "067f4797937122d4b0acc72d753466fac35b6d13206257be52d95f81cb414fd5",
+      "bytes": 4782
+    },
+    {
+      "path": ".cache/ace-sql-querydef-id-allocation-review/FINDINGS.md",
+      "sha256": "b4473c1d96889754d60f42f0ce4b78e80a1f52406fc6b896234c0c48fd155ab0",
+      "bytes": 8247
+    },
+    {
+      "path": ".cache/ace-sql-querydef-id-allocation-review/SOURCES.json",
+      "sha256": "dd9d994a4d20f4b8243086e65eceb19aacd3255211694d6d3b261afcee60e21d",
+      "bytes": 1815
+    },
+    {
+      "path": ".cache/ace16-insert-candidates-next-20261027/first-actual/executed-inputs/139-jackcess-5.0.4-sources.jar",
+      "sha256": "4de1bc2f1663b0946ce39057dd90eace355f4f74b8f818c0fe167f0c65815428",
+      "bytes": 878581
+    },
+    {
+      "path": ".cache/ucanaccess-reference-20261025/ucanaccess-5.2.0-sources.jar",
+      "sha256": "0cb3a900d8368be474381a5f61aaef1b6366c2958342aa91a722d13c4b3a1045",
+      "bytes": 246143
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/editing/native/query_sql.rs",
+      "sha256": "407e3cec433087bf71e6b10582e9ebdea7203d3584a10d0b003e2ea0bba7e523",
+      "bytes": 7780
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/tests/query_sql.rs",
+      "sha256": "1db5bd5a2fd81daec63b55fab52c3cb84ed4717244c0ac2a642a3958a6fee88e",
+      "bytes": 11116
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/tests/query_sql/preconditions.rs",
+      "sha256": "4372e000a3cf7f0523a60d33217ad97f0874cef14153422877accf77a5794c6e",
+      "bytes": 3104
+    },
+    {
+      "path": "crates/engineering/tablecraft-testkit/src/fixtures/access/saved_queries.rs",
+      "sha256": "e2c46a49ed0664792fc721d35bc325b085df4b8b1d53b17aed6f835e783d1a78",
+      "bytes": 6819
+    },
+    {
+      "path": "crates/engineering/tablecraft-testkit/src/fixtures/access/saved_queries/creation.rs",
+      "sha256": "9dc0654996d1f7e24edd40e98f464116c8d3629126f55072151c8983aa9c59b3",
+      "bytes": 7971
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation.rs",
+      "sha256": "37f4c71e93b0f4db3a0c6e3ad6433ca752d5d407916ad81cb250f1d452af8883",
+      "bytes": 3023
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/add_table.rs",
+      "sha256": "d41f459151d8eec77d952827b1cad5b6f17987882033518d851a2ee2a8de4a43",
+      "bytes": 10543
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/add_table/audit.rs",
+      "sha256": "84228b3c8e46af9a5b33b805f069b5edd8b854f958c5e7bf70d13861dfbafe68",
+      "bytes": 8335
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/add_table/build.rs",
+      "sha256": "3f25677f545eb2edb7f6fa28b126cdebb3d2ac60484853ed16b3438d7f326d27",
+      "bytes": 4891
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/add_table/native.rs",
+      "sha256": "fd0508f3824aa37b7155a93ca859c10b0d9fd118761c88bf565c4b7fa1fb30f0",
+      "bytes": 28479
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/add_table/retained/audit.rs",
+      "sha256": "ab2b3d28fdda30e31404ddd26bbccaa142596ae66a4187cd238fcdd4ed9825d9",
+      "bytes": 7731
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/add_table/retained/build.rs",
+      "sha256": "b70d6fc5993abff91e21eb5f5708fb39dd9efb42c11e7f0023c96741e05d5ce9",
+      "bytes": 5578
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/add_table/retained/source.rs",
+      "sha256": "b656d3713e7992bd7d76422e333931224edb2e4e238a9e0df30b0fcba3371606",
+      "bytes": 10047
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/add_table/source.rs",
+      "sha256": "d8c67845547878bb6b08f0162eb201e73ce616fafbec65b310e3d3835d267e2e",
+      "bytes": 17573
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/add_table/tests.rs",
+      "sha256": "78540379be801ea23282cee4ed665d60ac3ff86b8c713e8e19e25d781877f441",
+      "bytes": 12201
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/database_options.rs",
+      "sha256": "b83800a5099d7eea8137c6d6c423f69eb03ee43fbac4619d3f305b894e4fd64e",
+      "bytes": 8473
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/database_options/verify.rs",
+      "sha256": "a8e5beb1d58ee01d98d99b53df83ce63f2b07feeb0bc396bb8dc76a6e3d8f90a",
+      "bytes": 7876
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/format.rs",
+      "sha256": "541ab5ea958fb6a4007d5e8865d189ef7e0c38f4749b5795588aabf4e852b3a5",
+      "bytes": 374
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/format/data_append.rs",
+      "sha256": "b1b9d2d5f0291901f6f816ae54963f9d8fc7086a0b5fde398086ebdbaefb1b3a",
+      "bytes": 5097
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/lib.rs",
+      "sha256": "e3065af007a4907a5956766e18c31a42e7c68d7fab65799aafc34b1df226860c",
+      "bytes": 21921
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/queries.rs",
+      "sha256": "51e7e639e45ecd62d3e4e45a8b465ead383e55652c3c0dcfab2f95a5e22f50ae",
+      "bytes": 803
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/queries/creation.rs",
+      "sha256": "d9e8c5c99638704e4b367a743a18507e5b32ff4ee411494ec47bf317685d7804",
+      "bytes": 4226
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/queries/creation/definition.rs",
+      "sha256": "4d116861489e99f587b96455ebbaf19cfc33db29f8842d7feeb9879419b2829c",
+      "bytes": 2706
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/queries/creation/tests.rs",
+      "sha256": "8cbacb39e111db90dc6c7b1a21e10928234d4cfc6ac36a3028607cc89ff4667a",
+      "bytes": 11215
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation.rs",
+      "sha256": "717907ece10782bcc896e7ac29f261c45358543e8190ec37dc96b58ee052c3b3",
+      "bytes": 12087
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/query_creation.rs",
+      "sha256": "ae828655a1d4d0591497e03a00f10d5a796be6b30faf54949baa42d6ae27066b",
+      "bytes": 1910
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/query_creation/append.rs",
+      "sha256": "847c66e2872bbdd37ac058acedd65766afeb7fa5432a34b6d63f39fbb109cc73",
+      "bytes": 3069
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/query_creation/proof.rs",
+      "sha256": "19f3f9ce5c451f89ceac775739dc312cc9be036a218a6cec79a1850fdded82c2",
+      "bytes": 17812
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/query_creation/record.rs",
+      "sha256": "6a7945edb49cd82d14bf430e4a3c57e394915046ad6dcaf1c204ba6b28c27f7e",
+      "bytes": 6454
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/query_creation/source.rs",
+      "sha256": "22da6f72f73586169e59e5dcea39deffe4c78d2ee0a15842213ae0845ce39eee",
+      "bytes": 6319
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/query_creation/source/allocator.rs",
+      "sha256": "8a3deb3276ba158377248c47ddd05135d6b8b8bf77677f95a4e519e1e72cf944",
+      "bytes": 1504
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/query_creation/source/catalog.rs",
+      "sha256": "fd4f7d4f989df8dbfaa260404a2a8004dc7a5e407d7a35713dee3437bd481661",
+      "bytes": 3785
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/query_creation/source/fragments.rs",
+      "sha256": "35532c2eb9a60ad3911e07e769dbc6c28b196b882e195ae55043959e58c9d1fd",
+      "bytes": 2518
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/query_creation/source/schema.rs",
+      "sha256": "c6a4dbfa1e9509c663ff30735e1ead9c91ae2ca39a53ba18fd71e4a1d2ed116c",
+      "bytes": 6140
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/query_expression_edit/record.rs",
+      "sha256": "f693cb3bc3b4f62c6a60d19647ef330b735394039f0ebf4c61251eaba5466312",
+      "bytes": 1785
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/record_insertion/build.rs",
+      "sha256": "2181f6d1d8fca284aa29b15a9264aa774cadacd31f4166731964e5ca67279b52",
+      "bytes": 6591
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/record_serialization.rs",
+      "sha256": "0f90a7b812ca240cd768ea607903c10c415826a0a319b696c4bc1bedf3a260fb",
+      "bytes": 1983
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/record_serialization/storage.rs",
+      "sha256": "ae2d3241a469ec33460491c8edc677ee4c91ac90e308d283107ab545b0e00ce9",
+      "bytes": 10504
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/mutation/record_serialization/utf16.rs",
+      "sha256": "f3dd96943be736a62b3d2d9fce4d545863100e2196d1a0c8533f9653bf7922e3",
+      "bytes": 943
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/table_append.rs",
+      "sha256": "3e2ddc929dff921365280eb015eabbeb91d560060b442daa73aa754e6f1cebfe",
+      "bytes": 4681
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/table/table_append/storage.rs",
+      "sha256": "a6a1a0e806c25de146746b9e9ee71de5666109812610438d4d3afd733f085ec9",
+      "bytes": 11646
+    }
+  ],
+  "repository_guards": [
+    {
+      "job": "layout",
+      "command": [
+        "python3",
+        "scripts/check_rust_layout.py"
+      ],
+      "returncode": 0,
+      "artifact": {
+        "path": ".cache/ace-sql-query-create-layout-20261113.log",
+        "sha256": "e4495a784bb5b2430d358e84c0b08910bbade659dc50ff7df49d8a3236451954",
+        "bytes": 65
+      }
+    },
+    {
+      "job": "boundaries",
+      "command": [
+        "python3",
+        "scripts/check_dependency_boundaries.py"
+      ],
+      "returncode": 0,
+      "artifact": {
+        "path": ".cache/ace-sql-query-create-boundaries-20261113.log",
+        "sha256": "0550e0f35860c6b24c4aa1e52b57bcd7b8a01555414ce715a2168995381230b0",
+        "bytes": 56
+      }
+    },
+    {
+      "job": "links",
+      "command": [
+        "python3",
+        "scripts/check_documentation_links.py"
+      ],
+      "returncode": 0,
+      "artifact": {
+        "path": ".cache/ace-sql-query-create-links-20261113.log",
+        "sha256": "88bbd99ce83a907095ae81b35d4adcb933b0269609f7e2d4b98a5c523bc72cf6",
+        "bytes": 53
+      }
+    },
+    {
+      "job": "format",
+      "command": [
+        "rustfmt",
+        "--check",
+        "--edition",
+        "2024",
+        "--config",
+        "skip_children=true",
+        "crates/application/tablecraft-runtime/src/editing/native/query_sql.rs",
+        "crates/application/tablecraft-runtime/src/tests/query_sql.rs",
+        "crates/application/tablecraft-runtime/src/tests/query_sql/preconditions.rs",
+        "crates/engineering/tablecraft-testkit/src/fixtures/access/saved_queries.rs",
+        "crates/engineering/tablecraft-testkit/src/fixtures/access/saved_queries/creation.rs",
+        "crates/engines/tablecraft-ace/src/creation.rs",
+        "crates/engines/tablecraft-ace/src/creation/add_table.rs",
+        "crates/engines/tablecraft-ace/src/creation/add_table/audit.rs",
+        "crates/engines/tablecraft-ace/src/creation/add_table/build.rs",
+        "crates/engines/tablecraft-ace/src/creation/add_table/native.rs",
+        "crates/engines/tablecraft-ace/src/creation/add_table/retained/audit.rs",
+        "crates/engines/tablecraft-ace/src/creation/add_table/retained/build.rs",
+        "crates/engines/tablecraft-ace/src/creation/add_table/retained/source.rs",
+        "crates/engines/tablecraft-ace/src/creation/add_table/source.rs",
+        "crates/engines/tablecraft-ace/src/creation/add_table/tests.rs",
+        "crates/engines/tablecraft-ace/src/creation/database_options.rs",
+        "crates/engines/tablecraft-ace/src/creation/database_options/verify.rs",
+        "crates/engines/tablecraft-ace/src/format.rs",
+        "crates/engines/tablecraft-ace/src/format/data_append.rs",
+        "crates/engines/tablecraft-ace/src/lib.rs",
+        "crates/engines/tablecraft-ace/src/queries.rs",
+        "crates/engines/tablecraft-ace/src/queries/creation.rs",
+        "crates/engines/tablecraft-ace/src/queries/creation/definition.rs",
+        "crates/engines/tablecraft-ace/src/queries/creation/tests.rs",
+        "crates/engines/tablecraft-ace/src/table/mutation.rs",
+        "crates/engines/tablecraft-ace/src/table/mutation/query_creation.rs",
+        "crates/engines/tablecraft-ace/src/table/mutation/query_creation/append.rs",
+        "crates/engines/tablecraft-ace/src/table/mutation/query_creation/proof.rs",
+        "crates/engines/tablecraft-ace/src/table/mutation/query_creation/record.rs",
+        "crates/engines/tablecraft-ace/src/table/mutation/query_creation/source.rs",
+        "crates/engines/tablecraft-ace/src/table/mutation/query_creation/source/allocator.rs",
+        "crates/engines/tablecraft-ace/src/table/mutation/query_creation/source/catalog.rs",
+        "crates/engines/tablecraft-ace/src/table/mutation/query_creation/source/fragments.rs",
+        "crates/engines/tablecraft-ace/src/table/mutation/query_creation/source/schema.rs",
+        "crates/engines/tablecraft-ace/src/table/mutation/query_expression_edit/record.rs",
+        "crates/engines/tablecraft-ace/src/table/mutation/record_insertion/build.rs",
+        "crates/engines/tablecraft-ace/src/table/mutation/record_serialization.rs",
+        "crates/engines/tablecraft-ace/src/table/mutation/record_serialization/storage.rs",
+        "crates/engines/tablecraft-ace/src/table/mutation/record_serialization/utf16.rs",
+        "crates/engines/tablecraft-ace/src/table/table_append.rs",
+        "crates/engines/tablecraft-ace/src/table/table_append/storage.rs"
+      ],
+      "returncode": 0,
+      "artifact": {
+        "path": ".cache/ace-sql-query-create-format-20261113.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "job": "diff",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "returncode": 0,
+      "artifact": {
+        "path": ".cache/ace-sql-query-create-diff-20261113.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    }
+  ]
+}

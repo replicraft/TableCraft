@@ -51,6 +51,8 @@ Jet/ACE reading, native queries, storage, indexes, preservation and bounded writ
 
 ## Queries
 
+- [Native QueryDef construction candidate](queries/NATIVE_QUERY_CREATION.md)
+
 - [Explicit larger native scalar query snapshots](queries/LARGER_NATIVE_QUERIES.md)
 - [Explicit native external database sources](queries/NATIVE_EXTERNAL_QUERIES.md)
 - [Explicit one-hop native linked reads](queries/NATIVE_LINKED_QUERIES.md)

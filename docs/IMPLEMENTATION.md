@@ -1,5 +1,20 @@
 # Implementation status
 
+## Native QueryDef construction — 13 November 2026
+
+The engine now constructs a source-bound constant SELECT with a new signed
+catalog identity, explicit alias and captured DATE facts. Fresh record/query
+readback and a full protected-byte proof accompany independent complete images.
+This is a [construction candidate](access/queries/NATIVE_QUERY_CREATION.md),
+not yet a normal query Save/Save As capability.
+
+The [checkpoint](../tests/results/queries/querydef-construction-2026-11-13.json)
+records 664 native, 5 saved-reader, 334 adapter, 490 Runtime and 17 selected
+Desktop passes; 51 fixture/qualification cases remain explicitly ignored.
+Strict lint, minimal feature combinations and Rustdoc pass. Recovery, adapter
+and Runtime creation services are the next integration work; full query
+persistence and per-profile compatibility remain unfinished.
+
 ## Query Field authoring and retained edits — 13 November 2026
 
 The visual Field row now shows and edits `Alias: operand` through the shared
