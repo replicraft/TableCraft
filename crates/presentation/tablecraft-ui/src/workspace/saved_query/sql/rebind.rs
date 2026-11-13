@@ -92,6 +92,9 @@ impl SavedQueryState {
             }
         }
         target.error = if resolved { None } else { self.error.take() };
+        if resolved {
+            target.design.mark_saved();
+        }
     }
 
     pub(in crate::workspace) fn moved_sql_payload_bytes(

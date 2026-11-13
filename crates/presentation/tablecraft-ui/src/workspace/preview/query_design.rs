@@ -302,7 +302,7 @@ impl Preview {
             .state
             .begin_saved_query_sql_inspection(target, id)
             .expect("synthetic saved owner");
-        let sql = "SELECT 99 AS [Answer]";
+        let sql = "SELECT 99 AS [Answer];";
         assert!(self.state.set_saved_query_sql_inspection(
             id,
             &inspection,
@@ -324,5 +324,26 @@ impl Preview {
                 .set_query_design_built(id, built, Vec::new())
                 .is_some()
         );
+    }
+}
+
+impl Preview {
+    pub(super) fn prepare_query_design_close(&mut self) {
+        self.prepare_query_design(false, false);
+        let request = self
+            .state
+            .query_design_request()
+            .expect("synthetic Design owner");
+        let id = self.request();
+        assert!(
+            self.state
+                .begin_query_design_description(request, "Orders".into(), id)
+        );
+        assert!(
+            self.state
+                .set_query_design_table(id, table_metadata("Orders"))
+        );
+        let tab = self.state.active_object().expect("same edited Design tab");
+        assert!(self.state.request_query_design_close(&tab));
     }
 }

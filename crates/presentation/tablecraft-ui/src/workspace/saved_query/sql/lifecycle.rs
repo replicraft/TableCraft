@@ -46,6 +46,7 @@ impl State {
         draft.pending = None;
         draft.error = error;
         self.refresh_saved_sql_lifecycle_memory(&request.target);
+        self.cancel_query_design_close_saved(request_id);
         true
     }
 

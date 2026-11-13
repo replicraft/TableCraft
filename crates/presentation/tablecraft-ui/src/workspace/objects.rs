@@ -5,6 +5,7 @@ pub(super) mod memory;
 mod names;
 mod ownership;
 mod query_creation;
+mod query_design_close;
 mod query_design_inputs;
 mod saved_sql;
 mod saved_sql_close;
@@ -399,6 +400,10 @@ impl State {
             self.request_field_addition_close(tab);
             return false;
         }
+        if self.modified_query_design_for(tab).is_some() {
+            self.request_query_design_close(tab);
+            return false;
+        }
         if self.saved_query_sql_revision_for(tab).is_some() {
             self.request_saved_query_sql_close(tab);
             return false;
@@ -424,6 +429,9 @@ impl State {
     }
 
     pub(super) fn close_object_confirmed(&mut self, tab: &ObjectTab) -> bool {
+        if self.modified_query_design_for(tab).is_some() {
+            return false;
+        }
         if self.unresolved_query_design_edits_for(tab) {
             self.reveal_unresolved_query_design_edits_for(tab);
             return false;
@@ -477,6 +485,7 @@ impl State {
 
     pub(super) fn object_switch_ready_without_saved_field_name(&self) -> bool {
         !self.busy
+            && !self.query_design_close_open()
             && !self.query_creation_name_open()
             && !self.query_creation_save_open()
             && !self.options_dialog_open()

@@ -370,6 +370,12 @@ impl Preview {
                     self.state.error = Some(self.state.localizer.text("query-mock-error"));
                 }
             }
+            Action::QueryDesignClose { result } => {
+                if result.decision == crate::QueryDesignCloseDecision::Save {
+                    self.state.cancel_query_design_close();
+                    self.state.error = Some(self.state.localizer.text("ribbon-unavailable"));
+                }
+            }
             Action::ReviewQueryCreation { .. } => {
                 self.state.error = Some(self.state.localizer.text("query-mock-error"));
             }

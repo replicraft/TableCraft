@@ -67,11 +67,10 @@ impl State {
 
     pub fn can_review_saved_query_sql(&self) -> bool {
         self.can_edit_saved_query_sql()
-            && self
-                .saved_query
-                .sql
-                .as_ref()
-                .is_some_and(|draft| draft.dirty() && draft.pending.is_none())
+            && self.saved_query.sql.as_ref().is_some_and(|draft| {
+                (draft.dirty() || (self.query_design_visible() && self.query_design.is_dirty()))
+                    && draft.pending.is_none()
+            })
     }
 
     /// Bounded outgoing Action snapshot, without assigning a host request ID.
@@ -108,7 +107,9 @@ impl State {
         if !self.can_review_saved_query_sql() {
             return None;
         }
-        self.begin_saved_sql_request(request_id, Phase::Review)
+        let request = self.begin_saved_sql_request(request_id, Phase::Review)?;
+        self.bind_saved_design_close(request_id, &request);
+        Some(request)
     }
 
     pub fn set_saved_query_sql_review(
@@ -129,6 +130,7 @@ impl State {
         let draft = self.saved_query.sql.as_mut().unwrap();
         draft.pending.as_mut().unwrap().phase = Phase::Reviewed(review_id);
         draft.error = None;
+        self.review_saved_design_close(request_id, review_id);
         true
     }
 
@@ -174,6 +176,7 @@ impl State {
         let draft = self.saved_query.sql.as_mut().unwrap();
         draft.pending = None;
         draft.error = Some(error);
+        self.cancel_query_design_close_saved(request_id);
         true
     }
 

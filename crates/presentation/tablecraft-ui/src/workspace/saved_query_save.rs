@@ -368,6 +368,7 @@ impl State {
                     && matches!(status.phase, Phase::Reopening { .. } | Phase::ReopenFailed)
             });
         if clearable {
+            self.cancel_query_design_close_saved(identity.request_id);
             self.saved_query_sql_save = None;
         }
         clearable

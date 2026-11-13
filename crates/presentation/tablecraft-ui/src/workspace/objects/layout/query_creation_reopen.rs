@@ -292,6 +292,7 @@ fn prepare(
     let mut saved =
         SavedQueryState::created(created, &request.sql, request.text_revision.checked_add(1)?)?;
     saved.design = std::mem::take(&mut restored.design);
+    saved.design.mark_saved();
     **restored = saved;
     let active = entry.session.take()?;
     entry.retained_bytes = Some(0);

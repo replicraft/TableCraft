@@ -226,6 +226,7 @@ impl State {
         count.add(self.totals.retained_bytes()?);
         count.add(self.query_design.retained_bytes()?);
         count.add(self.query_creation.retained_bytes()?);
+        count.add(self.query_design_close.retained_bytes()?);
         count.add(self.records.retained_bytes()?);
         count.optional(&self.error);
         count.finish()

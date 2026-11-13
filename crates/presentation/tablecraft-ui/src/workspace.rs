@@ -26,6 +26,7 @@ pub mod preview;
 mod query;
 mod query_creation;
 mod query_design;
+mod query_design_close;
 mod records;
 mod recovery;
 pub(crate) mod ribbon;
@@ -101,6 +102,9 @@ pub use query_creation::{
     QueryCreationSaveOperation,
 };
 pub use query_design::{QueryDesignCompletion, QueryDesignRequest, QueryDesignTarget};
+pub use query_design_close::{
+    QueryDesignCloseDecision, QueryDesignCloseRequest, QueryDesignCloseResult,
+};
 pub use records::RecordTarget;
 pub use recovery::RecoveryOutcome;
 pub use row_identity::{RowOrdinalError, RowOrdinals};
@@ -303,6 +307,9 @@ pub enum Action {
     },
     AcknowledgeTableDraftSave {
         id: u64,
+    },
+    QueryDesignClose {
+        result: QueryDesignCloseResult,
     },
     ReviewQueryCreation {
         request: Arc<QueryCreationRequest>,
@@ -592,6 +599,7 @@ pub struct State {
     saved_query: saved_query::SavedQueryState,
     active_save: active_save::PendingSave,
     query_creation: query_creation::Model,
+    query_design_close: query_design_close::Model,
     saved_query_sql_close: Option<saved_query::SqlCloseConfirmation>,
     saved_query_sql_save: Option<saved_query_save::SaveStatus>,
     selected_field: usize,
@@ -974,6 +982,7 @@ impl State {
             || self.field_rename_modal_open()
             || self.field_rename_close_open()
             || self.saved_query_sql_save_open()
+            || self.query_design_close_open()
             || self.query_creation_name_open()
             || self.query_creation_save_open()
             || self.table_draft_save.is_some()
@@ -1090,6 +1099,8 @@ impl State {
         self.saved_query_sql_close_dialog(ui.ctx(), &mut actions);
         self.saved_query_sql_save_dialog(ui.ctx(), &mut actions);
         self.query_creation_dialog(ui.ctx(), &mut actions);
+        self.query_design_close_dialog(ui.ctx(), &mut actions);
+        self.finish_query_design_close_events(&mut actions);
         self.options_dialog(ui.ctx(), &mut actions);
         self.database_options_dialog(ui.ctx(), &mut actions);
         self.field_addition_close_dialog(ui.ctx(), &mut actions);

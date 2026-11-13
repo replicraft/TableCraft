@@ -52,6 +52,7 @@ struct Session {
     mode: Mode,
     draft: QueryDesignDraft,
     revision: u64,
+    saved_revision: u64,
     field_inputs: field_inputs::FieldInputs,
     result_revision: Option<u64>,
     totals_off_qualification: Option<(u64, bool)>,
@@ -430,6 +431,10 @@ impl State {
             PendingKind::Import { sql } if self.query_design_sql() == Some(sql.as_str()) => None,
             _ => return None,
         };
+        let close_build = session
+            .pending
+            .as_ref()
+            .map(|pending| (pending.request.tab.id, pending.request.draft_revision));
         if !self.replace_query_design_sql(built.sql) {
             return None;
         }
@@ -440,6 +445,9 @@ impl State {
         session.draft = built.draft;
         session.metadata = metadata;
         session.revision = session.revision.wrapping_add(1);
+        if completion.is_none() {
+            session.saved_revision = session.revision;
+        }
         session.mode = match completion {
             None => Mode::Design,
             Some(QueryDesignCompletion::ShowSql) => Mode::Sql,
@@ -449,14 +457,22 @@ impl State {
         if session.mode == Mode::Design {
             self.ribbon_tab = super::ribbon::Tab::QueryDesign;
         }
-        if completion == Some(QueryDesignCompletion::Save) {
-            self.begin_query_creation_name();
+        if matches!(
+            completion,
+            Some(QueryDesignCompletion::Save | QueryDesignCompletion::SaveExisting)
+        ) && let Some((tab_id, revision)) = close_build
+        {
+            self.query_design_close_built(tab_id, revision);
+        }
+        if completion == Some(QueryDesignCompletion::Save) && !self.begin_query_creation_name() {
+            self.cancel_query_design_close_name();
         }
         completion.or(Some(QueryDesignCompletion::ShowSql))
     }
 
     pub fn fail_query_design(&mut self, request_id: u64, message: String) {
         if self.design_reply_current(request_id) {
+            self.cancel_query_design_close_build();
             let session = self
                 .query_design
                 .session
@@ -471,6 +487,7 @@ impl State {
         if self.query_design_request_id() != Some(request_id) {
             return false;
         }
+        self.cancel_query_design_close_build();
         self.query_design
             .session
             .as_mut()
@@ -706,5 +723,28 @@ impl QueryDesign {
     pub(in crate::workspace) fn save_revision(&self) -> Option<u64> {
         let session = self.session.as_ref()?;
         (session.mode == Mode::Design).then_some(session.revision)
+    }
+}
+
+impl QueryDesign {
+    pub(in crate::workspace) fn dirty_revision(&self) -> Option<u64> {
+        let session = self.session.as_ref()?;
+        (session.revision != session.saved_revision).then_some(session.revision)
+    }
+
+    pub(in crate::workspace) fn is_dirty(&self) -> bool {
+        self.dirty_revision().is_some()
+    }
+
+    pub(in crate::workspace) fn mark_saved(&mut self) {
+        if let Some(session) = &mut self.session {
+            session.saved_revision = session.revision;
+        }
+    }
+}
+
+impl QueryDesign {
+    pub(in crate::workspace) fn revision(&self) -> Option<u64> {
+        Some(self.session.as_ref()?.revision)
     }
 }

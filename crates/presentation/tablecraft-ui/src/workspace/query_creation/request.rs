@@ -42,6 +42,7 @@ impl State {
         {
             return false;
         }
+        self.bind_query_creation_close(request_id, &request);
         self.query_creation.pending = Some(Pending {
             request_id,
             request,
@@ -69,6 +70,7 @@ impl State {
             return false;
         }
         pending.review_id = Some(review_id);
+        self.review_query_creation_close(request_id, review_id);
         true
     }
 
@@ -100,6 +102,7 @@ impl State {
         if !matches {
             return false;
         }
+        self.cancel_query_design_close_creation(request_id);
         let admitted = self.admit_object_bytes(Some(message.capacity()));
         let restored = self
             .restore_query_creation_name(request, if admitted { message.capacity() } else { 0 });
@@ -126,6 +129,7 @@ impl State {
         {
             return false;
         }
+        self.cancel_query_design_close_creation(request_id);
         let admitted = message
             .as_ref()
             .is_none_or(|message| self.admit_object_bytes(Some(message.capacity())));
@@ -251,7 +255,11 @@ impl State {
     }
 
     pub fn cancel_query_creation_name(&mut self) -> bool {
-        self.query_creation.name.take().is_some()
+        let cancelled = self.query_creation.name.take().is_some();
+        if cancelled {
+            self.cancel_query_design_close_name();
+        }
+        cancelled
     }
 
     pub fn submit_query_creation_name(&mut self) -> Option<Action> {

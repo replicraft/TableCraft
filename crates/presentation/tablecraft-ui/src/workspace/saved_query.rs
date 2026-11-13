@@ -336,6 +336,9 @@ impl State {
         parameters: &[ParameterInput],
     ) -> bool {
         !self.schema_after_awaits_reopen()
+            && !self.query_design_visible()
+            && !self.query_design_results_visible()
+            && !self.query_design.is_dirty()
             && self.saved_parameter_copy_fits(parameters)
             && !self.saved_query.sql.as_ref().is_some_and(sql::Draft::dirty)
             && !self.busy
