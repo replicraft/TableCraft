@@ -1,4 +1,5 @@
 //! Authoring buffers revoke old execution rights without discarding user text.
+mod limits;
 use super::*;
 use crate::preview::{Preview, Scene};
 use crate::workspace::{ObjectKind, ObjectTarget, QueryDesignCompletion, State};
@@ -17,7 +18,12 @@ fn harness(state: State) -> Harness<'static, State> {
         .with_size(egui::vec2(1280.0, 820.0))
         .build_ui_state(
             |ui, state: &mut State| {
-                state.show(ui);
+                let actions = state.show(ui);
+                ui.ctx().data_mut(|data| {
+                    let key = egui::Id::new("qbe_test_emitted_actions");
+                    let observed = data.get_temp::<bool>(key).unwrap_or(false);
+                    data.insert_temp(key, observed || !actions.is_empty());
+                });
             },
             state,
         );
