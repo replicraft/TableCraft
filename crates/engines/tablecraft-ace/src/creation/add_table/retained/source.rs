@@ -210,6 +210,7 @@ pub(super) fn capture<'image>(
     let after_pages =
         u32::try_from(after_bytes / PAGE_BYTES).map_err(|_| AddTableError::Capacity)?;
     let allocation = inventory
+        .physical()
         .plan_allocation(after_pages, budget, cancelled)
         .map_err(allocation_error)?;
     let added = Role {
@@ -278,7 +279,10 @@ pub(super) fn capabilities(
         let available = if available {
             let length = after_bytes(inventory.before_pages(), keyed)?;
             let pages = u32::try_from(length / PAGE_BYTES).map_err(|_| AddTableError::Capacity)?;
-            match inventory.plan_allocation(pages, budget, cancelled) {
+            match inventory
+                .physical()
+                .plan_allocation(pages, budget, cancelled)
+            {
                 Ok(_) => true,
                 Err(AllocationError::Capacity) => false,
                 Err(error) => return Err(allocation_error(error)),

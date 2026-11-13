@@ -1,5 +1,5 @@
 //! Move-only names and independently proved QueryDef images.
-use super::{NativeQueryCreationCandidate, QueryCreationDefinition};
+use super::{NativeQueryCreationCandidate, NativeQueryStorageChange, QueryCreationDefinition};
 use crate::NativeImage;
 
 pub(crate) struct NativeQueryCreationParts {
@@ -12,9 +12,14 @@ pub(crate) struct NativeQueryCreationEffect {
     before: NativeImage,
     after: NativeImage,
     native_id: i32,
+    storage_change: NativeQueryStorageChange,
 }
 
 impl NativeQueryCreationEffect {
+    pub(crate) const fn storage_change(&self) -> NativeQueryStorageChange {
+        self.storage_change
+    }
+
     pub(crate) fn before_bytes(&self) -> &[u8] {
         self.before.as_bytes()
     }
@@ -42,6 +47,7 @@ impl NativeQueryCreationCandidate {
                 before: self.before,
                 after: self.after,
                 native_id: self.native_id,
+                storage_change: self.storage_change,
             },
         }
     }

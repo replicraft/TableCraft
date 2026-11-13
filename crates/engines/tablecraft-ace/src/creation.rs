@@ -13,7 +13,7 @@ pub(crate) use database_options::FieldHistoryOffSource;
 #[cfg(feature = "journal")]
 mod declared_field_addition;
 mod defaults;
-mod definition;
+pub(crate) mod definition;
 #[cfg(feature = "journal")]
 pub(crate) mod existing_fields;
 #[cfg(feature = "journal")]
@@ -25,7 +25,7 @@ mod native;
 mod primary;
 pub(crate) mod profile;
 pub(crate) mod properties;
-mod record;
+pub(crate) mod record;
 mod request;
 mod stored_text;
 #[cfg(feature = "journal")]

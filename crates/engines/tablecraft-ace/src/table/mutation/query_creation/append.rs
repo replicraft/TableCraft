@@ -45,7 +45,7 @@ pub(super) fn build(
     Ok(after)
 }
 
-fn append<'record>(
+pub(super) fn append<'record>(
     after: &mut [u8],
     schema: &TableSchema,
     page_number: u32,
@@ -80,7 +80,7 @@ fn append<'record>(
     Ok(())
 }
 
-fn page_mut(bytes: &mut [u8], number: u32) -> Result<&mut [u8], QueryCreationError> {
+pub(super) fn page_mut(bytes: &mut [u8], number: u32) -> Result<&mut [u8], QueryCreationError> {
     let start = usize::try_from(number)
         .ok()
         .and_then(|number| number.checked_mul(PAGE_BYTES))
@@ -90,5 +90,15 @@ fn page_mut(bytes: &mut [u8], number: u32) -> Result<&mut [u8], QueryCreationErr
         .ok_or(InspectError::StructureLimit)?;
     bytes
         .get_mut(start..end)
+        .ok_or(QueryCreationError::Preservation)
+}
+
+pub(super) fn page(bytes: &[u8], number: u32) -> Result<&[u8], QueryCreationError> {
+    let start = usize::try_from(number)
+        .ok()
+        .and_then(|number| number.checked_mul(PAGE_BYTES))
+        .ok_or(InspectError::StructureLimit)?;
+    bytes
+        .get(start..start + PAGE_BYTES)
         .ok_or(QueryCreationError::Preservation)
 }

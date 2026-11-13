@@ -103,7 +103,7 @@ pub(super) fn write(
     )
 }
 
-pub(super) struct Role {
+pub(crate) struct Role {
     pub user: bool,
     pub catalog: bool,
     pub owned: u32,
@@ -154,12 +154,87 @@ pub(super) fn write_logical_role(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), CreateDatabaseError> {
+    write_logical(
+        page,
+        fields,
+        rows,
+        LogicalRole {
+            table: role,
+            primary,
+            extra: &[],
+        },
+        budget,
+        cancelled,
+    )
+}
+
+/// Explicit column map pairs belong to the caller's typed system declaration;
+/// they never reuse the creator catalog's fixed column/reference list.
+pub(crate) struct LongValueRole {
+    pub column: usize,
+    pub owned: u32,
+    pub candidate: u32,
+}
+
+struct LogicalRole<'a, 'request, 'maps> {
+    table: Role,
+    primary: Option<PrimaryRole<'a, 'request>>,
+    extra: &'maps [LongValueRole],
+}
+
+#[cfg(feature = "journal")]
+pub(crate) fn write_role_with_long_values(
+    page: &mut [u8],
+    fields: Fields<'_>,
+    rows: usize,
+    role: Role,
+    extra: &[LongValueRole],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), CreateDatabaseError> {
+    if page.len() != PAGE_BYTES || role.catalog || role.user {
+        return Err(CreateDatabaseError::Layout);
+    }
+    write_logical(
+        page,
+        fields,
+        rows,
+        LogicalRole {
+            table: role,
+            primary: None,
+            extra,
+        },
+        budget,
+        cancelled,
+    )
+}
+
+fn write_logical(
+    page: &mut [u8],
+    fields: Fields<'_>,
+    rows: usize,
+    logical: LogicalRole<'_, '_, '_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), CreateDatabaseError> {
+    let LogicalRole {
+        table: role,
+        primary,
+        extra,
+    } = logical;
     let catalog = role.catalog;
     if primary.is_some() && (!role.user || catalog) {
         return Err(CreateDatabaseError::Layout);
     }
     let prepared = primary.as_ref().map(|index| index.prepared);
-    let length = length_with_primary(fields, catalog, prepared)?;
+    let length = length_with_primary(fields, catalog, prepared)?
+        .checked_add(
+            extra
+                .len()
+                .checked_mul(LVAL_PAIR_BYTES)
+                .ok_or(CreateDatabaseError::Layout)?,
+        )
+        .ok_or(CreateDatabaseError::Layout)?;
     let column_start = HEADER_BYTES + prepared.map_or(0, primary::Prepared::column_shift);
     if length > page.len() || (page.len() != PAGE_BYTES && page.len() != length) {
         return Err(CreateDatabaseError::Layout);
@@ -271,6 +346,26 @@ pub(super) fn write_logical_role(
             )?;
             names += LVAL_PAIR_BYTES;
         }
+    }
+    let mut previous = None;
+    for pair in extra {
+        check(budget, cancelled)?;
+        if pair.column >= fields.count()
+            || !matches!(fields.get(pair.column).kind, OLE | LONG_TEXT)
+            || previous.is_some_and(|column| column >= pair.column)
+            || pair.owned == pair.candidate
+        {
+            return Err(CreateDatabaseError::Layout);
+        }
+        put16(page, names, pair.column)?;
+        put32(page, names + size_of::<u16>(), pair.owned)?;
+        put32(
+            page,
+            names + size_of::<u16>() + size_of::<u32>(),
+            pair.candidate,
+        )?;
+        names += LVAL_PAIR_BYTES;
+        previous = Some(pair.column);
     }
     if let Some(index) = primary {
         index

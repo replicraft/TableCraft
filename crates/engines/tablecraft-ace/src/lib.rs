@@ -513,4 +513,7 @@ pub use transaction::{
 };
 
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
-pub use queries::{NativeQueryCreationCandidate, QueryCreationDefinition, QueryCreationError};
+pub use queries::{
+    NativeQueryCreationCandidate, NativeQueryStorageChange, QueryCreationDefinition,
+    QueryCreationError,
+};

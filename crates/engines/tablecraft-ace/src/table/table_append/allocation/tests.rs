@@ -43,6 +43,7 @@ fn sole_inline_global_row_grows_past_page_sixty_three_without_rewriting_old_bits
     let expected = raw::append(&before, "More", Added::GeneratedNumber);
     assert_eq!(expected.len(), 65 * 4096);
     let allocation = inventory
+        .physical()
         .plan_allocation(65, &mut budget(), &|| false)
         .unwrap();
     let mut candidate = expected.clone();
@@ -102,6 +103,7 @@ fn already_represented_future_free_bits_are_cleared_without_moving_the_global_ro
     let source = image(&before);
     let inventory = Inventory::capture(&source, &mut budget(), &|| false).unwrap();
     let allocation = inventory
+        .physical()
         .plan_allocation(14, &mut budget(), &|| false)
         .unwrap();
     let mut candidate = before.clone();
@@ -135,19 +137,27 @@ fn bitmap_carrier_exhaustion_stays_distinct_from_source_and_explicit_work_failur
     let source = image(&before);
     let inventory = Inventory::capture(&source, &mut budget(), &|| false).unwrap();
     assert!(matches!(
-        inventory.plan_allocation(524_288, &mut budget(), &|| false),
+        inventory
+            .physical()
+            .plan_allocation(524_288, &mut budget(), &|| false),
         Err(AllocationError::Capacity)
     ));
     assert!(matches!(
-        inventory.plan_allocation(10, &mut budget(), &|| false),
+        inventory
+            .physical()
+            .plan_allocation(10, &mut budget(), &|| false),
         Err(AllocationError::Source)
     ));
     assert!(matches!(
-        inventory.plan_allocation(14, &mut budget(), &|| true),
+        inventory
+            .physical()
+            .plan_allocation(14, &mut budget(), &|| true),
         Err(AllocationError::Inspect(_))
     ));
     assert!(matches!(
-        inventory.plan_allocation(14, &mut ResourceBudget::new(0, 0, 0), &|| false),
+        inventory
+            .physical()
+            .plan_allocation(14, &mut ResourceBudget::new(0, 0, 0), &|| false),
         Err(AllocationError::Inspect(_))
     ));
 }

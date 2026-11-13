@@ -23,6 +23,8 @@ use tablecraft_core::{
 const INTEGER_TEXT_BYTES: usize = i32::MIN.unsigned_abs().ilog10() as usize + 2;
 const SELECT_TYPE: i16 = 1;
 const QUERY_OBJECT_TYPE: i16 = 5;
+const SYSTEM_TABLE_TYPE: i16 = 1;
+const SYSTEM_TABLE_FLAGS: i32 = 0x8000_0002_u32 as i32;
 const ORDER: [u8; size_of::<u32>()] = [0, 0, 0, 1];
 const ATTRIBUTES: [QueryAttribute; 5] = [
     QueryAttribute::Start,
@@ -77,6 +79,33 @@ pub(super) fn catalog(
             "Flags" => Cell::Long(0),
             "DateCreate" | "DateUpdate" => Cell::Date(definition.captured_at()),
             "Name" => Cell::Text(definition.name()),
+            _ => Cell::Null,
+        },
+        budget,
+        cancelled,
+    )
+}
+
+/// The new system row is encoded as its actual type and flags, never retagged
+/// from a user Query record. Both DATE cells use the caller's captured fact.
+pub(super) fn query_storage_catalog(
+    schema: &TableSchema,
+    parent: i32,
+    definition_page: u32,
+    captured_at: LegacyDateTime,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, QueryCreationError> {
+    let native_id = i32::try_from(definition_page).map_err(|_| QueryCreationError::Source)?;
+    encode(
+        schema,
+        |name| match name {
+            "Id" => Cell::Long(native_id),
+            "ParentId" => Cell::Long(parent),
+            "Type" => Cell::Short(SYSTEM_TABLE_TYPE),
+            "Flags" => Cell::Long(SYSTEM_TABLE_FLAGS),
+            "DateCreate" | "DateUpdate" => Cell::Date(captured_at),
+            "Name" => Cell::Text("MSysQueries"),
             _ => Cell::Null,
         },
         budget,

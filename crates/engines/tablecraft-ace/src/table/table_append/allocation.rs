@@ -1,5 +1,5 @@
 //! Sealed global-allocation changes for new physical pages, never page reclamation.
-use super::Inventory;
+use super::storage::Storage;
 use crate::{
     InspectError, NativeImage,
     format::{
@@ -48,7 +48,7 @@ pub(crate) struct Allocation<'image> {
     changes: Vec<Change>,
 }
 
-impl<'image> Inventory<'image> {
+impl<'image> Storage<'image> {
     pub(crate) fn plan_allocation(
         &self,
         after_pages: u32,

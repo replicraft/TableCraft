@@ -210,7 +210,7 @@ pub(super) fn capabilities(
             u64::from(pages) * PAGE_BYTES as u64 <= crate::limits::MAX_READ_FILE_BYTES
         });
         let fits_allocation = if fits_maps && fits_native {
-            match inventory.plan_allocation(
+            match inventory.physical().plan_allocation(
                 pages.ok_or(AddTableError::Capacity)?,
                 budget,
                 cancelled,
@@ -381,6 +381,7 @@ pub(super) fn build(
         return Err(AddTableError::Capacity);
     }
     let allocation = inventory
+        .physical()
         .plan_allocation(
             u32::try_from(topology.end).map_err(|_| AddTableError::Capacity)?,
             budget,

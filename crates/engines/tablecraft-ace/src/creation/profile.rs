@@ -183,7 +183,7 @@ pub(super) const ACE_FIELDS: [Field<'static>; 4] = [
 ];
 
 #[derive(Clone, Copy)]
-pub(super) struct Fields<'a>(&'a [Field<'a>]);
+pub(crate) struct Fields<'a>(&'a [Field<'a>]);
 
 impl<'a> Fields<'a> {
     pub fn new(fields: &'a [Field<'a>]) -> Self {

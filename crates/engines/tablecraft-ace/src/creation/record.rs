@@ -41,7 +41,7 @@ const EXTERNAL_PROPERTY_BYTES: usize = 3 * size_of::<u32>();
 const SINGLE_PROPERTY_FLAG: u32 = 0x4000_0000;
 pub(super) const DATABASE_SYSTEM_FLAGS: u32 = 0x8000_0000;
 
-pub(super) struct DataPage<'a> {
+pub(crate) struct DataPage<'a> {
     bytes: &'a mut [u8],
     end: usize,
     rows: usize,

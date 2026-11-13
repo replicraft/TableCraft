@@ -93,6 +93,7 @@ fn prove_original(
         u32::try_from(after.as_bytes().len() / PAGE).map_err(|_| InspectError::StructureLimit)?;
     let allocation = original
         .inventory
+        .physical()
         .plan_allocation(after_pages, budget, cancelled)
         .map_err(allocation_error)?;
     allocation

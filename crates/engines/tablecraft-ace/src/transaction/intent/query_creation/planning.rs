@@ -1,8 +1,8 @@
 //! Sealed QueryDef effect plus semantic original selects only checked V3.
 use super::{NativeQueryCreationIntent as Intent, QueryCreationIntentError as Error};
 use crate::{
-    NativeImage, NativeRecoveryQualificationError, QueryCreationDefinition, header::check,
-    queries::creation::effect::NativeQueryCreationEffect,
+    NativeImage, NativeQueryStorageChange, NativeRecoveryQualificationError,
+    QueryCreationDefinition, header::check, queries::creation::effect::NativeQueryCreationEffect,
     transaction::qualified_recovery::equal_image,
 };
 use tablecraft_core::limits::ResourceBudget;
@@ -39,6 +39,11 @@ impl NativeImage {
 }
 
 impl RecoverableNativeQueryCreationPlan {
+    /// Exact technical storage effect from the independently proved native plan.
+    pub const fn storage_change(&self) -> NativeQueryStorageChange {
+        self.effect.storage_change()
+    }
+
     /// Semantic original data; encoding grants no source or recovery authority.
     pub fn intent(&self) -> &Intent {
         &self.intent

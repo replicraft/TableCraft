@@ -33,17 +33,19 @@ struct Census {
     references: Vec<u32>,
 }
 
-pub(in crate::table) struct Storage {
+pub(crate) struct Storage<'image> {
+    pub(super) image: &'image NativeImage,
+    pub(super) before_pages: u32,
     pub catalog: Vec<u32>,
     pub maps: Vec<u32>,
 }
 
-pub(in crate::table) fn capture(
-    image: &NativeImage,
+pub(in crate::table) fn capture<'image>(
+    image: &'image NativeImage,
     catalog: &TableSchema,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<Storage, EditError> {
+) -> Result<Storage<'image>, EditError> {
     let result = physical(image, catalog, budget, cancelled)?;
     // Existing complete key/membership checking remains the authority for live
     // indexes. Retired roots below have their own empty-leaf storage contract.
@@ -75,12 +77,12 @@ pub(in crate::table) fn capture(
     Ok(result)
 }
 
-fn physical(
-    image: &NativeImage,
+fn physical<'image>(
+    image: &'image NativeImage,
     catalog: &TableSchema,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<Storage, EditError> {
+) -> Result<Storage<'image>, EditError> {
     let mut input = image.reader();
     let mut reader = Reader {
         source: &mut input,
@@ -185,6 +187,8 @@ fn physical(
         return Err(refused());
     }
     Ok(Storage {
+        image,
+        before_pages: image.catalog().header().page_count(),
         catalog: catalog_pages,
         maps: hosts,
     })

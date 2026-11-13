@@ -2,7 +2,7 @@
 pub(crate) mod allocation;
 mod catalog;
 mod selection;
-pub(in crate::table) mod storage;
+pub(crate) mod storage;
 
 use crate::{EditError, NativeImage, NativeSortOrder, header::check};
 use tablecraft_core::limits::ResourceBudget;
@@ -12,8 +12,7 @@ pub(crate) struct Inventory<'image> {
     image: &'image NativeImage,
     before_pages: u32,
     catalog_definition: u32,
-    catalog_pages: Vec<u32>,
-    map_pages: Vec<u32>,
+    physical: storage::Storage<'image>,
     catalog_live_rows: u32,
     tables_parent: i32,
     catalog_name_order: NativeSortOrder,
@@ -35,8 +34,7 @@ impl<'image> Inventory<'image> {
             image,
             before_pages: image.catalog().header().page_count(),
             catalog_definition: facts.schema.definition_page(),
-            catalog_pages: storage.catalog,
-            map_pages: storage.maps,
+            physical: storage,
             catalog_live_rows: facts.schema.declared_rows(),
             tables_parent: facts.tables_parent,
             catalog_name_order: facts.name_order,
@@ -59,8 +57,7 @@ impl<'image> Inventory<'image> {
             image,
             before_pages: image.catalog().header().page_count(),
             catalog_definition: facts.schema.definition_page(),
-            catalog_pages: storage.catalog,
-            map_pages: storage.maps,
+            physical: storage,
             catalog_live_rows: facts.schema.declared_rows(),
             tables_parent: facts.tables_parent,
             catalog_name_order: facts.name_order,
@@ -82,8 +79,7 @@ impl<'image> Inventory<'image> {
             image,
             before_pages: image.catalog().header().page_count(),
             catalog_definition: facts.schema.definition_page(),
-            catalog_pages: storage.catalog,
-            map_pages: storage.maps,
+            physical: storage,
             catalog_live_rows: facts.schema.declared_rows(),
             tables_parent: facts.tables_parent,
             catalog_name_order: facts.name_order,
@@ -97,6 +93,10 @@ impl<'image> Inventory<'image> {
         Ok(())
     }
 
+    pub(crate) fn physical(&self) -> &storage::Storage<'image> {
+        &self.physical
+    }
+
     pub(crate) fn before_pages(&self) -> u32 {
         self.before_pages
     }
@@ -106,11 +106,11 @@ impl<'image> Inventory<'image> {
     }
 
     pub(crate) fn catalog_pages(&self) -> &[u32] {
-        &self.catalog_pages
+        &self.physical.catalog
     }
 
     pub(crate) fn map_pages(&self) -> &[u32] {
-        &self.map_pages
+        &self.physical.maps
     }
 
     pub(crate) fn catalog_live_rows(&self) -> u32 {

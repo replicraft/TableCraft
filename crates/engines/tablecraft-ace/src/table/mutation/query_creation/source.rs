@@ -2,6 +2,7 @@
 mod allocator;
 mod catalog;
 mod fragments;
+pub(super) mod initialization;
 mod schema;
 
 use crate::{
@@ -23,6 +24,8 @@ use crate::{
 };
 use std::cmp::Ordering;
 use tablecraft_core::limits::ResourceBudget;
+
+const LOCAL_TABLE_TYPE: i16 = 1;
 
 pub(super) struct CheckedStorage {
     pub catalog: TableSchema,
@@ -137,7 +140,7 @@ fn capture_storage(
     })
 }
 
-fn direct_page(
+pub(super) fn direct_page(
     image: &NativeImage,
     schema: &TableSchema,
     budget: &mut ResourceBudget,
@@ -178,9 +181,42 @@ fn direct_page(
     Ok(*number)
 }
 
-fn edit_error(error: EditError) -> QueryCreationError {
+pub(super) fn edit_error(error: EditError) -> QueryCreationError {
     match error {
         EditError::Inspect(error) => QueryCreationError::Inspect(error),
         _ => QueryCreationError::Source,
     }
+}
+
+/// Absence is selected only by complete catalog membership. A conflicting or
+/// malformed named role is terminal; construction never retries schema failure.
+pub(super) fn missing_queries(
+    image: &NativeImage,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<bool, QueryCreationError> {
+    let mut found = None;
+    for (object, origin) in image
+        .catalog()
+        .catalog()
+        .objects()
+        .iter()
+        .zip(image.catalog().origins())
+    {
+        check(budget, cancelled)?;
+        budget.charge(
+            tablecraft_core::limits::Resource::Steps,
+            object.name().as_str().len() as u64,
+        )?;
+        if object.name().as_str().eq_ignore_ascii_case("MSysQueries") {
+            if found.replace(origin).is_some()
+                || !origin.is_system()
+                || origin.type_code() != LOCAL_TABLE_TYPE
+                || origin.table_storage() != Some(crate::NativeTableStorage::Local)
+            {
+                return Err(QueryCreationError::Source);
+            }
+        }
+    }
+    Ok(found.is_none())
 }

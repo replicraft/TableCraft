@@ -108,7 +108,9 @@ pub(super) fn verify(
             &new_catalog.records[old_catalog.count],
         )?,
         Expected {
-            source: original,
+            parent: old.parent,
+            native_id: original.native_id,
+            catalog: CatalogRow::Query,
             definition,
             attribute: None,
         },
@@ -125,7 +127,9 @@ pub(super) fn verify(
                 &new_queries.records[old_queries.count + ordinal],
             )?,
             Expected {
-                source: original,
+                parent: old.parent,
+                native_id: original.native_id,
+                catalog: CatalogRow::Query,
                 definition,
                 attribute: Some(attribute),
             },
@@ -212,24 +216,54 @@ pub(super) fn verify(
 
 #[derive(Clone, Copy)]
 struct Expected<'a> {
-    source: &'a Source,
+    parent: i32,
+    native_id: i32,
+    catalog: CatalogRow,
     definition: &'a QueryCreationDefinition,
     attribute: Option<QueryAttribute>,
 }
 
+#[derive(Clone, Copy)]
+enum CatalogRow {
+    Query,
+    Storage,
+}
+
+impl CatalogRow {
+    fn kind(self) -> i16 {
+        match self {
+            Self::Query => 5,
+            Self::Storage => 1,
+        }
+    }
+    fn flags(self) -> i32 {
+        match self {
+            Self::Query => 0,
+            Self::Storage => 0x8000_0002_u32 as i32,
+        }
+    }
+}
+
 impl Expected<'_> {
+    fn name(&self) -> &str {
+        match self.catalog {
+            CatalogRow::Query => self.definition.name(),
+            CatalogRow::Storage => "MSysQueries",
+        }
+    }
+
     fn matches(self, name: &str, actual: &Value, literal: &str) -> bool {
         match (self.attribute, name, actual) {
             (None, "Id", Value::Int32(value)) | (Some(_), "ObjectId", Value::Int32(value)) => {
-                *value == self.source.native_id
+                *value == self.native_id
             }
-            (None, "ParentId", Value::Int32(value)) => *value == self.source.storage.parent,
-            (None, "Type", Value::Int16(value)) => *value == 5,
-            (None, "Flags", Value::Int32(value)) => *value == 0,
+            (None, "ParentId", Value::Int32(value)) => *value == self.parent,
+            (None, "Type", Value::Int16(value)) => *value == self.catalog.kind(),
+            (None, "Flags", Value::Int32(value)) => *value == self.catalog.flags(),
             (None, "DateCreate" | "DateUpdate", Value::DateTime(value)) => {
                 *value == self.definition.captured_at()
             }
-            (None, "Name", Value::Text(value)) => value == self.definition.name(),
+            (None, "Name", Value::Text(value)) => value == self.name(),
             (Some(attribute), "Attribute", Value::Byte(value)) => *value == attribute.code(),
             (Some(QueryAttribute::Type), "Flag", Value::Int16(value)) => *value == 1,
             (Some(QueryAttribute::Flags), "Flag", Value::Int16(value)) => *value == 0,
@@ -292,7 +326,7 @@ fn verify_record(
             Value::Text(text) => {
                 text.len()
                     + match field.name() {
-                        "Name" => expected.definition.name().len(),
+                        "Name" => expected.name().len(),
                         "Name1" => expected.definition.alias().len(),
                         "Expression" => literal.len(),
                         _ => 0,
@@ -430,7 +464,7 @@ fn verify_short_text(
     Ok(())
 }
 
-fn capture(
+pub(super) fn capture(
     image: &NativeImage,
     number: u32,
     owner: u32,
@@ -454,7 +488,7 @@ fn page(image: &NativeImage, number: u32) -> Result<&[u8], QueryCreationError> {
         .ok_or(QueryCreationError::Preservation)
 }
 
-fn record<'a>(
+pub(super) fn record<'a>(
     image: &'a NativeImage,
     number: u32,
     range: &Range<usize>,
@@ -464,9 +498,39 @@ fn record<'a>(
         .ok_or(QueryCreationError::Preservation)
 }
 
-fn append_scope(offset: usize, before: &Page, after: &Page) -> bool {
+pub(super) fn append_scope(offset: usize, before: &Page, after: &Page) -> bool {
     (2..4).contains(&offset)
         || (12..14).contains(&offset)
         || (slot_offset(before.count)..slot_offset(after.count)).contains(&offset)
         || (after.start..before.start).contains(&offset)
+}
+
+pub(super) struct StorageRow<'a> {
+    pub parent: i32,
+    pub native_id: i32,
+    pub definition: &'a QueryCreationDefinition,
+}
+
+pub(super) fn verify_storage_record(
+    image: &NativeImage,
+    schema: &TableSchema,
+    actual: &[u8],
+    row: StorageRow<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), QueryCreationError> {
+    verify_record(
+        image,
+        schema,
+        actual,
+        Expected {
+            parent: row.parent,
+            native_id: row.native_id,
+            catalog: CatalogRow::Storage,
+            definition: row.definition,
+            attribute: None,
+        },
+        budget,
+        cancelled,
+    )
 }

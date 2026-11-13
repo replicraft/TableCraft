@@ -42,6 +42,21 @@ impl From<EditError> for QueryCreationError {
     }
 }
 
+/// Technical system-storage effect of a fully proved QueryDef creation.
+/// This inert fact grants no construction, mutation or publication authority.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum NativeQueryStorageChange {
+    /// The same complete MSysQueries storage already existed in BEFORE.
+    Existing,
+    /// One actual local system table was initialized from a missing-role source.
+    Initialized {
+        /// Actual signed native catalog ID of the new system table.
+        native_table_id: i32,
+        /// Actual newly allocated TDEF page, independently checked after build.
+        definition_page: u32,
+    },
+}
+
 /// Source-bound new QueryDef bytes with independent full-image proof.
 ///
 /// This candidate cannot prepare a journal, save, recover or publish a query.
@@ -52,15 +67,19 @@ pub struct NativeQueryCreationCandidate {
     after: NativeImage,
     definition: QueryCreationDefinition,
     native_id: i32,
+    storage_change: NativeQueryStorageChange,
 }
 
 impl NativeImage {
     /// Construct one new constant SELECT without changing an existing QueryDef.
     ///
-    /// The first source profile requires actual qualified native catalog and
-    /// MSysQueries storage with complete append ownership. Existing fragments,
-    /// user records and protected metadata remain unchanged. The declaration
-    /// supplies exact creation/update DATE bits; no clock or SQL is executed.
+    /// Qualified existing MSysQueries storage uses complete append ownership.
+    /// A positively qualified source without that role initializes its system
+    /// declaration, DATA and represented maps atomically with the new QueryDef.
+    /// Malformed or conflicting roles are refused without an initialization retry.
+    /// Existing fragments, user records and protected metadata remain unchanged.
+    /// The declaration supplies exact creation/update DATE bits for both new
+    /// catalog objects when initialization is needed; no clock or SQL is executed.
     ///
     /// # Errors
     /// Refuses incompatible source policy/geometry, collisions, unsupported
@@ -90,11 +109,17 @@ impl NativeImage {
             after: built.after,
             definition,
             native_id: built.native_id,
+            storage_change: built.storage_change,
         })
     }
 }
 
 impl NativeQueryCreationCandidate {
+    /// Exact technical effect derived only from the sealed native construction.
+    pub const fn storage_change(&self) -> NativeQueryStorageChange {
+        self.storage_change
+    }
+
     /// Complete immutable original image admitted by this construction.
     pub fn before_bytes(&self) -> &[u8] {
         self.before.as_bytes()

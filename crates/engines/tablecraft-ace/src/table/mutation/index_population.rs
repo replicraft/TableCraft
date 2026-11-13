@@ -78,6 +78,7 @@ pub(super) fn build<const WIRE_BYTES: usize>(
     original.inventory.require_source(&image)?;
     let allocation = original
         .inventory
+        .physical()
         .plan_allocation(maps.after_pages, budget, cancelled)
         .map_err(allocation_error)?;
     let descriptor = CreatedDescriptor {

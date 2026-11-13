@@ -32,6 +32,35 @@ pub(super) fn qualify(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<i32, QueryCreationError> {
+    qualify_roles(image, schema, QueryStorage::Existing, budget, cancelled)
+}
+
+pub(super) fn qualify_missing(
+    image: &NativeImage,
+    schema: &TableSchema,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<i32, QueryCreationError> {
+    qualify_roles(image, schema, QueryStorage::Missing, budget, cancelled)
+}
+
+#[derive(Clone, Copy)]
+enum QueryStorage {
+    Existing,
+    Missing,
+}
+
+fn qualify_roles(
+    image: &NativeImage,
+    schema: &TableSchema,
+    queries: QueryStorage,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<i32, QueryCreationError> {
+    let roles = match queries {
+        QueryStorage::Existing => &SYSTEM_ROLES[..],
+        QueryStorage::Missing => &SYSTEM_ROLES[..SYSTEM_ROLES.len() - 1],
+    };
     let objects = image.catalog().catalog().objects();
     let origins = image.catalog().origins();
     if objects.len() != origins.len()
@@ -55,13 +84,13 @@ pub(super) fn qualify(
     // Base roles and the three selected containers traverse the catalog names;
     // the database role owner separately charges its own containment lookup.
     let role_work = names
-        .checked_mul(SYSTEM_ROLES.len() + 3)
+        .checked_mul(roles.len() + 3)
         .ok_or(QueryCreationError::Source)?;
     budget.charge(Resource::Steps, role_work as u64)?;
     let root = role("DatabaseRoot")?;
     let tables = role("Tables")?;
     let databases = role("Databases")?;
-    for &(name, kind) in &SYSTEM_ROLES {
+    for &(name, kind) in roles {
         check(budget, cancelled)?;
         let origin = role(name)?;
         let parent = if name == "DatabaseRoot" {
@@ -94,10 +123,10 @@ pub(super) fn qualify(
         check(budget, cancelled)?;
         budget.charge(
             Resource::Steps,
-            (object.name().as_str().len() * SYSTEM_ROLES.len()) as u64,
+            (object.name().as_str().len() * roles.len()) as u64,
         )?;
         if origin.is_system() {
-            if !SYSTEM_ROLES
+            if !roles
                 .iter()
                 .any(|(name, _)| *name == object.name().as_str())
                 && database.is_none_or(|database| database.object_id() != origin.object_id())
@@ -107,7 +136,8 @@ pub(super) fn qualify(
         } else {
             let ordinary = origin.type_code() == LOCAL_TABLE_TYPE
                 && origin.table_storage() == Some(NativeTableStorage::Local);
-            if (!ordinary && origin.type_code() != QUERY_TYPE)
+            if (matches!(queries, QueryStorage::Missing) && !ordinary)
+                || (!ordinary && origin.type_code() != QUERY_TYPE)
                 || origin.flags() != 0
                 || origin.parent_id() != tables.native_id()
             {
