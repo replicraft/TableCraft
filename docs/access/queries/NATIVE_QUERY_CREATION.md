@@ -87,9 +87,13 @@ worker consumes the nominal capability, and `OpenQueryCreated` checks the comple
 saved image and actual new query identity before publishing a fresh catalog.
 Save, recovery and reopen do not resample the clock or execute the query.
 
-The service integration has focused recovery and real-worker acceptance tests;
-its combined release verification is pending. The construction checkpoint below
-predates these layers and does not qualify them or supply a GUI persistence claim.
+The [service checkpoint](../../../tests/results/queries/querydef-persistence-services-2026-11-13.json)
+records 671 native, 5 saved-reader, 343 adapter, 493 Runtime, 17 selected Desktop
+and 80 MCP passes. Separate journal-only and adapter-without-creation runs pass
+four and one tests respectively. The batch retains 51 explicit fixture-dependent
+or qualification ignores. Strict lint across eleven packages, separate engine
+feature combinations, minimal Runtime and Rustdoc pass. These checks qualify the
+documented service profile, not GUI persistence or native Windows/Access behavior.
 
 ## Local qualification
 

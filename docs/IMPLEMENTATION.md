@@ -1,5 +1,22 @@
 # Implementation status
 
+## QueryDef recovery and shared save service — 13 November 2026
+
+Native constant-query creation now has a distinct source-bound semantic original,
+checked V3 recovery, exclusive adapter staging and Runtime review/save/reopen
+services. Authored SQL and copying a stored definition remain separate requests;
+dirty Save As cannot substitute the stored definition. The clock is captured once
+at review, and fresh reopen checks the complete saved image and new query identity.
+
+The [service checkpoint](../tests/results/queries/querydef-persistence-services-2026-11-13.json)
+records 1,614 passing tests and 51 explicit fixture/qualification ignores across
+the selected native, adapter, Runtime, Desktop, MCP and feature-boundary scopes.
+Strict lint, minimal feature builds and Rustdoc pass. The initial compile failure
+and its correction are retained in the evidence. The [source and declaration
+restrictions](access/queries/NATIVE_QUERY_CREATION.md) remain explicit. GUI Save,
+Save As and genuine saved-query Design ownership are the next integration layer;
+general QueryDef persistence and other native profiles remain unfinished.
+
 ## Native QueryDef construction — 13 November 2026
 
 The engine now constructs a source-bound constant SELECT with a new signed

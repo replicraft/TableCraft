@@ -1,0 +1,810 @@
+{
+  "date": "2026-11-13",
+  "source_commit": "3a4a6d9fde288e0a3aae06e2c128af04ac42b5ef",
+  "scope": "Native constant QueryDef semantic originals, exclusive adapter staging and cold recovery, Runtime authored creation versus stored copy, save custody and guarded fresh reopen. GUI Save/Save As is not supplied by this checkpoint.",
+  "platform": "Darwin arm64",
+  "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)",
+  "qualification_status": "passed_with_explicit_fixture_and_qualification_ignores",
+  "boundaries": [
+    "ACE16 constant SELECT and the documented actual source certificate only; no broader SQL persistence or other-profile qualification.",
+    "Independent complete BEFORE/AFTER and literal TCQC wire checks; real V3 states and actual Worker/SaveWorker paths, without native Access or Windows execution.",
+    "Raw V3 journals do not embed semantic originals; the existing host opaque-intent journal bundle supplies durable pairing.",
+    "Authored draft input moves into the response after successful admission; stored-copy remains a distinct request. Save/recovery/reopen do not resample the injected clock.",
+    "Headless consumer regression checks do not qualify a new GUI surface or native interaction."
+  ],
+  "checks": [
+    {
+      "job": "strict",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-sql",
+        "-p",
+        "tablecraft-builders",
+        "-p",
+        "tablecraft-query",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-testkit",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-runtime",
+        "-p",
+        "tablecraft-ui",
+        "-p",
+        "tablecraft-desktop",
+        "-p",
+        "tablecraft-cli",
+        "-p",
+        "tablecraft-mcp",
+        "--all-targets",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "seconds": 48.04,
+      "log": ".cache/ace-sql-query-create-services-repaired-strict-20261113.log",
+      "artifact": {
+        "path": ".cache/ace-sql-query-create-services-repaired-strict-20261113.log",
+        "bytes": 1229,
+        "sha256": "c9e3c94fd8e0bf1b5a3dd388106ef018ce55787a193de1abb993239321e36c49"
+      },
+      "test_summaries": []
+    },
+    {
+      "job": "native",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "creation::",
+        "queries::expression_edit",
+        "queries::fitting",
+        "table::mutation::record_insertion",
+        "table::mutation::record_serialization",
+        "table::mutation::normal_insert",
+        "table::mutation::insert",
+        "format::data_append",
+        "transaction::intent::query_expression",
+        "transaction::intent::query_creation"
+      ],
+      "returncode": 0,
+      "seconds": 154.76,
+      "log": ".cache/ace-sql-query-create-services-repaired-native-20261113.log",
+      "artifact": {
+        "path": ".cache/ace-sql-query-create-services-repaired-native-20261113.log",
+        "bytes": 106160,
+        "sha256": "6300dc948657ca5f4bce709ca2e1ade791809976d081cc77c742074e7cf79e76"
+      },
+      "test_summaries": [
+        {
+          "passed": 671,
+          "failed": 0,
+          "ignored": 49,
+          "measured": 0,
+          "filtered_out": 1764
+        }
+      ]
+    },
+    {
+      "job": "saved-read",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--test",
+        "saved_queries",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 1.5,
+      "log": ".cache/ace-sql-query-create-services-repaired-saved-read-20261113.log",
+      "artifact": {
+        "path": ".cache/ace-sql-query-create-services-repaired-saved-read-20261113.log",
+        "bytes": 820,
+        "sha256": "bb101c61eefc232514beadd6dbc5dea6a6aeea40c6c9260fbaababf92b8ed0c5"
+      },
+      "test_summaries": [
+        {
+          "passed": 5,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0
+        }
+      ]
+    },
+    {
+      "job": "access",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 72.63,
+      "log": ".cache/ace-sql-query-create-services-repaired-access-20261113.log",
+      "artifact": {
+        "path": ".cache/ace-sql-query-create-services-repaired-access-20261113.log",
+        "bytes": 46402,
+        "sha256": "0d41273d858715414c1dfa699153b69b035f62d5cb3a977f50e700b0c7196629"
+      },
+      "test_summaries": [
+        {
+          "passed": 343,
+          "failed": 0,
+          "ignored": 1,
+          "measured": 0,
+          "filtered_out": 0
+        }
+      ]
+    },
+    {
+      "job": "runtime",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-runtime",
+        "--lib",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 93.46,
+      "log": ".cache/ace-sql-query-create-services-repaired-runtime-20261113.log",
+      "artifact": {
+        "path": ".cache/ace-sql-query-create-services-repaired-runtime-20261113.log",
+        "bytes": 61079,
+        "sha256": "3e8852b666d56c5ca71d83732e433b20705c2563fceb4e3f52dc99248826f2a5"
+      },
+      "test_summaries": [
+        {
+          "passed": 493,
+          "failed": 0,
+          "ignored": 1,
+          "measured": 0,
+          "filtered_out": 0
+        }
+      ]
+    },
+    {
+      "job": "desktop",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-desktop",
+        "--bin",
+        "tablecraft-desktop",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "workspace::saved::sql::tests",
+        "workspace::query_design::tests",
+        "workspace::objects::tests::save_handoff"
+      ],
+      "returncode": 0,
+      "seconds": 102.79,
+      "log": ".cache/ace-sql-query-create-services-repaired-desktop-20261113.log",
+      "artifact": {
+        "path": ".cache/ace-sql-query-create-services-repaired-desktop-20261113.log",
+        "bytes": 12118,
+        "sha256": "5d55c7a796e4bf4b8157d5fb5643277acc38b9e5ed006c8574a7c0ad85083365"
+      },
+      "test_summaries": [
+        {
+          "passed": 17,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 431
+        }
+      ]
+    },
+    {
+      "job": "mcp",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-mcp",
+        "--all-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 56.29,
+      "log": ".cache/ace-sql-query-create-services-repaired-mcp-20261113.log",
+      "artifact": {
+        "path": ".cache/ace-sql-query-create-services-repaired-mcp-20261113.log",
+        "bytes": 12432,
+        "sha256": "416814411eaef9aa7b62b399b3d91f7e7b89db8d0de85df721df5dfad0ddb081"
+      },
+      "test_summaries": [
+        {
+          "passed": 78,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0
+        },
+        {
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0
+        }
+      ]
+    },
+    {
+      "job": "engine-minimal",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--no-default-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 10.1,
+      "log": ".cache/ace-sql-query-create-services-repaired-engine-minimal-20261113.log",
+      "artifact": {
+        "path": ".cache/ace-sql-query-create-services-repaired-engine-minimal-20261113.log",
+        "bytes": 2428,
+        "sha256": "f17c16a7f1af90866aff09acf496376445920629a0b525febff9d44ff4e335b5"
+      },
+      "test_summaries": []
+    },
+    {
+      "job": "native-journal-data",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "journal",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "transaction::intent::query_creation"
+      ],
+      "returncode": 0,
+      "seconds": 58.84,
+      "log": ".cache/ace-sql-query-create-services-repaired-native-journal-data-20261113.log",
+      "artifact": {
+        "path": ".cache/ace-sql-query-create-services-repaired-native-journal-data-20261113.log",
+        "bytes": 1033,
+        "sha256": "9ca32033d09ff60c3357329a3eecdf85803deb713c5c47bdcdcfab86352cdf5d"
+      },
+      "test_summaries": [
+        {
+          "passed": 4,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 934
+        }
+      ]
+    },
+    {
+      "job": "access-no-create",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-access",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "offline-write-session",
+        "--offline",
+        "--locked",
+        "--release",
+        "--",
+        "editing::offline::plan::query_creation_tests"
+      ],
+      "returncode": 0,
+      "seconds": 28.52,
+      "log": ".cache/ace-sql-query-create-services-repaired-access-no-create-20261113.log",
+      "artifact": {
+        "path": ".cache/ace-sql-query-create-services-repaired-access-no-create-20261113.log",
+        "bytes": 757,
+        "sha256": "bb4143acd12375cb12f7fae2eb736e94420d82fac4cbc1e8b9dc537ecf078bf1"
+      },
+      "test_summaries": [
+        {
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 119
+        }
+      ]
+    },
+    {
+      "job": "engine-create-only",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "ace16-create",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 2.68,
+      "log": ".cache/ace-sql-query-create-services-repaired-engine-create-only-20261113.log",
+      "artifact": {
+        "path": ".cache/ace-sql-query-create-services-repaired-engine-create-only-20261113.log",
+        "bytes": 173,
+        "sha256": "c9d3a023cb2be69d48b519c16c37362097e4e97dbbf0abe1d577402ff34a6dd5"
+      },
+      "test_summaries": []
+    },
+    {
+      "job": "engine-journal-only",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "journal",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 6.81,
+      "log": ".cache/ace-sql-query-create-services-repaired-engine-journal-only-20261113.log",
+      "artifact": {
+        "path": ".cache/ace-sql-query-create-services-repaired-engine-journal-only-20261113.log",
+        "bytes": 283,
+        "sha256": "edaa84635b89c22a89ebe6aaa1b173d16eec4505f91a7f2987a83a482b1ecd38"
+      },
+      "test_summaries": []
+    },
+    {
+      "job": "engine-query-create",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-ace",
+        "--lib",
+        "--no-default-features",
+        "--features",
+        "journal,ace16-create",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 9.79,
+      "log": ".cache/ace-sql-query-create-services-repaired-engine-query-create-20261113.log",
+      "artifact": {
+        "path": ".cache/ace-sql-query-create-services-repaired-engine-query-create-20261113.log",
+        "bytes": 173,
+        "sha256": "b34988b17edca99b88934e632aaf6f6c12320b348044e313c770de2e5426f6ec"
+      },
+      "test_summaries": []
+    },
+    {
+      "job": "runtime-minimal",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "tablecraft-runtime",
+        "--no-default-features",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 8.1,
+      "log": ".cache/ace-sql-query-create-services-repaired-runtime-minimal-20261113.log",
+      "artifact": {
+        "path": ".cache/ace-sql-query-create-services-repaired-runtime-minimal-20261113.log",
+        "bytes": 3092,
+        "sha256": "d9ac2247c2eb6d5e38fa02e78e570948ba27c8cca51778f4b08289723884f706"
+      },
+      "test_summaries": []
+    },
+    {
+      "job": "rustdoc",
+      "command": [
+        "cargo",
+        "doc",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-runtime",
+        "--all-features",
+        "--no-deps",
+        "--offline",
+        "--locked",
+        "--release"
+      ],
+      "returncode": 0,
+      "seconds": 16.45,
+      "log": ".cache/ace-sql-query-create-services-repaired-rustdoc-20261113.log",
+      "artifact": {
+        "path": ".cache/ace-sql-query-create-services-repaired-rustdoc-20261113.log",
+        "bytes": 893,
+        "sha256": "3668f46cf82f0fa84b0b9a0bb196f62901c18add998a9dc805107f138bb4bed1"
+      },
+      "test_summaries": []
+    }
+  ],
+  "preserved_failed_attempt": {
+    "path": ".cache/ace-sql-query-create-services-strict-20261113.log",
+    "bytes": 15528,
+    "sha256": "82f2ecff55fb3686d24fbdd95d00e20270f96ee79a6dbdf483a28e9b950d2d6d"
+  },
+  "failure_resolution": "Initial strict compilation found a private DocumentEdits image_source access. A borrowed read-only accessor preserves field privacy for guarded reopen verification; repaired strict and remaining checks are recorded above.",
+  "artifacts": [
+    {
+      "path": "apps/tablecraft-desktop/src/workspace.rs",
+      "bytes": 83804,
+      "sha256": "f35f01ebe56ba32f483949423d215e63e693c6a7834983001f8fa399d71885b2"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/command.rs",
+      "bytes": 11420,
+      "sha256": "8b01603ad895178d8a944ca756a961324097987944fd6c2a6f88151d7104e4ec"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/display.rs",
+      "bytes": 9765,
+      "sha256": "4c259d3fb9b2ce329cdc8ed078fb21373486d0093d454b7104e7163b82205c4b"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/document.rs",
+      "bytes": 17001,
+      "sha256": "cd7b4c88c1bcc39150b22e70271df0bac3f5509c6a0e15370cb54e290b828fd5"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/document/query_creation.rs",
+      "bytes": 2014,
+      "sha256": "772bda5251f27162c18ddfd817f3fe4a20f7fdd8ef5aad6aa0301310e0c2a968"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/editing.rs",
+      "bytes": 6923,
+      "sha256": "104300803c58385d156383821544af4aba5e66caf78ce87201c50406fddd0442"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/editing/native.rs",
+      "bytes": 1515,
+      "sha256": "4962b53fe07b84779f7c53ca8d50c4ce4cbef297ee9219198bd9c8fbf037d948"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/editing/native/query_creation.rs",
+      "bytes": 8537,
+      "sha256": "5ba7d3dded26b7f4d4cafed6e3c44b4195089b972460b5729dfdf941c4e443e1"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/editing/native/query_sql.rs",
+      "bytes": 6719,
+      "sha256": "8685b50439ffb7992c1263f60ae4e3e63af805aca49ebea3b1923e97375a4352"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/editing/native/query_syntax.rs",
+      "bytes": 1328,
+      "sha256": "1a4ae90932da58d9c62cea1ea6bd6f16b16eca538effa666295a7b25f67c8edc"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/editing/native/save.rs",
+      "bytes": 49856,
+      "sha256": "5e48f7f67757f3201cdfca48b0f9799bcfe574c5045f30a0f123cf523796227a"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/editing/native/save/apply_query_creation.rs",
+      "bytes": 1890,
+      "sha256": "c5a8fdbc6a908be2cf0c4428a177571431aca15db741ea0e252788e661f28186"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/editing/native/save/outcomes.rs",
+      "bytes": 30336,
+      "sha256": "80c6e519ebc004ddd88b4d5d14f9ed32bc69dd1571956df48733399536ad0d54"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/editing/native/save/outcomes/query_creation.rs",
+      "bytes": 989,
+      "sha256": "862f95467bc6119c5472be65dad2c06615aebb69d6082db6a05051a72e3dfdd8"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/editing/native/state.rs",
+      "bytes": 1617,
+      "sha256": "072b4c071e515b9adab9ed393b83650db7fdb6bfe83aa88496d905c364c6f6f9"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/editing/query_creation.rs",
+      "bytes": 3658,
+      "sha256": "b75c3e4ff4520604aad694e37c64628a07e65d9ebdedbdb9e2cfbc876c63b9ca"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/editing/query_creation/outcome.rs",
+      "bytes": 1482,
+      "sha256": "06f53d8897c0052c03af363236e9ff82bd38a68f8487817ec0655d9c3bb5ee8a"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/editing/query_creation/outcome/tests.rs",
+      "bytes": 1481,
+      "sha256": "390c87b45bb999e0bdc8cd826395e8bfade551a165c454cb5842b169f0b75408"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/editing/save.rs",
+      "bytes": 7672,
+      "sha256": "75e0db0c461cf89c96f0dde66302bd5c51b3c1cd75a76f75ab4f3596b2fcad69"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/editing/unsupported.rs",
+      "bytes": 1336,
+      "sha256": "382c513ae7599e55f3b7b7668b8f0cc343ebaf40b7560cf28185296edb0a462f"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/editing/unsupported/query_creation.rs",
+      "bytes": 1260,
+      "sha256": "f269fee242c3c5f72d99a1f9e8a42d5828484c84c0055b72bb1b2246368dc345"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/editing/unsupported/save.rs",
+      "bytes": 9860,
+      "sha256": "0fd98f71f3b38bc4ceb417611ae7216ecef4261d426988d6c4f2e56bad108595"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/error.rs",
+      "bytes": 14015,
+      "sha256": "6063c34ee6a15e7fb033fb9c22ba0bea6e7510e13cbe34a3a3116a22262e7e62"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/lib.rs",
+      "bytes": 5025,
+      "sha256": "c81a2ca16ed9f587e9fafc32a288bdce68ce9d394d293739c1af712a92eb0104"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/response.rs",
+      "bytes": 8594,
+      "sha256": "5bf6ca723f849e83b0bae76a54ffe7db97e0f8be0cda962433798d44b0318679"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/source.rs",
+      "bytes": 4032,
+      "sha256": "250a505c12894b13bd4c22342fa1577e664aabd111eb074d8727f7d1f81d0b7a"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/tests.rs",
+      "bytes": 18965,
+      "sha256": "a8ed66d4111d00f076dcbd90098dd171596af08b1acba28466ad72031e69e91a"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/tests/query_creation.rs",
+      "bytes": 10254,
+      "sha256": "f695ab9a67ccf9be919f1525d4deba68cbabc343e71df5fadb794f2440fdbc1b"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/worker.rs",
+      "bytes": 49546,
+      "sha256": "540a406e7796884e4d4223d908f9f8faf209c20132e296e210a23c6649c742f2"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/editing/offline.rs",
+      "bytes": 19360,
+      "sha256": "d12bb34a84063cad759598b55db93a14c51b3c8ec97e24784258945a13e55880"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/editing/offline/add_table.rs",
+      "bytes": 3902,
+      "sha256": "419f40af1986f0ef3ab8b63a1f0a690fe38f1d6049e06c03bf7f7ef60ac70ca6"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/editing/offline/error.rs",
+      "bytes": 17398,
+      "sha256": "a4c172887a6612212309e9382a1e098bf1d0feba43dd6e856a4271d5fe9a59cf"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/editing/offline/index_creation.rs",
+      "bytes": 5611,
+      "sha256": "6f949e362e941a9454ff0fb424b2522d3a2971c6c19ad2b34bd1dd840c6e91b0"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/editing/offline/index_drop.rs",
+      "bytes": 3951,
+      "sha256": "a9201b030d2b6ca89f7a6c2cf451e2baf59b12ddd552ad6af242ec707897f3da"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/editing/offline/plan.rs",
+      "bytes": 40040,
+      "sha256": "270e117fec550fdfb6a7d96afe8da8eee46c1868a1f78b2462aa3a7c16c52880"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/editing/offline/plan/query_creation_tests.rs",
+      "bytes": 3564,
+      "sha256": "bd57e36a19db9bd8d89abd9c8b1ae587ae92535b3dacc0246f4d60b55f95b64a"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/editing/offline/populated_table.rs",
+      "bytes": 3095,
+      "sha256": "6a0836a3caef76e8344fbe78f0013a2a91ea889bb4b8c9b0a0d8518e2cd25fbb"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/editing/offline/query_creation.rs",
+      "bytes": 3581,
+      "sha256": "c96e6d06048dace65bc0b15036b1128cf714aa305b7b4996329c11b6fc39cf94"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/editing/offline/query_creation/tests.rs",
+      "bytes": 7881,
+      "sha256": "3684236b0b0fb28dd5bd3118b655b458538ba5785be67a31ee1d61f4ab29f7be"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/editing/offline/recovery.rs",
+      "bytes": 68870,
+      "sha256": "6b2c297c7cad2f0b7d222139e9fb86bae1e6a7d154485584d84d29c847e32b6c"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/editing/offline/test_support/retained_schema_recovery.rs",
+      "bytes": 3760,
+      "sha256": "8f245e042e47fb9a0f8593702783db92a1cf7757ef53c822dae1e220818d3ac7"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/lib.rs",
+      "bytes": 1701,
+      "sha256": "575d78e1fb91d7383076d24de6b81ab23ba7bcc1ab3e87a0003e243d27ac0ce1"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/saved.rs",
+      "bytes": 1802,
+      "sha256": "09ed6a1759aebf5066cec92170f43780c42d744d23ed0d4603cd5d12ebb69e0b"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/saved/creation.rs",
+      "bytes": 6715,
+      "sha256": "a5cc4ed05b905bb560eee2569708be6a3d72ff11745b1e1efc05983337b594cf"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/saved/creation/tests.rs",
+      "bytes": 7133,
+      "sha256": "d1517b63e1ed0a8fc405150c33a3053d18fcf2f458c3471b036872591b415977"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/saved/expression_edit.rs",
+      "bytes": 5592,
+      "sha256": "c31fbf79f5df33d40237ffef265f641e3d75c5f0e2cd59b1e0a39531f262d195"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/saved/expression_edit/diff.rs",
+      "bytes": 5330,
+      "sha256": "b4018ee5bb62e314376860f4ecf37f72a8bbc72d0ef319cf25dbb4e321815379"
+    },
+    {
+      "path": "crates/backends/tablecraft-access/src/saved/render.rs",
+      "bytes": 7511,
+      "sha256": "02c43baa0aa2c1384bb69533726c7e6e4582286fe1a6802b9e55718513d8e273"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/lib.rs",
+      "bytes": 22187,
+      "sha256": "120492e5ced31f60541a52814d2b5d7a1c507a54eb82a7defeb8524c03f8baed"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/queries.rs",
+      "bytes": 814,
+      "sha256": "491f93a4590cf2b37035f292b12810d0e92b9c2dfdcdacdc3ce3d7d650aa3d39"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/queries/creation.rs",
+      "bytes": 4249,
+      "sha256": "d0f6d666820c7ad1aadb1272a2ed0222162c322b99dfe41529ea4a1593d57835"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/queries/creation/definition.rs",
+      "bytes": 3485,
+      "sha256": "a3f4539bf2f47f109e82f9cb87c07b744e754a553f48ae79cdc21fcc237494d7"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/queries/creation/effect.rs",
+      "bytes": 1442,
+      "sha256": "ef2a53519e4e0a55637ba4162bae757a31aa1f29ed3024c38b6678537a037a89"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/transaction.rs",
+      "bytes": 13498,
+      "sha256": "97cf01c3395fb05c25ce39820d1a3407f82c27ad7d13b7768555a5e06327a223"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/transaction/intent.rs",
+      "bytes": 9633,
+      "sha256": "50de5d89a41ce609e33770ffff5cf129f70570c0dc3e6ee4bddaed64e4648173"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/transaction/intent/query_creation.rs",
+      "bytes": 7621,
+      "sha256": "8c647901a39f14fec19c77eb3bd6825a5c88ce88eb143e9a18470ef49b2256d3"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/transaction/intent/query_creation/codec.rs",
+      "bytes": 7125,
+      "sha256": "e0cdf2503249ecf92f246b25466098172f92537ea92d4537e4e57ebeff52bb8a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/transaction/intent/query_creation/planning.rs",
+      "bytes": 4760,
+      "sha256": "f0bbd7c52fd3b29db495c05ae28056958b445510c7fc19103ea23c83dc4fb815"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/transaction/intent/query_creation/recovery.rs",
+      "bytes": 3890,
+      "sha256": "b2464facc27e106f5f76b4362bbdf1d3d5e625686e665933daf5ab5898cdbb21"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/transaction/intent/query_creation/tests.rs",
+      "bytes": 8712,
+      "sha256": "e49dc46c0f7373ecb57e9781c0d2352ef8806390b82a874f8cab23f879fd5808"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/transaction/intent/query_creation/tests/recovery.rs",
+      "bytes": 12192,
+      "sha256": "28724447ae400108278909ae52ad2b0896740733744561ac41e5f39955cadb4a"
+    },
+    {
+      "path": "crates/query/tablecraft-expressions/src/functions/dates/clock.rs",
+      "bytes": 4251,
+      "sha256": "87108b9578b32a5c713694dfb89c48ba0e3a0f6dc56640e4c4988f8901a59ea7"
+    },
+    {
+      "path": ".cache/ace-sql-query-create-services-repaired-batch-20261113.py",
+      "bytes": 3566,
+      "sha256": "16bb4f0580b6e2d0c4a91eee7ca93cbf6624a056cd3c867df3b6a3a31b062af7"
+    }
+  ]
+}
