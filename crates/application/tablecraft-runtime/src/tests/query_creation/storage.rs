@@ -14,7 +14,8 @@ fn run(case: Case) {
     let clock = Arc::new(CountedClock(AtomicUsize::new(0)));
     // NO_CLONE: The worker owns its injected clock while the observer checks
     // that save, ACK, guarded reopen and Run never read it again.
-    let worker = Worker::with_query_clock(|| {}, Arc::clone(&clock));
+    let provider = Arc::clone(&clock);
+    let worker = Worker::with_query_clock(|| {}, provider);
     // NO_CLONE: Open consumes its path; the test retains a separate file witness.
     let Response::Opened {
         document_revision,
