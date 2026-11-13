@@ -75,7 +75,7 @@ pub(super) fn show(
         &response,
         index == 0 || response.has_focus(),
     );
-    if reveal {
+    if reveal && !response.has_focus() {
         response.request_focus();
     }
     let changed_text = (response.changed() && text.as_ref() != original).then(|| text.into_owned());
@@ -145,13 +145,24 @@ pub(super) fn show(
     if response.lost_focus() {
         inputs.blur(index);
     }
-    if response.has_focus()
+    // A newly requested focus has no lock filter until the next pass. egui can
+    // therefore release it on Escape before this widget renders; retain the
+    // exact previous-frame owner instead of another recently blurred field.
+    let owned_focus =
+        response.has_focus() || ui.memory(|memory| memory.had_focus_last_frame(response.id));
+    if ui.is_enabled()
+        && owned_focus
         && !egui::Popup::is_any_open(ui.ctx())
         && ui.input_mut(|input| input.consume_key(egui::Modifiers::NONE, egui::Key::Escape))
     {
         if inputs.has(index) {
             match cancel(inputs, index, column, budget) {
-                Ok(cancelled) => changed |= cancelled,
+                Ok(cancelled) => {
+                    changed |= cancelled;
+                    if cancelled && !response.has_focus() {
+                        response.request_focus();
+                    }
+                }
                 Err(_) => budget.rejected = true,
             }
         } else {

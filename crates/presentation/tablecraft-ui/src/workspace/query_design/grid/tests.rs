@@ -345,6 +345,12 @@ fn escape_cancels_retained_field_text_before_focus_navigation() {
             .get_by_role_and_label(Role::TextInput, "Field expression")
             .is_focused()
     );
+    // Accessibility focus can be requested again on an already focused input.
+    // Escape on the next pass must still reach that exact field's edit owner.
+    harness
+        .get_by_role_and_label(Role::TextInput, "Field expression")
+        .focus();
+    harness.run_steps(1);
     harness.key_press(Key::Escape);
     harness.run_steps(2);
     assert!(!harness.state().0.field_inputs.has(0));
