@@ -1,4 +1,6 @@
 //! Genuine saved Design identity keeps Run attached to the current typed draft.
+mod close;
+
 use super::{accept_name, name, opened, scratch, sql};
 use crate::workspace::{
     Desktop,
