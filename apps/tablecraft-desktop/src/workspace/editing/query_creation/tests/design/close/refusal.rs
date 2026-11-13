@@ -61,7 +61,10 @@ fn unsupported_saved_alias_close_save_cancels_deferred_open_and_retains_the_actu
     else {
         panic!("actual TCQE alias-change review must return its host profile refusal");
     };
-    assert!(message.contains("existing expression-fragment profile"));
+    assert_eq!(
+        message,
+        "saved SQL changes unsupported topology or expression syntax"
+    );
     assert!(harness.get_by_label(message).rect().width() > 0.0);
     assert!(!harness.state().state.query_creation_name_open());
     assert!(!harness.state().state.query_design_close_open());
