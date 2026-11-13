@@ -144,7 +144,7 @@ fn database_row(before: &[u8]) -> usize {
     );
     assert_eq!(
         u32::from_le_bytes(before[row + 28..row + 32].try_into().unwrap()),
-        0x8000_0002
+        0x8000_0000
     );
     row
 }
