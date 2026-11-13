@@ -229,6 +229,7 @@ pub(super) fn design_grid(ui: &mut Ui, session: &mut Session) -> bool {
                                                     .get(criterion)
                                                     .map_or(0, String::len),
                                                 &mut budget,
+                                                None,
                                             );
                                             focus::register(
                                                 ui,
@@ -314,19 +315,22 @@ fn bounded_input(
     label_key: &str,
     old_cost: usize,
     budget: &mut InputBudget,
+    event_filter: Option<egui::EventFilter>,
 ) -> egui::Response {
     let id = ui.make_persistent_id(label_key);
     let limit = budget.remaining.saturating_add(old_cost);
     budget.rejected |= crate::text_input::reject_oversized_events(ui, id, text.as_str(), limit);
     let label = tr(ui, label_key);
-    let response = ui.add(
-        TextEdit::singleline(&mut *text)
-            .id(id)
-            .desired_width(GRID_COLUMN_WIDTH)
-            .frame(egui::Frame::NONE)
-            .margin(egui::vec2(3.0, 1.0))
-            .char_limit(limit.min(crate::text_input::MAX_EDITOR_SCALARS)),
-    );
+    let mut editor = TextEdit::singleline(&mut *text)
+        .id(id)
+        .desired_width(GRID_COLUMN_WIDTH)
+        .frame(egui::Frame::NONE)
+        .margin(egui::vec2(3.0, 1.0))
+        .char_limit(limit.min(crate::text_input::MAX_EDITOR_SCALARS));
+    if let Some(event_filter) = event_filter {
+        editor = editor.event_filter(event_filter);
+    }
+    let response = ui.add(editor);
     if response.changed() {
         budget.remaining = limit.saturating_sub(text.as_str().len());
     }

@@ -6,7 +6,7 @@ use crate::workspace::query_design::{
     context_menu,
     field_inputs::{FieldInputs, copy_text, payload_bytes},
 };
-use egui::{Response, Ui};
+use egui::{EventFilter, Response, Ui};
 use std::borrow::Cow;
 use tablecraft_builders::query::{
     DesignColumn, DesignExpression, DesignSource, DesignTableMetadata, QueryDesignError,
@@ -60,6 +60,14 @@ pub(super) fn show(
         "qbe-field-input",
         cost.max(original.len()),
         budget,
+        // Escape must reach this editor before egui's begin-pass focus
+        // navigation surrenders focus. Preserve TextEdit's arrow/Tab policy.
+        Some(EventFilter {
+            horizontal_arrows: true,
+            vertical_arrows: true,
+            escape: true,
+            ..EventFilter::default()
+        }),
     );
     focus::register(
         ui,
@@ -141,9 +149,14 @@ pub(super) fn show(
         && !egui::Popup::is_any_open(ui.ctx())
         && ui.input_mut(|input| input.consume_key(egui::Modifiers::NONE, egui::Key::Escape))
     {
-        match cancel(inputs, index, column, budget) {
-            Ok(cancelled) => changed |= cancelled,
-            Err(_) => budget.rejected = true,
+        if inputs.has(index) {
+            match cancel(inputs, index, column, budget) {
+                Ok(cancelled) => changed |= cancelled,
+                Err(_) => budget.rejected = true,
+            }
+        } else {
+            // With no retained edit, keep the ordinary Escape focus behavior.
+            response.surrender_focus();
         }
     }
     let mut remove = false;
@@ -166,6 +179,7 @@ pub(super) fn show(
                 "qbe-alias-input",
                 column.alias.as_ref().map_or(0, String::len),
                 budget,
+                None,
             );
             if keyboard_open && !inputs.has(index) {
                 alias_input.request_focus();

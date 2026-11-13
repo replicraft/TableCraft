@@ -334,3 +334,39 @@ fn explicit_local_field_changes_keep_the_table_and_formulas_remain_checked_sql()
         "an explicit unqualified formula remains ambiguous across the two aliases"
     );
 }
+
+#[test]
+fn escape_cancels_retained_field_text_before_focus_navigation() {
+    let mut harness = harness(session());
+    replace_field(&mut harness, "[Unfinished");
+    assert!(harness.state().0.field_inputs.unresolved());
+    assert!(
+        harness
+            .get_by_role_and_label(Role::TextInput, "Field expression")
+            .is_focused()
+    );
+    harness.key_press(Key::Escape);
+    harness.run_steps(2);
+    assert!(!harness.state().0.field_inputs.has(0));
+    assert_eq!(
+        harness.state().0.draft.columns[0].expression,
+        DesignExpression::Field(DesignField {
+            source_id: 20,
+            column: "ID".into()
+        })
+    );
+    assert!(
+        harness
+            .get_by_role_and_label(Role::TextInput, "Field expression")
+            .is_focused()
+    );
+    // Once the edit is resolved, another Escape retains the ordinary
+    // non-editing focus-release behavior rather than trapping the keyboard.
+    harness.key_press(Key::Escape);
+    harness.run_steps(2);
+    assert!(
+        !harness
+            .get_by_role_and_label(Role::TextInput, "Field expression")
+            .is_focused()
+    );
+}
