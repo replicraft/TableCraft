@@ -12,15 +12,18 @@ use tablecraft_core::{
 };
 
 const SYSTEM_FLAGS: u32 = 0x8000_0002;
+const LOCAL_TABLE_TYPE: i16 = 1;
+const CONTAINER_TYPE: i16 = 3;
+const QUERY_TYPE: i16 = 5;
 const SYSTEM_ROLES: [(&str, i16); 8] = [
-    ("DatabaseRoot", 3),
-    ("Tables", 3),
-    ("Databases", 3),
-    ("Relationships", 3),
-    ("MSysObjects", 1),
-    ("MSysRelationships", 1),
-    ("MSysACEs", 1),
-    ("MSysQueries", 1),
+    ("DatabaseRoot", CONTAINER_TYPE),
+    ("Tables", CONTAINER_TYPE),
+    ("Databases", CONTAINER_TYPE),
+    ("Relationships", CONTAINER_TYPE),
+    ("MSysObjects", LOCAL_TABLE_TYPE),
+    ("MSysRelationships", LOCAL_TABLE_TYPE),
+    ("MSysACEs", LOCAL_TABLE_TYPE),
+    ("MSysQueries", LOCAL_TABLE_TYPE),
 ];
 
 pub(super) fn qualify(
@@ -63,7 +66,7 @@ pub(super) fn qualify(
         let origin = role(name)?;
         let parent = if name == "DatabaseRoot" {
             0
-        } else if kind == 3 {
+        } else if kind == CONTAINER_TYPE {
             root.native_id()
         } else {
             tables.native_id()
@@ -72,7 +75,8 @@ pub(super) fn qualify(
             || origin.parent_id() != parent
             || !origin.is_system()
             || origin.flags() & !SYSTEM_FLAGS != 0
-            || (kind == 1 && origin.table_storage() != Some(NativeTableStorage::Local))
+            || (kind == LOCAL_TABLE_TYPE
+                && origin.table_storage() != Some(NativeTableStorage::Local))
         {
             return Err(QueryCreationError::Source);
         }
@@ -101,9 +105,9 @@ pub(super) fn qualify(
                 return Err(QueryCreationError::Source);
             }
         } else {
-            let ordinary = origin.type_code() == 1
+            let ordinary = origin.type_code() == LOCAL_TABLE_TYPE
                 && origin.table_storage() == Some(NativeTableStorage::Local);
-            if (!ordinary && origin.type_code() != 5)
+            if (!ordinary && origin.type_code() != QUERY_TYPE)
                 || origin.flags() != 0
                 || origin.parent_id() != tables.native_id()
             {
@@ -151,7 +155,7 @@ pub(super) fn qualify(
             .iter()
             .find(|origin| origin.native_id() == *id)
             .ok_or(QueryCreationError::Source)?;
-        let properties = !origin.is_system() && origin.type_code() == 1
+        let properties = !origin.is_system() && origin.type_code() == LOCAL_TABLE_TYPE
             || database.is_some_and(|database| database.object_id() == origin.object_id());
         for (column, value) in schema.columns().iter().zip(row) {
             check(budget, cancelled)?;
