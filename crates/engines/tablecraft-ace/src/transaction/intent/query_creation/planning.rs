@@ -1,7 +1,7 @@
 //! Sealed QueryDef effect plus semantic original selects only checked V3.
 use super::{NativeQueryCreationIntent as Intent, QueryCreationIntentError as Error};
 use crate::{
-    NativeImage, QueryCreationDefinition, header::check,
+    NativeImage, NativeRecoveryQualificationError, QueryCreationDefinition, header::check,
     queries::creation::effect::NativeQueryCreationEffect,
     transaction::qualified_recovery::equal_image,
 };
@@ -79,7 +79,12 @@ impl RecoverableNativeQueryCreationPlan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, Error> {
         let Self { effect, intent } = self;
-        equal_image(image.as_bytes(), effect.before_bytes(), proof, cancelled)?;
+        equal_image(image.as_bytes(), effect.before_bytes(), proof, cancelled).map_err(
+            |error| match error {
+                NativeRecoveryQualificationError::ImageMismatch => Error::BeforeMismatch,
+                other => Error::Proof(other),
+            },
+        )?;
         let expected_after = effect.after_shared_bytes();
         drop(effect);
         let (effect, intent) = intent.reconstruct(image, native, cancelled)?;

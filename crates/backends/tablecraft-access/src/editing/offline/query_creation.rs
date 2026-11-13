@@ -1,7 +1,7 @@
 //! Original QueryDef creation on the same exclusive offline source.
 use super::{Cause, Failure, OfflineWriteSession, Phase, QueryChange, Receipt, plan::MutationPlan};
 use std::path::Path;
-use tablecraft_ace::RecoverableNativeQueryCreationPlan;
+use tablecraft_ace::{QueryCreationIntentError, RecoverableNativeQueryCreationPlan};
 use tablecraft_core::{limits::ResourceBudget, values::LegacyDateTime};
 
 /// Reviewed new-query request; no durable namespace exists before apply.
@@ -31,7 +31,10 @@ impl OfflineWriteSession {
             .and_then(|image| {
                 reviewed
                     .requalify_with_budgets(image, native, proof, cancelled)
-                    .map_err(Cause::QueryCreationIntent)
+                    .map_err(|error| match error {
+                        QueryCreationIntentError::BeforeMismatch => Cause::SourceChanged,
+                        other => Cause::QueryCreationIntent(other),
+                    })
             });
         match result {
             Ok(plan) => Ok(StagedQueryCreation {

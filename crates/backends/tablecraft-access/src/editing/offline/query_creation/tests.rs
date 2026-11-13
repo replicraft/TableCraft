@@ -179,12 +179,7 @@ fn changed_source_cancel_and_both_resource_pools_refuse_before_namespace_and_ret
             Ok(_) => panic!("stale, cancelled or exhausted creation review must refuse"),
         };
         match case {
-            0 => assert!(matches!(
-                failure.cause(),
-                Cause::QueryCreationIntent(QueryCreationIntentError::Proof(
-                    NativeRecoveryQualificationError::ImageMismatch
-                ))
-            )),
+            0 => assert!(matches!(failure.cause(), Cause::SourceChanged)),
             1 => assert!(matches!(
                 failure.cause(),
                 Cause::Native(InspectError::Cancelled)

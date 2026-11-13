@@ -146,6 +146,16 @@ fn canonical_identity_request_source_and_full_after_tampering_refuse_before_effe
     // retained for plan construction and the complete unchanged oracle.
     let mut stale = case.before.clone();
     stale[3 * 4096 + 3000] ^= 1;
+    assert!(matches!(
+        plan(&case, names).requalify_with_budgets(
+            image(&stale),
+            &mut budget(),
+            &mut budget(),
+            &|| false,
+        ),
+        Err(Error::BeforeMismatch)
+    ));
+
     // NO_CLONE: The target owns the stale publication image; the oracle remains
     // independently available after the consuming prepare attempt.
     let mut target = MemoryStorage::new(stale.clone());

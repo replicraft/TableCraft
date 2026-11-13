@@ -86,8 +86,11 @@ fn changed_exclusive_source_retains_the_actual_actor_until_release_without_creat
         .unwrap();
     let report = terminal(&saves);
     assert_eq!(report.id, id);
-    assert!(matches!(report.outcome, SaveOutcome::Failed(failure)
-        if failure.kind == SaveFailureKind::SourceChanged && failure.can_release && !failure.can_recover));
+    assert!(
+        matches!(report.outcome, SaveOutcome::Failed(failure)
+            if failure.kind == SaveFailureKind::SourceChanged && failure.can_release && !failure.can_recover),
+        "unexpected source-change report: {report:?}"
+    );
     assert_eq!(saves.poll(), Some(report));
     assert!(!saves.acknowledge(id));
     assert!(saves.recover(id).is_err());
