@@ -3,9 +3,9 @@
 ## Query naming and close decisions — 13 November 2026
 
 The [visual record](../../tests/results/queries/query-save-surfaces-2026-11-13.json)
-captures sixteen directly inspected offscreen frames: naming, source-free saved
+captures twenty directly inspected offscreen frames: naming, source-free saved
 Design and close confirmation in English/German, light/dark, including a corrected
-localized close caption. They use the normal presentation host at 1280 × 820/1×
+localized close caption and a follow-up render of the integrated close flow. They use the normal presentation host at 1280 × 820/1×
 on macOS ARM64, with Metal requested and Windows input emulation. No native
 application window was opened; the renderer does not export adapter metadata.
 

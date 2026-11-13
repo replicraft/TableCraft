@@ -48,6 +48,11 @@
       "path": ".cache/ui-previews/query-design-close/metal-headless-c50823e0e/render-results.json",
       "bytes": 12348,
       "sha256": "b5c9d633d4d005e09bed8113c0423674d2783d97405294ca1649e4b85a8ce50c"
+    },
+    {
+      "path": ".cache/ui-previews/query-design-close/metal-headless-5f3b34840-host/render-results.json",
+      "bytes": 12853,
+      "sha256": "f96b895ba8be99daf0f554b3c30dbb368d9c0d2526e36cbcbf28adf3cc22f1ed"
     }
   ],
   "frames": [
@@ -384,6 +389,100 @@
         "Translated Save/Discard/Cancel remain readable and within the modal at 1280x820/1x.",
         "No native close-dialog capture is available; this is an approximation, not native interaction evidence."
       ]
+    },
+    {
+      "scene": "query-design-close",
+      "source_revision": "5f3b34840c076b44c97ffb69b3e0a25bee252a30",
+      "locale": "en-US",
+      "theme": "light",
+      "pixel_size": [
+        1280,
+        820
+      ],
+      "artifact": {
+        "path": ".cache/ui-previews/query-design-close/metal-headless-5f3b34840-host/en-US-light-query-design-close.png",
+        "bytes": 136359,
+        "sha256": "f0e36d066d12844ef7cb9bedf6ffa3e435bd3e43f2b5b69ef3e6e9b2c85a836a"
+      },
+      "directly_viewed": true,
+      "observations": [
+        "Save/Discard/Cancel captions and localized query name fit at 1280x820, scale 1.",
+        "Modal and light/dark presentation directly viewed; no retained native Access close-dialog capture exists.",
+        "Source cards and Field/Table/Sort/Show/Criteria/or composition compared with actual city-dob.gif. Source cards retain their own scrolling; status footer remains generic query view."
+      ]
+    },
+    {
+      "scene": "query-design-close",
+      "source_revision": "5f3b34840c076b44c97ffb69b3e0a25bee252a30",
+      "locale": "en-US",
+      "theme": "dark",
+      "pixel_size": [
+        1280,
+        820
+      ],
+      "artifact": {
+        "path": ".cache/ui-previews/query-design-close/metal-headless-5f3b34840-host/en-US-dark-query-design-close.png",
+        "bytes": 149814,
+        "sha256": "2d22fdb36a85a9390dbeaeea5e080790b08292db4e303c4b267b26e27d3af0c9"
+      },
+      "directly_viewed": true,
+      "observations": [
+        "Save/Discard/Cancel captions and localized query name fit at 1280x820, scale 1.",
+        "Modal and light/dark presentation directly viewed; no retained native Access close-dialog capture exists.",
+        "Source cards and Field/Table/Sort/Show/Criteria/or composition compared with actual city-dob.gif. Source cards retain their own scrolling; status footer remains generic query view."
+      ]
+    },
+    {
+      "scene": "query-design-close",
+      "source_revision": "5f3b34840c076b44c97ffb69b3e0a25bee252a30",
+      "locale": "de",
+      "theme": "light",
+      "pixel_size": [
+        1280,
+        820
+      ],
+      "artifact": {
+        "path": ".cache/ui-previews/query-design-close/metal-headless-5f3b34840-host/de-light-query-design-close.png",
+        "bytes": 154681,
+        "sha256": "1b4c018d93086176b0da5f56046e8066457b3d37474a18ce104bc681a79e42bb"
+      },
+      "directly_viewed": true,
+      "observations": [
+        "Save/Discard/Cancel captions and localized query name fit at 1280x820, scale 1.",
+        "Modal and light/dark presentation directly viewed; no retained native Access close-dialog capture exists.",
+        "Source cards and Field/Table/Sort/Show/Criteria/or composition compared with actual city-dob.gif. Source cards retain their own scrolling; status footer remains generic query view."
+      ]
+    },
+    {
+      "scene": "query-design-close",
+      "source_revision": "5f3b34840c076b44c97ffb69b3e0a25bee252a30",
+      "locale": "de",
+      "theme": "dark",
+      "pixel_size": [
+        1280,
+        820
+      ],
+      "artifact": {
+        "path": ".cache/ui-previews/query-design-close/metal-headless-5f3b34840-host/de-dark-query-design-close.png",
+        "bytes": 168675,
+        "sha256": "3ed4f7f9b2a5b56bca34eff6f5e864226c4c93b526850bcef7e63dec45484d57"
+      },
+      "directly_viewed": true,
+      "observations": [
+        "Save/Discard/Cancel captions and localized query name fit at 1280x820, scale 1.",
+        "Modal and light/dark presentation directly viewed; no retained native Access close-dialog capture exists.",
+        "Source cards and Field/Table/Sort/Show/Criteria/or composition compared with actual city-dob.gif. Source cards retain their own scrolling; status footer remains generic query view."
+      ]
+    }
+  ],
+  "failed_attempts": [
+    {
+      "report": {
+        "path": ".cache/ui-previews/query-design-close/metal-headless-5f3b34840/render-results.json",
+        "bytes": 10197,
+        "sha256": "52c12abb006edde38572cc7cdbb0f7362deb5fe1bd14462448328a11f0f2c6cc"
+      },
+      "reason": "Sandboxed renderer could not acquire a Metal adapter; headless GPU-access rerun succeeded."
     }
   ]
 }
