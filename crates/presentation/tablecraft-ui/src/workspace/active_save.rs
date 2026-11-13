@@ -124,7 +124,7 @@ impl State {
             if self.active_object().is_some_and(|tab| tab.id == id)
                 && self.can_begin_query_creation_save_as()
             {
-                if self.query_design_visible() {
+                if self.query_design_visible() || self.query_design_owned_results_visible() {
                     if let Some(action) = self.query_design_save_action() {
                         actions.push(action);
                     }
@@ -194,7 +194,7 @@ pub(in crate::workspace) mod tests;
 impl State {
     fn can_save_saved_query_design(&self) -> bool {
         self.saved_query.active
-            && self.query_design_visible()
+            && (self.query_design_visible() || self.query_design_owned_results_visible())
             && self.can_begin_query_creation_save_as()
             && self.query_design_request().is_some()
     }

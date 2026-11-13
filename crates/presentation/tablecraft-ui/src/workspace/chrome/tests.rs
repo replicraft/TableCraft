@@ -606,7 +606,21 @@ fn contextual_ribbon_returns_home_when_its_object_closes_and_global_tabs_stay_se
         harness.get_by_role_and_label(Role::Tab, caption);
         harness.get_by_role_and_label(Role::Button, unavailable);
 
-        assert!(harness.state_mut().0.close_object(&object));
+        if scene == Scene::QueryDesign {
+            assert!(!harness.state_mut().0.close_object(&object));
+            harness.run_steps(2);
+            assert!(harness.state().0.query_design_close_open());
+            harness
+                .get_by_role_and_label(Role::Button, "Discard")
+                .click();
+            harness.run_steps(2);
+            assert!(matches!(harness.state().1.as_slice(),
+                [Action::QueryDesignClose { result }] if result.decision == crate::QueryDesignCloseDecision::Discard
+            ));
+            harness.state_mut().1.clear();
+        } else {
+            assert!(harness.state_mut().0.close_object(&object));
+        }
         harness.run_steps(3);
         assert!(harness.state().0.ribbon_tab == ribbon::Tab::Home);
         assert!(

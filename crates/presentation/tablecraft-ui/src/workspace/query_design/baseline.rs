@@ -1,7 +1,7 @@
 //! Exact semantic baselines remain independent of request freshness revisions.
 #[cfg(test)]
 mod tests;
-use super::{Mode, QueryDesign, Session, retention};
+use super::{Mode, QueryDesign, ResultsOwner, Session, retention};
 use crate::workspace::{
     State,
     objects::{MAX_RETAINED_BYTES, memory::Counter},
@@ -90,7 +90,7 @@ impl QueryDesign {
     pub(in crate::workspace) fn dirty_revision(&self) -> Option<u64> {
         let session = self.session.as_ref()?;
         (session.field_inputs.unresolved()
-            || (session.mode != Mode::Sql && !session.baseline.matches(&session.draft)))
+            || (session.mode.owns_design() && !session.baseline.matches(&session.draft)))
         .then_some(session.revision)
     }
 
@@ -126,7 +126,7 @@ impl QueryDesign {
             return true;
         }
 
-        if session.mode == Mode::Sql {
+        if matches!(session.mode, Mode::Sql | Mode::Results(ResultsOwner::Sql)) {
             // SQL View superseded this hidden model. Reimport the actual current
             // authored SQL before Design can be used on the new source.
             self.session = None;

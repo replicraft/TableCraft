@@ -18,15 +18,7 @@ impl State {
                 ObjectKind::SavedQuery { .. } => self.saved_query.sql.as_ref()?.revision(),
                 _ => return None,
             };
-            let (result, sql) = if self.saved_query.active {
-                (
-                    &self.saved_query.design_result,
-                    self.saved_query.sql.as_ref()?.text(),
-                )
-            } else {
-                (&self.query_result, self.sql.as_str())
-            };
-            return Some((text, self.query_design.close_revision(result, sql)));
+            return Some((text, self.query_design.close_revision()));
         }
         match self
             .objects
@@ -36,19 +28,12 @@ impl State {
             .session
             .as_ref()?
         {
-            Session::Sql {
-                design,
-                result_origin,
-                ..
-            } => Some((
-                self.query_sql_revision()?,
-                design.close_revision(result_origin, &self.sql),
-            )),
+            Session::Sql { design, .. } => {
+                Some((self.query_sql_revision()?, design.close_revision()))
+            }
             Session::Saved { state, .. } => Some((
                 state.sql.as_ref()?.revision(),
-                state
-                    .design
-                    .close_revision(&state.design_result, state.sql.as_ref()?.text()),
+                state.design.close_revision(),
             )),
             _ => None,
         }

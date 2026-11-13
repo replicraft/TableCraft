@@ -1,4 +1,5 @@
 //! Working Design commands use the contextual Ribbon and the same typed intents.
+use super::{Mode, ResultsOwner};
 use crate::localization::tr;
 use crate::workspace::ribbon::{self, CommandSize, Icon, command, command_menu, group};
 use crate::workspace::{Action, State};
@@ -42,10 +43,16 @@ impl State {
                 )
                 .clicked()
                 {
-                    self.query_design
+                    let session = self
+                        .query_design
                         .session
-                        .get_or_insert_with(Default::default)
-                        .mode = super::Mode::Results;
+                        .get_or_insert_with(Default::default);
+                    let owner = if session.mode.owns_design() {
+                        ResultsOwner::Design
+                    } else {
+                        ResultsOwner::Sql
+                    };
+                    session.mode = Mode::Results(owner);
                     ui.close();
                 }
                 if command(

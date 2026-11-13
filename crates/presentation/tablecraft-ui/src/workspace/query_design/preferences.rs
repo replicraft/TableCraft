@@ -1,6 +1,6 @@
 //! Reopening retains only source-free design choices, never metadata or execution rights.
 use super::{
-    Mode, QueryDesign, Session,
+    Mode, QueryDesign, ResultsOwner, Session,
     baseline::{Baseline, Submission},
 };
 use tablecraft_builders::query::QueryDesignDraft;
@@ -35,7 +35,8 @@ impl QueryDesign {
     pub(in crate::workspace) fn from_preferences(preferences: Preferences) -> Self {
         // Old results cannot be represented by a fresh-source receipt.
         let mode = match preferences.mode {
-            Mode::Results => Mode::Design,
+            Mode::Results(ResultsOwner::Design) => Mode::Design,
+            Mode::Results(ResultsOwner::Sql) => Mode::Sql,
             mode => mode,
         };
         Self {

@@ -262,3 +262,105 @@ fn import_refuses_complete_retention_growth_before_changing_sql_draft_or_revisio
     );
     assert_eq!(state.query_design_request_id(), Some(207));
 }
+
+#[test]
+fn accepted_changed_build_owns_design_close_before_any_run_result_arrives() {
+    let mut harness = make_harness(state());
+    edit(&mut harness, "Answer: 101");
+    let before_rows = harness
+        .state()
+        .query_data
+        .as_ref()
+        .map(|data| data.rows.as_ptr());
+    let action = harness.state().query_design_run_action().unwrap();
+    complete_build(harness.state_mut(), action, 208);
+    let state = harness.state_mut();
+    assert_eq!(
+        state.query_data.as_ref().map(|data| data.rows.as_ptr()),
+        before_rows
+    );
+    assert!(
+        state.query_design_results_previous(),
+        "no new run result has been published"
+    );
+    assert!(state.query_design.is_dirty());
+    assert!(state.has_modified_query_design());
+    assert!(state.can_save_active_object());
+    let submitted = state
+        .query_design
+        .session
+        .as_ref()
+        .unwrap()
+        .submitted
+        .as_ref()
+        .unwrap();
+    assert_eq!(submitted.text_revision, state.saved_query_sql().unwrap().2);
+    assert_eq!(
+        submitted.draft.as_ref(),
+        state.query_design_draft().unwrap()
+    );
+    let tab = state.active_object().unwrap();
+    assert!(!state.close_object(&tab));
+    assert!(state.query_design_close_open());
+    assert!(!state.saved_query_sql_close_open());
+    assert!(
+        state
+            .choose_query_design_close(crate::QueryDesignCloseDecision::Cancel)
+            .is_some()
+    );
+    assert_eq!(state.active_object().as_ref(), Some(&tab));
+    assert!(state.query_design.is_dirty());
+}
+
+#[test]
+fn clearing_sql_does_not_revive_the_superseded_hidden_design() {
+    let (mut state, _) = inspected_state(true);
+    let Action::ImportQueryDesign { request, sql } = state.show_query_design().unwrap() else {
+        panic!("actual saved source import");
+    };
+    let built = import(&sql, &[]).unwrap();
+    assert!(state.begin_query_design_import(request, sql, 209));
+    assert!(
+        state
+            .set_query_design_built(209, built, Vec::new())
+            .is_some()
+    );
+    let mut harness = make_harness(state);
+    edit(&mut harness, "Answer: 101");
+    let action = harness.state_mut().show_query_design_sql().unwrap();
+    complete_build(harness.state_mut(), action, 210);
+    let state = harness.state_mut();
+    assert!(state.set_saved_query_sql_text(String::new()));
+    let original = state.saved_query_sql().unwrap().0.as_ptr();
+    let hidden = state.query_design_draft().unwrap().columns.as_ptr();
+    let Action::ImportQueryDesign { request, sql } = state.show_query_design().unwrap() else {
+        panic!("empty current SQL must use the real import service, not hidden101");
+    };
+    assert!(sql.is_empty());
+    assert!(state.can_import_query_design(&request, &sql));
+    assert!(import(&sql, &[]).is_err());
+    assert!(!state.query_design_visible());
+    assert_eq!(state.query_design_sql(), Some(""));
+    assert_eq!(state.saved_query_sql().unwrap().0.as_ptr(), original);
+    assert!(state.saved_query_sql_dirty());
+    assert_eq!(state.query_design_draft().unwrap().columns.as_ptr(), hidden);
+    assert_eq!(
+        field_cell_text(&state.query_design_draft().unwrap().columns[0]).unwrap(),
+        "Answer: 101"
+    );
+}
+
+#[test]
+fn a_genuinely_empty_scratch_editor_still_opens_new_design_without_import() {
+    let mut preview = Preview::new(Scene::QuerySaveName);
+    let mut state = std::mem::take(preview.state_mut());
+    assert!(state.cancel_query_creation_name());
+    assert!(state.replace_query_sql(String::new()));
+    assert!(state.show_query_design().is_none());
+    assert!(state.query_design_visible());
+    assert_eq!(
+        state.query_design_draft(),
+        Some(&QueryDesignDraft::default())
+    );
+    assert!(state.query_design_sql().unwrap().is_empty());
+}

@@ -71,7 +71,21 @@ enum Mode {
     #[default]
     Sql,
     Design,
-    Results,
+    Results(ResultsOwner),
+}
+
+/// The current authoring view that selected a datasheet, independent of the
+/// historical rows and of whether a requested run has published any result yet.
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum ResultsOwner {
+    Sql,
+    Design,
+}
+
+impl Mode {
+    fn owns_design(self) -> bool {
+        matches!(self, Self::Design | Self::Results(ResultsOwner::Design))
+    }
 }
 
 struct Pending {
@@ -221,7 +235,16 @@ impl State {
                 .query_design
                 .session
                 .as_ref()
-                .is_some_and(|s| s.mode == Mode::Results)
+                .is_some_and(|s| matches!(s.mode, Mode::Results(_)))
+    }
+
+    pub(in crate::workspace) fn query_design_owned_results_visible(&self) -> bool {
+        self.query_design_results_visible()
+            && self
+                .query_design
+                .session
+                .as_ref()
+                .is_some_and(|session| session.mode == Mode::Results(ResultsOwner::Design))
     }
 
     pub fn query_design_draft(&self) -> Option<&QueryDesignDraft> {
@@ -361,7 +384,7 @@ impl State {
             && self.query_design_ready()
             && self.query_design_request().as_ref() == Some(request)
             && self.query_design.session.as_ref().is_some_and(|session| {
-                session.mode != Mode::Sql && !session.add_tables && &session.draft == draft
+                session.mode.owns_design() && !session.add_tables && &session.draft == draft
             })
     }
 
@@ -531,7 +554,7 @@ impl State {
         session.mode = match completion {
             None => Mode::Design,
             Some(QueryDesignCompletion::ShowSql) => Mode::Sql,
-            Some(QueryDesignCompletion::Run) => Mode::Results,
+            Some(QueryDesignCompletion::Run) => Mode::Results(ResultsOwner::Design),
             Some(QueryDesignCompletion::Save | QueryDesignCompletion::SaveExisting) => Mode::Design,
         };
         if session.mode == Mode::Design {
@@ -605,7 +628,7 @@ impl State {
     pub fn begin_query_design_run(&mut self, request_id: u64) -> bool {
         if request_id == 0
             || self.query_design.has_unresolved_field_inputs()
-            || !self.query_design_results_visible()
+            || !self.query_design_owned_results_visible()
             || !self.query_design_ready()
         {
             return false;
@@ -626,7 +649,8 @@ impl State {
     }
 
     pub fn set_query_design_results(&mut self, request_id: u64, data: super::Data) -> bool {
-        if !self.design_reply_current(request_id)
+        if !self.query_design_owned_results_visible()
+            || !self.design_reply_current(request_id)
             || data.offset != 0
             || data.has_more
             || data.source_revision.is_some()
@@ -688,7 +712,7 @@ impl State {
 
     pub(super) fn query_design_results_previous(&self) -> bool {
         self.query_design.session.as_ref().is_some_and(|session| {
-            session.mode == Mode::Results
+            session.mode == Mode::Results(ResultsOwner::Design)
                 && (session.result_revision != Some(session.revision)
                     || self.busy
                     || self.error.is_some()
@@ -711,7 +735,15 @@ impl State {
             return None;
         }
         let request = self.query_design_request()?;
-        if self.query_design_results_visible() || self.query_design_sql()?.trim().is_empty() {
+        let empty_scratch = request.tab.target.kind == ObjectKind::Sql
+            && self
+                .query_design
+                .session
+                .as_ref()
+                .is_none_or(|session| session.draft == QueryDesignDraft::default());
+        let empty_current = self.query_design_sql()?.trim().is_empty()
+            && (empty_scratch || self.query_design_visible());
+        if self.query_design_owned_results_visible() || empty_current {
             let session = self
                 .query_design
                 .session
@@ -739,12 +771,24 @@ impl State {
             return None;
         }
         if self.query_design_results_visible() {
-            self.query_design.session.as_mut()?.mode = Mode::Sql;
-            return None;
+            let text_revision = if self.saved_query.active {
+                self.saved_query_sql().map(|(_, _, revision, _)| revision)
+            } else {
+                self.query_sql_revision()
+            };
+            let session = self.query_design.session.as_ref()?;
+            let already_built = session.submitted.as_ref().is_some_and(|submitted| {
+                Some(submitted.text_revision) == text_revision
+                    && submitted.draft.as_ref() == &session.draft
+            });
+            if !session.mode.owns_design() || already_built {
+                self.query_design.session.as_mut()?.mode = Mode::Sql;
+                return None;
+            }
         }
         let request = self.query_design_request()?;
         let session = self.query_design.session.as_ref()?;
-        if session.mode != Mode::Design {
+        if !session.mode.owns_design() {
             return None;
         }
         Some(Action::BuildQueryDesign {
@@ -804,17 +848,8 @@ impl QueryDesign {
 }
 
 impl QueryDesign {
-    pub(in crate::workspace) fn close_revision(
-        &self,
-        result: &ResultOrigin,
-        authored_sql: &str,
-    ) -> Option<u64> {
+    pub(in crate::workspace) fn close_revision(&self) -> Option<u64> {
         let session = self.session.as_ref()?;
-        // A SQL-origin datasheet can coexist with an older hidden typed draft.
-        // Only an actual Design result keeps that draft as the current close owner.
-        (session.mode == Mode::Design
-            || (session.mode == Mode::Results
-                && matches!(result, ResultOrigin::Design(sql) if sql == authored_sql)))
-        .then_some(session.revision)
+        session.mode.owns_design().then_some(session.revision)
     }
 }

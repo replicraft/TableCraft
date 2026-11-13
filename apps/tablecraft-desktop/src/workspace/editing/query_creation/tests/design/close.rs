@@ -1,5 +1,6 @@
 //! Real close choices consume only the original Design owner's completed save.
 mod refusal;
+mod results;
 mod scratch_sql;
 mod sql_view;
 
@@ -68,6 +69,9 @@ fn fill_name_after_close_save(harness: &mut Harness<'_, Desktop>) {
         harness.run_steps(1);
         std::thread::yield_now();
     }
+    // The direct SQL Naming transition is published after this frame's State
+    // widgets. Render that newly opened modal before observing its input node.
+    harness.run_steps(1);
     harness
         .get_by_role_and_label(Role::TextInput, "Query Name")
         .focus();
