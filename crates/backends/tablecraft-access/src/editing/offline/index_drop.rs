@@ -53,7 +53,7 @@ impl OfflineWriteSession {
     ) -> Result<StagedIndexDrop, Failure> {
         let _span = tracing::debug_span!("access.offline.stage_index_drop").entered();
         let result = self
-            .capture_schema_source(None, super::SchemaCapture::TableAppend, native, cancelled)
+            .capture_schema_source(None, super::SchemaCapture::Retained, native, cancelled)
             .and_then(|image| reviewed.requalify_with_budgets(image, native, proof, cancelled));
         match result {
             Ok(plan) => Ok(StagedIndexDrop {

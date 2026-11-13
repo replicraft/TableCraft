@@ -45,3 +45,13 @@ impl SavedRead {
         &self.query
     }
 }
+
+#[cfg(feature = "journal")]
+mod render;
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+mod creation;
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use creation::{
+    SavedQueryCreationError, SavedQueryCreationOptions, prepare_saved_query_creation,
+};

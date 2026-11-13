@@ -35,3 +35,6 @@ pub use saved::{
 
 mod template;
 pub use template::TemplateSource;
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use saved::{SavedQueryCreationError, SavedQueryCreationOptions, prepare_saved_query_creation};

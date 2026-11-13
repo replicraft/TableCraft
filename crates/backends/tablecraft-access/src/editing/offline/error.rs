@@ -1,6 +1,7 @@
 use super::{KnownOutcome, OfflineWriteSession, Receipt, SessionState};
 use crate::editing::{NativeEditError, journal, sql};
 use std::{error::Error, fmt};
+use tablecraft_ace::QueryCreationIntentError;
 #[cfg(feature = "ace16-create")]
 use tablecraft_ace::{
     AddColumnIntentError, AddTableError, AddTableIntentError, DatabaseOptionsIntentError,
@@ -64,6 +65,9 @@ pub enum Phase {
 /// Sanitized typed cause. Resources remain in Failure rather than being discarded.
 #[derive(Debug, Error)]
 pub enum Cause {
+    /// Original QueryDef creation, source or complete V3 image proof refused.
+    #[error(transparent)]
+    QueryCreationIntent(QueryCreationIntentError),
     /// Numeric original CREATE, native source or complete image proof refused.
     #[error(transparent)]
     NumericIndexCreationIntent(NumericIndexCreateIntentError),

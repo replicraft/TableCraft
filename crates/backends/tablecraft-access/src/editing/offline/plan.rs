@@ -11,6 +11,7 @@ use super::index_creation::plan::Plan as IndexCreationPlan;
 use super::index_drop::plan::Plan as IndexDropPlan;
 use super::{Cause, QueryChange, SchemaChange, query_expression::QueryExpressionPlan};
 use crate::editing::journal::NativeJournalInsertPlan;
+use tablecraft_ace::NativeQueryCreationIntent;
 #[cfg(feature = "ace16-create")]
 use tablecraft_ace::{
     AddTablePlan, FirstTablePlan, NativeAddColumnIntent, NativeAddTableIntent,
@@ -37,6 +38,8 @@ use tablecraft_ace::{
     RecoverableNativeDeletePlan, RecoverableNativeEditPlan, RecoverableNativeTableRenamePlan,
     RecoverableTableDropPlan,
 };
+#[cfg(feature = "ace16-create")]
+use tablecraft_ace::{QueryCreationIntentError, RecoverableNativeQueryCreationPlan};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::{DurableStorage, ResizableDurableStorage};
 
@@ -44,6 +47,7 @@ use tablecraft_io::journal::{DurableStorage, ResizableDurableStorage};
 const FIELD_RENAME_FAMILY: &[u8; 4] = b"TCFR";
 #[cfg(feature = "ace16-create")]
 const FIELD_DROP_FAMILY: &[u8; 4] = b"TCFD";
+const QUERY_CREATION_FAMILY: &[u8; 4] = b"TCQC";
 const TABLE_DROP_FAMILY: &[u8; 4] = b"TCTD";
 const POPULATED_TABLE_FAMILY: &[u8; 4] = b"TCPT";
 const INDEX_CREATION_FAMILY: &[u8; 4] = b"TCIC";
@@ -74,6 +78,8 @@ mod declared_addition_tests;
 mod populated_tests;
 
 pub(super) enum MutationPlan {
+    #[cfg(feature = "ace16-create")]
+    QueryCreation(RecoverableNativeQueryCreationPlan),
     #[cfg(feature = "ace16-create")]
     IndexCreation(IndexCreationPlan),
     #[cfg(feature = "ace16-create")]
@@ -133,6 +139,13 @@ impl MutationPlan {
                 Ok(Some(u64::from(length)))
             }
             #[cfg(feature = "ace16-create")]
+            Self::QueryCreation(_) => {
+                let length = u32::try_from(encoded_length).map_err(|_| {
+                    Cause::QueryCreationIntent(QueryCreationIntentError::InvalidRecord)
+                })?;
+                Ok(Some(u64::from(length)))
+            }
+            #[cfg(feature = "ace16-create")]
             Self::PopulatedTable(_) => Ok(Some(
                 NativePopulatedAddTableIntent::MAX_ENCODED_BYTES as u64,
             )),
@@ -146,6 +159,11 @@ impl MutationPlan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u8>, Cause> {
         match self {
+            #[cfg(feature = "ace16-create")]
+            Self::QueryCreation(plan) => plan
+                .intent()
+                .encode(budget, cancelled)
+                .map_err(Cause::QueryCreationIntent),
             #[cfg(feature = "ace16-create")]
             Self::IndexCreation(plan) => plan.encode_intent(budget, cancelled),
             #[cfg(feature = "ace16-create")]
@@ -210,6 +228,14 @@ impl MutationPlan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), Cause> {
         let prepared = match self {
+            #[cfg(feature = "ace16-create")]
+            Self::QueryCreation(plan) => {
+                return plan
+                    .prepare_retained(target, journal, budget, cancelled)
+                    .map_err(Cause::Prepare)?
+                    .commit(budget, cancelled)
+                    .map_err(Cause::Commit);
+            }
             #[cfg(feature = "ace16-create")]
             Self::IndexCreation(plan) => {
                 return plan.commit(target, journal, budget, cancelled);
@@ -356,6 +382,7 @@ impl MutationPlan {
 }
 
 pub(super) enum MutationIntent {
+    QueryCreation(NativeQueryCreationIntent),
     #[cfg(feature = "ace16-create")]
     IndexCreation(NativeIndexCreateIntent),
     #[cfg(feature = "ace16-create")]
@@ -485,6 +512,7 @@ impl MutationIntent {
 
     pub(super) fn query_change(&self) -> Option<QueryChange> {
         match self {
+            Self::QueryCreation(_) => Some(QueryChange::Created),
             Self::QueryExpressionEdits(intent) => intent
                 .edits()
                 .iter()
@@ -505,6 +533,11 @@ impl MutationIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, Cause> {
+        if raw.starts_with(QUERY_CREATION_FAMILY) {
+            return NativeQueryCreationIntent::decode(raw, budget, cancelled)
+                .map(Self::QueryCreation)
+                .map_err(Cause::QueryCreationIntent);
+        }
         if raw.starts_with(UNIQUE_LONG_INDEX_CREATION_TAG) {
             #[cfg(feature = "ace16-create")]
             return NativeUniqueLongIndexCreateIntent::decode(raw, budget, cancelled)
@@ -852,3 +885,10 @@ mod fresh_index_tests;
 
 #[cfg(all(test, not(feature = "ace16-create")))]
 mod numeric_index_tests;
+
+#[cfg(all(
+    test,
+    not(feature = "ace16-create"),
+    any(target_os = "macos", target_os = "linux", windows)
+))]
+mod query_creation_tests;

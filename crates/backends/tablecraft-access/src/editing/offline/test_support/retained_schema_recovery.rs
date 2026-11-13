@@ -1,6 +1,6 @@
-//! Shared filesystem recovery driver for actual retained schema actions.
+//! Shared filesystem recovery driver for actual retained metadata actions.
 use crate::editing::offline::{
-    CompletionKind, OfflineWriteSession, SchemaChange, SessionState, VerifiedImage,
+    CompletionKind, OfflineWriteSession, QueryChange, SchemaChange, SessionState, VerifiedImage,
     test_support::saved_field::retired_namespace,
 };
 use std::fs;
@@ -22,15 +22,33 @@ fn same(actual: &[u8], expected: &[u8]) {
     assert_eq!(actual.iter().zip(expected).position(|(a, b)| a != b), None);
 }
 
+pub(in crate::editing::offline) enum Change {
+    Schema(SchemaChange),
+    Query(QueryChange),
+}
+
+impl From<SchemaChange> for Change {
+    fn from(change: SchemaChange) -> Self {
+        Self::Schema(change)
+    }
+}
+
+impl From<QueryChange> for Change {
+    fn from(change: QueryChange) -> Self {
+        Self::Query(change)
+    }
+}
+
 pub(in crate::editing::offline) fn cold_case(
     before: &[u8],
     expected: &[u8],
     encoded: Vec<u8>,
     committed: bool,
     retired: bool,
-    schema_change: SchemaChange,
+    change: impl Into<Change>,
     prepare: impl FnOnce(&mut OfflineJournalPair, bool, bool),
 ) {
+    let change = change.into();
     let directory = tempfile::tempdir().unwrap();
     let path = directory.path().join("declared.accdb");
     let bundle = directory.path().join("journal");
@@ -68,7 +86,15 @@ pub(in crate::editing::offline) fn cold_case(
             .recover_update(&bundle, &mut budget(), &|| false)
             .unwrap()
     };
-    assert_eq!(receipt.schema_change(), committed.then_some(schema_change));
+    let (schema, query) = match change {
+        Change::Schema(change) => (Some(change), None),
+        Change::Query(change) => (None, Some(change)),
+    };
+    assert_eq!(
+        receipt.schema_change(),
+        if committed { schema } else { None }
+    );
+    assert_eq!(receipt.query_change(), if committed { query } else { None });
     assert_eq!(
         (receipt.matched_rows(), receipt.changed_rows()),
         (None, None)

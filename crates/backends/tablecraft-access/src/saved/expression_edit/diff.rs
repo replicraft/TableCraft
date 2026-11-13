@@ -1,6 +1,6 @@
 //! Exact complete-model guards and source-derived existing fragment selection.
-use super::super::{SavedRead, context::Context, fragments, ordering};
-use super::{SavedQuerySqlEditError as Error, render};
+use super::super::{SavedRead, context::Context, fragments, ordering, render};
+use super::SavedQuerySqlEditError as Error;
 use tablecraft_ace::{QueryAttribute, QueryFragmentExpressionEdit, SavedQueryRow};
 use tablecraft_sql::{
     query::{Query, ReadBody, ReadQuery, Statement},

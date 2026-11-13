@@ -1,13 +1,23 @@
 //! Bounded formatting of changed owned leaves, using the SQL syntax owner.
-use super::{
-    super::{SavedReadError, context::Context},
-    SavedQuerySqlEditError as Error,
-};
+use super::{SavedReadError, context::Context};
 use std::fmt::{self, Display, Write};
 use tablecraft_core::limits::Resource;
 use tablecraft_sql::select::{Expression, FunctionArgument, Projection};
 
 const TEXT_ESCAPE_COPIES: u64 = 2;
+
+#[derive(Debug)]
+pub(super) enum Error {
+    Metadata(SavedReadError),
+    Unsupported,
+    Roundtrip,
+}
+
+impl From<SavedReadError> for Error {
+    fn from(error: SavedReadError) -> Self {
+        Self::Metadata(error)
+    }
+}
 
 struct Output<'a, 'b> {
     context: &'a mut Context<'b>,

@@ -4,6 +4,7 @@ use super::{
     SessionState, VerifiedImage,
 };
 use std::path::Path;
+use tablecraft_ace::NativeQueryCreationIntent;
 #[cfg(feature = "ace16-create")]
 use tablecraft_ace::{
     AddTableSourceProfile, NativeAddColumnIntent, NativeAddTableIntent,
@@ -84,6 +85,18 @@ impl OfflineWriteSession {
                     super::database_options::recovery::recover(
                         pair, intent, slot.scope, budget, cancelled,
                     )
+                }
+                MutationIntent::QueryCreation(intent) => {
+                    let (mut target, mut journal) =
+                        pair.resizable_storage().map_err(Cause::Pair)?;
+                    let checked =
+                        inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = intent
+                        .qualify_retained_recovery(checked, slot.scope, budget, cancelled)
+                        .map_err(Cause::QueryCreationIntent)?;
+                    qualified
+                        .recover_retained(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
                 }
                 MutationIntent::QueryExpressionEdits(intent) => {
                     let (mut target, mut journal) = pair.storage().map_err(Cause::Pair)?;
@@ -683,6 +696,16 @@ impl OfflineWriteSession {
                         .confirm_completed(&mut target, budget, cancelled)
                         .map_err(Cause::Recovery)
                 }
+                MutationIntent::QueryCreation(intent) => {
+                    let checked =
+                        inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = intent
+                        .qualify_retained_recovery(checked, slot.scope, budget, cancelled)
+                        .map_err(Cause::QueryCreationIntent)?;
+                    qualified
+                        .confirm_completed(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
                 MutationIntent::QueryExpressionEdits(intent) => {
                     let checked =
                         inspect_v1(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
@@ -1196,7 +1219,8 @@ impl OfflineWriteSession {
         let slot = self.slot_mut()?;
         slot.current = None;
         let target = slot.target.take().ok_or(Cause::InvalidState)?;
-        let limit = tablecraft_ace::NativeIndexDropIntent::MAX_ENCODED_BYTES
+        let limit = NativeQueryCreationIntent::MAX_ENCODED_BYTES
+            .max(tablecraft_ace::NativeIndexDropIntent::MAX_ENCODED_BYTES)
             .max(tablecraft_ace::NativeFreshIndexCreateIntent::MAX_ENCODED_BYTES)
             .max(tablecraft_ace::NativeNumericIndexCreateIntent::MAX_ENCODED_BYTES)
             .max(NativeQueryExpressionIntent::MAX_ENCODED_BYTES)

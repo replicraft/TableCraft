@@ -1,10 +1,9 @@
 //! Same-image SQL review into existing native expression slots, without execution.
 mod diff;
-mod render;
 #[cfg(test)]
 mod tests;
 
-use super::{SavedReadError, context::Context, reconstruct_saved_read};
+use super::{SavedReadError, context::Context, reconstruct_saved_read, render};
 use crate::SavedRead;
 use std::io::Cursor;
 use tablecraft_ace::{
@@ -36,6 +35,16 @@ pub enum SavedQuerySqlEditError {
     /// Serialized changed leaves or the complete candidate differ from submitted SQL.
     #[error("saved SQL expression roundtrip does not preserve the submitted model")]
     Roundtrip,
+}
+
+impl From<render::Error> for SavedQuerySqlEditError {
+    fn from(error: render::Error) -> Self {
+        match error {
+            render::Error::Metadata(error) => Self::Metadata(error),
+            render::Error::Unsupported => Self::Unsupported,
+            render::Error::Roundtrip => Self::Roundtrip,
+        }
+    }
 }
 
 /// Review complete SQL against actual fragments from this same immutable image.

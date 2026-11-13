@@ -26,6 +26,8 @@ mod insert;
 mod plan;
 #[cfg(feature = "ace16-create")]
 mod populated_table;
+#[cfg(feature = "ace16-create")]
+mod query_creation;
 mod query_expression;
 mod recovery;
 mod rename;
@@ -62,6 +64,8 @@ pub use index_drop::StagedIndexDrop;
 pub use insert::{OfflineTableInserter, StagedInsert};
 #[cfg(feature = "ace16-create")]
 pub use populated_table::StagedPopulatedAddTable;
+#[cfg(feature = "ace16-create")]
+pub use query_creation::StagedQueryCreation;
 pub use query_expression::StagedQueryExpression;
 pub use rename::StagedTableRename;
 pub use table::OfflineTableEditor;
@@ -139,6 +143,8 @@ pub enum SchemaChange {
 /// Acknowledged query-definition change, separate from table schema and rows.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum QueryChange {
+    /// A new QueryDef was created without changing tables or data records.
+    Created,
     /// An existing query's qualified literal expression was saved without renaming.
     ExpressionSaved,
 }
@@ -263,7 +269,7 @@ pub struct OfflineWriteSession {
 #[cfg(feature = "ace16-create")]
 enum SchemaCapture {
     FirstTable,
-    TableAppend,
+    Retained,
 }
 
 impl OfflineWriteSession {
@@ -362,7 +368,7 @@ impl OfflineWriteSession {
             SchemaCapture::FirstTable => {
                 NativeImage::capture(target, slot.scope, budget, cancelled)
             }
-            SchemaCapture::TableAppend => {
+            SchemaCapture::Retained => {
                 NativeImage::capture_retained(target, slot.scope, budget, cancelled)
             }
         }
