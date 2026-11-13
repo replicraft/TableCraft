@@ -19,3 +19,8 @@ pub use expression_edit::{
 mod fitting;
 #[cfg(feature = "journal")]
 pub use fitting::{NativeQueryExpressionPlan, QueryExpressionError};
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+mod creation;
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use creation::{NativeQueryCreationCandidate, QueryCreationDefinition, QueryCreationError};

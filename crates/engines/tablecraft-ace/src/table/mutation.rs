@@ -325,3 +325,6 @@ mod value_limits;
 
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 mod historical_text_updates;
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(crate) mod query_creation;

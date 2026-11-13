@@ -504,3 +504,6 @@ pub use transaction::{
     NativeUnadornedFieldAdditionIntent, QualifiedUnadornedFieldAdditionRecovery,
     RecoverableUnadornedFieldAdditionPlan,
 };
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use queries::{NativeQueryCreationCandidate, QueryCreationDefinition, QueryCreationError};

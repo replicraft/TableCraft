@@ -33,12 +33,12 @@ struct Census {
     references: Vec<u32>,
 }
 
-pub(super) struct Storage {
+pub(in crate::table) struct Storage {
     pub catalog: Vec<u32>,
     pub maps: Vec<u32>,
 }
 
-pub(super) fn capture(
+pub(in crate::table) fn capture(
     image: &NativeImage,
     catalog: &TableSchema,
     budget: &mut ResourceBudget,

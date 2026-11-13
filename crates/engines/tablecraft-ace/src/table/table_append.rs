@@ -2,7 +2,7 @@
 pub(crate) mod allocation;
 mod catalog;
 mod selection;
-mod storage;
+pub(in crate::table) mod storage;
 
 use crate::{EditError, NativeImage, NativeSortOrder, header::check};
 use tablecraft_core::limits::ResourceBudget;
