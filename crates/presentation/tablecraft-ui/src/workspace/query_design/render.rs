@@ -44,6 +44,9 @@ impl State {
         if self.query_design_request().is_none() {
             return;
         }
+        if self.saved_query.active {
+            self.saved_query_sql_error_report(ui);
+        }
         if let Some(error) = self
             .query_design
             .session

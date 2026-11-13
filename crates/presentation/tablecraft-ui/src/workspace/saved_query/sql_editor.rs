@@ -15,8 +15,7 @@ const MAX_SQL_EDITOR_HEIGHT: f32 = 150.0;
 const MIN_SQL_EDITOR_HEIGHT: f32 = 24.0;
 
 impl State {
-    pub(super) fn saved_query_sql_editor(&mut self, ui: &mut Ui) {
-        let label = ui.label(tr(ui, "query-title"));
+    pub(in crate::workspace) fn saved_query_sql_error_report(&self, ui: &mut Ui) {
         if let Some(error) = self.saved_query_sql_error() {
             let message = match error {
                 SavedQuerySqlError::SourceChanged => {
@@ -34,6 +33,11 @@ impl State {
             let id = ui.make_persistent_id(("saved_query_sql_error", target, revision));
             diagnostics::show(ui, id, &message);
         }
+    }
+
+    pub(super) fn saved_query_sql_editor(&mut self, ui: &mut Ui) {
+        let label = ui.label(tr(ui, "query-title"));
+        self.saved_query_sql_error_report(ui);
         let Some((_, proposed, _, _)) = self.saved_query_sql() else {
             ui.weak(tr(ui, "ribbon-unavailable"));
             return;
