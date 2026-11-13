@@ -27,8 +27,7 @@ pub(in crate::workspace) struct PendingSql {
 impl State {
     fn source_bound_sql_object(&self) -> Option<ObjectTab> {
         self.active_object().filter(|object| {
-            (object.target.kind == ObjectKind::Sql
-                || self.query_design_parameter_origin().is_some())
+            object.target.kind == ObjectKind::Sql
                 && self.database.as_ref().is_some_and(|database| {
                     object.target.document_revision == database.document_revision
                 })
@@ -78,7 +77,9 @@ impl State {
     }
 
     fn reserve_query_sql(&mut self, bytes: usize, copies: usize) -> Option<String> {
-        if self.source_bound_sql_object().is_none() || self.query_sql_revision().is_none() {
+        let owner =
+            self.source_bound_sql_object().is_some() || self.query_design_request().is_some();
+        if !owner || self.query_sql_revision().is_none() {
             self.error = Some(self.localizer.text("objects-open-refused"));
             return None;
         }
