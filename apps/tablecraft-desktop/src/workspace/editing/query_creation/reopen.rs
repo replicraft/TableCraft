@@ -2,8 +2,8 @@
 use super::super::save_outcome;
 use crate::workspace::{Desktop, PendingOperation, request_read};
 use std::sync::Arc;
-use tablecraft_runtime::Command;
-use tablecraft_ui::{Database, EditSaveOutcome};
+use tablecraft_runtime::{Command, QueryCreationStorageChange};
+use tablecraft_ui::{Database, EditSaveOutcome, QueryCreationCatalogChange};
 
 impl Desktop {
     pub(in crate::workspace) fn reopen_query_creation(&mut self) {
@@ -96,10 +96,25 @@ impl Desktop {
             object_id: query.object_id,
             name: query.name.clone(),
         };
+        let Some(witness) = host.witness.as_ref() else {
+            return;
+        };
+        let storage = match witness.storage_change() {
+            QueryCreationStorageChange::Existing => QueryCreationCatalogChange::ExistingTables,
+            QueryCreationStorageChange::Initialized { .. } => {
+                let Some(storage) = witness.initialized_storage_display() else {
+                    self.fail_query_creation_reopen(
+                        &tablecraft_runtime::Error::QueryCreatedSourceChanged,
+                    );
+                    return;
+                };
+                QueryCreationCatalogChange::InitializedQueries { storage }
+            }
+        };
         let revision = database.document_revision;
         if !self
             .state
-            .resolve_query_creation_reopen(status, database, created)
+            .resolve_query_creation_reopen(status, database, created, storage)
         {
             let Some(host) = self.editing.query_creation.as_mut() else {
                 self.state.error = Some(self.state.localizer.text("objects-open-refused"));

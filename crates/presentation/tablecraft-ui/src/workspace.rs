@@ -98,8 +98,8 @@ pub use query::contents::{QueryCollectionBinding, QueryContentsBindings, QueryCo
 pub use query::options::{QueryPoolLimits, QueryRunLimits};
 pub use query::parameters::{ParameterInput, ParameterSpec};
 pub use query_creation::{
-    QueryCreationRequest, QueryCreationSaveCommand, QueryCreationSaveIdentity,
-    QueryCreationSaveOperation,
+    QueryCreationCatalogChange, QueryCreationRequest, QueryCreationSaveCommand,
+    QueryCreationSaveIdentity, QueryCreationSaveOperation,
 };
 pub use query_design::{QueryDesignCompletion, QueryDesignRequest, QueryDesignTarget};
 pub use query_design_close::{

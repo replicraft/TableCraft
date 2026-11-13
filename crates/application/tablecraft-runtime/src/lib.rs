@@ -114,5 +114,5 @@ mod tests;
 #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
 pub use editing::{
     QueryCreatedReopen, QueryCreationOrigin, QueryCreationOutcomeError, QueryCreationReopenFacts,
-    QueryCreationReview, QueryCreationTarget, ReviewedQueryCreation,
+    QueryCreationReview, QueryCreationStorageChange, QueryCreationTarget, ReviewedQueryCreation,
 };

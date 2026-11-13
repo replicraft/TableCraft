@@ -16,6 +16,14 @@ pub(super) const SHARED_TEXT_CONTROL_BYTES: usize =
 pub(super) const SHARED_REQUEST_CONTROL_BYTES: usize =
     size_of::<(AtomicUsize, AtomicUsize)>() + align_of::<QueryCreationRequest>();
 
+/// Exact technical catalog effect already checked by a guarded native reopen.
+/// This is inert presentation evidence, never native save authority.
+#[derive(Clone, Copy)]
+pub enum QueryCreationCatalogChange<'a> {
+    ExistingTables,
+    InitializedQueries { storage: &'a str },
+}
+
 /// The submitted editor snapshot. Native source and SQL qualification remain host-owned.
 #[derive(Debug, PartialEq, Eq)]
 pub struct QueryCreationRequest {

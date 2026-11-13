@@ -1,6 +1,8 @@
 //! Nominal creation review and immutable query-created publication evidence.
 mod outcome;
+pub(in crate::editing) mod storage;
 pub use outcome::{QueryCreationOutcomeError, QueryCreationReopenFacts};
+pub use storage::QueryCreationStorageChange;
 
 use super::platform;
 use crate::{Error, Response, SavedQueryTarget, document::Document};
@@ -54,6 +56,7 @@ pub struct QueryCreatedReopen {
     pub(in crate::editing) document_revision: u64,
     pub(in crate::editing) name: String,
     pub(in crate::editing) native_id: i32,
+    pub(in crate::editing) storage: storage::Witness,
 }
 
 impl QueryCreatedReopen {
@@ -71,6 +74,16 @@ impl QueryCreatedReopen {
 
     pub fn native_query_id(&self) -> i32 {
         self.native_id
+    }
+
+    /// Native-reviewed technical catalog effect; this fact grants no save authority.
+    pub fn storage_change(&self) -> QueryCreationStorageChange {
+        self.storage.change()
+    }
+
+    /// Actual Runtime table-storage presentation for the initialized system role.
+    pub fn initialized_storage_display(&self) -> Option<&str> {
+        self.storage.display()
     }
 
     pub(crate) fn expected_bytes(&self) -> &[u8] {

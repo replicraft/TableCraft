@@ -6,7 +6,7 @@ use crate::{
     controls::{SCOPE, action_review_budget, check},
     display::Presentation,
     document::Document,
-    editing::{EditError, platform::ids::issue_id},
+    editing::{EditError, platform::ids::issue_id, query_creation::storage::Witness},
 };
 use std::sync::{
     Arc,
@@ -187,6 +187,15 @@ fn issue(
     native.charge_allocation(document.edits.path.as_os_str().len() as u64, 1)?;
     native.charge_allocation(1, size_of::<QueryCreatedReopen>() as u64)?;
     native.charge_allocation(1, size_of::<State>() as u64)?;
+    // Capture only the initialized-storage route's compact prior membership;
+    // existing storage keeps its current native witness path without another scan.
+    let storage = Witness::capture(
+        document.edits.image_source(),
+        &plan,
+        native,
+        &mut output,
+        cancelled,
+    )?;
     let reopen = Arc::new(QueryCreatedReopen {
         // NO_CLONE: The immutable reopen witness outlives this Document borrow
         // while the live source retains its own exact path owner.
@@ -197,6 +206,7 @@ fn issue(
         // the original; its bounded name cannot borrow the plan being moved.
         name: output.text(intent.name())?,
         native_id: intent.native_query_id(),
+        storage,
     });
     check(cancelled)?;
     let origin = origin()?;

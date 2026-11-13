@@ -11,7 +11,10 @@ use crate::workspace::{
     query_design::QueryDesign,
     saved_query::SavedQueryState,
 };
-use crate::{Database, QueryCreationRequest, QueryCreationSaveIdentity, SavedQueryTarget};
+use crate::{
+    Database, QueryCreationCatalogChange, QueryCreationRequest, QueryCreationSaveIdentity,
+    SavedQueryTarget,
+};
 use std::sync::atomic::Ordering;
 
 struct SavedSlot<'a> {
@@ -100,6 +103,7 @@ impl State {
         identity: QueryCreationSaveIdentity,
         fresh: Database,
         created: SavedQueryTarget,
+        storage: QueryCreationCatalogChange<'_>,
     ) -> bool {
         let Some(request) = self.query_creation_reopen_request(identity) else {
             return false;
@@ -114,6 +118,7 @@ impl State {
                     catalog::Change::QueryCreated {
                         object_id: created.object_id,
                         name: &created.name,
+                        storage,
                     },
                 )
             })

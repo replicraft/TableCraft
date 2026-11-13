@@ -49,6 +49,7 @@ impl Document {
         {
             return Err(Error::QueryCreatedSourceChanged);
         }
+        witness.verify_storage(&image, &mut work, cancelled)?;
         check(cancelled)?;
         Ok((document, response))
     }

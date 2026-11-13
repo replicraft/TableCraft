@@ -85,7 +85,7 @@ pub use platform::save::SaveWorker;
 #[cfg(feature = "ace16-create")]
 pub use query_creation::{
     QueryCreatedReopen, QueryCreationOrigin, QueryCreationOutcomeError, QueryCreationReopenFacts,
-    QueryCreationReview, QueryCreationTarget, ReviewedQueryCreation,
+    QueryCreationReview, QueryCreationStorageChange, QueryCreationTarget, ReviewedQueryCreation,
 };
 pub use query_delete::{QueryDeleteReview, ReviewedQueryDelete};
 pub use query_expression::{
