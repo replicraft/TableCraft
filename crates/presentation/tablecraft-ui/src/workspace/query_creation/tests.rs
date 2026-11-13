@@ -124,3 +124,14 @@ fn saved_design_parks_under_its_real_owner_without_overwriting_global_scratch_sq
     assert!(state.activate_object(&scratch));
     assert_eq!(state.query_design_sql(), Some("SELECT 7 AS [Scratch]"));
 }
+
+#[test]
+fn saved_design_capture_retains_its_sql_without_granting_a_scratch_run() {
+    let mut preview = Preview::new(Scene::SavedQueryDesign);
+    let state = preview.state_mut();
+    assert!(state.replace_query_sql("SELECT 7 AS [Scratch]".into()));
+    let captured = state.capture_query_draft().unwrap();
+    assert_eq!(captured, "SELECT 99 AS [Answer];");
+    assert_eq!(state.sql, "SELECT 7 AS [Scratch]");
+    assert!(!state.begin_query_run(901, captured));
+}
