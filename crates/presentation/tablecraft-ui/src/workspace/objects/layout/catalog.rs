@@ -5,6 +5,7 @@ use crate::workspace::objects::memory::Counter;
 #[derive(Clone, Copy)]
 pub(super) enum Change<'a> {
     Unchanged,
+    QueryCreated { object_id: u128, name: &'a str },
     TableDropped(&'a str),
     TableCreated(&'a str),
 }
@@ -18,7 +19,9 @@ pub(super) fn matches_change(old: &Database, fresh: &Database, change: Change<'_
         && fresh.format == old.format
         && fresh.title_path == old.title_path
         && match change {
-            Change::Unchanged => fresh.tables.len() == old.tables.len(),
+            Change::Unchanged | Change::QueryCreated { .. } => {
+                fresh.tables.len() == old.tables.len()
+            }
             Change::TableCreated(name) => {
                 old.tables.iter().all(|table| table.name != name)
                     && old.tables.len().checked_add(1) == Some(fresh.tables.len())
@@ -46,17 +49,40 @@ pub(super) fn matches_change(old: &Database, fresh: &Database, change: Change<'_
                     && fresh.tables.iter().all(|table| table.name != name)
             }
         }
-        && fresh.queries.len() == old.queries.len()
+        && match change {
+            Change::QueryCreated { object_id, name } => {
+                old.queries
+                    .iter()
+                    .all(|query| query.object_id != object_id && query.name != name)
+                    && old.queries.len().checked_add(1) == Some(fresh.queries.len())
+                    && fresh
+                        .queries
+                        .iter()
+                        .filter(|query| query.object_id == object_id)
+                        .count()
+                        == 1
+                    && fresh
+                        .queries
+                        .iter()
+                        .filter(|query| query.name == name)
+                        .count()
+                        == 1
+                    && fresh.queries.iter().any(|query| {
+                        query.object_id == object_id && query.name == name && !query.system
+                    })
+            }
+            _ => fresh.queries.len() == old.queries.len(),
+        }
         && old
             .tables
             .iter()
             .filter(|table| match change {
-                Change::Unchanged | Change::TableCreated(_) => true,
+                Change::Unchanged | Change::QueryCreated { .. } | Change::TableCreated(_) => true,
                 Change::TableDropped(name) => table.name != name,
             })
             .zip(fresh.tables.iter().filter(|table| match change {
                 Change::TableCreated(name) => table.name != name,
-                Change::Unchanged | Change::TableDropped(_) => true,
+                Change::Unchanged | Change::QueryCreated { .. } | Change::TableDropped(_) => true,
             }))
             .all(|(old, fresh)| {
                 old.name == fresh.name
@@ -64,9 +90,18 @@ pub(super) fn matches_change(old: &Database, fresh: &Database, change: Change<'_
                     && old.system == fresh.system
                     && old.storage == fresh.storage
             })
-        && old.queries.iter().zip(&fresh.queries).all(|(old, fresh)| {
-            old.object_id == fresh.object_id && old.name == fresh.name && old.system == fresh.system
-        })
+        && old
+            .queries
+            .iter()
+            .zip(fresh.queries.iter().filter(|query| match change {
+                Change::QueryCreated { object_id, .. } => query.object_id != object_id,
+                _ => true,
+            }))
+            .all(|(old, fresh)| {
+                old.object_id == fresh.object_id
+                    && old.name == fresh.name
+                    && old.system == fresh.system
+            })
 }
 
 pub(super) fn retained_bytes(database: &Database) -> Option<usize> {

@@ -141,7 +141,7 @@ impl State {
                 None,
             ),
             DocumentView::Query => {
-                let data = if self.saved_query.active {
+                let data = if self.saved_query_data_visible() {
                     self.saved_query.data.as_ref()
                 } else {
                     self.query_data.as_ref()
@@ -168,7 +168,7 @@ impl State {
             source,
             offset,
             saved,
-            self.saved_query.active,
+            self.saved_query_data_visible(),
             self.focus_publication,
             self.active_object().map(|object| object.id),
             (

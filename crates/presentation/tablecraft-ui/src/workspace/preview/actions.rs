@@ -370,6 +370,11 @@ impl Preview {
                     self.state.error = Some(self.state.localizer.text("query-mock-error"));
                 }
             }
+            Action::ReviewQueryCreation { .. } => {
+                self.state.error = Some(self.state.localizer.text("query-mock-error"));
+            }
+            // Synthetic hosts cannot acquire native creation custody or reopen witnesses.
+            Action::QueryCreationSave { .. } => {}
             Action::ReviewSavedQuerySql { request } => self.refuse_saved_sql_save(request),
             Action::SavedQuerySqlClose { result } => self.finish_saved_sql_close(result),
             // This synthetic host never owns a native save or read-reopen witness.

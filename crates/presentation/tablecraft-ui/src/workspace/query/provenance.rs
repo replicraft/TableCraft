@@ -27,7 +27,8 @@ pub(in crate::workspace) struct PendingSql {
 impl State {
     fn source_bound_sql_object(&self) -> Option<ObjectTab> {
         self.active_object().filter(|object| {
-            object.target.kind == ObjectKind::Sql
+            (object.target.kind == ObjectKind::Sql
+                || self.query_design_parameter_origin().is_some())
                 && self.database.as_ref().is_some_and(|database| {
                     object.target.document_revision == database.document_revision
                 })
@@ -102,8 +103,9 @@ impl State {
 
     /// Preflight the GUI command copy and pending witness before cloning a draft.
     pub fn capture_query_draft(&mut self) -> Option<String> {
-        let mut captured = self.reserve_query_sql(self.sql.len(), 2)?;
-        captured.push_str(&self.sql);
+        let length = self.query_design_sql().map_or(self.sql.len(), str::len);
+        let mut captured = self.reserve_query_sql(length, 2)?;
+        captured.push_str(self.query_design_sql().unwrap_or(&self.sql));
         Some(captured)
     }
 
@@ -154,7 +156,7 @@ impl State {
             && match &self.query_result {
                 ResultOrigin::Unknown => true,
                 ResultOrigin::Sql(sql) | ResultOrigin::Design(sql) => {
-                    sql != &self.sql
+                    self.query_design_sql().unwrap_or(&self.sql) != sql
                         || self.busy
                         || self.query_pending.is_some()
                         || self.query_parameters.is_some()

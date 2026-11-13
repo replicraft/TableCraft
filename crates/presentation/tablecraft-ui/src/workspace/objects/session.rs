@@ -80,7 +80,7 @@ impl Session {
     }
 
     pub(super) fn take(state: &mut State, kind: &ObjectKind) -> Self {
-        if *kind == ObjectKind::Sql {
+        if matches!(kind, ObjectKind::Sql | ObjectKind::SavedQuery { .. }) {
             state.query_design.clear_field_input_hints();
         }
         match kind {
@@ -98,10 +98,16 @@ impl Session {
                 design: state.view == DocumentView::Design,
                 error: state.error.take(),
             },
-            ObjectKind::SavedQuery { .. } => Self::Saved {
-                state: Box::new(mem::take(&mut state.saved_query)),
-                error: state.error.take(),
-            },
+            ObjectKind::SavedQuery { .. } => {
+                state.saved_query.design = mem::take(&mut state.query_design);
+                state.saved_query.design_data = state.query_data.take();
+                state.saved_query.design_result = mem::take(&mut state.query_result);
+                state.saved_query.design_selection = mem::take(&mut state.query_selection);
+                Self::Saved {
+                    state: Box::new(mem::take(&mut state.saved_query)),
+                    error: state.error.take(),
+                }
+            }
             ObjectKind::Sql => Self::Sql {
                 design: mem::take(&mut state.query_design),
                 data: state.query_data.take(),
@@ -154,6 +160,10 @@ impl Session {
                 error,
             } => {
                 state.saved_query = *saved;
+                state.query_design = mem::take(&mut state.saved_query.design);
+                state.query_data = state.saved_query.design_data.take();
+                state.query_result = mem::take(&mut state.saved_query.design_result);
+                state.query_selection = mem::take(&mut state.saved_query.design_selection);
                 state.saved_query.active = true;
                 state.view = DocumentView::Query;
                 state.error = error;

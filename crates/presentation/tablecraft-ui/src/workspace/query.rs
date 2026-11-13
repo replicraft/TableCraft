@@ -40,7 +40,19 @@ impl State {
 
     fn query_editor_contents(&mut self, ui: &mut Ui, actions: &mut Vec<Action>) {
         if self.view == DocumentView::Query {
-            if self.saved_query.active {
+            if ui
+                .add_enabled(
+                    self.can_begin_query_creation_save_as(),
+                    egui::Button::new(tr(ui, "query-save-as")),
+                )
+                .clicked()
+            {
+                self.queue_query_creation_save_as();
+            }
+            if self.saved_query.active
+                && !self.query_design_visible()
+                && !self.query_design_results_visible()
+            {
                 self.saved_query_editor(ui, actions);
                 return;
             }

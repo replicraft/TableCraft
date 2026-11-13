@@ -5,6 +5,7 @@ mod database_options_reopen;
 mod field_addition_reopen;
 mod field_drop_reopen;
 mod field_rename_reopen;
+mod query_creation_reopen;
 mod query_schema_reopen;
 mod replacement;
 mod restoration;
@@ -79,6 +80,7 @@ impl State {
                 } else {
                     match &entry.session {
                         Some(Session::Sql { design, .. }) => design.preferences(),
+                        Some(Session::Saved { state, .. }) => state.design.preferences(),
                         _ => None,
                     }
                 };

@@ -38,6 +38,8 @@ pub struct QueryDesignRequest {
 pub enum QueryDesignCompletion {
     ShowSql,
     Run,
+    Save,
+    SaveExisting,
 }
 
 #[derive(Default)]
@@ -93,9 +95,76 @@ enum PendingKind {
 }
 
 impl State {
+    pub(in crate::workspace) fn saved_query_data_visible(&self) -> bool {
+        self.saved_query.active
+            && !self.query_design_visible()
+            && !self.query_design_results_visible()
+    }
+
+    /// Current authoring text for either the actual scratch or saved Design owner.
+    pub fn query_design_sql(&self) -> Option<&str> {
+        match self.active_object()?.target.kind {
+            ObjectKind::Sql => Some(&self.sql),
+            ObjectKind::SavedQuery { .. } => self.saved_query_sql().map(|(_, sql, _, _)| sql),
+            _ => None,
+        }
+    }
+
+    fn replace_query_design_sql(&mut self, sql: String) -> bool {
+        if self.saved_query.active {
+            if self.query_design_sql() == Some(sql.as_str()) {
+                return true;
+            }
+            if !self.admit_object_bytes(Some(sql.capacity())) {
+                return false;
+            }
+            let Some(draft) = &mut self.saved_query.sql else {
+                return false;
+            };
+            draft.replace_text(sql)
+        } else {
+            self.replace_query_sql(sql)
+        }
+    }
+
+    fn set_query_design_data(&mut self, sql: String, mut data: super::Data) -> bool {
+        if !self.saved_query.active {
+            return self.set_query_data(Some(sql), data);
+        }
+        if data.source_revision.is_some()
+            || data.row_ordinals.is_some()
+            || data
+                .query_contents
+                .as_ref()
+                .is_some_and(|bindings| !bindings.valid_for(&data))
+        {
+            return false;
+        }
+        let submitted = Some(sql);
+        if !self.admit_query_data(&submitted, &data) {
+            return false;
+        }
+        self.prepare_display(&mut data);
+        if !self.admit_query_data(&submitted, &data) {
+            return false;
+        }
+        self.bump_focus_publication();
+        self.query_selection.reset(&data);
+        self.query_data = Some(data);
+        self.query_result = submitted.map_or(ResultOrigin::Unknown, ResultOrigin::Sql);
+        true
+    }
+
     pub fn query_design_request(&self) -> Option<QueryDesignRequest> {
         let tab = self.active_object()?;
-        if tab.target.kind != ObjectKind::Sql || self.saved_query.active {
+        let admitted = match &tab.target.kind {
+            ObjectKind::Sql => !self.saved_query.active,
+            ObjectKind::SavedQuery { .. } => {
+                self.saved_query.active && self.saved_query_sql().is_some()
+            }
+            _ => false,
+        };
+        if !admitted {
             return None;
         }
         let revision = self.database.as_ref()?.document_revision;
@@ -316,7 +385,7 @@ impl State {
         !self.query_design.has_unresolved_field_inputs()
             && self.query_design_ready()
             && self.query_design_request().as_ref() == Some(request)
-            && self.sql == sql
+            && self.query_design_sql() == Some(sql.as_str())
             && sql.len() <= MAX_DESIGN_TEXT_BYTES
     }
 
@@ -358,10 +427,10 @@ impl State {
             PendingKind::Build { draft, completion } if draft.as_ref() == &built.draft => {
                 Some(*completion)
             }
-            PendingKind::Import { sql } if *sql == self.sql => None,
+            PendingKind::Import { sql } if self.query_design_sql() == Some(sql.as_str()) => None,
             _ => return None,
         };
-        if !self.replace_query_sql(built.sql) {
+        if !self.replace_query_design_sql(built.sql) {
             return None;
         }
         let session = self.query_design.session.as_mut()?;
@@ -375,9 +444,13 @@ impl State {
             None => Mode::Design,
             Some(QueryDesignCompletion::ShowSql) => Mode::Sql,
             Some(QueryDesignCompletion::Run) => Mode::Results,
+            Some(QueryDesignCompletion::Save | QueryDesignCompletion::SaveExisting) => Mode::Design,
         };
         if session.mode == Mode::Design {
             self.ribbon_tab = super::ribbon::Tab::QueryDesign;
+        }
+        if completion == Some(QueryDesignCompletion::Save) {
+            self.begin_query_creation_name();
         }
         completion.or(Some(QueryDesignCompletion::ShowSql))
     }
@@ -450,7 +523,7 @@ impl State {
                 // NO_CLONE: Preserve the submitted SQL after the editable buffer changes so old
                 // results retain their true provenance. A borrow would alias that buffer;
                 // sharing requires one immutable SQL contract across all result owners.
-                sql: self.sql.clone(),
+                sql: super::query::parameters::copy_text(self.query_design_sql()?)?,
             },
         );
         true
@@ -471,7 +544,7 @@ impl State {
                 .pending
                 .as_ref()
                 .is_some_and(|pending| match &pending.kind {
-                    PendingKind::Run { sql } => sql == &self.sql,
+                    PendingKind::Run { sql } => self.query_design_sql() == Some(sql.as_str()),
                     _ => false,
                 })
         });
@@ -489,7 +562,7 @@ impl State {
         let PendingKind::Run { sql } = pending.kind else {
             unreachable!("validated Design run");
         };
-        if !self.set_query_data(Some(sql), data) {
+        if !self.set_query_design_data(sql, data) {
             // NO_CLONE: The global diagnostic and independently dismissible Design error both
             // retain this text. Cow cannot borrow mutable UI state; Arc per diagnostic
             // would replace both message contracts for a small exceptional-path copy.
@@ -542,7 +615,7 @@ impl State {
             return None;
         }
         let request = self.query_design_request()?;
-        if self.query_design_results_visible() || self.sql.trim().is_empty() {
+        if self.query_design_results_visible() || self.query_design_sql()?.trim().is_empty() {
             let session = self
                 .query_design
                 .session
@@ -557,7 +630,7 @@ impl State {
                 // NO_CLONE: Import owns the submitted SQL while the editor keeps its mutable buffer
                 // after rejection. Rc cannot cross the worker; borrowing the editor
                 // through Cow cannot survive asynchronous dispatch.
-                sql: self.sql.clone(),
+                sql: super::query::parameters::copy_text(self.query_design_sql()?)?,
             })
         } else {
             None
@@ -585,6 +658,31 @@ impl State {
         })
     }
 
+    pub(in crate::workspace) fn query_design_save_action(&self) -> Option<Action> {
+        self.query_design_save_action_for(false)
+    }
+
+    pub(in crate::workspace) fn query_design_save_action_for(
+        &self,
+        existing: bool,
+    ) -> Option<Action> {
+        let request = self.query_design_request()?;
+        let session = self.query_design.session.as_ref()?;
+        let completion = if existing {
+            QueryDesignCompletion::SaveExisting
+        } else {
+            QueryDesignCompletion::Save
+        };
+        self.can_build_query_design(&request, &session.draft, completion)
+            .then(|| Action::BuildQueryDesign {
+                request,
+                // NO_CLONE: The worker and live editable Design need independent snapshots;
+                // this one paid immutable Arc is shared by the pending request and worker.
+                draft: Arc::new(session.draft.clone()),
+                completion,
+            })
+    }
+
     pub(super) fn query_design_run_action(&self) -> Option<Action> {
         let request = self.query_design_request()?;
         let session = self.query_design.session.as_ref()?;
@@ -603,3 +701,10 @@ impl State {
 
 #[cfg(test)]
 mod tests;
+
+impl QueryDesign {
+    pub(in crate::workspace) fn save_revision(&self) -> Option<u64> {
+        let session = self.session.as_ref()?;
+        (session.mode == Mode::Design).then_some(session.revision)
+    }
+}

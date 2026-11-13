@@ -419,7 +419,7 @@ impl State {
     }
 }
 
-fn without_report(outcome: EditSaveOutcome) -> EditSaveOutcome {
+pub(in crate::workspace) fn without_report(outcome: EditSaveOutcome) -> EditSaveOutcome {
     match outcome {
         EditSaveOutcome::Retained {
             can_recover,
@@ -436,7 +436,7 @@ fn without_report(outcome: EditSaveOutcome) -> EditSaveOutcome {
     }
 }
 
-fn outcome_bytes(outcome: &EditSaveOutcome) -> usize {
+pub(in crate::workspace) fn outcome_bytes(outcome: &EditSaveOutcome) -> usize {
     match outcome {
         EditSaveOutcome::Retained { message, .. }
         | EditSaveOutcome::Saved(message)

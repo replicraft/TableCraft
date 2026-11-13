@@ -343,7 +343,7 @@ impl State {
                     })
                     && self.table_selection.can_copy(data)
             }
-            DocumentView::Query if self.saved_query.active => {
+            DocumentView::Query if self.saved_query_data_visible() => {
                 self.saved_query.selection.can_copy(data)
             }
             DocumentView::Query => self.query_selection.can_copy(data),
@@ -359,7 +359,7 @@ impl State {
             DocumentView::Table => self
                 .table_selection
                 .select_record(self.data.as_ref().expect("visible table page"), context),
-            DocumentView::Query if self.saved_query.active => {
+            DocumentView::Query if self.saved_query_data_visible() => {
                 self.saved_query.selection.select_record(
                     self.saved_query
                         .data

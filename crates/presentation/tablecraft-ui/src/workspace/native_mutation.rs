@@ -42,6 +42,8 @@ impl State {
 
     fn native_mutation_blocked_without_saved_field(&self) -> bool {
         self.native_source_stale()
+            || self.query_creation_name_open()
+            || self.query_creation_save_open()
             || self.table_drop_open()
             || self.options_dialog_open()
             || self.database_options_pending()

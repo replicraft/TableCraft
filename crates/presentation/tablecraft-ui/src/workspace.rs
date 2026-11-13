@@ -24,6 +24,7 @@ mod navigation;
 mod objects;
 pub mod preview;
 mod query;
+mod query_creation;
 mod query_design;
 mod records;
 mod recovery;
@@ -95,6 +96,10 @@ pub use query::actions::review::{
 pub use query::contents::{QueryCollectionBinding, QueryContentsBindings, QueryContentsTarget};
 pub use query::options::{QueryPoolLimits, QueryRunLimits};
 pub use query::parameters::{ParameterInput, ParameterSpec};
+pub use query_creation::{
+    QueryCreationRequest, QueryCreationSaveCommand, QueryCreationSaveIdentity,
+    QueryCreationSaveOperation,
+};
 pub use query_design::{QueryDesignCompletion, QueryDesignRequest, QueryDesignTarget};
 pub use records::RecordTarget;
 pub use recovery::RecoveryOutcome;
@@ -298,6 +303,13 @@ pub enum Action {
     },
     AcknowledgeTableDraftSave {
         id: u64,
+    },
+    ReviewQueryCreation {
+        request: Arc<QueryCreationRequest>,
+    },
+    QueryCreationSave {
+        identity: QueryCreationSaveIdentity,
+        command: QueryCreationSaveCommand,
     },
     SavedQuerySqlSave {
         identity: SavedQuerySqlSaveIdentity,
@@ -579,6 +591,7 @@ pub struct State {
     pub saved_query_sql_edit_available: bool,
     saved_query: saved_query::SavedQueryState,
     active_save: active_save::PendingSave,
+    query_creation: query_creation::Model,
     saved_query_sql_close: Option<saved_query::SqlCloseConfirmation>,
     saved_query_sql_save: Option<saved_query_save::SaveStatus>,
     selected_field: usize,
@@ -708,7 +721,9 @@ impl State {
         let data = self.visible_data()?;
         match self.view {
             DocumentView::Table => self.table_selection.text(data),
-            DocumentView::Query if self.saved_query.active => self.saved_query.selection.text(data),
+            DocumentView::Query if self.saved_query_data_visible() => {
+                self.saved_query.selection.text(data)
+            }
             DocumentView::Query => self.query_selection.text(data),
             DocumentView::Design => None,
         }
@@ -729,7 +744,7 @@ impl State {
         };
         match self.view {
             DocumentView::Table => self.table_selection.can_copy(data),
-            DocumentView::Query if self.saved_query.active => {
+            DocumentView::Query if self.saved_query_data_visible() => {
                 self.saved_query.selection.can_copy(data)
             }
             DocumentView::Query => self.query_selection.can_copy(data),
@@ -748,7 +763,7 @@ impl State {
         }
         match self.view {
             DocumentView::Table => self.table_selection.row_selected(),
-            DocumentView::Query if self.saved_query.active => {
+            DocumentView::Query if self.saved_query_data_visible() => {
                 self.saved_query.selection.row_selected()
             }
             DocumentView::Query => self.query_selection.row_selected(),
@@ -777,7 +792,7 @@ impl State {
                 .data
                 .as_ref()
                 .is_some_and(|data| self.table_selection.copy(data, ctx)),
-            DocumentView::Query if self.saved_query.active => self
+            DocumentView::Query if self.saved_query_data_visible() => self
                 .saved_query
                 .data
                 .as_ref()
@@ -923,7 +938,9 @@ impl State {
         }
         match self.view {
             DocumentView::Table => self.data.as_ref(),
-            DocumentView::Query if self.saved_query.active => self.saved_query.data.as_ref(),
+            DocumentView::Query if self.saved_query_data_visible() => {
+                self.saved_query.data.as_ref()
+            }
             DocumentView::Query => self.query_data.as_ref(),
             DocumentView::Design => None,
         }
@@ -957,6 +974,8 @@ impl State {
             || self.field_rename_modal_open()
             || self.field_rename_close_open()
             || self.saved_query_sql_save_open()
+            || self.query_creation_name_open()
+            || self.query_creation_save_open()
             || self.table_draft_save.is_some()
             || self.table_draft_field_delete_open()
             || self.insert_continuation_pending()
@@ -1070,6 +1089,7 @@ impl State {
         self.table_draft_close_dialog(ui.ctx(), &mut actions);
         self.saved_query_sql_close_dialog(ui.ctx(), &mut actions);
         self.saved_query_sql_save_dialog(ui.ctx(), &mut actions);
+        self.query_creation_dialog(ui.ctx(), &mut actions);
         self.options_dialog(ui.ctx(), &mut actions);
         self.database_options_dialog(ui.ctx(), &mut actions);
         self.field_addition_close_dialog(ui.ctx(), &mut actions);

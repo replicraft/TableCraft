@@ -27,7 +27,10 @@ impl State {
         request_id: u64,
         sql: String,
     ) -> bool {
-        if request_id == 0 || sql != self.sql || !self.admit_object_bytes(Some(sql.capacity())) {
+        if request_id == 0
+            || self.query_design_sql() != Some(sql.as_str())
+            || !self.admit_object_bytes(Some(sql.capacity()))
+        {
             return false;
         }
         let Some(request) = self.query_design_parameter_origin() else {

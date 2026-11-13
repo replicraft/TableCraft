@@ -60,6 +60,25 @@ impl SavedQuerySqlRequest {
 }
 
 impl Draft {
+    pub(in crate::workspace) fn created(
+        target: SavedQueryTarget,
+        sql: &str,
+        revision: u64,
+    ) -> Option<Self> {
+        // NO_CLONE: The saved baseline and independently editable authored text
+        // have different mutation lifetimes. Their bounded copies retain exact
+        // source text; normal fresh inspection supplies actual eligibility.
+        Some(Self {
+            target,
+            original: Some(copy_text(sql)?),
+            proposed: copy_text(sql)?,
+            revision,
+            eligibility: SavedQuerySqlEligibility::Unavailable,
+            pending: None,
+            error: None,
+        })
+    }
+
     pub(super) fn new(target: SavedQueryTarget) -> Self {
         Self {
             target,
@@ -70,6 +89,10 @@ impl Draft {
             pending: None,
             error: None,
         }
+    }
+
+    pub(in crate::workspace) fn text(&self) -> &str {
+        &self.proposed
     }
 
     pub(in crate::workspace) fn target(&self) -> &SavedQueryTarget {
@@ -137,7 +160,7 @@ impl Draft {
             })
     }
 
-    pub(super) fn replace_text(&mut self, text: String) -> bool {
+    pub(in crate::workspace) fn replace_text(&mut self, text: String) -> bool {
         if self.proposed == text {
             return true;
         }

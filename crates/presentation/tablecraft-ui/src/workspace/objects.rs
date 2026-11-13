@@ -4,6 +4,7 @@ mod layout;
 pub(super) mod memory;
 mod names;
 mod ownership;
+mod query_creation;
 mod query_design_inputs;
 mod saved_sql;
 mod saved_sql_close;
@@ -476,6 +477,8 @@ impl State {
 
     pub(super) fn object_switch_ready_without_saved_field_name(&self) -> bool {
         !self.busy
+            && !self.query_creation_name_open()
+            && !self.query_creation_save_open()
             && !self.options_dialog_open()
             && !self.database_options_modal_open()
             && !self.saved_query_sql_close_open()

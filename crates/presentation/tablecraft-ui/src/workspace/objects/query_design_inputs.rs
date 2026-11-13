@@ -6,14 +6,24 @@ impl State {
     /// Unresolved QBE text is user data in either the active or a parked SQL tab.
     pub fn has_unresolved_query_design_edits(&self) -> bool {
         self.query_design.has_unresolved_field_inputs()
-            || self.objects.entries.iter().any(|entry| {
-                matches!(&entry.session, Some(ObjectSession::Sql { design, .. })
-                    if design.has_unresolved_field_inputs())
-            })
+            || self
+                .objects
+                .entries
+                .iter()
+                .any(|entry| match &entry.session {
+                    Some(ObjectSession::Sql { design, .. }) => design.has_unresolved_field_inputs(),
+                    Some(ObjectSession::Saved { state, .. }) => {
+                        state.design.has_unresolved_field_inputs()
+                    }
+                    _ => false,
+                })
     }
 
     pub(in crate::workspace) fn unresolved_query_design_edits_for(&self, tab: &ObjectTab) -> bool {
-        if tab.target.kind != ObjectKind::Sql {
+        if !matches!(
+            tab.target.kind,
+            ObjectKind::Sql | ObjectKind::SavedQuery { .. }
+        ) {
             return false;
         }
         if self.active_object().as_ref() == Some(tab) {
@@ -23,9 +33,12 @@ impl State {
             .entries
             .iter()
             .find(|entry| entry.tab == *tab)
-            .is_some_and(|entry| {
-                matches!(&entry.session, Some(ObjectSession::Sql { design, .. })
-                if design.has_unresolved_field_inputs())
+            .is_some_and(|entry| match &entry.session {
+                Some(ObjectSession::Sql { design, .. }) => design.has_unresolved_field_inputs(),
+                Some(ObjectSession::Saved { state, .. }) => {
+                    state.design.has_unresolved_field_inputs()
+                }
+                _ => false,
             })
     }
 
@@ -41,7 +54,8 @@ impl State {
             id: entry.tab.id,
             target: ObjectTarget {
                 document_revision: entry.tab.target.document_revision,
-                kind: ObjectKind::Sql,
+                // NO_CLONE: The reveal target must survive activation mutating the object registry.
+                kind: entry.tab.target.kind.clone(),
             },
         });
         let Some(target) = target else {

@@ -91,6 +91,11 @@ fn prepare_with_identity(
                 let ObjectKind::SavedQuery { object_id, name } = &target.kind else {
                     return Err(PrepareError::Identity);
                 };
+                state.design = preference
+                    .query_design
+                    .map(QueryDesign::from_preferences)
+                    .unwrap_or_default();
+                let design = std::mem::take(&mut state.design);
                 state.restore_preferences(
                     SavedQueryTarget {
                         document_revision: revision,
@@ -99,6 +104,7 @@ fn prepare_with_identity(
                     },
                     preference.parameters,
                 );
+                state.design = design;
             }
             Session::Sql { design, .. } => {
                 *design = preference

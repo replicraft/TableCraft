@@ -40,6 +40,10 @@ struct Pending {
 #[derive(Default)]
 pub(super) struct SavedQueryState {
     pub(in crate::workspace) sql: Option<sql::Draft>,
+    pub(in crate::workspace) design: super::query_design::QueryDesign,
+    pub(in crate::workspace) design_data: Option<Data>,
+    pub(in crate::workspace) design_result: super::query::provenance::ResultOrigin,
+    pub(in crate::workspace) design_selection: Selection,
     pub(super) active: bool,
     pub(super) target: Option<SavedQueryTarget>,
     pub(super) data: Option<Data>,
@@ -59,6 +63,26 @@ pub(super) struct InputPreferences {
 }
 
 impl SavedQueryState {
+    pub(in crate::workspace) fn created(
+        target: SavedQueryTarget,
+        text: &str,
+        revision: u64,
+    ) -> Option<Self> {
+        // NO_CLONE: The live saved owner and its independent SQL draft retain
+        // distinct identities across normal inspection and authoring lifetimes.
+        let draft_target = SavedQueryTarget {
+            document_revision: target.document_revision,
+            object_id: target.object_id,
+            name: super::query::parameters::copy_text(&target.name)?,
+        };
+        Some(Self {
+            active: true,
+            sql: Some(sql::Draft::created(draft_target, text, revision)?),
+            target: Some(target),
+            ..Self::default()
+        })
+    }
+
     pub(super) fn needs_inspection(&self) -> bool {
         self.parameters.is_none()
     }
@@ -102,6 +126,11 @@ impl SavedQueryState {
 
     pub(super) fn retained_bytes(&self) -> Option<usize> {
         let mut count = Counter::new(size_of::<Self>());
+        count.add(self.design.retained_bytes()?);
+        count.add(self.design_result.retained_bytes());
+        if let Some(data) = &self.design_data {
+            count.add(memory::data(data)?);
+        }
         if let Some(sql) = &self.sql {
             count.add(sql.retained_bytes()?);
         }

@@ -49,6 +49,8 @@ pub enum Scene {
     TotalsError,
     QueryDesign,
     QueryDesignTotals,
+    QuerySaveName,
+    SavedQueryDesign,
     QueryDesignTables,
     QueryDesignError,
     QueryDesignWide,
@@ -153,7 +155,7 @@ pub enum Scene {
 }
 
 impl Scene {
-    pub const ALL: [Self; 119] = [
+    pub const ALL: [Self; 121] = [
         Self::Datasheet,
         Self::RibbonCollapsed,
         Self::RibbonTemporary,
@@ -172,6 +174,8 @@ impl Scene {
         Self::TotalsError,
         Self::QueryDesign,
         Self::QueryDesignTotals,
+        Self::QuerySaveName,
+        Self::SavedQueryDesign,
         Self::QueryDesignTables,
         Self::QueryDesignError,
         Self::QueryDesignWide,
@@ -324,6 +328,8 @@ impl Scene {
             Self::TotalsError => "totals-error",
             Self::QueryDesign => "query-design",
             Self::QueryDesignTotals => "query-design-totals",
+            Self::QuerySaveName => "query-save-name",
+            Self::SavedQueryDesign => "saved-query-design",
             Self::QueryDesignTables => "query-design-tables",
             Self::QueryDesignError => "query-design-error",
             Self::QueryDesignWide => "query-design-wide",
@@ -535,6 +541,8 @@ impl Preview {
             Scene::TotalsError => self.prepare_totals_scene(true),
             Scene::QueryDesign => self.prepare_query_design(false, false),
             Scene::QueryDesignTotals => self.prepare_query_design_totals(),
+            Scene::QuerySaveName => self.prepare_query_save_name(),
+            Scene::SavedQueryDesign => self.prepare_saved_query_design(),
             Scene::QueryDesignTables => self.prepare_query_design(true, false),
             Scene::QueryDesignError => self.prepare_query_design(false, true),
             Scene::QueryDesignWide => self.prepare_wide_query_design(),

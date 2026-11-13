@@ -1,6 +1,8 @@
 //! Authored design inventories are presentation fixtures, never executed queries.
 use super::{Preview, fixtures};
-use crate::{ObjectKind, ObjectTarget, QueryDesignCompletion, QueryDesignRequest};
+use crate::{
+    ObjectKind, ObjectTarget, QueryDesignCompletion, QueryDesignRequest, SavedQuerySqlEligibility,
+};
 use std::sync::Arc;
 use tablecraft_builders::query::{
     BuiltQueryDesign, DesignColumn, DesignField, DesignFieldMetadata, DesignJoin, DesignJoinKind,
@@ -276,3 +278,51 @@ fn table_metadata(table: &str) -> DesignTableMetadata {
 
 #[cfg(test)]
 mod tests;
+
+impl Preview {
+    pub(super) fn prepare_query_save_name(&mut self) {
+        self.mock_open_object(ObjectTarget {
+            document_revision: fixtures::REVISION,
+            kind: ObjectKind::Sql,
+        });
+        assert!(self.state.replace_query_sql("SELECT 99 AS [Answer]".into()));
+        assert!(self.state.begin_query_creation_name());
+        assert!(self.state.set_query_creation_name("Query1".into()));
+    }
+
+    pub(super) fn prepare_saved_query_design(&mut self) {
+        let target = fixtures::saved_target();
+        let id = self.request();
+        // NO_CLONE: The synthetic read observation and its independent reply
+        // comparison retain the same bounded identity, never a native capability.
+        self.state.begin_saved_query_inspection(target.clone(), id);
+        assert!(self.state.set_saved_query_details(id, &target, Vec::new()));
+        let id = self.request();
+        let inspection = self
+            .state
+            .begin_saved_query_sql_inspection(target, id)
+            .expect("synthetic saved owner");
+        let sql = "SELECT 99 AS [Answer]";
+        assert!(self.state.set_saved_query_sql_inspection(
+            id,
+            &inspection,
+            Some(sql.into()),
+            SavedQuerySqlEligibility::Unavailable
+        ));
+        let built = tablecraft_builders::query::import(sql, &[]).expect("constant saved design");
+        let request = self
+            .state
+            .query_design_request()
+            .expect("actual saved Design owner");
+        let id = self.request();
+        assert!(
+            self.state
+                .begin_query_design_import(request, sql.into(), id)
+        );
+        assert!(
+            self.state
+                .set_query_design_built(id, built, Vec::new())
+                .is_some()
+        );
+    }
+}

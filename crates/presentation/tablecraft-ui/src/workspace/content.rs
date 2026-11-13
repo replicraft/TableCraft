@@ -124,7 +124,9 @@ impl State {
         let boolean_toggles = self.boolean_toggle_context();
         let data = match self.view {
             DocumentView::Table => self.data.as_ref(),
-            DocumentView::Query if self.saved_query.active => self.saved_query.data.as_ref(),
+            DocumentView::Query if self.saved_query_data_visible() => {
+                self.saved_query.data.as_ref()
+            }
             DocumentView::Query => self.query_data.as_ref(),
             DocumentView::Design => None,
         };
@@ -140,7 +142,7 @@ impl State {
                 .and_then(|(target, enabled)| self.totals.row(target, *enabled));
             let selection = if self.view == DocumentView::Table {
                 &mut self.table_selection
-            } else if self.saved_query.active {
+            } else if self.saved_query_data_visible() {
                 &mut self.saved_query.selection
             } else {
                 &mut self.query_selection
@@ -194,7 +196,7 @@ impl State {
             Frame::new().inner_margin(10).show(ui, |ui| {
                 ui.weak(tr(
                     ui,
-                    if self.saved_query.active {
+                    if self.saved_query_data_visible() {
                         "query-saved-empty"
                     } else {
                         "query-empty"
@@ -230,7 +232,7 @@ impl State {
             (Pane::Document, DocumentView::Table) => self.table_selection.focus_selected(context),
             (Pane::Document, DocumentView::Design) => self.request_design_pane_entry(context),
             (Pane::Results, DocumentView::Query) => {
-                if self.saved_query.active {
+                if self.saved_query_data_visible() {
                     self.saved_query.selection.focus_selected(context);
                 } else {
                     self.query_selection.focus_selected(context);

@@ -30,13 +30,16 @@ impl Session {
         state.focus_publication == self.publication
             && state.active_object().as_ref() == Some(&self.object)
             && state.view == DocumentView::Query
-            && !state.saved_query.active
+            && (!state.saved_query.active || self.design_origin.is_some())
             && !state.backstage_visible()
             && match &self.design_origin {
                 Some(origin) => state.query_design_parameter_origin_current(origin),
                 None => !state.query_design_visible() && !state.query_design_results_visible(),
             }
-            && state.query_sql_witness_current(self.sql_revision, &self.sql)
+            && match &self.design_origin {
+                Some(_) => state.query_design_sql() == Some(self.sql.as_str()),
+                None => state.query_sql_witness_current(self.sql_revision, &self.sql),
+            }
     }
 
     pub(in crate::workspace) fn retained_bytes(&self) -> Option<usize> {
@@ -93,6 +96,12 @@ impl State {
         self.query_parameters = None;
     }
 
+    pub fn query_parameter_inspection_owner_current(&self, id: u64) -> bool {
+        self.query_parameters
+            .as_ref()
+            .is_some_and(|session| session.inspection_id == id && session.current(self))
+    }
+
     pub fn query_parameter_inspection_current(&self, id: u64, sql: &str) -> bool {
         self.query_parameters.as_ref().is_some_and(|session| {
             session.inspection_id == id && session.sql == sql && session.current(self)
@@ -105,7 +114,8 @@ impl State {
             && !self.query_action_dialog_open()
             && self.query_sql_revision().is_some()
             && self.active_object().is_some_and(|tab| {
-                tab.target.kind == ObjectKind::Sql
+                (tab.target.kind == ObjectKind::Sql
+                    || self.query_design_parameter_origin().is_some())
                     && self.database.as_ref().is_some_and(|database| {
                         tab.target.document_revision == database.document_revision
                     })
@@ -133,15 +143,14 @@ impl State {
     ) -> bool {
         if request_id == 0
             || !self.can_inspect_query_parameters()
-            || self.sql != captured_sql
+            || self.query_design_sql() != Some(captured_sql.as_str())
             || !self.admit_object_bytes(Some(captured_sql.capacity()))
         {
             return false;
         }
-        let Some(object) = self
-            .active_object()
-            .filter(|tab| tab.target.kind == ObjectKind::Sql)
-        else {
+        let Some(object) = self.active_object().filter(|tab| {
+            tab.target.kind == ObjectKind::Sql || self.query_design_parameter_origin().is_some()
+        }) else {
             return false;
         };
         let Some(sql_revision) = self.query_sql_revision() else {

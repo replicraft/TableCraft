@@ -405,7 +405,9 @@ impl State {
     }
 
     pub fn edit_save_pending(&self) -> bool {
-        self.saved_query_sql_save_open()
+        self.query_creation_name_open()
+            || self.query_creation_save_open()
+            || self.saved_query_sql_save_open()
             || self.database_options_pending()
             || self.insert_save_pending()
             || self.delete_save_pending()
