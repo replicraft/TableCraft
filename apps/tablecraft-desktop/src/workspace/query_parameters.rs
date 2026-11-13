@@ -53,7 +53,7 @@ impl Desktop {
             && request_id == self.generation
             && !self
                 .state
-                .query_parameter_inspection_current(request_id, &self.state.sql)
+                .query_parameter_inspection_owner_current(request_id)
         {
             self.worker.cancel();
             self.state.busy = false;

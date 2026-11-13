@@ -91,6 +91,12 @@ enum PendingOperation {
     FieldAdditionReopen {
         request_id: u64,
     },
+    QueryCreationReview {
+        request_id: u64,
+    },
+    QueryCreationReopen {
+        request_id: u64,
+    },
     QueryDefinitionReview {
         request_id: u64,
     },
@@ -472,7 +478,8 @@ impl Desktop {
     }
 
     fn file_selected(&mut self, selection: Option<PathBuf>) {
-        if self.editing.has_save()
+        if self.state.query_creation_name_open()
+            || self.editing.has_save()
             || self.creating.is_busy()
             || self.recovery.is_some()
             || self.state.table_draft_save_open()
@@ -493,7 +500,8 @@ impl Desktop {
     }
 
     fn open(&mut self) {
-        if self.editing.has_save()
+        if self.state.query_creation_name_open()
+            || self.editing.has_save()
             || self.creating.is_busy()
             || self.recovery.is_some()
             || self.state.table_draft_save_open()
@@ -595,11 +603,13 @@ impl Desktop {
                 Ok(Response::QuerySqlDraft { draft }) => {
                     self.publish_saved_query_sql(generation, draft);
                 }
+                Ok(Response::QueryCreationReviewed { review, capability }) => {
+                    self.start_reviewed_query_creation(generation, review, capability);
+                }
                 Ok(Response::QuerySqlReviewed { review, capability }) => {
                     self.start_reviewed_query_definition(generation, review, capability);
                 }
-                Ok(Response::QueryCreationReviewed { .. })
-                | Ok(Response::QueryExpressionReviewed { .. })
+                Ok(Response::QueryExpressionReviewed { .. })
                 | Ok(Response::AddColumnReviewed { .. })
                 | Ok(Response::NumberColumnReviewed { .. })
                 | Ok(Response::NumberColumnAvailability { .. }) => {
@@ -816,6 +826,15 @@ impl Desktop {
                     }
                     if let PendingOperation::FieldAdditionReopen { request_id } = self.pending {
                         self.finish_field_addition_reopen(
+                            request_id,
+                            database,
+                            table_creation_available,
+                            table_design_available,
+                        );
+                        continue;
+                    }
+                    if let PendingOperation::QueryCreationReopen { request_id } = self.pending {
+                        self.finish_query_creation_reopen(
                             request_id,
                             database,
                             table_creation_available,
@@ -1300,6 +1319,12 @@ impl eframe::App for Desktop {
                 }
                 Action::FieldAdditionSave { identity, command } => {
                     self.field_addition_save_command(identity, command)
+                }
+                Action::ReviewQueryCreation { request } => {
+                    self.save_query_creation(request);
+                }
+                Action::QueryCreationSave { identity, command } => {
+                    self.query_creation_save_action(identity, command);
                 }
                 Action::ReviewSavedQuerySql { request } => {
                     self.save_query_definition(request);

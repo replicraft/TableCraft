@@ -197,7 +197,14 @@ impl Desktop {
             .set_query_design_built(request_id, built, metadata)
         {
             Some(QueryDesignCompletion::Run) => self.run_query_design(options),
-            Some(QueryDesignCompletion::ShowSql) => {}
+            Some(QueryDesignCompletion::ShowSql | QueryDesignCompletion::Save) => {}
+            Some(QueryDesignCompletion::SaveExisting) => {
+                if let Some(request) = self.state.saved_query_sql_review_request() {
+                    self.save_query_definition(request);
+                } else {
+                    self.state.error = Some(self.state.localizer.text("objects-open-refused"));
+                }
+            }
             None => self
                 .state
                 .fail_query_design(request_id, self.state.localizer.text("qbe-invalid-result")),

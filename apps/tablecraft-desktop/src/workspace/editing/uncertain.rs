@@ -21,6 +21,7 @@ impl Desktop {
             SaveOwner::FieldDrop => self.acknowledge_uncertain_field_drop(id),
             SaveOwner::FieldAddition => self.acknowledge_uncertain_field_addition(id),
             SaveOwner::QueryDefinition => self.acknowledge_uncertain_query_definition(id),
+            SaveOwner::QueryCreation => self.acknowledge_uncertain_query_creation(id),
             SaveOwner::DatabaseOptions => self.acknowledge_uncertain_database_options(id),
             SaveOwner::TableCreation => self.acknowledge_uncertain_table_creation(id),
             SaveOwner::TableRename => {

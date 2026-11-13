@@ -97,6 +97,13 @@ impl Desktop {
                     self.state.error = Some(error.to_string());
                 }
             }
+            PendingOperation::QueryCreationReview { request_id } => {
+                let request_id = *request_id;
+                self.query_creation_review_failed(request_id, error.to_string());
+            }
+            PendingOperation::QueryCreationReopen { .. } => {
+                self.fail_query_creation_reopen(error);
+            }
             PendingOperation::QueryDefinitionReview { request_id } => {
                 let request_id = *request_id;
                 self.query_definition_review_failed(request_id, error.to_string());

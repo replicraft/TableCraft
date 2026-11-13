@@ -10,6 +10,7 @@ mod inserting;
 #[cfg(test)]
 mod pasting;
 mod query_action;
+mod query_creation;
 mod query_definition;
 pub(super) mod recovery;
 #[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
@@ -39,6 +40,7 @@ use tablecraft_ui::{
 pub(super) struct Editing {
     worker: SaveWorker,
     query_definition: Option<query_definition::QueryDefinitionHost>,
+    query_creation: Option<query_creation::QueryCreationHost>,
     field_addition: Option<field_addition::FieldAdditionHost>,
     field_rename: Option<field_rename::FieldRenameHost>,
     field_drop: Option<field_drop::FieldDropHost>,
@@ -85,6 +87,7 @@ enum SaveOwner {
     DatabaseOptions,
     QueryAction,
     QueryDefinition,
+    QueryCreation,
 }
 
 struct ActiveSave {
@@ -102,6 +105,7 @@ impl Editing {
         Self {
             worker: SaveWorker::new(move || ctx.request_repaint()),
             query_definition: None,
+            query_creation: None,
             field_addition: None,
             field_rename: None,
             field_drop: None,
@@ -128,6 +132,7 @@ impl Editing {
         self.save.is_some()
             || self.worker.is_busy()
             || self.query_definition.is_some()
+            || self.query_creation.is_some()
             || self.field_addition.is_some()
             || self.field_rename.is_some()
             || self.field_drop.is_some()
@@ -380,6 +385,11 @@ impl Desktop {
                             .set_database_options_actor_lost(identity, message);
                     }
                 }
+                SaveOwner::QueryCreation => {
+                    if let Some((identity, _)) = self.state.query_creation_save_status() {
+                        self.state.set_query_creation_actor_lost(identity, message);
+                    }
+                }
                 SaveOwner::QueryDefinition => {
                     if let Some((identity, _)) = self.state.saved_query_sql_save_status() {
                         self.state.set_saved_query_sql_actor_lost(identity, message);
@@ -393,6 +403,10 @@ impl Desktop {
         }
         if let Some(retry) = &mut save.insert_retry {
             retry.evidence.observe(report);
+        }
+        if matches!(save.owner, SaveOwner::QueryCreation) {
+            self.query_creation_save_report(report);
+            return;
         }
         if matches!(save.owner, SaveOwner::QueryDefinition) {
             self.query_definition_save_report(report);
@@ -465,7 +479,7 @@ impl Desktop {
             | SaveOwner::FieldDrop
             | SaveOwner::TableDrop
             | SaveOwner::DatabaseOptions => {}
-            SaveOwner::QueryDefinition => {}
+            SaveOwner::QueryDefinition | SaveOwner::QueryCreation => {}
         }
     }
 
@@ -485,6 +499,9 @@ impl Desktop {
         if self.cancel_current_field_addition_operation() {
             return;
         }
+        if self.cancel_query_creation_operation() {
+            return;
+        }
         if self.cancel_query_definition_operation() {
             return;
         }
@@ -501,6 +518,7 @@ impl Desktop {
         self.note_field_drop_cancellation(id);
         self.note_table_drop_cancellation(id);
         if self.editing.save.as_ref().is_some_and(|save| save.id == id) {
+            self.note_query_creation_save_cancellation(id);
             self.note_query_definition_save_cancellation(id);
             self.editing.worker.cancel(id);
         }
@@ -557,6 +575,11 @@ impl Desktop {
             );
             return;
         }
+        if self.editing.query_creation.is_some()
+            && !self.can_resolve_query_creation_save(id, recover)
+        {
+            return;
+        }
         if self.editing.query_definition.is_some()
             && !self.can_resolve_query_definition_save(id, recover)
         {
@@ -594,6 +617,9 @@ impl Desktop {
                     }
                     SaveOwner::QueryDefinition => {
                         self.query_definition_resolution_started(next);
+                    }
+                    SaveOwner::QueryCreation => {
+                        self.query_creation_resolution_started(next);
                     }
                     SaveOwner::FieldAddition
                     | SaveOwner::FieldRename
@@ -634,6 +660,10 @@ impl Desktop {
             .filter(|identity| identity.save_id == id)
         {
             self.acknowledge_field_addition(identity);
+            return;
+        }
+        if self.editing.query_creation.is_some() {
+            self.acknowledge_query_creation(id);
             return;
         }
         if self.editing.query_definition.is_some() {
@@ -715,7 +745,7 @@ impl Desktop {
             | SaveOwner::FieldDrop
             | SaveOwner::TableDrop
             | SaveOwner::DatabaseOptions => {}
-            SaveOwner::QueryDefinition => {}
+            SaveOwner::QueryDefinition | SaveOwner::QueryCreation => {}
         }
         if refresh_after_ack {
             let selection = self.editing.take_saved_cell_selection(id);

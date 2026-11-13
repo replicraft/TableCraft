@@ -34,7 +34,9 @@ impl Desktop {
             self.state.reveal_unresolved_query_design_edits();
             return None;
         }
-        if self.state.table_draft_save_open()
+        if self.state.query_creation_name_open()
+            || self.state.query_creation_save_open()
+            || self.state.table_draft_save_open()
             || self.state.table_draft_field_delete_open()
             || self.state.saved_query_sql_close_open()
             || self.state.field_rename_close_open()
@@ -119,6 +121,8 @@ impl Desktop {
             return;
         }
         if self.deferred_draft_action.is_some()
+            || self.state.query_creation_name_open()
+            || self.state.query_creation_save_open()
             || self.state.table_draft_save_open()
             || self.state.table_draft_field_delete_open()
             || self.state.saved_query_sql_close_open()
