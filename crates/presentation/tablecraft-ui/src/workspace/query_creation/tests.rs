@@ -1,3 +1,5 @@
+mod keyboard;
+
 use crate::preview::{Preview, Scene};
 use crate::{Action, ObjectKind, ObjectTarget, State};
 use egui::{Key, accesskit::Role};
