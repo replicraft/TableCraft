@@ -30,6 +30,11 @@ pub(crate) struct DocumentEdits {
 }
 
 impl DocumentEdits {
+    #[cfg(feature = "ace16-create")]
+    pub(crate) fn image_source(&self) -> &NativeImageSource {
+        &self.image_source
+    }
+
     pub(crate) fn new(path: PathBuf, original: Bytes, image_source: NativeImageSource) -> Self {
         Self {
             image_source,

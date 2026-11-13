@@ -29,7 +29,7 @@ impl Document {
         // NO_CLONE: Fresh catalog verification borrows the Document's immutable
         // source independently; sharing adds no image payload copy.
         let image = NativeImage::capture_shared_retained(
-            document.edits.image_source.clone(),
+            document.edits.image_source().clone(),
             SCOPE,
             &mut work,
             cancelled,
