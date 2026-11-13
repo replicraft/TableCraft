@@ -24,6 +24,14 @@ fn field(harness: &mut Harness<'_, Desktop>, index: usize, text: &str) {
     harness.run_steps(2);
 }
 
+fn assert_field_text(harness: &Harness<'_, Desktop>, index: usize, text: &str) {
+    let input = harness
+        .get_all_by_role_and_label(Role::TextInput, "Field expression")
+        .nth(index)
+        .unwrap();
+    assert_eq!(input.accesskit_node().value(), Some(text));
+}
+
 fn show_items(harness: &mut Harness<'_, Desktop>) {
     let revision = harness
         .state()
@@ -132,7 +140,7 @@ fn parked_incomplete_alias_blocks_destructive_open_queue_and_close_until_explici
         harness.state().state.active_object().unwrap().id,
         query_tab.id
     );
-    harness.get_by_value("Chosen: IIf(");
+    assert_field_text(&harness, 1, "Chosen: IIf(");
     harness.key_press_modifiers(egui::Modifiers::COMMAND, Key::W);
     harness.run_steps(2);
     assert!(
@@ -157,7 +165,7 @@ fn parked_incomplete_alias_blocks_destructive_open_queue_and_close_until_explici
         harness.state().state.active_object().unwrap().id,
         query_tab.id
     );
-    harness.get_by_value("Chosen: IIf(");
+    assert_field_text(&harness, 1, "Chosen: IIf(");
 
     // A queued user transition must recheck the current draft on consumption.
     // This is a plain host open request, never a native review/save capability.
@@ -222,7 +230,7 @@ fn acknowledged_same_document_cell_save_preserves_parked_raw_alias_after_fresh_r
         fresh.target.document_revision,
         original_tab.target.document_revision
     );
-    harness.get_by_value("Chosen: IIf(");
+    assert_field_text(&harness, 1, "Chosen: IIf(");
     assert!(harness.state().state.query_data.is_none());
     assert!(harness.state().state.query_design_request_id().is_none());
     assert!(!harness.state().editing.has_save());
