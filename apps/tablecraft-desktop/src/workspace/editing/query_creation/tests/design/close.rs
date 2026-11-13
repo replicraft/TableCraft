@@ -1,5 +1,6 @@
 //! Real close choices consume only the original Design owner's completed save.
 mod refusal;
+mod sql_view;
 
 use super::super::{accept_name, name, opened, run_saved, saved, scratch, sql};
 use super::design;
