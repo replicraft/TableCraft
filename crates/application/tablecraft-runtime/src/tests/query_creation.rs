@@ -85,20 +85,21 @@ fn authored_and_stored_sources_create_distinct_objects_without_replaying_clock_o
                     draft_revision: 7,
                     source,
                 },
-                sql: "SELECT 99 AS Answer;".into(),
+                sql: Arc::new("SELECT 99 AS Answer;".into()),
                 destination: "Created".into(),
             }
         };
-        let (submitted_sql, submitted_name) = match &command {
+        let (submitted_sql, submitted_name, submitted_snapshot) = match &command {
             Command::ReviewQueryCreation { target, sql, .. } => (
                 Some(sql.as_ptr() as usize),
                 target
                     .source
                     .as_ref()
                     .map(|source| source.name.as_ptr() as usize),
+                Some(Arc::as_ptr(sql) as usize),
             ),
             Command::ReviewStoredQueryCopy { target, .. } => {
-                (None, Some(target.name.as_ptr() as usize))
+                (None, Some(target.name.as_ptr() as usize), None)
             }
             _ => unreachable!("only the two explicit creation sources are issued"),
         };
@@ -120,8 +121,9 @@ fn authored_and_stored_sources_create_distinct_objects_without_replaying_clock_o
             } => {
                 assert_ne!(origin, "stored-copy");
                 assert_eq!(draft_revision, 7);
-                assert_eq!(sql, "SELECT 99 AS Answer;");
+                assert_eq!(sql.as_str(), "SELECT 99 AS Answer;");
                 assert_eq!(Some(sql.as_ptr() as usize), submitted_sql);
+                assert_eq!(Some(Arc::as_ptr(&sql) as usize), submitted_snapshot);
                 assert_eq!(source.is_some(), saved_editor);
                 assert_eq!(
                     source.as_ref().map(|source| source.name.as_ptr() as usize),
@@ -240,7 +242,7 @@ fn stale_authored_owner_is_rejected_before_parsing_or_reading_clock() {
                     source: None
                 },
                 destination: "Created".into(),
-                sql: "not SQL".into(),
+                sql: Arc::new("not SQL".into()),
             }
         ),
         Err(Error::StaleDocument)
@@ -263,7 +265,7 @@ fn stale_authored_owner_is_rejected_before_parsing_or_reading_clock() {
                     })
                 },
                 destination: "Created".into(),
-                sql: "not SQL".into(),
+                sql: Arc::new("not SQL".into()),
             }
         ),
         Err(Error::StaleSavedQuery)

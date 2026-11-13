@@ -29,7 +29,7 @@ pub enum Command {
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     ReviewQueryCreation {
         target: QueryCreationTarget,
-        sql: String,
+        sql: Arc<String>,
         destination: String,
     },
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]

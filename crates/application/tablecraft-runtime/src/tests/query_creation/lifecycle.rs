@@ -54,7 +54,7 @@ fn changed_exclusive_source_retains_the_actual_actor_until_release_without_creat
                     name: saved.name,
                 }),
             },
-            sql: "SELECT 99 AS Answer;".into(),
+            sql: Arc::new("SELECT 99 AS Answer;".into()),
             destination: "Created".into(),
         },
     )
@@ -71,7 +71,7 @@ fn changed_exclusive_source_retains_the_actual_actor_until_release_without_creat
         panic!("dirty authored SQL must not become a stored-copy request");
     };
     assert_eq!(draft_revision, 17);
-    assert_eq!(sql, "SELECT 99 AS Answer;");
+    assert_eq!(sql.as_str(), "SELECT 99 AS Answer;");
     assert_eq!(source.as_ref().unwrap().name, "Saved");
 
     let mut changed = case.before;
@@ -109,7 +109,7 @@ fn changed_exclusive_source_retains_the_actual_actor_until_release_without_creat
     assert!(saves.poll().is_none());
     assert_eq!(std::fs::read(path).unwrap(), changed);
     assert_eq!(clock.0.load(Ordering::SeqCst), 1);
-    assert_eq!(sql, "SELECT 99 AS Answer;");
+    assert_eq!(sql.as_str(), "SELECT 99 AS Answer;");
     assert_eq!(source.unwrap().name, "Saved");
 }
 
@@ -146,7 +146,7 @@ fn saved_fact_cannot_publish_foreign_after_and_readonly_retry_never_replays_the_
                 draft_revision: 21,
                 source: None,
             },
-            sql: "SELECT 99 AS Answer;".into(),
+            sql: Arc::new("SELECT 99 AS Answer;".into()),
             destination: "Created".into(),
         },
     )

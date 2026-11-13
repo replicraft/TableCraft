@@ -67,7 +67,7 @@ fn capture(
 pub(in crate::editing) fn review_sql(
     document: &mut Document,
     target: &mut QueryCreationTarget,
-    sql: &mut String,
+    sql: &Arc<String>,
     destination: &str,
     clock: &dyn Clock,
     cancelled: &dyn Fn() -> bool,
@@ -106,7 +106,10 @@ pub(in crate::editing) fn review_sql(
         if let Some(source) = &target.source {
             output.allocation(source.name.capacity(), 1)?;
         }
-        let sql = output.take_text(sql)?;
+        output.allocation(sql.capacity(), 1)?;
+        // NO_CLONE: The immutable SQL snapshot is shared with the command and
+        // host request for exact reply correlation; no text payload is copied.
+        let sql = Arc::clone(sql);
         Ok(QueryCreationOrigin::Draft {
             draft_revision: target.draft_revision,
             sql,

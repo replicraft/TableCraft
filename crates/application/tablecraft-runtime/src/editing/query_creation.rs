@@ -27,7 +27,7 @@ pub enum QueryCreationOrigin {
     /// Exact submitted authoring text and its caller-owned revision.
     Draft {
         draft_revision: u64,
-        sql: String,
+        sql: Arc<String>,
         source: Option<SavedQueryTarget>,
     },
     /// Actual stored definition selected by the source document.
@@ -103,7 +103,7 @@ impl Document {
     pub(crate) fn review_query_creation(
         &mut self,
         target: &mut QueryCreationTarget,
-        sql: &mut String,
+        sql: &Arc<String>,
         destination: &str,
         clock: &dyn Clock,
         cancelled: &dyn Fn() -> bool,

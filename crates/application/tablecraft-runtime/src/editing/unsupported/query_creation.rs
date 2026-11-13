@@ -14,7 +14,7 @@ pub(in crate::editing) struct State {
 pub(in crate::editing) fn review_sql(
     _document: &mut Document,
     _target: &mut QueryCreationTarget,
-    _sql: &mut String,
+    _sql: &Arc<String>,
     _destination: &str,
     _clock: &dyn Clock,
     _cancelled: &dyn Fn() -> bool,
