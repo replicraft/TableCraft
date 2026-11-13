@@ -112,6 +112,7 @@ impl Desktop {
             );
             return;
         }
+        let close_tab = self.state.finish_query_design_close_after_creation(status);
         self.state.clear_query_creation_save(status);
         let Some(host) = self.editing.query_creation.take() else {
             self.state.error = Some(self.state.localizer.text("objects-open-refused"));
@@ -128,7 +129,10 @@ impl Desktop {
         self.pending = PendingOperation::Read;
         self.editing.clear_review();
         self.clear_query_parameters();
-        if let Some(open) = self.state.active_object_load() {
+        if let Some(tab) = close_tab {
+            self.close_object(tab);
+            self.resume_after_query_definition = true;
+        } else if let Some(open) = self.state.active_object_load() {
             self.load_object(open);
         }
     }

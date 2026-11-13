@@ -633,6 +633,11 @@ impl Desktop {
             }
             return;
         }
+        let design_close = self.state.finish_query_design_close_after_saved_sql(
+            host.request_id,
+            &host.request,
+            review_id,
+        );
         if let Some(status) = host.status {
             self.state.clear_saved_query_sql_save(status);
         }
@@ -653,7 +658,10 @@ impl Desktop {
         self.pending = PendingOperation::Read;
         self.editing.clear_review();
         self.clear_query_parameters();
-        if close_after_save {
+        if let Some(tab) = design_close {
+            self.close_object(tab);
+            self.resume_after_query_definition = true;
+        } else if close_after_save {
             if let Some(tab) = self.state.object_tabs().into_iter().find(|tab| {
                 tab.target.document_revision == revision
                     && matches!(&tab.target.kind, tablecraft_ui::ObjectKind::SavedQuery { object_id, name }

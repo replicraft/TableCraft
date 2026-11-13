@@ -39,6 +39,7 @@ impl Desktop {
             || self.state.table_draft_save_open()
             || self.state.table_draft_field_delete_open()
             || self.state.saved_query_sql_close_open()
+            || self.state.query_design_close_open()
             || self.state.field_rename_close_open()
             || self.state.field_drop_close_open()
         {
@@ -48,7 +49,9 @@ impl Desktop {
         let action = self.defer_field_addition_transition(action)?;
         let action = self.defer_field_rename_transition(action)?;
         let action = self.defer_field_drop_transition(action)?;
-        let confirmation = if self.state.has_modified_saved_query_sql() {
+        let confirmation = if self.state.has_modified_query_design() {
+            self.state.request_query_design_close_all()
+        } else if self.state.has_modified_saved_query_sql() {
             self.state.request_saved_query_sql_close_all()
         } else if self.state.has_modified_table_drafts() {
             self.state.request_table_draft_discard()
@@ -126,6 +129,7 @@ impl Desktop {
             || self.state.table_draft_save_open()
             || self.state.table_draft_field_delete_open()
             || self.state.saved_query_sql_close_open()
+            || self.state.query_design_close_open()
             || self.state.field_rename_close_open()
             || self.state.field_drop_close_open()
         {
@@ -133,6 +137,7 @@ impl Desktop {
             return;
         }
         if self.state.has_modified_table_drafts()
+            || self.state.has_modified_query_design()
             || self.state.has_modified_saved_query_sql()
             || self.state.field_addition_open()
             || self.state.field_rename_open()

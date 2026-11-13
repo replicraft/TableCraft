@@ -47,13 +47,13 @@ impl Desktop {
         request: QueryDesignRequest,
         draft: Arc<QueryDesignDraft>,
         completion: QueryDesignCompletion,
-    ) {
+    ) -> bool {
         if self.editing.has_save()
             || !self
                 .state
                 .can_build_query_design(&request, &draft, completion)
         {
-            return;
+            return false;
         }
         let Some(request_id) = request_read(
             Command::BuildQueryDesign {
@@ -67,7 +67,7 @@ impl Desktop {
             &mut self.state,
         ) else {
             self.read_request_rejected();
-            return;
+            return false;
         };
         // NO_CLONE: The shared pending QBE build and desktop pending operation each own the exact
         // object/publication/draft-revision witness.
@@ -76,7 +76,7 @@ impl Desktop {
             .begin_query_design_build(request.clone(), draft, completion, request_id)
         {
             self.worker.cancel();
-            return;
+            return false;
         }
         self.generation = request_id;
         self.pending = PendingOperation::QueryDesignBuild {
@@ -85,6 +85,7 @@ impl Desktop {
             options: self.read_query_options(),
         };
         self.state.busy = true;
+        true
     }
 
     pub(super) fn import_query_design(&mut self, request: QueryDesignRequest, sql: String) {
@@ -202,6 +203,7 @@ impl Desktop {
                 if let Some(request) = self.state.saved_query_sql_review_request() {
                     self.save_query_definition(request);
                 } else {
+                    self.state.cancel_query_design_close();
                     self.state.error = Some(self.state.localizer.text("objects-open-refused"));
                 }
             }

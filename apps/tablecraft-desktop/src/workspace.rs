@@ -9,6 +9,7 @@ mod objects;
 mod opening;
 mod query_contents;
 mod query_design;
+mod query_design_close;
 mod query_limits;
 mod query_parameters;
 mod read_failures;
@@ -1162,7 +1163,9 @@ impl eframe::App for Desktop {
                     request,
                     draft,
                     completion,
-                } => self.build_query_design(request, draft, completion),
+                } => {
+                    self.build_query_design(request, draft, completion);
+                }
                 Action::ImportQueryDesign { request, sql } => {
                     self.import_query_design(request, sql);
                 }
@@ -1257,6 +1260,9 @@ impl eframe::App for Desktop {
                 }
                 Action::CloseContents { request_id } => self.close_contents(request_id),
                 Action::InspectSavedQuery { target } => self.inspect_saved_query(target),
+                Action::QueryDesignClose { result } => {
+                    self.finish_query_design_close(result, ui.ctx());
+                }
                 Action::SavedQuerySqlClose { result } => {
                     self.finish_saved_query_sql_close(result, ui.ctx());
                 }
