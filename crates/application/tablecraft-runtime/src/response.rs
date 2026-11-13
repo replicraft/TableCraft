@@ -3,9 +3,10 @@
 use crate::{
     AddColumnReview, DatabaseOptionsInspection, DatabaseOptionsReview, FieldAdditionAvailability,
     FieldAdditionReview, FieldDropReview, FieldDropSourceInspection, FieldRenameReview,
-    FieldRenameSourceInspection, NumberColumnAvailability, ReviewedAddColumn,
+    FieldRenameSourceInspection, NumberColumnAvailability, QueryCreationReview, ReviewedAddColumn,
     ReviewedDatabaseOptions, ReviewedFieldAddition, ReviewedFieldDrop, ReviewedFieldRename,
-    ReviewedIndexCreation, ReviewedIndexDrop, ReviewedNumberColumn, ReviewedTableCreation,
+    ReviewedIndexCreation, ReviewedIndexDrop, ReviewedNumberColumn, ReviewedQueryCreation,
+    ReviewedTableCreation,
 };
 use crate::{
     Cell, CollectionKind, Column, ContentsTarget, DiscoveredQuery, Field, FieldFilterDescription,
@@ -24,6 +25,11 @@ use std::{path::PathBuf, sync::Arc};
 use tablecraft_builders::query::{BuiltQueryDesign, DesignTableMetadata};
 
 pub enum Response {
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    QueryCreationReviewed {
+        review: QueryCreationReview,
+        capability: ReviewedQueryCreation,
+    },
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     IndexDropReviewed {
         capability: ReviewedIndexDrop,

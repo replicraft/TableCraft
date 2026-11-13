@@ -69,6 +69,17 @@ impl Source {
         matches!(self, Self::Plain { input, fits_standard_image: true } if !input.is_deployment())
     }
 
+    /// New retained actions qualify the actual image instead of inheriting the
+    /// standard capture-size observation. Existing editing routes stay separate.
+    #[cfg(all(
+        feature = "offline-edit",
+        feature = "ace16-create",
+        any(target_os = "macos", target_os = "linux", windows)
+    ))]
+    pub(super) fn retained_native(&self) -> bool {
+        matches!(self, Self::Plain { input, .. } if !input.is_deployment())
+    }
+
     pub(super) fn open(
         bytes: Bytes,
         password: &str,

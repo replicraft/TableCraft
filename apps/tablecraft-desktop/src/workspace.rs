@@ -598,7 +598,8 @@ impl Desktop {
                 Ok(Response::QuerySqlReviewed { review, capability }) => {
                     self.start_reviewed_query_definition(generation, review, capability);
                 }
-                Ok(Response::QueryExpressionReviewed { .. })
+                Ok(Response::QueryCreationReviewed { .. })
+                | Ok(Response::QueryExpressionReviewed { .. })
                 | Ok(Response::AddColumnReviewed { .. })
                 | Ok(Response::NumberColumnReviewed { .. })
                 | Ok(Response::NumberColumnAvailability { .. }) => {

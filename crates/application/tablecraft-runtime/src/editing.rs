@@ -19,6 +19,8 @@ mod inserting;
 mod number_column;
 mod outcome_facts;
 mod query_action;
+#[cfg(feature = "ace16-create")]
+mod query_creation;
 mod query_delete;
 mod query_expression;
 mod query_insert;
@@ -80,6 +82,11 @@ pub use inserting::{
 #[cfg(feature = "ace16-create")]
 pub use number_column::{NumberColumnAvailability, ReviewedNumberColumn};
 pub use platform::save::SaveWorker;
+#[cfg(feature = "ace16-create")]
+pub use query_creation::{
+    QueryCreatedReopen, QueryCreationOrigin, QueryCreationOutcomeError, QueryCreationReopenFacts,
+    QueryCreationReview, QueryCreationTarget, ReviewedQueryCreation,
+};
 pub use query_delete::{QueryDeleteReview, ReviewedQueryDelete};
 pub use query_expression::{
     QueryExpressionOutcomeError, QueryExpressionReopen, QueryExpressionReopenFacts,

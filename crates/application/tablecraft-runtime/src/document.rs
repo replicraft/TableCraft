@@ -1,5 +1,11 @@
 //! Stable, bounded file capture and read-session ownership.
 mod capture;
+#[cfg(all(
+    feature = "offline-edit",
+    feature = "ace16-create",
+    any(target_os = "macos", target_os = "linux", windows)
+))]
+mod query_creation;
 use super::{
     Error, Response, SavedQuery, Table,
     controls::{SCOPE, budget, check},

@@ -17,6 +17,8 @@ mod apply_index_creation;
 mod apply_index_drop;
 mod apply_insert;
 mod apply_query_action;
+#[cfg(feature = "ace16-create")]
+mod apply_query_creation;
 mod apply_query_expression;
 mod apply_query_sql;
 #[cfg(feature = "ace16-create")]
@@ -54,7 +56,7 @@ use crate::editing::save::{
 use crate::editing::{
     ReviewedAddColumn, ReviewedDatabaseOptions, ReviewedFieldAddition, ReviewedFieldDrop,
     ReviewedFieldRename, ReviewedIndexCreation, ReviewedIndexDrop, ReviewedNumberColumn,
-    ReviewedTableCreation,
+    ReviewedQueryCreation, ReviewedTableCreation,
 };
 use crate::{
     controls::action_recovery_budget,
@@ -87,6 +89,8 @@ enum Task {
     ApplyDatabaseOptions(ReviewedDatabaseOptions, PathBuf),
     ApplyQueryExpression(ReviewedQueryExpression, PathBuf),
     ApplyQuerySql(ReviewedQuerySql, PathBuf),
+    #[cfg(feature = "ace16-create")]
+    ApplyQueryCreation(ReviewedQueryCreation, PathBuf),
     #[cfg(feature = "ace16-create")]
     ApplyAddColumn(ReviewedAddColumn, PathBuf),
     #[cfg(feature = "ace16-create")]
@@ -423,7 +427,8 @@ impl SaveWorker {
                         #[cfg(feature = "ace16-create")]
                         Task::ApplyTableCreation(..)
                         | Task::ApplyIndexCreation(..)
-                        | Task::ApplyIndexDrop(..) => SaveOperation::Apply,
+                        | Task::ApplyIndexDrop(..)
+                        | Task::ApplyQueryCreation(..) => SaveOperation::Apply,
                         #[cfg(feature = "ace16-create")]
                         Task::ApplyAddColumn(..)
                         | Task::ApplyNumberColumn(..)
@@ -463,6 +468,15 @@ impl SaveWorker {
                         }
                         Task::ApplyTableDrop(reviewed, bundle) => {
                             self::apply_table_drop::apply_table_drop(
+                                reviewed,
+                                bundle,
+                                &mut retained,
+                                &cancelled,
+                            )
+                        }
+                        #[cfg(feature = "ace16-create")]
+                        Task::ApplyQueryCreation(reviewed, bundle) => {
+                            self::apply_query_creation::apply_query_creation(
                                 reviewed,
                                 bundle,
                                 &mut retained,
@@ -1223,3 +1237,26 @@ mod health_tests;
 
 #[cfg(test)]
 mod test_support;
+
+#[cfg(feature = "ace16-create")]
+impl SaveWorker {
+    /// Whether this native host can consume source-issued query creation reviews.
+    pub const fn supports_query_creation() -> bool {
+        true
+    }
+
+    /// Consume exactly one accepted creation review; no SQL or clock is replayed.
+    ///
+    /// # Errors
+    /// Returns the unconsumed capability on startup refusal, as with `start`.
+    pub fn start_query_creation(
+        &self,
+        reviewed: ReviewedQueryCreation,
+        bundle: PathBuf,
+    ) -> Result<u64, SaveStartError<ReviewedQueryCreation>> {
+        // NO_CLONE: The actor startup guard independently observes Document
+        // invalidation while the consuming capability moves into its task.
+        let valid = Some(Arc::clone(&reviewed.state.valid));
+        self.start_reviewed(reviewed, bundle, valid, Task::ApplyQueryCreation)
+    }
+}

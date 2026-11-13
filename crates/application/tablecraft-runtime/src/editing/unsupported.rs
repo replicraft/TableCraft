@@ -18,6 +18,8 @@ pub(in crate::editing) mod index_drop;
 pub(in crate::editing) mod inserting;
 #[cfg(feature = "ace16-create")]
 pub(in crate::editing) mod number_column;
+#[cfg(feature = "ace16-create")]
+pub(in crate::editing) mod query_creation;
 pub(in crate::editing) mod query_delete;
 pub(in crate::editing) mod query_expression;
 pub(in crate::editing) mod query_insert;

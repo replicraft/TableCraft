@@ -113,8 +113,10 @@ impl Worker {
     }
 
     /// Use a caller-owned statement clock without inferred conversion profiles.
-    /// The provider is read only by executed clock expressions, never by open,
-    /// inspection, or parameter discovery.
+    /// The provider is read by executed clock expressions and once by an
+    /// explicit new-query creation review for its captured metadata DATE.
+    /// Open, inspection and parameter discovery do not read it; saving,
+    /// recovery and guarded reopen never resample the captured creation time.
     /// It must select its own timezone and report failures without a fallback.
     pub fn with_query_clock(
         repaint: impl Fn() + Send + Sync + 'static,
@@ -146,6 +148,34 @@ impl Worker {
         let mut document: Option<Document> = None;
         let mut document_revision = 0_u64;
         Self::start(repaint, move |command, cancelled| match command {
+            #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+            Command::ReviewQueryCreation {
+                target,
+                sql,
+                destination,
+            } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .review_query_creation(target, sql, destination, clock.as_ref(), cancelled),
+            #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+            Command::ReviewStoredQueryCopy {
+                target,
+                destination,
+            } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .review_stored_query_copy(target, destination, clock.as_ref(), cancelled),
+            #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+            Command::OpenQueryCreated { witness } => {
+                document = None;
+                document_revision = document_revision
+                    .checked_add(1)
+                    .ok_or(Error::RevisionExhausted)?;
+                let (opened, response) =
+                    Document::open_query_created(witness, document_revision, cancelled)?;
+                document = Some(opened);
+                Ok(response)
+            }
             #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
             Command::InspectDatabaseOptions { document_revision } => document
                 .as_mut()
@@ -812,6 +842,12 @@ impl Worker {
                         Command::InspectQuerySqlDraft { .. } => "inspect_query_sql_draft",
                         #[cfg(feature = "offline-edit")]
                         Command::ReviewQuerySql { .. } => "review_query_sql",
+                        #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                        Command::ReviewQueryCreation { .. } => "review_query_creation",
+                        #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                        Command::ReviewStoredQueryCopy { .. } => "review_stored_query_copy",
+                        #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                        Command::OpenQueryCreated { .. } => "open_query_created",
                         #[cfg(feature = "offline-edit")]
                         Command::ReviewQueryLiteralExpression { .. } => "review_query_expression",
                         #[cfg(feature = "offline-edit")]

@@ -4,7 +4,7 @@ use crate::editing::save::{SaveReport, SaveStartError, SaveStartFailure};
 use crate::editing::{
     ReviewedAddColumn, ReviewedDatabaseOptions, ReviewedFieldAddition, ReviewedFieldDrop,
     ReviewedFieldRename, ReviewedIndexCreation, ReviewedIndexDrop, ReviewedNumberColumn,
-    ReviewedTableCreation,
+    ReviewedQueryCreation, ReviewedTableCreation,
 };
 use crate::editing::{
     ReviewedDelete, ReviewedEdit, ReviewedInsert, ReviewedQueryDelete, ReviewedQueryExpression,
@@ -326,5 +326,23 @@ impl SaveWorker {
 
     pub fn is_busy(&self) -> bool {
         false
+    }
+}
+
+#[cfg(feature = "ace16-create")]
+impl SaveWorker {
+    pub const fn supports_query_creation() -> bool {
+        false
+    }
+
+    pub fn start_query_creation(
+        &self,
+        reviewed: ReviewedQueryCreation,
+        _bundle: PathBuf,
+    ) -> Result<u64, SaveStartError<ReviewedQueryCreation>> {
+        Err(SaveStartError {
+            kind: SaveStartFailure::UnsupportedPlatform,
+            reviewed: Some(reviewed),
+        })
     }
 }

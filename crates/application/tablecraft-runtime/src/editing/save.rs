@@ -92,6 +92,8 @@ pub enum SaveSchemaChange {
 /// Acknowledged query-definition facts, separate from table schema and rows.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum SaveQueryChange {
+    /// A new native query object, distinct from expression replacement.
+    Created,
     ExpressionSaved,
 }
 

@@ -614,3 +614,10 @@ fn sorting_reads_the_complete_relation_and_retains_native_edit_identity() {
         mutation_fixture::with_rows(&records)
     );
 }
+
+#[cfg(all(
+    feature = "offline-edit",
+    feature = "ace16-create",
+    any(target_os = "macos", target_os = "linux", windows)
+))]
+mod query_creation;

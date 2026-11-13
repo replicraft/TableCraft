@@ -52,7 +52,8 @@ impl ClockReading {
     }
 }
 
-/// Host clock callback, invoked only when a supported clock expression executes.
+/// Explicit host clock callback for supported clock expressions and operation metadata.
+/// Callers decide when to sample; inspecting metadata must not implicitly read it.
 /// Implementations must enforce their own I/O/work bounds and return payload-free
 /// errors. They may return fresh readings; the query layer does not cache time.
 pub trait Clock: Send + Sync {

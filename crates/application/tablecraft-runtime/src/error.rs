@@ -23,6 +23,12 @@ use tablecraft_builders::query::QueryDesignError;
 /// A typed task failure. Display text contains no credentials or row payloads.
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    #[error(transparent)]
+    QueryCreation(#[from] tablecraft_access::SavedQueryCreationError),
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    #[error("created query contents changed before reopening")]
+    QueryCreatedSourceChanged,
     #[error("read query {pool:?} pool: {source}")]
     ReadQueryLimit {
         pool: crate::QueryRunPool,

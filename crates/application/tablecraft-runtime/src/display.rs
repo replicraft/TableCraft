@@ -145,6 +145,18 @@ impl<'a> Presentation<'a> {
         Ok(owned)
     }
 
+    /// Transfer command-owned text only after cancellation and retained-capacity
+    /// admission. Refusal leaves the caller's string and allocation unchanged.
+    #[cfg(all(
+        feature = "offline-edit",
+        feature = "ace16-create",
+        any(target_os = "macos", target_os = "linux", windows)
+    ))]
+    pub(super) fn take_text(&mut self, text: &mut String) -> Result<String, Error> {
+        self.allocation(text.capacity(), 1)?;
+        Ok(std::mem::take(text))
+    }
+
     pub(crate) fn binary(&mut self, count: usize) -> Result<Vec<u8>, Error> {
         self.work(1)?;
         self.work.charge_allocation(count as u64, 1)?;

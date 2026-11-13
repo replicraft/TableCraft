@@ -11,6 +11,7 @@ mod index_drop;
 #[cfg(feature = "ace16-create")]
 mod number_column;
 mod numeric_index_creation;
+mod query_creation;
 mod query_expression_edits;
 mod table_drop;
 
@@ -148,6 +149,7 @@ pub(super) fn receipt(value: Receipt) -> SaveReceipt {
         }),
         query_change: value.query_change().map(|change| match change {
             QueryChange::ExpressionSaved => SaveQueryChange::ExpressionSaved,
+            QueryChange::Created => SaveQueryChange::Created,
         }),
         database_options_change: value.database_options_change().map(|change| match change {
             DatabaseOptionsChange::NameAutoCorrectDisabled => {
@@ -260,6 +262,7 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
             Cause::TableRenameIntent(error) => rename_intent_failure(error),
             Cause::TableDropIntent(error) => table_drop::intent(error),
             Cause::QueryExpressionEditsIntent(error) => query_expression_edits::intent(error),
+            Cause::QueryCreationIntent(error) => query_creation::intent(error),
             Cause::QueryExpressionIntent(error) => query_expression_intent_failure(error),
             Cause::QueryExpressionQualification(error) => query_expression_recovery_failure(error),
             Cause::Prepare(error) | Cause::Recovery(error) => journal_failure(error),
@@ -321,6 +324,14 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
     }
     if let Some(error) = error.downcast_ref::<TableRenameIntentError>() {
         return rename_intent_failure(error);
+    }
+    #[cfg(feature = "ace16-create")]
+    if let Some(error) = error.downcast_ref::<tablecraft_ace::QueryCreationIntentError>() {
+        return query_creation::intent(error);
+    }
+    #[cfg(feature = "ace16-create")]
+    if let Some(error) = error.downcast_ref::<tablecraft_ace::QueryCreationError>() {
+        return query_creation::native(error);
     }
     if let Some(error) = error.downcast_ref::<QueryExpressionEditsError>() {
         return query_expression_edits::expression(error);

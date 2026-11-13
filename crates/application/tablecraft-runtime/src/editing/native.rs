@@ -23,10 +23,13 @@ pub(in crate::editing) mod inserting;
 #[cfg(feature = "ace16-create")]
 pub(in crate::editing) mod number_column;
 pub(in crate::editing) mod query_action;
+#[cfg(feature = "ace16-create")]
+pub(in crate::editing) mod query_creation;
 pub(in crate::editing) mod query_delete;
 pub(in crate::editing) mod query_expression;
 pub(in crate::editing) mod query_insert;
 pub(in crate::editing) mod query_sql;
+mod query_syntax;
 pub(in crate::editing) mod query_update;
 mod reopen_image;
 pub(in crate::editing) mod replacing;
